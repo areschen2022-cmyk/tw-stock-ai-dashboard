@@ -83,6 +83,30 @@ def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     assert summary["items"][0]["stop_hit"] is False
 
 
+def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    signal = _score("2408", 88, price=100.0)
+    signal.themes = ["記憶體/HBM", "AI伺服器"]
+    signal.stop_price = 95.0
+    signal.entry_limit_price = 103.0
+    store.save_daily_score(signal, day0)
+    store.save_watch_candidates([signal], day0, {"2408": "南亞科"})
+    for index, price in enumerate([101.0, 102.0, 103.0, 104.0, 110.0], start=1):
+        store.save_daily_score(_score("2408", 88, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+    theme_stats = {row["label"]: row for row in summary["theme_stats"]}
+    score_bands = {row["label"]: row for row in summary["score_bands"]}
+
+    assert theme_stats["記憶體/HBM"]["signals"] == 1
+    assert theme_stats["AI伺服器"]["signals"] == 1
+    assert theme_stats["記憶體/HBM"]["win_rate_5d"] == 100
+    assert score_bands["85-100"]["signals"] == 1
+    assert score_bands["85-100"]["avg_return_5d"] == 10
+
+
 def test_detect_alerts_flags_score_jump(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     previous_day = date(2026, 5, 10)

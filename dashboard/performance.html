@@ -22,6 +22,10 @@
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .analysis-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    h2 { font-size:16px; margin:0 0 8px; }
+    .note { color:var(--muted); font-size:12px; margin:0 0 10px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
     a { color:#0b4a8b; text-decoration:none; }
@@ -31,6 +35,7 @@
     @media (max-width:900px) {
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
+      .analysis-grid { grid-template-columns:1fr; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
       thead { display:none; }
@@ -52,6 +57,24 @@
       <a class="nav-tab active" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
+    <div class="analysis-grid">
+      <section>
+        <h2>題材成效</h2>
+        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。</div>
+        <table>
+          <thead><tr><th>題材</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>停損</th></tr></thead>
+          <tbody id="themeStats"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>分數區間</h2>
+        <div class="note">僅顯示資料，不自動調整 BUY/WATCH 門檻。</div>
+        <table>
+          <thead><tr><th>區間</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th></tr></thead>
+          <tbody id="scoreBands"></tbody>
+        </table>
+      </section>
+    </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
       <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option></select>
@@ -83,6 +106,27 @@
         metric("停損觸及", stats.stop_hit_rate?.toFixed(1), "%"),
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
+      document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
+        ? data.theme_stats.map(r => `
+          <tr>
+            <td data-label="題材">${esc(r.label)}</td>
+            <td data-label="訊號">${esc(r.signals)}</td>
+            <td data-label="完成">${esc(r.completed)}</td>
+            <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+            <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+            <td data-label="停損">${fmtPct(r.stop_hit_rate)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td data-label="題材" colspan="6">尚無題材統計資料</td></tr>`;
+      document.querySelector("#scoreBands").innerHTML = (data.score_bands || []).map(r => `
+        <tr>
+          <td data-label="區間">${esc(r.label)}</td>
+          <td data-label="訊號">${esc(r.signals)}</td>
+          <td data-label="完成">${esc(r.completed)}</td>
+          <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+          <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+        </tr>
+      `).join("");
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const grade = document.querySelector("#grade").value;
       const status = document.querySelector("#status").value;

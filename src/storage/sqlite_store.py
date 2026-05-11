@@ -228,7 +228,7 @@ class SQLiteStore:
             rows = conn.execute(
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, entry_price,
-                       entry_triggered, return_3d, return_5d, stop_hit, action
+                       entry_triggered, return_3d, return_5d, stop_hit, action, themes_json
                 FROM watch_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -237,7 +237,7 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, stop_hit, action = row
+            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, stop_hit, action, themes_json = row
             items.append(
                 {
                     "signal_date": signal_date,
@@ -251,6 +251,7 @@ class SQLiteStore:
                     "return_5d": return_5d,
                     "stop_hit": _bool_or_none(stop_hit),
                     "action": action,
+                    "themes": json.loads(themes_json or "[]"),
                     "status": "已完成" if return_5d is not None else "進行中",
                 }
             )
@@ -268,6 +269,8 @@ class SQLiteStore:
                 "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
                 "a_win_rate_5d": _rate([item["return_5d"] > 0 for item in a_completed]),
             },
+            "theme_stats": _theme_stats(items),
+            "score_bands": _score_band_stats(items),
             "items": items,
         }
 
@@ -346,3 +349,45 @@ def _rate(values: list[bool | None]) -> float | None:
     if not known:
         return None
     return sum(1 for value in known if value) / len(known) * 100
+
+
+def _bucket_stats(label: str, items: list[dict]) -> dict:
+    completed = [item for item in items if item["return_5d"] is not None]
+    stop_known = [item for item in items if item["stop_hit"] is not None]
+    return {
+        "label": label,
+        "signals": len(items),
+        "completed": len(completed),
+        "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
+        "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+        "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
+    }
+
+
+def _theme_stats(items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        for theme in item.get("themes", []) or []:
+            buckets.setdefault(theme, []).append(item)
+    return [
+        _bucket_stats(theme, bucket_items)
+        for theme, bucket_items in sorted(buckets.items(), key=lambda entry: (-len(entry[1]), entry[0]))
+    ]
+
+
+def _score_band_stats(items: list[dict]) -> list[dict]:
+    bands = [
+        ("50-64", 50, 64),
+        ("65-74", 65, 74),
+        ("75-84", 75, 84),
+        ("85-100", 85, 100),
+    ]
+    result = []
+    for label, lower, upper in bands:
+        band_items = [
+            item
+            for item in items
+            if lower <= int(item.get("total_score", 0)) <= upper
+        ]
+        result.append(_bucket_stats(label, band_items))
+    return result
