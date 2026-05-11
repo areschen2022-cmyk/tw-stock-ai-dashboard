@@ -99,7 +99,7 @@
         .filter(([,score]) => score > 0)
         .sort((a,b) => b[1] - a[1])
         .slice(0,5)
-        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則</div>`)
+        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
         .join("");
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${data.themes.summary}</div>
