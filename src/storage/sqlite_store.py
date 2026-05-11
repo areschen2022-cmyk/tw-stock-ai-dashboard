@@ -170,6 +170,7 @@ class SQLiteStore:
                 SELECT signal_date, stock_id, entry_price, stop_price, entry_limit_price
                 FROM watch_signals
                 WHERE signal_date < ?
+                  AND (return_5d IS NULL OR stop_hit IS NULL OR entry_triggered IS NULL)
                 """,
                 (as_of.isoformat(),),
             ).fetchall()
@@ -183,7 +184,7 @@ class SQLiteStore:
                     WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
                     ORDER BY as_of_date
                     """,
-                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=10)).isoformat()),
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=14)).isoformat()),
                 ).fetchall()
                 if not future_rows:
                     continue

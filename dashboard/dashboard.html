@@ -14,7 +14,7 @@
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
-    .metric b { display:block; font-size:22px; margin-bottom:2px; }
+    .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
     .bands { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; }
     section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }

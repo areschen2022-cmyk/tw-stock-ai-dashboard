@@ -9,7 +9,6 @@ def chip_score(institutional: pd.DataFrame, margin: pd.DataFrame, prices: pd.Dat
     if not institutional.empty:
         df = institutional.copy().sort_values("date")
         df["net"] = df.get("buy", 0).astype(float) - df.get("sell", 0).astype(float)
-        by_name = df.groupby("name")["net"].tail(3).groupby(df.groupby("name").cumcount()).sum()
         foreign = df[df["name"].str.contains("Foreign", case=False, na=False)].tail(3)["net"].sum()
         trust = df[df["name"].str.contains("Trust", case=False, na=False)].tail(3)["net"].sum()
         total = df.tail(9)["net"].sum()
@@ -25,7 +24,6 @@ def chip_score(institutional: pd.DataFrame, margin: pd.DataFrame, prices: pd.Dat
         if not prices.empty and total > prices["volume"].astype(float).tail(20).mean() * 0.001:
             score += 4
             reasons.append("法人買超量相對成交量具參考性")
-        _ = by_name
     if not margin.empty and len(margin) >= 3:
         m = margin.copy().sort_values("date")
         margin_bal = m["MarginPurchaseTodayBalance"].astype(float)

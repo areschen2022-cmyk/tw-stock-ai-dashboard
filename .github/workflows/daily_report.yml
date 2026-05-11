@@ -34,3 +34,18 @@ jobs:
       - name: Publish GitHub Pages files
         shell: pwsh
         run: ./scripts/publish_pages.ps1 -Message "Automated daily dashboard update"
+
+      - name: Notify on failure
+        if: failure()
+        shell: pwsh
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if ($env:TELEGRAM_BOT_TOKEN -and $env:TELEGRAM_CHAT_ID) {
+            $text = "台股 AI 每日任務失敗，請檢查 GitHub Actions。"
+            Invoke-RestMethod -Uri "https://api.telegram.org/bot$env:TELEGRAM_BOT_TOKEN/sendMessage" -Method Post -Body @{
+              chat_id = $env:TELEGRAM_CHAT_ID
+              text = $text
+            }
+          }

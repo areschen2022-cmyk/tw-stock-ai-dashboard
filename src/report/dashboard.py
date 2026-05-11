@@ -140,7 +140,7 @@ def _html() -> str:
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
-    .metric b { display:block; font-size:22px; margin-bottom:2px; }
+    .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
     .bands { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; }
     section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
@@ -303,7 +303,7 @@ def _performance_html() -> str:
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
-    .metric b { display:block; font-size:22px; margin-bottom:2px; }
+    .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
     .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
     .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
