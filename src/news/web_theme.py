@@ -77,10 +77,11 @@ def fetch_theme_signal(config: dict) -> ThemeSignal:
                     scores[theme] += 1
                     break
 
-    active = [theme for theme, score in sorted(scores.items(), key=lambda item: item[1], reverse=True) if score > 0]
+    ranked = [(theme, score) for theme, score in sorted(scores.items(), key=lambda item: item[1], reverse=True) if score > 0]
+    active = [theme for theme, _ in ranked]
     max_themes = int(config.get("opportunity", {}).get("max_active_themes", 3))
     active = active[:max_themes]
     theme_names = config.get("theme_pools", {})
-    active_names = [theme_names.get(theme, {}).get("name", theme) for theme in active]
+    active_names = [f"{theme_names.get(theme, {}).get('name', theme)}({scores[theme]})" for theme in active]
     summary = "、".join(active_names) if active_names else "未偵測到明顯題材"
     return ThemeSignal(active, summary, deduped[:8], scores)

@@ -79,6 +79,7 @@ def build_dashboard_payload(
             "active": theme_signal.active_themes if theme_signal else [],
             "headlines": theme_signal.headlines[:8] if theme_signal else [],
             "scores": theme_signal.scores if theme_signal else {},
+            "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
         },
         "source_status": source_status or {"label": "未知"},
         "summary": {
@@ -197,8 +198,15 @@ def _html() -> str:
         <div class="line">海外：${data.overseas.label}｜${data.overseas.summary}</div>
         <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${data.source_status.label}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${data.market.warning}</div>` : ""}`;
+      const themeRank = Object.entries(data.themes.scores || {})
+        .filter(([,score]) => score > 0)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,5)
+        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則</div>`)
+        .join("");
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${data.themes.summary}</div>
+        ${themeRank}
         ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${h}</div>`).join("")}`;
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
