@@ -40,6 +40,7 @@ def build_dashboard_payload(
     config: dict,
     overseas: OverseasSentiment | None,
     theme_signal: ThemeSignal | None,
+    source_status: dict | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
     rows = []
@@ -79,6 +80,7 @@ def build_dashboard_payload(
             "headlines": theme_signal.headlines[:8] if theme_signal else [],
             "scores": theme_signal.scores if theme_signal else {},
         },
+        "source_status": source_status or {"label": "未知"},
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -138,6 +140,10 @@ def _html() -> str:
     a.stock-link { color:#0b4a8b; text-decoration:none; }
     a.stock-link:hover { text-decoration:underline; }
     .bad { color:var(--bad); }
+    .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:#98a2b3; }
+    .status-ok { background:var(--good); }
+    .status-warn { background:var(--warn); }
+    .status-bad { background:var(--bad); }
     @media (max-width: 900px) {
       header { position:static; }
       main, header { padding-left:12px; padding-right:12px; }
@@ -189,6 +195,7 @@ def _html() -> str:
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${data.market.summary}</div>
         <div class="line">海外：${data.overseas.label}｜${data.overseas.summary}</div>
+        <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${data.source_status.label}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${data.market.warning}</div>` : ""}`;
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${data.themes.summary}</div>
@@ -205,6 +212,13 @@ def _html() -> str:
           <td data-label="題材" class="themes">${(r.themes || []).join(" / ") || "-"}</td>
           <td data-label="技術">${r.technical}</td><td data-label="籌碼">${r.chip}</td><td data-label="基本">${r.fundamental}</td><td data-label="風險">${r.risk}</td><td data-label="異常">${r.opportunity}</td>
         </tr>`).join("");
+    }
+    function sourceClass(label) {
+      const base = "status-dot ";
+      if (label === "正常") return base + "status-ok";
+      if (label === "部分限流" || label === "限流") return base + "status-warn";
+      if (label === "錯誤") return base + "status-bad";
+      return base;
     }
     fetch("dashboard_data.json").then(r => r.json()).then(json => { data = json; render(); });
     document.querySelector("#search").addEventListener("input", render);

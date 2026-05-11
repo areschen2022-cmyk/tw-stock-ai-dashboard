@@ -135,6 +135,7 @@ def main() -> int:
         config,
         overseas,
         theme_signal,
+        provider.source_status(),
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     telegram_message = report
@@ -149,7 +150,7 @@ def main() -> int:
             [
                 f"台股 AI 早報已更新｜{as_of.isoformat()}",
                 f"風向：{dashboard_payload['overseas']['label']}｜題材：{dashboard_payload['themes']['summary']}",
-                f"掃描：{s['scanned']}｜A級：{s['a_grade']}｜B級：{s['b_grade']}｜資料不足：{s['data_insufficient']}",
+                f"掃描：{s['scanned']}｜A級：{s['a_grade']}｜B級：{s['b_grade']}｜資料源：{dashboard_payload['source_status']['label']}",
                 "Top觀察：",
                 top_text,
                 f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'dashboard.html'}",

@@ -92,3 +92,6 @@ class MockDataProvider:
 
     def overseas_bundle(self, start_date: date, end_date: date) -> dict[str, pd.DataFrame]:
         return {}
+
+    def source_status(self) -> dict[str, int | str]:
+        return {"label": "mock", "api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0}
