@@ -152,7 +152,7 @@ def main() -> int:
                 f"掃描：{s['scanned']}｜A級：{s['a_grade']}｜B級：{s['b_grade']}｜資料不足：{s['data_insufficient']}",
                 "Top觀察：",
                 top_text,
-                f"監控頁：{ROOT / 'dashboard' / 'dashboard.html'}",
+                f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'dashboard.html'}",
                 "僅供研究追蹤，不是投資建議。",
             ]
         )

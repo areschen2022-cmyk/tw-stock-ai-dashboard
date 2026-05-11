@@ -12,6 +12,9 @@ Copy-Item -Force -Path (Join-Path $dashboard "dashboard.html") -Destination (Joi
 Copy-Item -Force -Path (Join-Path $dashboard "dashboard_data.json") -Destination (Join-Path $docs "dashboard_data.json")
 
 git add docs .gitignore .nojekyll scripts/publish_pages.ps1
-git commit -m $Message
-git push
-
+if (-not (git diff --cached --quiet)) {
+  git commit -m $Message
+  git push
+} else {
+  Write-Host "No dashboard changes to publish."
+}
