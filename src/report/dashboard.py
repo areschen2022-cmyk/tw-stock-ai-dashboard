@@ -200,6 +200,9 @@ def _html() -> str:
   <script>
     let data = null;
     const cls = g => "grade grade-" + (g === "-" ? "-" : g);
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
     function render() {
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
@@ -208,25 +211,25 @@ def _html() -> str:
         ["掃描", data.summary.scanned], ["有效", data.summary.valid], ["A級", data.summary.a_grade], ["B級", data.summary.b_grade], ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       document.querySelector("#market").innerHTML = `
-        <div class="line">台股：${data.market.summary}</div>
-        <div class="line">海外：${data.overseas.label}｜${data.overseas.summary}</div>
-        <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${data.source_status.label}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
-        ${data.market.warning ? `<div class="line bad">提醒：${data.market.warning}</div>` : ""}`;
+        <div class="line">台股：${esc(data.market.summary)}</div>
+        <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
+        <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
+        ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
       const themeRank = Object.entries(data.themes.scores || {})
         .filter(([,score]) => score > 0)
         .sort((a,b) => b[1] - a[1])
         .slice(0,5)
-        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
+        .map(([key,score]) => `<div class="line">${esc(data.themes.names[key] || key)}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
         .join("");
       document.querySelector("#themes").innerHTML = `
-        <div class="line">熱門：${data.themes.summary}</div>
+        <div class="line">熱門：${esc(data.themes.summary)}</div>
         ${themeRank}
-        ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${h}</div>`).join("")}`;
+        ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${esc(h)}</div>`).join("")}`;
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
-        ? data.alerts.map(a => `<div class="line bad">- ${a}</div>`).join("")
+        ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
         : `<div class="line">目前無重大異常</div>`;
       document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
-        ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${w.stock_id} ${w.name}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
+        ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
         : `<div class="line">尚無可追蹤觀察名單</div>`;
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
@@ -235,11 +238,11 @@ def _html() -> str:
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
           <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
-          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${r.stock_id}" target="_blank" rel="noopener noreferrer">${r.stock_id} ${r.name}</a></b><div class="small">${r.label_text}｜收 ${r.price ?? "-"}</div></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜異常 ${r.opportunity_score}</div></td>
-          <td data-label="操作"><b>${r.action || "只觀察"}</b><div class="small">${r.opportunity || "資料不足，暫不建議"}</div></td>
-          <td data-label="題材" class="themes">${(r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-"}</td>
-          <td data-label="技術">${r.technical || "無明顯訊號"}</td><td data-label="籌碼">${r.chip || "無明顯訊號"}</td><td data-label="基本">${r.fundamental || "無明顯訊號"}</td><td data-label="風險">${r.risk || "無明顯訊號"}</td><td data-label="進場/停損">${r.entry_condition || "資料不足，暫不設進場條件"}<div class="small">${r.stop_reference || "資料不足，暫不設停損參考"}</div></td>
+          <td data-label="操作"><b>${esc(r.action || "只觀察")}</b><div class="small">${esc(r.opportunity || "資料不足，暫不建議")}</div></td>
+          <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>
+          <td data-label="技術">${esc(r.technical || "無明顯訊號")}</td><td data-label="籌碼">${esc(r.chip || "無明顯訊號")}</td><td data-label="基本">${esc(r.fundamental || "無明顯訊號")}</td><td data-label="風險">${esc(r.risk || "無明顯訊號")}</td><td data-label="進場/停損">${esc(r.entry_condition || "資料不足，暫不設進場條件")}<div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div></td>
         </tr>`).join("");
     }
     function sourceClass(label) {
@@ -249,7 +252,17 @@ def _html() -> str:
       if (label === "錯誤") return base + "status-bad";
       return base;
     }
-    fetch("dashboard_data.json").then(r => r.json()).then(json => { data = json; render(); });
+    fetch("dashboard_data.json")
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(json => { data = json; render(); })
+      .catch(err => {
+        document.querySelector("#subtitle").textContent = "資料載入失敗";
+        document.querySelector("#metrics").innerHTML = "";
+        document.querySelector("#market").innerHTML = `<div class="line bad">dashboard_data.json 載入失敗：${esc(err.message)}</div>`;
+      });
     document.querySelector("#search").addEventListener("input", render);
     document.querySelector("#grade").addEventListener("change", render);
   </script>
