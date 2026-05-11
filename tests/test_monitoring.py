@@ -107,6 +107,42 @@ def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     assert score_bands["85-100"]["avg_return_5d"] == 10
 
 
+def test_performance_summary_entry_analysis(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    triggered = _score("2408", 80, price=100.0)
+    triggered.entry_limit_price = 103.0
+    triggered.stop_price = 95.0
+    not_triggered = _score("2344", 80, price=100.0)
+    not_triggered.entry_limit_price = 99.0
+    not_triggered.stop_price = 95.0
+    store.save_daily_score(triggered, day0)
+    store.save_daily_score(not_triggered, day0)
+    store.save_watch_candidates(
+        [triggered, not_triggered],
+        day0,
+        {"2408": "Stock A", "2344": "Stock B"},
+    )
+
+    triggered_prices = [101.0, 102.0, 103.0, 104.0, 110.0]
+    not_triggered_prices = [101.0, 99.0, 96.0, 94.0, 90.0]
+    for index, price in enumerate(triggered_prices, start=1):
+        store.save_daily_score(_score("2408", 80, price=price), day0 + timedelta(days=index))
+    for index, price in enumerate(not_triggered_prices, start=1):
+        store.save_daily_score(_score("2344", 80, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+    entry = summary["entry_analysis"]
+
+    assert entry["triggered"]["count"] == 1
+    assert entry["triggered"]["win_rate_5d"] == 100
+    assert entry["triggered"]["avg_return_5d"] == 10
+    assert entry["not_triggered"]["count"] == 1
+    assert entry["not_triggered"]["win_rate_5d"] == 0
+    assert entry["not_triggered"]["avg_return_5d"] == -10
+
+
 def test_forward_returns_complete_when_stop_price_is_missing(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)

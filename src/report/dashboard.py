@@ -321,6 +321,9 @@ def _performance_html() -> str:
     a:hover { text-decoration:underline; }
     .pos { color:var(--good); font-weight:700; }
     .neg { color:var(--bad); font-weight:700; }
+    @media (max-width:1100px) {
+      .metrics { grid-template-columns:repeat(3,1fr); }
+    }
     @media (max-width:900px) {
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
@@ -364,6 +367,14 @@ def _performance_html() -> str:
         </table>
       </section>
     </div>
+    <section>
+      <h2>進場條件分析</h2>
+      <div class="note">比較進場條件是否對報酬有正向影響；樣本不足時數據僅供參考。</div>
+      <table>
+        <thead><tr><th>類型</th><th>筆數</th><th>5日勝率</th><th>5日平均報酬</th></tr></thead>
+        <tbody id="entryAnalysis"></tbody>
+      </table>
+    </section>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
       <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option></select>
@@ -415,6 +426,18 @@ def _performance_html() -> str:
           <td data-label="完成">${esc(r.completed)}</td>
           <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
           <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+        </tr>
+      `).join("");
+      const entry = data.entry_analysis || {};
+      document.querySelector("#entryAnalysis").innerHTML = [
+        ["有觸發進場", entry.triggered],
+        ["未觸發進場", entry.not_triggered],
+      ].map(([label, row]) => `
+        <tr>
+          <td data-label="類型">${esc(label)}</td>
+          <td data-label="筆數">${esc(row?.count ?? 0)}</td>
+          <td data-label="5日勝率">${fmtPct(row?.win_rate_5d)}</td>
+          <td data-label="5日平均報酬">${fmtPct(row?.avg_return_5d)}</td>
         </tr>
       `).join("");
       const q = document.querySelector("#search").value.trim().toLowerCase();

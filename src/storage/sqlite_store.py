@@ -271,6 +271,7 @@ class SQLiteStore:
             },
             "theme_stats": _theme_stats(items),
             "score_bands": _score_band_stats(items),
+            "entry_analysis": _entry_analysis(items),
             "items": items,
         }
 
@@ -391,3 +392,28 @@ def _score_band_stats(items: list[dict]) -> list[dict]:
         ]
         result.append(_bucket_stats(label, band_items))
     return result
+
+
+def _entry_analysis(items: list[dict]) -> dict:
+    triggered = [
+        item
+        for item in items
+        if item["entry_triggered"] is True and item["return_5d"] is not None
+    ]
+    not_triggered = [
+        item
+        for item in items
+        if item["entry_triggered"] is False and item["return_5d"] is not None
+    ]
+    return {
+        "triggered": {
+            "count": len(triggered),
+            "win_rate_5d": _rate([item["return_5d"] > 0 for item in triggered]),
+            "avg_return_5d": _avg([item["return_5d"] for item in triggered]),
+        },
+        "not_triggered": {
+            "count": len(not_triggered),
+            "win_rate_5d": _rate([item["return_5d"] > 0 for item in not_triggered]),
+            "avg_return_5d": _avg([item["return_5d"] for item in not_triggered]),
+        },
+    }
