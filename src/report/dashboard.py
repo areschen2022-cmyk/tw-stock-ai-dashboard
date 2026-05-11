@@ -41,6 +41,8 @@ def build_dashboard_payload(
     overseas: OverseasSentiment | None,
     theme_signal: ThemeSignal | None,
     source_status: dict | None = None,
+    alerts: list[str] | None = None,
+    watch_reviews: list[dict] | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
     rows = []
@@ -85,6 +87,8 @@ def build_dashboard_payload(
             "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
         },
         "source_status": source_status or {"label": "未知"},
+        "alerts": alerts or [],
+        "watch_reviews": watch_reviews or [],
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -176,6 +180,8 @@ def _html() -> str:
     <div class="bands">
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
+      <section><h2>異常提醒</h2><div id="alerts"></div></section>
+      <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
@@ -211,6 +217,12 @@ def _html() -> str:
         <div class="line">熱門：${data.themes.summary}</div>
         ${themeRank}
         ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${h}</div>`).join("")}`;
+      document.querySelector("#alerts").innerHTML = (data.alerts || []).length
+        ? data.alerts.map(a => `<div class="line bad">- ${a}</div>`).join("")
+        : `<div class="line">目前無重大異常</div>`;
+      document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
+        ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${w.stock_id} ${w.name}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
+        : `<div class="line">尚無可追蹤觀察名單</div>`;
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
         return (!q || blob.includes(q)) && (!g || r.grade === g);

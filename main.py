@@ -15,6 +15,7 @@ from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import build_dashboard_payload, write_dashboard
+from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -118,6 +119,18 @@ def main() -> int:
         results.append(score)
         store.save_daily_score(score, as_of)
 
+    source_status = provider.source_status()
+    watch_reviews = store.watch_reviews(as_of)
+    alerts = detect_alerts(
+        results,
+        as_of,
+        store,
+        source_status,
+        overseas,
+        theme_signal,
+    )
+    store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
+
     report = build_report(
         results,
         as_of,
@@ -135,7 +148,9 @@ def main() -> int:
         config,
         overseas,
         theme_signal,
-        provider.source_status(),
+        source_status,
+        alerts,
+        watch_reviews,
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     telegram_message = report
@@ -146,6 +161,9 @@ def main() -> int:
             f"- {row['stock_id']} {row['name']}｜{row['score']}/100｜{row['grade']}級｜{row['action']}"
             for row in top_rows
         ) or "- 今日暫無 A/B 級觀察"
+        alert_text = "\n".join(f"- {item}" for item in alerts[:3]) or "- 目前無重大異常"
+        review_lines = format_watch_reviews(watch_reviews)
+        review_text = "\n".join(f"- {item}" for item in review_lines) or "- 尚無可追蹤觀察"
         telegram_message = "\n".join(
             [
                 f"台股 AI 早報已更新｜{as_of.isoformat()}",
@@ -153,6 +171,10 @@ def main() -> int:
                 f"掃描：{s['scanned']}｜A級：{s['a_grade']}｜B級：{s['b_grade']}｜資料源：{dashboard_payload['source_status']['label']}",
                 "Top觀察：",
                 top_text,
+                "異常提醒：",
+                alert_text,
+                "觀察追蹤：",
+                review_text,
                 f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'dashboard.html'}",
                 "僅供研究追蹤，不是投資建議。",
             ]
