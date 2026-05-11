@@ -147,6 +147,9 @@ def _html() -> str:
     h2 { font-size:16px; margin:0 0 10px; }
     .line { color:var(--muted); margin:5px 0; font-size:14px; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
+    .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
@@ -190,7 +193,10 @@ def _html() -> str:
     <div class="sub" id="subtitle">載入中...</div>
   </header>
   <main>
-    <div class="toolbar"><a class="stock-link" href="performance.html">查看訊號成效追蹤</a></div>
+    <nav class="nav-tabs" aria-label="頁面切換">
+      <a class="nav-tab active" href="index.html">今日監控</a>
+      <a class="nav-tab" href="performance.html">訊號成效</a>
+    </nav>
     <div class="metrics" id="metrics"></div>
     <div class="bands">
       <section><h2>市場風向</h2><div id="market"></div></section>
@@ -299,6 +305,9 @@ def _performance_html() -> str:
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
     .metric b { display:block; font-size:22px; margin-bottom:2px; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
+    .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
@@ -327,7 +336,10 @@ def _performance_html() -> str:
     <div class="sub" id="subtitle">載入中...</div>
   </header>
   <main>
-    <div class="toolbar"><a href="index.html">返回監控頁</a></div>
+    <nav class="nav-tabs" aria-label="頁面切換">
+      <a class="nav-tab" href="index.html">今日監控</a>
+      <a class="nav-tab active" href="performance.html">訊號成效</a>
+    </nav>
     <div class="metrics" id="metrics"></div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
