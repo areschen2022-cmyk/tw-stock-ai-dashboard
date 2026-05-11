@@ -135,6 +135,8 @@ def _html() -> str:
     .grade-- { color:#667085; background:#f2f4f7; }
     .small { color:var(--muted); font-size:12px; margin-top:3px; }
     .themes { color:#175cd3; }
+    a.stock-link { color:#0b4a8b; text-decoration:none; }
+    a.stock-link:hover { text-decoration:underline; }
     .bad { color:var(--bad); }
     @media (max-width: 900px) {
       header { position:static; }
@@ -198,7 +200,7 @@ def _html() -> str:
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
           <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
-          <td data-label="股票"><b>${r.stock_id} ${r.name}</b><div class="small">${r.label_text}｜收 ${r.price ?? "-"}</div></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${r.stock_id}" target="_blank" rel="noopener noreferrer">${r.stock_id} ${r.name}</a></b><div class="small">${r.label_text}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜異常 ${r.opportunity_score}</div></td>
           <td data-label="題材" class="themes">${(r.themes || []).join(" / ") || "-"}</td>
           <td data-label="技術">${r.technical}</td><td data-label="籌碼">${r.chip}</td><td data-label="基本">${r.fundamental}</td><td data-label="風險">${r.risk}</td><td data-label="異常">${r.opportunity}</td>
