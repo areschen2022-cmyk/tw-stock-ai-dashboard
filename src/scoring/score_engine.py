@@ -11,6 +11,7 @@ from src.indicators.fundamental import fundamental_score
 from src.indicators.market import market_adjustment as calc_market_adjustment
 from src.indicators.risk import risk_score
 from src.indicators.technical import technical_score
+from src.indicators.trade_plan import trade_plan
 
 
 @dataclass
@@ -27,6 +28,9 @@ class StockScore:
     overseas_adjustment: int = 0
     opportunity_score: int = 0
     themes: list[str] = field(default_factory=list)
+    action: str = "只觀察"
+    entry_condition: str = ""
+    stop_reference: str = ""
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
@@ -73,6 +77,9 @@ class ScoreEngine:
                 overseas_adjustment=overseas_adj,
                 opportunity_score=opportunity_adj,
                 themes=themes or [],
+                action="只觀察",
+                entry_condition="價格資料不足",
+                stop_reference="價格資料不足",
                 warnings=[f"價格資料少於 {min_days} 筆"],
             )
 
@@ -97,6 +104,7 @@ class ScoreEngine:
             label = "WAIT"
         else:
             label = "AVOID"
+        plan = trade_plan(total, prices, r_reasons)
         return StockScore(
             stock_id=stock_id,
             total_score=total,
@@ -110,6 +118,9 @@ class ScoreEngine:
             overseas_adjustment=overseas_adj,
             opportunity_score=opportunity_adj,
             themes=themes or [],
+            action=plan["action"],
+            entry_condition=plan["entry"],
+            stop_reference=plan["stop"],
             reasons={
                 "technical": t_reasons,
                 "chip": c_reasons,

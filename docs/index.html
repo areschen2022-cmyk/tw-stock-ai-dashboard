@@ -74,7 +74,7 @@
       <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
     </div>
     <table>
-      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>題材</th><th>技術</th><th>籌碼</th><th>基本</th><th>風險</th><th>異常</th></tr></thead>
+      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>操作</th><th>題材</th><th>技術</th><th>籌碼</th><th>基本</th><th>風險</th><th>進場/停損</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </main>
@@ -112,8 +112,9 @@
           <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${r.stock_id}" target="_blank" rel="noopener noreferrer">${r.stock_id} ${r.name}</a></b><div class="small">${r.label_text}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜異常 ${r.opportunity_score}</div></td>
+          <td data-label="操作"><b>${r.action}</b><div class="small">${r.opportunity}</div></td>
           <td data-label="題材" class="themes">${(r.themes || []).join(" / ") || "-"}</td>
-          <td data-label="技術">${r.technical}</td><td data-label="籌碼">${r.chip}</td><td data-label="基本">${r.fundamental}</td><td data-label="風險">${r.risk}</td><td data-label="異常">${r.opportunity}</td>
+          <td data-label="技術">${r.technical}</td><td data-label="籌碼">${r.chip}</td><td data-label="基本">${r.fundamental}</td><td data-label="風險">${r.risk}</td><td data-label="進場/停損">${r.entry_condition}<div class="small">${r.stop_reference}</div></td>
         </tr>`).join("");
     }
     function sourceClass(label) {

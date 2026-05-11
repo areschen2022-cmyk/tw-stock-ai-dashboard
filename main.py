@@ -143,7 +143,7 @@ def main() -> int:
         s = dashboard_payload["summary"]
         top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"A", "B"}][:3]
         top_text = "\n".join(
-            f"- {row['stock_id']} {row['name']}｜{row['score']}/100｜{row['grade']}級"
+            f"- {row['stock_id']} {row['name']}｜{row['score']}/100｜{row['grade']}級｜{row['action']}"
             for row in top_rows
         ) or "- 今日暫無 A/B 級觀察"
         telegram_message = "\n".join(
