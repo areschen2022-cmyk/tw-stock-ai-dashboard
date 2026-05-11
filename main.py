@@ -81,6 +81,8 @@ def main() -> int:
     results = []
     semiconductor_sensitive = set(config.get("overseas", {}).get("semiconductor_sensitive", []))
     stock_themes: dict[str, list[str]] = {stock_id: [] for stock_id in config["stocks"]}
+    stock_theme_details: dict[str, list[dict]] = {stock_id: [] for stock_id in config["stocks"]}
+    theme_stock_meta = config.get("theme_stock_meta", {})
     theme_pools = config.get("theme_pools", {})
     active_theme_keys = set(theme_signal.active_themes)
     selected_theme_pools = {
@@ -88,10 +90,13 @@ def main() -> int:
         for key, value in theme_pools.items()
         if not active_theme_keys or key in active_theme_keys
     }
-    for theme_cfg in selected_theme_pools.values():
+    for theme_key, theme_cfg in selected_theme_pools.items():
         theme_name = theme_cfg.get("name", "題材")
         for stock_id in theme_cfg.get("stocks", {}):
             stock_themes.setdefault(stock_id, []).append(theme_name)
+            meta = theme_stock_meta.get(stock_id, {}).get(theme_key)
+            if meta:
+                stock_theme_details.setdefault(stock_id, []).append(meta)
 
     all_stock_ids = list(dict.fromkeys([*config["stocks"], *stock_themes.keys()]))
     core_ids = set(config["stocks"])
@@ -105,7 +110,11 @@ def main() -> int:
         opp_adj = 0
         opp_reasons: list[str] = []
         if config.get("opportunity", {}).get("enabled", False):
-            opp_adj, opp_reasons = opportunity_score(bundle, stock_themes.get(stock_id, []))
+            opp_adj, opp_reasons = opportunity_score(
+                bundle,
+                stock_themes.get(stock_id, []),
+                stock_theme_details.get(stock_id, []),
+            )
         score = engine.score_stock(
             stock_id,
             bundle,
@@ -115,6 +124,10 @@ def main() -> int:
             opportunity_adj=opp_adj,
             opportunity_reasons=opp_reasons,
             themes=stock_themes.get(stock_id, []),
+            theme_tiers=[
+                f"{item.get('theme_name', '題材')}:{item.get('tier_label', item.get('tier', '受惠'))}"
+                for item in stock_theme_details.get(stock_id, [])
+            ],
         )
         results.append(score)
         store.save_daily_score(score, as_of)

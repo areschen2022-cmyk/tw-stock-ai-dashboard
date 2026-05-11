@@ -2,8 +2,18 @@ from __future__ import annotations
 
 import pandas as pd
 
+TIER_BONUS = {
+    "core": 6,
+    "beneficiary": 4,
+    "speculative": 2,
+}
 
-def opportunity_score(bundle: dict[str, pd.DataFrame], themes: list[str]) -> tuple[int, list[str]]:
+
+def opportunity_score(
+    bundle: dict[str, pd.DataFrame],
+    themes: list[str],
+    theme_details: list[dict] | None = None,
+) -> tuple[int, list[str]]:
     prices = bundle.get("prices", pd.DataFrame())
     institutional = bundle.get("institutional", pd.DataFrame())
     revenue = bundle.get("revenue", pd.DataFrame())
@@ -46,7 +56,15 @@ def opportunity_score(bundle: dict[str, pd.DataFrame], themes: list[str]) -> tup
             score += 4
             reasons.append(f"月營收年增 {yoy:.1f}%")
 
-    if themes:
+    if theme_details:
+        tier_bonus = sum(TIER_BONUS.get(item.get("tier", "beneficiary"), 3) for item in theme_details)
+        score += min(tier_bonus, 8)
+        labels = [
+            f"{item.get('theme_name', '題材')}({item.get('tier_label', item.get('tier', '受惠'))})"
+            for item in theme_details[:2]
+        ]
+        reasons.append(f"題材分層：{'/'.join(labels)}")
+    elif themes:
         score += min(len(themes) * 3, 6)
         reasons.append(f"題材：{'/'.join(themes[:2])}")
 

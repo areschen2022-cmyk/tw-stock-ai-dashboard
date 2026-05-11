@@ -28,6 +28,7 @@ class StockScore:
     overseas_adjustment: int = 0
     opportunity_score: int = 0
     themes: list[str] = field(default_factory=list)
+    theme_tiers: list[str] = field(default_factory=list)
     action: str = "只觀察"
     entry_condition: str = ""
     stop_reference: str = ""
@@ -60,6 +61,7 @@ class ScoreEngine:
         opportunity_adj: int = 0,
         opportunity_reasons: list[str] | None = None,
         themes: list[str] | None = None,
+        theme_tiers: list[str] | None = None,
     ) -> StockScore:
         prices = bundle.get("prices", pd.DataFrame())
         min_days = int(self.config.get("data", {}).get("min_data_days", 25))
@@ -77,6 +79,7 @@ class ScoreEngine:
                 overseas_adjustment=overseas_adj,
                 opportunity_score=opportunity_adj,
                 themes=themes or [],
+                theme_tiers=theme_tiers or [],
                 action="只觀察",
                 entry_condition="價格資料不足",
                 stop_reference="價格資料不足",
@@ -118,6 +121,7 @@ class ScoreEngine:
             overseas_adjustment=overseas_adj,
             opportunity_score=opportunity_adj,
             themes=themes or [],
+            theme_tiers=theme_tiers or [],
             action=plan["action"],
             entry_condition=plan["entry"],
             stop_reference=plan["stop"],

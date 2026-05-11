@@ -5,6 +5,12 @@ from typing import Any
 
 import yaml
 
+TIER_LABELS = {
+    "core": "核心",
+    "beneficiary": "受惠",
+    "speculative": "投機",
+}
+
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
     with open(path, "r", encoding="utf-8") as fh:
@@ -23,6 +29,7 @@ def merge_theme_database(config: dict[str, Any], project_root: Path) -> dict[str
 
     database = load_yaml(theme_db_path)
     theme_pools = config.setdefault("theme_pools", {})
+    theme_stock_meta = config.setdefault("theme_stock_meta", {})
     stock_names = config.setdefault("stock_names", {})
     web_news = config.setdefault("web_news", {})
     theme_keywords = web_news.setdefault("theme_keywords", {})
@@ -40,6 +47,15 @@ def merge_theme_database(config: dict[str, Any], project_root: Path) -> dict[str
             if name:
                 pool_stocks[stock_id] = name
                 stock_names.setdefault(stock_id, name)
+            tier = str(item.get("tier", "beneficiary")).strip() or "beneficiary"
+            role = str(item.get("role", "")).strip()
+            theme_stock_meta.setdefault(stock_id, {})[theme_key] = {
+                "theme_key": theme_key,
+                "theme_name": pool["name"],
+                "tier": tier,
+                "tier_label": TIER_LABELS.get(tier, tier),
+                "role": role,
+            }
 
         keywords = list(theme_keywords.get(theme_key, []))
         for keyword in theme_cfg.get("keywords", []):

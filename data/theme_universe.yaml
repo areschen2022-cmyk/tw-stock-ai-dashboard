@@ -12,18 +12,18 @@ themes:
       - "Blackwell"
       - "水冷"
     stocks:
-      - {id: "2317", name: "鴻海", role: "system assembly"}
-      - {id: "2382", name: "廣達", role: "server ODM"}
-      - {id: "3231", name: "緯創", role: "server ODM"}
-      - {id: "6669", name: "緯穎", role: "cloud server"}
-      - {id: "2356", name: "英業達", role: "server ODM"}
-      - {id: "2376", name: "技嘉", role: "motherboard/server"}
-      - {id: "3706", name: "神達", role: "server"}
-      - {id: "3013", name: "晟銘電", role: "server chassis"}
-      - {id: "8210", name: "勤誠", role: "server chassis"}
-      - {id: "3324", name: "雙鴻", role: "thermal"}
-      - {id: "3017", name: "奇鋐", role: "thermal"}
-      - {id: "2308", name: "台達電", role: "power"}
+      - {id: "2317", name: "鴻海", tier: "core", role: "system assembly"}
+      - {id: "2382", name: "廣達", tier: "core", role: "server ODM"}
+      - {id: "3231", name: "緯創", tier: "core", role: "server ODM"}
+      - {id: "6669", name: "緯穎", tier: "core", role: "cloud server"}
+      - {id: "2356", name: "英業達", tier: "beneficiary", role: "server ODM"}
+      - {id: "2376", name: "技嘉", tier: "beneficiary", role: "motherboard/server"}
+      - {id: "3706", name: "神達", tier: "beneficiary", role: "server"}
+      - {id: "3013", name: "晟銘電", tier: "beneficiary", role: "server chassis"}
+      - {id: "8210", name: "勤誠", tier: "beneficiary", role: "server chassis"}
+      - {id: "3324", name: "雙鴻", tier: "beneficiary", role: "thermal"}
+      - {id: "3017", name: "奇鋐", tier: "beneficiary", role: "thermal"}
+      - {id: "2308", name: "台達電", tier: "beneficiary", role: "power"}
 
   advanced_packaging:
     name: "先進封裝/CoWoS"
@@ -34,17 +34,17 @@ themes:
       - "晶圓代工"
       - "台積電"
     stocks:
-      - {id: "2330", name: "台積電", role: "foundry/CoWoS"}
-      - {id: "3711", name: "日月光投控", role: "OSAT"}
-      - {id: "2449", name: "京元電子", role: "testing"}
-      - {id: "3264", name: "欣銓", role: "testing"}
-      - {id: "3583", name: "辛耘", role: "equipment"}
-      - {id: "3131", name: "弘塑", role: "equipment"}
-      - {id: "6187", name: "萬潤", role: "equipment"}
-      - {id: "6510", name: "精測", role: "probe card"}
-      - {id: "6515", name: "穎崴", role: "test socket"}
-      - {id: "6643", name: "M31", role: "IP"}
-      - {id: "6789", name: "采鈺", role: "wafer-level optics"}
+      - {id: "2330", name: "台積電", tier: "core", role: "foundry/CoWoS"}
+      - {id: "3711", name: "日月光投控", tier: "core", role: "OSAT"}
+      - {id: "2449", name: "京元電子", tier: "beneficiary", role: "testing"}
+      - {id: "3264", name: "欣銓", tier: "beneficiary", role: "testing"}
+      - {id: "3583", name: "辛耘", tier: "beneficiary", role: "equipment"}
+      - {id: "3131", name: "弘塑", tier: "beneficiary", role: "equipment"}
+      - {id: "6187", name: "萬潤", tier: "beneficiary", role: "equipment"}
+      - {id: "6510", name: "精測", tier: "beneficiary", role: "probe card"}
+      - {id: "6515", name: "穎崴", tier: "beneficiary", role: "test socket"}
+      - {id: "6643", name: "M31", tier: "speculative", role: "IP"}
+      - {id: "6789", name: "采鈺", tier: "speculative", role: "wafer-level optics"}
 
   memory:
     name: "記憶體/HBM"
@@ -57,15 +57,15 @@ themes:
       - "美光"
       - "高頻寬記憶體"
     stocks:
-      - {id: "2408", name: "南亞科", role: "DRAM"}
-      - {id: "2344", name: "華邦電", role: "DRAM/Flash"}
-      - {id: "8299", name: "群聯", role: "NAND controller"}
-      - {id: "3260", name: "威剛", role: "memory module"}
-      - {id: "2451", name: "創見", role: "memory module"}
-      - {id: "8271", name: "宇瞻", role: "memory module"}
-      - {id: "3006", name: "晶豪科", role: "memory IC"}
-      - {id: "6770", name: "力積電", role: "foundry"}
-      - {id: "6239", name: "力成", role: "memory packaging/testing"}
+      - {id: "2408", name: "南亞科", tier: "core", role: "DRAM"}
+      - {id: "2344", name: "華邦電", tier: "core", role: "DRAM/Flash"}
+      - {id: "8299", name: "群聯", tier: "beneficiary", role: "NAND controller"}
+      - {id: "3260", name: "威剛", tier: "speculative", role: "memory module"}
+      - {id: "2451", name: "創見", tier: "speculative", role: "memory module"}
+      - {id: "8271", name: "宇瞻", tier: "speculative", role: "memory module"}
+      - {id: "3006", name: "晶豪科", tier: "beneficiary", role: "memory IC"}
+      - {id: "6770", name: "力積電", tier: "beneficiary", role: "foundry"}
+      - {id: "6239", name: "力成", tier: "beneficiary", role: "memory packaging/testing"}
 
   silicon_photonics:
     name: "矽光子/CPO"
@@ -78,15 +78,15 @@ themes:
       - "800G"
       - "1.6T"
     stocks:
-      - {id: "3081", name: "聯亞", role: "optical component"}
-      - {id: "3363", name: "上詮", role: "fiber component"}
-      - {id: "3163", name: "波若威", role: "optical communication"}
-      - {id: "4979", name: "華星光", role: "optical transceiver"}
-      - {id: "4977", name: "眾達-KY", role: "optical transceiver"}
-      - {id: "4908", name: "前鼎", role: "optical communication"}
-      - {id: "3450", name: "聯鈞", role: "optical component"}
-      - {id: "6442", name: "光聖", role: "optical component"}
-      - {id: "6530", name: "創威", role: "optical module"}
+      - {id: "3081", name: "聯亞", tier: "core", role: "optical component"}
+      - {id: "3363", name: "上詮", tier: "beneficiary", role: "fiber component"}
+      - {id: "3163", name: "波若威", tier: "beneficiary", role: "optical communication"}
+      - {id: "4979", name: "華星光", tier: "core", role: "optical transceiver"}
+      - {id: "4977", name: "眾達-KY", tier: "core", role: "optical transceiver"}
+      - {id: "4908", name: "前鼎", tier: "beneficiary", role: "optical communication"}
+      - {id: "3450", name: "聯鈞", tier: "beneficiary", role: "optical component"}
+      - {id: "6442", name: "光聖", tier: "beneficiary", role: "optical component"}
+      - {id: "6530", name: "創威", tier: "speculative", role: "optical module"}
 
   cooling_power:
     name: "散熱/電源"
@@ -98,15 +98,15 @@ themes:
       - "BBU"
       - "不斷電"
     stocks:
-      - {id: "3017", name: "奇鋐", role: "thermal"}
-      - {id: "3324", name: "雙鴻", role: "thermal"}
-      - {id: "3653", name: "健策", role: "thermal/mechanical"}
-      - {id: "6230", name: "尼得科超眾", role: "thermal"}
-      - {id: "2308", name: "台達電", role: "power"}
-      - {id: "1513", name: "中興電", role: "power grid"}
-      - {id: "1519", name: "華城", role: "power grid"}
-      - {id: "1504", name: "東元", role: "electromechanical"}
-      - {id: "1514", name: "亞力", role: "power equipment"}
+      - {id: "3017", name: "奇鋐", tier: "core", role: "thermal"}
+      - {id: "3324", name: "雙鴻", tier: "core", role: "thermal"}
+      - {id: "3653", name: "健策", tier: "beneficiary", role: "thermal/mechanical"}
+      - {id: "6230", name: "尼得科超眾", tier: "beneficiary", role: "thermal"}
+      - {id: "2308", name: "台達電", tier: "core", role: "power"}
+      - {id: "1513", name: "中興電", tier: "beneficiary", role: "power grid"}
+      - {id: "1519", name: "華城", tier: "beneficiary", role: "power grid"}
+      - {id: "1504", name: "東元", tier: "speculative", role: "electromechanical"}
+      - {id: "1514", name: "亞力", tier: "speculative", role: "power equipment"}
 
   robotics:
     name: "機器人/自動化"
@@ -117,10 +117,10 @@ themes:
       - "伺服馬達"
       - "減速機"
     stocks:
-      - {id: "2359", name: "所羅門", role: "machine vision"}
-      - {id: "8374", name: "羅昇", role: "automation"}
-      - {id: "1597", name: "直得", role: "linear motion"}
-      - {id: "2049", name: "上銀", role: "linear motion"}
-      - {id: "2464", name: "盟立", role: "automation"}
-      - {id: "4576", name: "大銀微系統", role: "linear motion"}
-      - {id: "6414", name: "樺漢", role: "industrial computer"}
+      - {id: "2359", name: "所羅門", tier: "core", role: "machine vision"}
+      - {id: "8374", name: "羅昇", tier: "beneficiary", role: "automation"}
+      - {id: "1597", name: "直得", tier: "beneficiary", role: "linear motion"}
+      - {id: "2049", name: "上銀", tier: "core", role: "linear motion"}
+      - {id: "2464", name: "盟立", tier: "beneficiary", role: "automation"}
+      - {id: "4576", name: "大銀微系統", tier: "beneficiary", role: "linear motion"}
+      - {id: "6414", name: "樺漢", tier: "speculative", role: "industrial computer"}

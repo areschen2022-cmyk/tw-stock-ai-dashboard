@@ -16,8 +16,8 @@ def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
                         "name": "記憶體/HBM",
                         "keywords": ["HBM", "DRAM"],
                         "stocks": [
-                            {"id": "2408", "name": "南亞科"},
-                            {"id": "2344", "name": "華邦電"},
+                            {"id": "2408", "name": "南亞科", "tier": "core", "role": "DRAM"},
+                            {"id": "2344", "name": "華邦電", "tier": "beneficiary", "role": "DRAM"},
                         ],
                     }
                 }
@@ -40,3 +40,6 @@ def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
     assert merged["theme_pools"]["memory"]["stocks"]["8299"] == "群聯"
     assert merged["stock_names"]["2344"] == "華邦電"
     assert merged["web_news"]["theme_keywords"]["memory"] == ["NAND", "HBM", "DRAM"]
+    assert merged["theme_stock_meta"]["2408"]["memory"]["tier"] == "core"
+    assert merged["theme_stock_meta"]["2408"]["memory"]["tier_label"] == "核心"
+    assert merged["theme_stock_meta"]["2408"]["memory"]["role"] == "DRAM"
