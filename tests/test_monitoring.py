@@ -107,6 +107,25 @@ def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     assert score_bands["85-100"]["avg_return_5d"] == 10
 
 
+def test_forward_returns_complete_when_stop_price_is_missing(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    signal = _score("2408", 80, price=100.0)
+    signal.stop_price = None
+    signal.entry_limit_price = 103.0
+    store.save_daily_score(signal, day0)
+    store.save_watch_candidates([signal], day0, {"2408": "南亞科"})
+    for index, price in enumerate([101.0, 102.0, 103.0, 104.0, 105.0], start=1):
+        store.save_daily_score(_score("2408", 80, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+
+    assert summary["stats"]["completed"] == 1
+    assert summary["items"][0]["return_5d"] == 5
+    assert summary["items"][0]["stop_hit"] is None
+
+
 def test_detect_alerts_flags_score_jump(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     previous_day = date(2026, 5, 10)

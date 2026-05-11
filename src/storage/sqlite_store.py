@@ -170,7 +170,7 @@ class SQLiteStore:
                 SELECT signal_date, stock_id, entry_price, stop_price, entry_limit_price
                 FROM watch_signals
                 WHERE signal_date < ?
-                  AND (return_5d IS NULL OR stop_hit IS NULL OR entry_triggered IS NULL)
+                  AND return_5d IS NULL
                 """,
                 (as_of.isoformat(),),
             ).fetchall()

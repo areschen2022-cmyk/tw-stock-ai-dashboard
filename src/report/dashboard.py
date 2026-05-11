@@ -349,7 +349,7 @@ def _performance_html() -> str:
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
-        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。</div>
+        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計；停損率越低越好。</div>
         <table>
           <thead><tr><th>題材</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>停損</th></tr></thead>
           <tbody id="themeStats"></tbody>
@@ -357,7 +357,7 @@ def _performance_html() -> str:
       </section>
       <section>
         <h2>分數區間</h2>
-        <div class="note">僅顯示資料，不自動調整 BUY/WATCH 門檻。</div>
+        <div class="note">僅顯示資料，不自動調整 BUY/WATCH 門檻；目前只追蹤 BUY_WATCH（65 分以上）訊號，勝率定義為 5 日報酬 > 0%。</div>
         <table>
           <thead><tr><th>區間</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th></tr></thead>
           <tbody id="scoreBands"></tbody>
@@ -380,6 +380,7 @@ def _performance_html() -> str:
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[ch]));
     const fmtPct = value => value === null || value === undefined ? "—" : `<span class="${value >= 0 ? "pos" : "neg"}">${value >= 0 ? "+" : ""}${Number(value).toFixed(1)}%</span>`;
+    const fmtNeutralPct = value => value === null || value === undefined ? "—" : `${Number(value).toFixed(1)}%`;
     const fmtBool = value => value === null || value === undefined ? "—" : (value ? "是" : "否");
     function metric(label, value, suffix="") {
       return `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
@@ -403,7 +404,7 @@ def _performance_html() -> str:
             <td data-label="完成">${esc(r.completed)}</td>
             <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
             <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
-            <td data-label="停損">${fmtPct(r.stop_hit_rate)}</td>
+            <td data-label="停損">${fmtNeutralPct(r.stop_hit_rate)}</td>
           </tr>
         `).join("")
         : `<tr><td data-label="題材" colspan="6">尚無題材統計資料</td></tr>`;
