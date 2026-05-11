@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
+from src.data_provider.twse_client import TwseClient
 from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
@@ -68,7 +69,13 @@ def main() -> int:
     use_mock = args.mock_data or bool(config.get("runtime", {}).get("use_mock_data", False))
     dry_run = False if args.send_telegram else args.dry_run or bool(config.get("runtime", {}).get("dry_run", True))
 
-    provider = MockDataProvider(as_of=as_of) if use_mock else FinMindClient()
+    data_provider = str(config.get("runtime", {}).get("data_provider", "finmind")).lower()
+    if use_mock:
+        provider = MockDataProvider(as_of=as_of)
+    elif data_provider == "twse":
+        provider = TwseClient(fallback=FinMindClient())
+    else:
+        provider = FinMindClient()
     store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
     engine = ScoreEngine(config)
 
