@@ -44,6 +44,21 @@ def test_watch_reviews_compare_current_price(tmp_path) -> None:
     assert format_watch_reviews(reviews)[0].startswith("2408 南亞科：+10.0%")
 
 
+def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    signal_day = date(2026, 5, 10)
+
+    store.save_daily_score(_score("2408", 80, price=100.0), signal_day)
+    store.save_daily_score(_score("2344", 80, price=50.0), signal_day)
+    store.save_watch_candidates([_score("2408", 80, price=100.0)], signal_day, {"2408": "南亞科"})
+    store.save_watch_candidates([_score("2344", 80, price=50.0)], signal_day, {"2344": "華邦電"})
+
+    with store._connect() as conn:
+        rows = conn.execute("SELECT stock_id FROM watch_signals WHERE signal_date = ?", (signal_day.isoformat(),)).fetchall()
+
+    assert rows == [("2344",)]
+
+
 def test_detect_alerts_flags_score_jump(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     previous_day = date(2026, 5, 10)

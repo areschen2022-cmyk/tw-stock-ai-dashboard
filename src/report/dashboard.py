@@ -85,6 +85,10 @@ def build_dashboard_payload(
             "headlines": theme_signal.headlines[:8] if theme_signal else [],
             "scores": theme_signal.scores if theme_signal else {},
             "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
+            "pool_counts": {
+                key: len(value.get("stocks", {}))
+                for key, value in config.get("theme_pools", {}).items()
+            },
         },
         "source_status": source_status or {"label": "未知"},
         "alerts": alerts or [],
@@ -211,7 +215,7 @@ def _html() -> str:
         .filter(([,score]) => score > 0)
         .sort((a,b) => b[1] - a[1])
         .slice(0,5)
-        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則</div>`)
+        .map(([key,score]) => `<div class="line">${data.themes.names[key] || key}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
         .join("");
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${data.themes.summary}</div>

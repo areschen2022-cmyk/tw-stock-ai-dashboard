@@ -122,6 +122,7 @@ class SQLiteStore:
             if score.label == "BUY_WATCH" and score.price is not None
         ]
         with self._connect() as conn:
+            conn.execute("DELETE FROM watch_signals WHERE signal_date = ?", (as_of.isoformat(),))
             for score in candidates:
                 conn.execute(
                     """

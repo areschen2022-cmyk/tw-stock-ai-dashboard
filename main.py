@@ -5,9 +5,9 @@ import logging
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-import yaml
 from dotenv import load_dotenv
 
+from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
 from src.indicators.overseas import analyze_overseas_sentiment
@@ -36,8 +36,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_config(path: str) -> dict:
-    with open(path, "r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+    config = load_yaml(path)
+    return merge_theme_database(config, ROOT)
 
 
 def resolve_as_of(config: dict, cli_value: str | None) -> date:
