@@ -59,9 +59,9 @@ def build_dashboard_payload(
                 "fundamental": _first(item.reasons.get("fundamental", [])),
                 "risk": _first(item.reasons.get("risk", [])),
                 "opportunity": _first(item.reasons.get("opportunity", [])),
-                "action": item.action,
-                "entry_condition": item.entry_condition,
-                "stop_reference": item.stop_reference,
+                "action": item.action or "只觀察",
+                "entry_condition": item.entry_condition or "資料不足，暫不設進場條件",
+                "stop_reference": item.stop_reference or "資料不足，暫不設停損參考",
                 "themes": item.themes,
                 "overseas_adjustment": item.overseas_adjustment,
                 "opportunity_score": item.opportunity_score,
@@ -220,9 +220,9 @@ def _html() -> str:
           <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${r.stock_id}" target="_blank" rel="noopener noreferrer">${r.stock_id} ${r.name}</a></b><div class="small">${r.label_text}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜異常 ${r.opportunity_score}</div></td>
-          <td data-label="操作"><b>${r.action}</b><div class="small">${r.opportunity}</div></td>
+          <td data-label="操作"><b>${r.action || "只觀察"}</b><div class="small">${r.opportunity || "資料不足，暫不建議"}</div></td>
           <td data-label="題材" class="themes">${(r.themes || []).join(" / ") || "-"}</td>
-          <td data-label="技術">${r.technical}</td><td data-label="籌碼">${r.chip}</td><td data-label="基本">${r.fundamental}</td><td data-label="風險">${r.risk}</td><td data-label="進場/停損">${r.entry_condition}<div class="small">${r.stop_reference}</div></td>
+          <td data-label="技術">${r.technical || "無明顯訊號"}</td><td data-label="籌碼">${r.chip || "無明顯訊號"}</td><td data-label="基本">${r.fundamental || "無明顯訊號"}</td><td data-label="風險">${r.risk || "無明顯訊號"}</td><td data-label="進場/停損">${r.entry_condition || "資料不足，暫不設進場條件"}<div class="small">${r.stop_reference || "資料不足，暫不設停損參考"}</div></td>
         </tr>`).join("");
     }
     function sourceClass(label) {
