@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import os
 import logging
+from calendar import monthrange
 from datetime import date
 from datetime import timedelta
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 import pandas as pd
@@ -20,18 +22,46 @@ class FinMindClient:
         self.cache_dir = cache_dir or Path("data") / "cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.status_counts = {"api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0}
+        self._lock = Lock()
 
-    def _cache_path(self, dataset: str, data_id: str, start_date: date, end_date: date) -> Path:
+    def _count(self, key: str) -> None:
+        with self._lock:
+            self.status_counts[key] += 1
+
+    def _cache_path(self, dataset: str, data_id: str, year: int, month: int, current: bool = False) -> Path:
         safe_id = data_id.replace("^", "idx_").replace("/", "_").replace(" ", "_")
-        name = f"{dataset}__{safe_id}__{start_date.isoformat()}__{end_date.isoformat()}.json"
+        suffix = f"{year}-{month:02d}-current" if current else f"{year}-{month:02d}"
+        name = f"{dataset}__{safe_id}__{suffix}.json"
         return self.cache_dir / name
 
-    def _fetch(self, dataset: str, data_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        cache_path = self._cache_path(dataset, data_id, start_date, end_date)
-        if cache_path.exists():
-            self.status_counts["cache"] += 1
-            return pd.read_json(cache_path, orient="records")
+    def _month_segments(self, start_date: date, end_date: date) -> list[tuple[int, int, date, date, bool]]:
+        segments = []
+        cursor = date(start_date.year, start_date.month, 1)
+        today = date.today()
+        while cursor <= end_date:
+            last_day = monthrange(cursor.year, cursor.month)[1]
+            month_start = cursor
+            month_end = date(cursor.year, cursor.month, last_day)
+            is_current = cursor.year == today.year and cursor.month == today.month
+            fetch_start = month_start
+            fetch_end = min(month_end, end_date) if is_current else month_end
+            segments.append((cursor.year, cursor.month, fetch_start, fetch_end, is_current))
+            cursor = date(cursor.year + int(cursor.month == 12), 1 if cursor.month == 12 else cursor.month + 1, 1)
+        return segments
 
+    def _current_cache_is_fresh(self, cache_path: Path) -> bool:
+        if not cache_path.exists():
+            return False
+        modified = date.fromtimestamp(cache_path.stat().st_mtime)
+        return modified == date.today()
+
+    def _request_range(
+        self,
+        dataset: str,
+        data_id: str,
+        start_date: date,
+        end_date: date,
+    ) -> pd.DataFrame:
         params: dict[str, Any] = {
             "dataset": dataset,
             "data_id": data_id,
@@ -43,20 +73,66 @@ class FinMindClient:
         response = requests.get(self.BASE_URL, params=params, timeout=self.timeout)
         if response.status_code in {402, 429}:
             logging.warning("FinMind quota/permission issue for %s %s: %s", dataset, data_id, response.status_code)
-            self.status_counts["quota"] += 1
+            self._count("quota")
             return pd.DataFrame()
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            self.status_counts["error"] += 1
+            self._count("error")
             raise
         payload = response.json()
         if not payload.get("data"):
-            self.status_counts["empty"] += 1
+            self._count("empty")
             return pd.DataFrame()
         df = pd.DataFrame(payload["data"])
-        df.to_json(cache_path, orient="records", force_ascii=False, date_format="iso")
-        self.status_counts["api"] += 1
+        self._count("api")
+        return df
+
+    def _write_month_cache(self, df: pd.DataFrame, cache_path: Path, start_date: date, end_date: date) -> None:
+        if df.empty:
+            return
+        if "date" in df.columns:
+            dates = pd.to_datetime(df["date"], errors="coerce").dt.date
+            month_df = df[(dates >= start_date) & (dates <= end_date)]
+        elif "Date" in df.columns:
+            dates = pd.to_datetime(df["Date"], errors="coerce").dt.date
+            month_df = df[(dates >= start_date) & (dates <= end_date)]
+        else:
+            month_df = df
+        if not month_df.empty:
+            month_df.to_json(cache_path, orient="records", force_ascii=False, date_format="iso")
+
+    def _fetch(self, dataset: str, data_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        segments = self._month_segments(start_date, end_date)
+        frames = []
+        missing = []
+        for year, month, segment_start, segment_end, is_current in segments:
+            cache_path = self._cache_path(dataset, data_id, year, month, current=is_current)
+            refresh = is_current and not self._current_cache_is_fresh(cache_path)
+            if cache_path.exists() and not refresh:
+                self._count("cache")
+                frame = pd.read_json(cache_path, orient="records")
+                if not frame.empty:
+                    frames.append(frame)
+            else:
+                missing.append((year, month, segment_start, segment_end, is_current, cache_path))
+        if missing:
+            group_start = missing[0][2]
+            group_end = missing[-1][3]
+            fetched = self._request_range(dataset, data_id, group_start, group_end)
+            if not fetched.empty:
+                frames.append(fetched)
+                for _, _, segment_start, segment_end, _, cache_path in missing:
+                    self._write_month_cache(fetched, cache_path, segment_start, segment_end)
+        if not frames:
+            return pd.DataFrame()
+        df = pd.concat(frames, ignore_index=True)
+        if "date" in df.columns:
+            dates = pd.to_datetime(df["date"], errors="coerce").dt.date
+            df = df[(dates >= start_date) & (dates <= end_date)]
+        if "Date" in df.columns:
+            dates = pd.to_datetime(df["Date"], errors="coerce").dt.date
+            df = df[(dates >= start_date) & (dates <= end_date)]
         return df
 
     def source_status(self) -> dict[str, Any]:

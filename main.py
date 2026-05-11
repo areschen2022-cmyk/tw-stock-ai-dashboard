@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -100,8 +101,20 @@ def main() -> int:
 
     all_stock_ids = list(dict.fromkeys([*config["stocks"], *stock_themes.keys()]))
     core_ids = set(config["stocks"])
+    bundles = {}
+    max_workers = int(config.get("runtime", {}).get("fetch_workers", 3))
+    max_workers = max(1, min(max_workers, 6))
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = {
+            pool.submit(provider.stock_bundle, stock_id, start_date, as_of, stock_id in core_ids): stock_id
+            for stock_id in all_stock_ids
+        }
+        for future in as_completed(futures):
+            stock_id = futures[future]
+            bundles[stock_id] = future.result()
+
     for stock_id in all_stock_ids:
-        bundle = provider.stock_bundle(stock_id, start_date, as_of, include_dividend=stock_id in core_ids)
+        bundle = bundles[stock_id]
         overseas_adj = 0
         if overseas:
             overseas_adj = overseas.adjustment
