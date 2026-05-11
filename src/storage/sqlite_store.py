@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from src.scoring.score_engine import StockScore
@@ -64,6 +64,20 @@ class SQLiteStore:
                 )
                 """
             )
+            watch_columns = {row[1] for row in conn.execute("PRAGMA table_info(watch_signals)").fetchall()}
+            for column, definition in [
+                ("stop_price", "REAL"),
+                ("entry_limit_price", "REAL"),
+                ("grade", "TEXT"),
+                ("price_3d", "REAL"),
+                ("price_5d", "REAL"),
+                ("return_3d", "REAL"),
+                ("return_5d", "REAL"),
+                ("stop_hit", "INTEGER"),
+                ("entry_triggered", "INTEGER"),
+            ]:
+                if column not in watch_columns:
+                    conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -128,8 +142,9 @@ class SQLiteStore:
                     """
                     INSERT OR REPLACE INTO watch_signals (
                         signal_date, stock_id, name, total_score, label, action,
-                        entry_price, entry_condition, stop_reference, themes_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        entry_price, entry_condition, stop_reference, themes_json,
+                        stop_price, entry_limit_price, grade
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -142,8 +157,118 @@ class SQLiteStore:
                         score.entry_condition,
                         score.stop_reference,
                         json.dumps(score.themes, ensure_ascii=False),
+                        score.stop_price,
+                        score.entry_limit_price,
+                        _grade(score.total_score),
                     ),
                 )
+
+    def update_forward_returns(self, as_of: date) -> None:
+        with self._connect() as conn:
+            signals = conn.execute(
+                """
+                SELECT signal_date, stock_id, entry_price, stop_price, entry_limit_price
+                FROM watch_signals
+                WHERE signal_date < ?
+                """,
+                (as_of.isoformat(),),
+            ).fetchall()
+            for signal_date, stock_id, entry_price, stop_price, entry_limit_price in signals:
+                if entry_price is None:
+                    continue
+                future_rows = conn.execute(
+                    """
+                    SELECT as_of_date, price
+                    FROM daily_scores
+                    WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
+                    ORDER BY as_of_date
+                    """,
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=10)).isoformat()),
+                ).fetchall()
+                if not future_rows:
+                    continue
+                prices = [float(row[1]) for row in future_rows]
+                price_3d = prices[2] if len(prices) >= 3 else None
+                price_5d = prices[4] if len(prices) >= 5 else None
+                return_3d = _pct_return(price_3d, entry_price)
+                return_5d = _pct_return(price_5d, entry_price)
+                stop_hit = None
+                if stop_price is not None:
+                    stop_hit = int(any(price <= float(stop_price) for price in prices[:5]))
+                entry_triggered = None
+                if entry_limit_price is not None and prices:
+                    entry_triggered = int(prices[0] <= float(entry_limit_price))
+                conn.execute(
+                    """
+                    UPDATE watch_signals
+                    SET price_3d = COALESCE(?, price_3d),
+                        price_5d = COALESCE(?, price_5d),
+                        return_3d = COALESCE(?, return_3d),
+                        return_5d = COALESCE(?, return_5d),
+                        stop_hit = COALESCE(?, stop_hit),
+                        entry_triggered = COALESCE(?, entry_triggered)
+                    WHERE signal_date = ? AND stock_id = ?
+                    """,
+                    (
+                        price_3d,
+                        price_5d,
+                        return_3d,
+                        return_5d,
+                        stop_hit,
+                        entry_triggered,
+                        signal_date,
+                        stock_id,
+                    ),
+                )
+
+    def performance_summary(self, as_of: date, days: int = 30) -> dict:
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT signal_date, stock_id, name, grade, total_score, entry_price,
+                       entry_triggered, return_3d, return_5d, stop_hit, action
+                FROM watch_signals
+                WHERE signal_date >= ?
+                ORDER BY signal_date DESC, total_score DESC
+                """,
+                (since.isoformat(),),
+            ).fetchall()
+        items = []
+        for row in rows:
+            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, stop_hit, action = row
+            items.append(
+                {
+                    "signal_date": signal_date,
+                    "stock_id": stock_id,
+                    "name": name,
+                    "grade": grade or _grade(total_score),
+                    "total_score": total_score,
+                    "entry_price": entry_price,
+                    "entry_triggered": _bool_or_none(entry_triggered),
+                    "return_3d": return_3d,
+                    "return_5d": return_5d,
+                    "stop_hit": _bool_or_none(stop_hit),
+                    "action": action,
+                    "status": "已完成" if return_5d is not None else "進行中",
+                }
+            )
+        completed = [item for item in items if item["return_5d"] is not None]
+        a_completed = [item for item in completed if item["grade"] == "A"]
+        stop_known = [item for item in items if item["stop_hit"] is not None]
+        return {
+            "as_of": as_of.isoformat(),
+            "days": days,
+            "stats": {
+                "signals": len(items),
+                "completed": len(completed),
+                "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
+                "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+                "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
+                "a_win_rate_5d": _rate([item["return_5d"] > 0 for item in a_completed]),
+            },
+            "items": items,
+        }
 
     def watch_reviews(self, as_of: date, max_age_days: int = 5) -> list[dict]:
         with self._connect() as conn:
@@ -184,3 +309,39 @@ class SQLiteStore:
                 }
             )
         return reviews
+
+
+def _pct_return(price: float | None, entry: float | None) -> float | None:
+    if price is None or not entry:
+        return None
+    return (float(price) - float(entry)) / float(entry) * 100
+
+
+def _grade(score: int) -> str:
+    if score >= 75:
+        return "A"
+    if score >= 65:
+        return "B"
+    if score >= 50:
+        return "C"
+    return "-"
+
+
+def _bool_or_none(value: int | None) -> bool | None:
+    if value is None:
+        return None
+    return bool(value)
+
+
+def _avg(values: list[float | None]) -> float | None:
+    nums = [float(value) for value in values if value is not None]
+    if not nums:
+        return None
+    return sum(nums) / len(nums)
+
+
+def _rate(values: list[bool | None]) -> float | None:
+    known = [value for value in values if value is not None]
+    if not known:
+        return None
+    return sum(1 for value in known if value) / len(known) * 100

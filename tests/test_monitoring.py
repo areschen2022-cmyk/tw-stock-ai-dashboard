@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.scoring.score_engine import StockScore
@@ -57,6 +57,30 @@ def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
         rows = conn.execute("SELECT stock_id FROM watch_signals WHERE signal_date = ?", (signal_day.isoformat(),)).fetchall()
 
     assert rows == [("2344",)]
+
+
+def test_performance_summary_uses_forward_prices(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    prices = [101.0, 102.0, 106.0, 104.0, 108.0]
+
+    signal = _score("2408", 80, price=100.0)
+    signal.stop_price = 95.0
+    signal.entry_limit_price = 103.0
+    store.save_daily_score(signal, day0)
+    store.save_watch_candidates([signal], day0, {"2408": "南亞科"})
+    for index, price in enumerate(prices, start=1):
+        store.save_daily_score(_score("2408", 82, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+
+    assert summary["stats"]["signals"] == 1
+    assert summary["stats"]["completed"] == 1
+    assert summary["items"][0]["return_3d"] == 6
+    assert summary["items"][0]["return_5d"] == 8
+    assert summary["items"][0]["entry_triggered"] is True
+    assert summary["items"][0]["stop_hit"] is False
 
 
 def test_detect_alerts_flags_score_jump(tmp_path) -> None:

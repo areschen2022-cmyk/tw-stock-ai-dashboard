@@ -14,7 +14,7 @@ from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
-from src.report.dashboard import build_dashboard_payload, write_dashboard
+from src.report.dashboard import build_dashboard_payload, write_dashboard, write_performance
 from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
@@ -143,6 +143,7 @@ def main() -> int:
         theme_signal,
     )
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
+    store.update_forward_returns(as_of)
 
     report = build_report(
         results,
@@ -166,6 +167,7 @@ def main() -> int:
         watch_reviews,
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
+    write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
     telegram_message = report
     if args.telegram_summary:
         s = dashboard_payload["summary"]

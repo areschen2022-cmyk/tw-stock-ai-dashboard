@@ -4,6 +4,9 @@ import os
 
 import requests
 
+MAX_TELEGRAM_LEN = 4096
+SAFE_CHUNK_LEN = 3900
+
 
 class TelegramNotifier:
     def __init__(self, bot_token: str | None, chat_id: str | None, dry_run: bool = True) -> None:
@@ -25,9 +28,29 @@ class TelegramNotifier:
             return
         if not self.bot_token or not self.chat_id:
             raise RuntimeError("Telegram credentials missing: set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env")
+        for chunk in self._chunks(message):
+            self._send_single(chunk)
+
+    def _send_single(self, message: str) -> None:
         response = requests.post(
             f"https://api.telegram.org/bot{self.bot_token}/sendMessage",
             json={"chat_id": self.chat_id, "text": message},
             timeout=20,
         )
         response.raise_for_status()
+
+    def _chunks(self, message: str) -> list[str]:
+        if len(message) <= MAX_TELEGRAM_LEN:
+            return [message]
+        chunks: list[str] = []
+        remaining = message
+        while remaining:
+            if len(remaining) <= SAFE_CHUNK_LEN:
+                chunks.append(remaining)
+                break
+            split_at = remaining.rfind("\n", 0, SAFE_CHUNK_LEN)
+            if split_at < SAFE_CHUNK_LEN // 2:
+                split_at = SAFE_CHUNK_LEN
+            chunks.append(remaining[:split_at].strip())
+            remaining = remaining[split_at:].strip()
+        return chunks

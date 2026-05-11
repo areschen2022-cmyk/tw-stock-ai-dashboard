@@ -32,6 +32,8 @@ class StockScore:
     action: str = "只觀察"
     entry_condition: str = ""
     stop_reference: str = ""
+    stop_price: float | None = None
+    entry_limit_price: float | None = None
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
@@ -83,6 +85,8 @@ class ScoreEngine:
                 action="只觀察",
                 entry_condition="價格資料不足",
                 stop_reference="價格資料不足",
+                stop_price=None,
+                entry_limit_price=None,
                 warnings=[f"價格資料少於 {min_days} 筆"],
             )
 
@@ -125,6 +129,8 @@ class ScoreEngine:
             action=plan["action"],
             entry_condition=plan["entry"],
             stop_reference=plan["stop"],
+            stop_price=plan.get("stop_price"),
+            entry_limit_price=plan.get("entry_limit_price"),
             reasons={
                 "technical": t_reasons,
                 "chip": c_reasons,

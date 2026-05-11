@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>台股 AI 訊號成效追蹤</title>
+  <style>
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --bad:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    h1 { margin:0 0 8px; font-size:24px; }
+    .sub, .small { color:var(--muted); font-size:13px; }
+    main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
+    .metrics { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .metric b { display:block; font-size:22px; margin-bottom:2px; }
+    .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+    input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
+    input { min-width:260px; flex:1; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th { background:#eef1f5; font-size:12px; color:#475467; }
+    a { color:#0b4a8b; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .pos { color:var(--good); font-weight:700; }
+    .neg { color:var(--bad); font-weight:700; }
+    @media (max-width:900px) {
+      main, header { padding-left:12px; padding-right:12px; }
+      .metrics { grid-template-columns:1fr 1fr; }
+      input, select { width:100%; min-width:0; }
+      table, thead, tbody, tr, td { display:block; width:100%; }
+      thead { display:none; }
+      table { border:0; background:transparent; }
+      tr { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:10px; padding:10px; }
+      td { border:0; padding:5px 0; }
+      td::before { content:attr(data-label); display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>台股 AI 訊號成效追蹤</h1>
+    <div class="sub" id="subtitle">載入中...</div>
+  </header>
+  <main>
+    <div class="toolbar"><a href="index.html">返回監控頁</a></div>
+    <div class="metrics" id="metrics"></div>
+    <div class="toolbar">
+      <input id="search" placeholder="搜尋股票、日期、狀態..." />
+      <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option></select>
+      <select id="status"><option value="">全部狀態</option><option>已完成</option><option>進行中</option></select>
+    </div>
+    <table>
+      <thead><tr><th>訊號日</th><th>股票</th><th>級別</th><th>分數</th><th>訊號價</th><th>進場觸發</th><th>3日漲跌</th><th>5日漲跌</th><th>停損觸及</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+  <script>
+    let data = null;
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+    const fmtPct = value => value === null || value === undefined ? "—" : `<span class="${value >= 0 ? "pos" : "neg"}">${value >= 0 ? "+" : ""}${Number(value).toFixed(1)}%</span>`;
+    const fmtBool = value => value === null || value === undefined ? "—" : (value ? "是" : "否");
+    function metric(label, value, suffix="") {
+      return `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
+    }
+    function render() {
+      const stats = data.stats || {};
+      document.querySelector("#subtitle").textContent = `${data.as_of}｜近 ${data.days} 天｜僅供研究追蹤`;
+      document.querySelector("#metrics").innerHTML = [
+        metric("訊號總數", stats.signals),
+        metric("已完成", stats.completed),
+        metric("5日勝率", stats.win_rate_5d?.toFixed(1), "%"),
+        metric("5日平均", stats.avg_return_5d?.toFixed(1), "%"),
+        metric("停損觸及", stats.stop_hit_rate?.toFixed(1), "%"),
+        metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
+      ].join("");
+      const q = document.querySelector("#search").value.trim().toLowerCase();
+      const grade = document.querySelector("#grade").value;
+      const status = document.querySelector("#status").value;
+      const rows = (data.items || []).filter(r => {
+        const blob = JSON.stringify(r).toLowerCase();
+        return (!q || blob.includes(q)) && (!grade || r.grade === grade) && (!status || r.status === status);
+      });
+      document.querySelector("#rows").innerHTML = rows.map(r => `
+        <tr>
+          <td data-label="訊號日">${esc(r.signal_date)}</td>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a><div class="small">${esc(r.status)}</div></td>
+          <td data-label="級別">${esc(r.grade)}</td>
+          <td data-label="分數">${esc(r.total_score)}/100</td>
+          <td data-label="訊號價">${r.entry_price ?? "—"}</td>
+          <td data-label="進場觸發">${fmtBool(r.entry_triggered)}</td>
+          <td data-label="3日漲跌">${fmtPct(r.return_3d)}</td>
+          <td data-label="5日漲跌">${fmtPct(r.return_5d)}</td>
+          <td data-label="停損觸及">${fmtBool(r.stop_hit)}</td>
+        </tr>
+      `).join("");
+    }
+    fetch("performance_data.json")
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(json => { data = json; render(); })
+      .catch(err => {
+        document.querySelector("#subtitle").textContent = "資料載入失敗";
+        document.querySelector("#metrics").innerHTML = `<div class="metric"><b>錯誤</b><span>${esc(err.message)}</span></div>`;
+      });
+    document.querySelector("#search").addEventListener("input", render);
+    document.querySelector("#grade").addEventListener("change", render);
+    document.querySelector("#status").addEventListener("change", render);
+  </script>
+</body>
+</html>

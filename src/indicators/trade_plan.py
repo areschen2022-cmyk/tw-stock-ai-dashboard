@@ -3,12 +3,14 @@ from __future__ import annotations
 import pandas as pd
 
 
-def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) -> dict[str, str]:
+def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) -> dict:
     if prices.empty or len(prices) < 5:
         return {
             "action": "只觀察",
             "entry": "價格資料不足，暫不設進場條件",
             "stop": "價格資料不足",
+            "stop_price": None,
+            "entry_limit_price": None,
         }
 
     df = prices.sort_values("date")
@@ -41,4 +43,10 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
     stop = f"跌破 MA5/昨低/近3日低點中較低值 {stop_ref:.2f}，先退出觀察"
     if avg_volume and avg_volume > 0:
         entry += f"，成交量需接近20日均量"
-    return {"action": action, "entry": entry, "stop": stop}
+    return {
+        "action": action,
+        "entry": entry,
+        "stop": stop,
+        "stop_price": round(float(stop_ref), 2),
+        "entry_limit_price": round(float(gap_limit), 2),
+    }
