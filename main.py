@@ -12,6 +12,7 @@ from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
 from src.data_provider.twse_client import TwseClient
+from src.indicators.market import sector_context
 from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
