@@ -32,7 +32,11 @@ class TwseClient:
         self.status_counts = {"api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0, "fallback": 0}
         self._lock = Lock()
         self._today_all_lock = Lock()
-        self._today_all_df: pd.DataFrame | None = None  # in-memory cache, shared across threads
+        self._today_all_df: pd.DataFrame | None = None  # in-memory cache for STOCK_DAY_ALL
+        self._valuation_lock = Lock()
+        self._valuation_df: pd.DataFrame | None = None  # in-memory cache for BWIBBU_ALL
+        self._sector_lock = Lock()
+        self._sector_df: pd.DataFrame | None = None    # in-memory cache for MI_INDEX
         self.headers = {
             "User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0; research dashboard)",
             "Accept": "application/json,text/plain,*/*",
@@ -290,25 +294,34 @@ class TwseClient:
 
         Returns DataFrame with columns: Date, Code, Name, PEratio, DividendYield, PBratio.
         Empty strings indicate missing data for that stock. Cached once per calendar day.
+        Thread-safe: in-memory + disk cache; only one HTTP request per process lifetime.
         """
-        cache_path = self._cache_path("BWIBBU_ALL", "all", date.today().isoformat())
-        if cache_path.exists():
-            self._count("cache")
-            return pd.read_json(cache_path, orient="records")
-        try:
-            response = requests.get(self.VALUATION_URL, headers=self.headers, timeout=self.timeout)
-            response.raise_for_status()
-            df = pd.DataFrame(response.json())
-        except Exception:
-            self._count("error")
-            logging.warning("TWSE valuation (BWIBBU_ALL) fetch failed")
-            return pd.DataFrame()
-        if df.empty:
-            self._count("empty")
-            return pd.DataFrame()
-        df.to_json(cache_path, orient="records", force_ascii=False)
-        self._count("api")
-        return df
+        with self._valuation_lock:
+            if self._valuation_df is not None:
+                return self._valuation_df
+            cache_path = self._cache_path("BWIBBU_ALL", "all", date.today().isoformat())
+            if cache_path.exists():
+                df = pd.read_json(cache_path, orient="records")
+                self._valuation_df = df
+                self._count("cache")
+                return df
+            try:
+                response = requests.get(self.VALUATION_URL, headers=self.headers, timeout=self.timeout)
+                response.raise_for_status()
+                df = pd.DataFrame(response.json())
+            except Exception:
+                self._count("error")
+                logging.warning("TWSE valuation (BWIBBU_ALL) fetch failed")
+                self._valuation_df = pd.DataFrame()
+                return pd.DataFrame()
+            if df.empty:
+                self._count("empty")
+                self._valuation_df = pd.DataFrame()
+                return pd.DataFrame()
+            df.to_json(cache_path, orient="records", force_ascii=False)
+            self._count("api")
+            self._valuation_df = df
+            return df
 
     def _valuation_for_stock(self, stock_id: str) -> dict[str, float | None]:
         """Return pe/pb/div_yield for one stock from today's BWIBBU_ALL snapshot.
@@ -336,44 +349,56 @@ class TwseClient:
         Normalises Chinese field names to English:
           index_name, close, direction, change_pts, change_pct (signed float).
         Cached once per calendar day.
+        Thread-safe: in-memory + disk cache; only one HTTP request per process lifetime.
         """
-        cache_path = self._cache_path("MI_INDEX", "all", date.today().isoformat())
-        if cache_path.exists():
-            self._count("cache")
-            return pd.read_json(cache_path, orient="records")
-        try:
-            response = requests.get(self.INDEX_URL, headers=self.headers, timeout=self.timeout)
-            response.raise_for_status()
-            raw = pd.DataFrame(response.json())
-        except Exception:
-            self._count("error")
-            logging.warning("TWSE sector index (MI_INDEX) fetch failed")
-            return pd.DataFrame()
-        if raw.empty:
-            self._count("empty")
-            return pd.DataFrame()
-        rename_map = {
-            "日期": "date",
-            "指數": "index_name",
-            "收盤指數": "close",
-            "漲跌": "direction",
-            "漲跌點數": "change_pts",
-            "漲跌百分比": "change_pct",
-            "特殊處理註記": "notes",
-        }
-        df = raw.rename(columns={k: v for k, v in rename_map.items() if k in raw.columns})
-        # Combine direction (+/-) with magnitude to produce a signed float
-        if "change_pct" in df.columns and "direction" in df.columns:
-            def _signed_pct(row: pd.Series) -> float:
-                try:
-                    val = float(str(row["change_pct"]).replace(",", "").strip())
-                    return -abs(val) if str(row.get("direction", "+")).strip() == "-" else abs(val)
-                except (ValueError, TypeError):
-                    return 0.0
-            df["change_pct"] = df.apply(_signed_pct, axis=1)
-        df.to_json(cache_path, orient="records", force_ascii=False)
-        self._count("api")
-        return df
+        with self._sector_lock:
+            if self._sector_df is not None:
+                return self._sector_df
+            cache_path = self._cache_path("MI_INDEX", "all", date.today().isoformat())
+            if cache_path.exists():
+                df = pd.read_json(cache_path, orient="records")
+                self._sector_df = df
+                self._count("cache")
+                return df
+            try:
+                response = requests.get(self.INDEX_URL, headers=self.headers, timeout=self.timeout)
+                response.raise_for_status()
+                raw = pd.DataFrame(response.json())
+            except Exception:
+                self._count("error")
+                logging.warning("TWSE sector index (MI_INDEX) fetch failed")
+                self._sector_df = pd.DataFrame()
+                return pd.DataFrame()
+            if raw.empty:
+                self._count("empty")
+                self._sector_df = pd.DataFrame()
+                return pd.DataFrame()
+            rename_map = {
+                "日期": "date",
+                "指數": "index_name",
+                "收盤指數": "close",
+                "漲跌": "direction",
+                "漲跌點數": "change_pts",
+                "漲跌百分比": "change_pct",
+                "特殊處理註記": "notes",
+            }
+            df = raw.rename(columns={k: v for k, v in rename_map.items() if k in raw.columns})
+            # Combine direction (+/-) with magnitude to produce a signed float
+            # MI_INDEX direction column may be "+" / "-" or Chinese "漲"/"跌"
+            if "change_pct" in df.columns and "direction" in df.columns:
+                def _signed_pct(row: pd.Series) -> float:
+                    try:
+                        val = float(str(row["change_pct"]).replace(",", "").strip())
+                        dir_str = str(row.get("direction", "+")).strip()
+                        is_neg = dir_str == "-" or dir_str == "跌" or dir_str.startswith("-")
+                        return -abs(val) if is_neg else abs(val)
+                    except (ValueError, TypeError):
+                        return 0.0
+                df["change_pct"] = df.apply(_signed_pct, axis=1)
+            df.to_json(cache_path, orient="records", force_ascii=False)
+            self._count("api")
+            self._sector_df = df
+            return df
 
     def overseas_bundle(self, start_date: date, end_date: date) -> dict[str, pd.DataFrame]:
         self._count("fallback")
