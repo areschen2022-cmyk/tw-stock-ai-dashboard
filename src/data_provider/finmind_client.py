@@ -128,10 +128,12 @@ class FinMindClient:
             return pd.DataFrame()
         df = pd.concat(frames, ignore_index=True)
         if "date" in df.columns:
-            dates = pd.to_datetime(df["date"], errors="coerce").dt.date
+            df["date"] = pd.to_datetime(df["date"], errors="coerce")
+            dates = df["date"].dt.date
             df = df[(dates >= start_date) & (dates <= end_date)]
         if "Date" in df.columns:
-            dates = pd.to_datetime(df["Date"], errors="coerce").dt.date
+            df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+            dates = df["Date"].dt.date
             df = df[(dates >= start_date) & (dates <= end_date)]
         return df
 

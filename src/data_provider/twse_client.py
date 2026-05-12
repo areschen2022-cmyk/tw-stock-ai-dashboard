@@ -117,6 +117,7 @@ class TwseClient:
                 }
             )
         df = pd.DataFrame(parsed)
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df.to_json(cache_path, orient="records", force_ascii=False, date_format="iso")
         self._count("api")
         return df

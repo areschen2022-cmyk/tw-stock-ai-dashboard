@@ -6,7 +6,9 @@ import pandas as pd
 def fundamental_score(revenue: pd.DataFrame) -> tuple[int, list[str]]:
     if revenue.empty or len(revenue) < 15:
         return 0, ["月營收資料不足"]
-    df = revenue.copy().sort_values("date")
+    df = revenue.copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.sort_values("date")
     latest = float(df.iloc[-1]["revenue"])
     previous = float(df.iloc[-2]["revenue"])
     year_ago = float(df.iloc[-13]["revenue"])
