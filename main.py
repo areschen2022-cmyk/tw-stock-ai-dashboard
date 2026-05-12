@@ -193,25 +193,33 @@ def main() -> int:
         s = dashboard_payload["summary"]
         top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"A", "B"}][:3]
         top_text = "\n".join(
-            f"- {row['stock_id']} {row['name']}｜{row['score']}/100｜{row['grade']}級\n  {row['trigger_summary']}"
+            f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row['score']}/100｜{row['grade']}級\n"
+            f"  {row['trigger_summary']}"
             for row in top_rows
-        ) or "- 今日暫無 A/B 級觀察"
-        alert_text = "\n".join(f"- {item}" for item in alerts[:3]) or "- 目前無重大異常"
+        ) or "▸ 今日暫無 A/B 級觀察"
+        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
         review_lines = format_watch_reviews(watch_reviews)
-        review_text = "\n".join(f"- {item}" for item in review_lines) or "- 尚無可追蹤觀察"
+        review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
+        dashboard_url = config.get('runtime', {}).get('dashboard_url') or (ROOT / 'dashboard' / 'index.html')
         telegram_message = "\n".join(
             [
-                f"台股 AI 早報已更新｜{as_of.isoformat()}",
-                f"風向：{dashboard_payload['overseas']['label']}｜題材：{dashboard_payload['themes']['summary']}",
-                f"掃描：{s['scanned']}｜A級：{s['a_grade']}｜B級：{s['b_grade']}｜資料源：{dashboard_payload['source_status']['label']}",
-                "Top觀察：",
+                f"🇹🇼 <b>台股 AI 早報</b>｜{as_of.isoformat()}",
+                "",
+                f"🧭 風向：{dashboard_payload['overseas']['label']}",
+                f"📰 題材：{dashboard_payload['themes']['summary']}",
+                f"📊 掃描 <b>{s['scanned']}</b> 檔｜A級 <b>{s['a_grade']}</b>｜B級 <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
+                "",
+                "🏆 <b>Top 觀察：</b>",
                 top_text,
-                "異常提醒：",
+                "",
+                "🚨 <b>異常提醒：</b>",
                 alert_text,
-                "觀察追蹤：",
+                "",
+                "👁 <b>觀察追蹤：</b>",
                 review_text,
-                f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'index.html'}",
-                "僅供研究追蹤，不是投資建議。",
+                "",
+                f"🔗 <a href=\"{dashboard_url}\">開啟監控頁</a>",
+                "⚠️ 僅供研究追蹤，不是投資建議。",
             ]
         )
     notifier = TelegramNotifier.from_env(dry_run=dry_run)
