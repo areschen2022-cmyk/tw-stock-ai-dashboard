@@ -36,9 +36,84 @@ class StockScore:
     entry_limit_price: float | None = None
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    trigger_tags: list[str] = field(default_factory=list)
+
+    @property
+    def trigger_summary(self) -> str:
+        """Human-readable summary: '題材升溫 + 外資買超 + 放量突破'"""
+        return " + ".join(self.trigger_tags) if self.trigger_tags else "綜合訊號"
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        d = asdict(self)
+        d["trigger_summary"] = self.trigger_summary
+        return d
+
+
+def _build_trigger_tags(
+    t_score: int,
+    t_reasons: list[str],
+    c_score: int,
+    c_reasons: list[str],
+    f_score: int,
+    overseas_adj: int,
+    opportunity_adj: int,
+    themes: list[str],
+) -> list[str]:
+    """Distil all sub-scores and reasons into concise human-readable trigger tags.
+
+    Tags are ordered: 題材 → 籌碼 → 技術 → 基本面 → 海外.
+    Phase 2 will append a '收盤資金流入' tag from the capital-flow module.
+    """
+    tags: list[str] = []
+
+    # ── 題材面 ──────────────────────────────────────────────
+    if themes:
+        if opportunity_adj >= 10:
+            tags.append("題材強共振")
+        elif opportunity_adj >= 5:
+            tags.append("題材升溫")
+        else:
+            tags.append("題材關注")
+
+    # ── 籌碼面 ──────────────────────────────────────────────
+    has_foreign = any("外資" in r for r in c_reasons)
+    has_trust = any("投信" in r for r in c_reasons)
+    if has_foreign and has_trust:
+        tags.append("法人共振")
+    elif has_foreign:
+        tags.append("外資買超")
+    elif has_trust:
+        tags.append("投信買超")
+    elif c_score >= 18:
+        tags.append("籌碼偏多")
+    elif c_score >= 10:
+        tags.append("法人關注")
+
+    # ── 技術面 ──────────────────────────────────────────────
+    if t_score > 0:
+        t_text = " ".join(t_reasons)
+        if "爆量" in t_text or ("量增" in t_text and "突破" in t_text):
+            tags.append("放量突破")
+        elif "突破" in t_text or "新高" in t_text:
+            tags.append("技術突破")
+        elif "均線多頭" in t_text or "趨勢向上" in t_text or "多頭排列" in t_text:
+            tags.append("趨勢向上")
+        elif t_score >= 15:
+            tags.append("技術偏多")
+
+    # ── 基本面 ──────────────────────────────────────────────
+    if f_score >= 10:
+        tags.append("營收加速")
+    elif f_score >= 5:
+        tags.append("營收回升")
+
+    # ── 海外連動 ─────────────────────────────────────────────
+    if overseas_adj >= 5:
+        tags.append("美股映射")
+    elif overseas_adj >= 3:
+        tags.append("海外順風")
+
+    return tags or ["綜合訊號"]
 
 
 class ScoreEngine:
@@ -112,6 +187,16 @@ class ScoreEngine:
         else:
             label = "AVOID"
         plan = trade_plan(total, prices, r_reasons)
+        tags = _build_trigger_tags(
+            t_score=t_score,
+            t_reasons=t_reasons,
+            c_score=c_score,
+            c_reasons=c_reasons,
+            f_score=f_score,
+            overseas_adj=overseas_adj,
+            opportunity_adj=opportunity_adj,
+            themes=themes or [],
+        )
         return StockScore(
             stock_id=stock_id,
             total_score=total,
@@ -138,4 +223,5 @@ class ScoreEngine:
                 "risk": r_reasons,
                 "opportunity": opportunity_reasons or [],
             },
+            trigger_tags=tags,
         )

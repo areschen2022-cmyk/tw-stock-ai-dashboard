@@ -91,10 +91,8 @@ def build_report(
         lines.extend(
             [
                 f"{idx}. {item.stock_id} {name}｜{item.total_score}/100｜{_grade(item.total_score)}｜收 {item.price:.2f}{overseas_note}",
-                f"   技術：{_one(item.reasons.get('technical', []))}",
-                f"   籌碼：{_one(item.reasons.get('chip', []))}",
-                f"   基本：{_one(item.reasons.get('fundamental', []))}",
-                f"   風險：{_one(item.reasons.get('risk', []))}",
+                f"   原因：{item.trigger_summary}",
+                f"   進場：{item.entry_condition or '觀察中'}｜停損參考：{item.stop_reference or '—'}",
             ]
         )
 
@@ -109,9 +107,7 @@ def build_report(
             lines.extend(
                 [
                     f"{idx}. {item.stock_id} {name}｜{item.total_score}/100｜{_grade(item.total_score)}｜題材：{theme_text}",
-                    f"   異常：{_one(item.reasons.get('opportunity', []))}",
-                    f"   技術：{_one(item.reasons.get('technical', []))}",
-                    f"   籌碼：{_one(item.reasons.get('chip', []))}",
+                    f"   原因：{item.trigger_summary}",
                 ]
             )
 

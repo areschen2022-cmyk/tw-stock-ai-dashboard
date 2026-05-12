@@ -69,6 +69,8 @@ def build_dashboard_payload(
                 "overseas_adjustment": item.overseas_adjustment,
                 "opportunity_score": item.opportunity_score,
                 "warnings": item.warnings,
+                "trigger_tags": item.trigger_tags,
+                "trigger_summary": item.trigger_summary,
             }
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
@@ -107,11 +109,16 @@ def build_dashboard_payload(
 
 def write_dashboard(payload: dict, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "dashboard_data.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
+    json_text = json.dumps(payload, ensure_ascii=False, indent=2)
+    (output_dir / "dashboard_data.json").write_text(json_text, encoding="utf-8")
+    # Embed data inline so the file works when opened via file:// without a server
+    safe_json = json_text.replace("</script>", r"<\/script>")
+    inline_script = f"window.__DASHBOARD_DATA__ = {safe_json};"
+    html = _html().replace(
+        "/* __INLINE_DATA_SENTINEL__ */",
+        inline_script,
     )
-    (output_dir / "dashboard.html").write_text(_html(), encoding="utf-8")
+    (output_dir / "dashboard.html").write_text(html, encoding="utf-8")
 
 
 def write_performance(payload: dict, output_dir: Path) -> None:
@@ -169,6 +176,14 @@ def _html() -> str:
     .status-ok { background:var(--good); }
     .status-warn { background:var(--warn); }
     .status-bad { background:var(--bad); }
+    .tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+    .tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .tag-theme  { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .tag-chip   { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+    .tag-tech   { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+    .tag-fund   { background:#fdf4ff; color:#7e22ce; border:1px solid #e9d5ff; }
+    .tag-over   { background:#f0f9ff; color:#0c4a6e; border:1px solid #bae6fd; }
+    .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
     @media (max-width: 900px) {
       header { position:static; }
       main, header { padding-left:12px; padding-right:12px; }
@@ -209,16 +224,33 @@ def _html() -> str:
       <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
     </div>
     <table>
-      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>操作</th><th>題材</th><th>技術</th><th>籌碼</th><th>基本</th><th>風險</th><th>進場/停損</th></tr></thead>
+      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </main>
   <script>
+    /* __INLINE_DATA_SENTINEL__ */
     let data = null;
     const cls = g => "grade grade-" + (g === "-" ? "-" : g);
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[ch]));
+    const TAG_CLASS = {
+      "題材": "tag-theme", "法人": "tag-chip", "外資": "tag-chip", "投信": "tag-chip",
+      "突破": "tag-tech",  "趨勢": "tag-tech",  "技術": "tag-tech",
+      "營收": "tag-fund",
+      "美股": "tag-over",  "海外": "tag-over",
+    };
+    function tagClass(tag) {
+      for (const [kw, cls] of Object.entries(TAG_CLASS)) {
+        if (tag.includes(kw)) return "tag " + cls;
+      }
+      return "tag tag-default";
+    }
+    function renderTags(tags) {
+      if (!tags || !tags.length) return '<span class="tag tag-default">綜合訊號</span>';
+      return tags.map(t => `<span class="${tagClass(t)}">${esc(t)}</span>`).join("");
+    }
     function render() {
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
@@ -255,10 +287,17 @@ def _html() -> str:
         <tr>
           <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
-          <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜異常 ${r.opportunity_score}</div></td>
-          <td data-label="操作"><b>${esc(r.action || "只觀察")}</b><div class="small">${esc(r.opportunity || "資料不足，暫不建議")}</div></td>
+          <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
+          <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
           <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>
-          <td data-label="技術">${esc(r.technical || "無明顯訊號")}</td><td data-label="籌碼">${esc(r.chip || "無明顯訊號")}</td><td data-label="基本">${esc(r.fundamental || "無明顯訊號")}</td><td data-label="風險">${esc(r.risk || "無明顯訊號")}</td><td data-label="進場/停損">${esc(r.entry_condition || "資料不足，暫不設進場條件")}<div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div></td>
+          <td data-label="四面向">
+            <div class="small">技術：${esc(r.technical || "無明顯訊號")}</div>
+            <div class="small">籌碼：${esc(r.chip || "無明顯訊號")}</div>
+            <div class="small">基本：${esc(r.fundamental || "無明顯訊號")}</div>
+            <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
+          </td>
+          <td data-label="操作"><b>${esc(r.action || "只觀察")}</b></td>
+          <td data-label="進場/停損">${esc(r.entry_condition || "資料不足，暫不設進場條件")}<div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div></td>
         </tr>`).join("");
     }
     function sourceClass(label) {
@@ -268,17 +307,22 @@ def _html() -> str:
       if (label === "錯誤") return base + "status-bad";
       return base;
     }
-    fetch("dashboard_data.json")
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then(json => { data = json; render(); })
-      .catch(err => {
-        document.querySelector("#subtitle").textContent = "資料載入失敗";
-        document.querySelector("#metrics").innerHTML = "";
-        document.querySelector("#market").innerHTML = `<div class="line bad">dashboard_data.json 載入失敗：${esc(err.message)}</div>`;
-      });
+    if (window.__DASHBOARD_DATA__ && window.__DASHBOARD_DATA__ !== null) {
+      data = window.__DASHBOARD_DATA__;
+      render();
+    } else {
+      fetch("dashboard_data.json")
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then(json => { data = json; render(); })
+        .catch(err => {
+          document.querySelector("#subtitle").textContent = "資料載入失敗";
+          document.querySelector("#metrics").innerHTML = "";
+          document.querySelector("#market").innerHTML = `<div class="line bad">dashboard_data.json 載入失敗：${esc(err.message)}</div>`;
+        });
+    }
     document.querySelector("#search").addEventListener("input", render);
     document.querySelector("#grade").addEventListener("change", render);
   </script>
