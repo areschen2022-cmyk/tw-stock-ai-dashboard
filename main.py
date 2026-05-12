@@ -192,9 +192,20 @@ def main() -> int:
     if args.telegram_summary:
         s = dashboard_payload["summary"]
         top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"A", "B"}][:3]
+
+        def _entry_line(row: dict) -> str:
+            action = row.get("action", "只觀察")
+            limit = row.get("entry_limit_price")
+            stop = row.get("stop_price")
+            limit_str = f"上限 {limit:.2f}" if limit else ""
+            stop_str = f"止損 {stop:.2f}" if stop else ""
+            numbers = "｜".join(x for x in [limit_str, stop_str] if x)
+            return f"{action}" + (f"（{numbers}）" if numbers else "")
+
         top_text = "\n".join(
             f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row['score']}/100｜{row['grade']}級\n"
-            f"  {row['trigger_summary']}"
+            f"  📌 {row['trigger_summary']}\n"
+            f"  🎯 {_entry_line(row)}"
             for row in top_rows
         ) or "▸ 今日暫無 A/B 級觀察"
         alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
