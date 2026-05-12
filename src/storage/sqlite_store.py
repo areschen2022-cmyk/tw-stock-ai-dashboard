@@ -68,6 +68,7 @@ class SQLiteStore:
             for column, definition in [
                 ("stop_price", "REAL"),
                 ("entry_limit_price", "REAL"),
+                ("vol_5min_threshold", "REAL"),
                 ("grade", "TEXT"),
                 ("price_3d", "REAL"),
                 ("price_5d", "REAL"),
@@ -159,8 +160,8 @@ class SQLiteStore:
                     INSERT OR REPLACE INTO watch_signals (
                         signal_date, stock_id, name, total_score, label, action,
                         entry_price, entry_condition, stop_reference, themes_json,
-                        stop_price, entry_limit_price, grade
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        stop_price, entry_limit_price, vol_5min_threshold, grade
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -175,6 +176,7 @@ class SQLiteStore:
                         json.dumps(score.themes, ensure_ascii=False),
                         score.stop_price,
                         score.entry_limit_price,
+                        score.vol_5min_threshold,
                         _grade(score.total_score),
                     ),
                 )
@@ -237,6 +239,38 @@ class SQLiteStore:
                         stock_id,
                     ),
                 )
+
+    def watch_candidates_today(self, as_of: date) -> list[dict]:
+        """Return today's watch candidates (grade A or B) for intraday confirmation."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT stock_id, name, total_score, grade, action,
+                       entry_price, entry_limit_price, stop_price, vol_5min_threshold,
+                       entry_condition, stop_reference
+                FROM watch_signals
+                WHERE signal_date = ?
+                  AND grade IN ('A', 'B')
+                ORDER BY total_score DESC
+                """,
+                (as_of.isoformat(),),
+            ).fetchall()
+        return [
+            {
+                "stock_id": row[0],
+                "name": row[1],
+                "total_score": row[2],
+                "grade": row[3],
+                "action": row[4],
+                "prev_close": row[5],   # entry_price stored as yesterday's close
+                "entry_limit_price": row[6],
+                "stop_price": row[7],
+                "vol_5min_threshold": row[8],
+                "entry_condition": row[9],
+                "stop_reference": row[10],
+            }
+            for row in rows
+        ]
 
     def performance_summary(self, as_of: date, days: int = 30) -> dict:
         since = as_of - timedelta(days=days)

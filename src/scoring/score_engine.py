@@ -34,6 +34,7 @@ class StockScore:
     stop_reference: str = ""
     stop_price: float | None = None
     entry_limit_price: float | None = None
+    vol_5min_threshold: float | None = None
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     trigger_tags: list[str] = field(default_factory=list)
@@ -162,6 +163,7 @@ class ScoreEngine:
                 stop_reference="價格資料不足",
                 stop_price=None,
                 entry_limit_price=None,
+                vol_5min_threshold=None,
                 warnings=[f"價格資料少於 {min_days} 筆"],
             )
 
@@ -216,6 +218,7 @@ class ScoreEngine:
             stop_reference=plan["stop"],
             stop_price=plan.get("stop_price"),
             entry_limit_price=plan.get("entry_limit_price"),
+            vol_5min_threshold=plan.get("vol_5min_threshold"),
             reasons={
                 "technical": t_reasons,
                 "chip": c_reasons,

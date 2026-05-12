@@ -192,6 +192,25 @@ class FinMindClient:
         bundle["tx_night"] = self.futures_daily("TX", start_date, end_date)
         return bundle
 
+    def intraday_prices(self, stock_id: str, trade_date: date) -> pd.DataFrame:
+        """Fetch minute-level OHLCV for *trade_date* (TaiwanStockPriceMinute).
+
+        Returns a DataFrame with columns:
+          datetime (Timestamp), time (str HH:MM), open, high, low, close, volume
+        Rows are sorted ascending by datetime.
+        """
+        df = self._request_range("TaiwanStockPriceMinute", stock_id, trade_date, trade_date)
+        if df.empty:
+            return df
+        if "date" in df.columns:
+            df["datetime"] = pd.to_datetime(df["date"], errors="coerce")
+            df["time"] = df["datetime"].dt.strftime("%H:%M")
+            df = df.sort_values("datetime").reset_index(drop=True)
+        for col in ("open", "high", "low", "close", "volume"):
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+        return df
+
     def stock_bundle(
         self,
         stock_id: str,

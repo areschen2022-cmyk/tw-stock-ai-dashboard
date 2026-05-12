@@ -19,6 +19,7 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
             "stop": "價格資料不足",
             "stop_price": None,
             "entry_limit_price": None,
+            "vol_5min_threshold": None,
         }
 
     df = prices.sort_values("date")
@@ -120,4 +121,5 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
         "stop": stop,
         "stop_price": round(float(stop_ref), 2),
         "entry_limit_price": round(float(gap_limit), 2),
+        "vol_5min_threshold": round(float(vol_5min), 0),
     }
