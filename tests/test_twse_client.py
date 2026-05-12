@@ -59,3 +59,17 @@ def test_twse_stock_prices_parse_and_cache(tmp_path, monkeypatch) -> None:
     assert second["close"].tolist() == [2275.0, 2250.0]
     assert client.status_counts["api"] == 1
     assert client.status_counts["cache"] == 1
+
+
+def test_twse_source_status_labels_are_readable(tmp_path) -> None:
+    client = TwseClient(fallback=_Fallback(), cache_dir=tmp_path)
+    assert client.source_status()["label"] == "無資料"
+    client.status_counts["api"] = 1
+    assert client.source_status()["label"] == "正常"
+    client.status_counts["quota"] = 1
+    assert client.source_status()["label"] == "部分限流"
+    client.status_counts["api"] = 0
+    client.status_counts["cache"] = 0
+    assert client.source_status()["label"] == "限流"
+    client.status_counts["error"] = 1
+    assert client.source_status()["label"] == "錯誤"

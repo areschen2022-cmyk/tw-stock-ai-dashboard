@@ -45,13 +45,15 @@ class TwseClient:
         api = self.status_counts["api"] + int(fallback_status.get("api", 0))
         cache = self.status_counts["cache"] + int(fallback_status.get("cache", 0))
         if error:
-            label = "?航炊"
+            label = "錯誤"
+        elif quota and api == 0 and cache == 0:
+            label = "限流"
         elif quota:
-            label = "?典???"
+            label = "部分限流"
         elif api or cache:
-            label = "甇?虜"
+            label = "正常"
         else:
-            label = "?∟???"
+            label = "無資料"
         return {
             "label": label,
             **self.status_counts,

@@ -78,6 +78,22 @@ class SQLiteStore:
             ]:
                 if column not in watch_columns:
                     conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS capital_flow_signals (
+                    trade_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    quadrant TEXT NOT NULL,
+                    volume_rank INTEGER,
+                    prev_volume_rank INTEGER,
+                    rank_change INTEGER,
+                    price_change_pct REAL,
+                    volume_value REAL,
+                    themes_json TEXT NOT NULL DEFAULT '[]',
+                    PRIMARY KEY (trade_date, stock_id)
+                )
+                """
+            )
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -314,6 +330,56 @@ class SQLiteStore:
                 }
             )
         return reviews
+
+    def save_capital_flow(self, signals: list[dict], trade_date: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM capital_flow_signals WHERE trade_date = ?", (trade_date.isoformat(),))
+            for signal in signals:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO capital_flow_signals (
+                        trade_date, stock_id, quadrant, volume_rank, prev_volume_rank,
+                        rank_change, price_change_pct, volume_value, themes_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        trade_date.isoformat(),
+                        signal["stock_id"],
+                        signal["quadrant"],
+                        signal.get("volume_rank"),
+                        signal.get("prev_volume_rank"),
+                        signal.get("rank_change"),
+                        signal.get("price_change_pct"),
+                        signal.get("volume_value"),
+                        json.dumps(signal.get("themes", []), ensure_ascii=False),
+                    ),
+                )
+
+    def latest_capital_flow(self, trade_date: date) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT stock_id, quadrant, volume_rank, prev_volume_rank,
+                       rank_change, price_change_pct, volume_value, themes_json
+                FROM capital_flow_signals
+                WHERE trade_date = ?
+                ORDER BY volume_rank
+                """,
+                (trade_date.isoformat(),),
+            ).fetchall()
+        return [
+            {
+                "stock_id": row[0],
+                "quadrant": row[1],
+                "volume_rank": row[2],
+                "prev_volume_rank": row[3],
+                "rank_change": row[4],
+                "price_change_pct": row[5],
+                "volume_value": row[6],
+                "themes": json.loads(row[7] or "[]"),
+            }
+            for row in rows
+        ]
 
 
 def _pct_return(price: float | None, entry: float | None) -> float | None:

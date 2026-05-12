@@ -4,6 +4,8 @@ import pandas as pd
 
 
 def chip_score(institutional: pd.DataFrame, margin: pd.DataFrame, prices: pd.DataFrame) -> tuple[int, list[str]]:
+    # FinMind institutional buy/sell and price volume are both share-based.
+    # Recheck units before reusing this ratio with another data source.
     score = 0
     reasons: list[str] = []
     if not institutional.empty:
