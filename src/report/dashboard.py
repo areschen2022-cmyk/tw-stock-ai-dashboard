@@ -118,7 +118,7 @@ def write_dashboard(payload: dict, output_dir: Path) -> None:
         "/* __INLINE_DATA_SENTINEL__ */",
         inline_script,
     )
-    (output_dir / "dashboard.html").write_text(html, encoding="utf-8")
+    (output_dir / "index.html").write_text(html, encoding="utf-8")
 
 
 def write_performance(payload: dict, output_dir: Path) -> None:
@@ -214,7 +214,7 @@ def _html() -> str:
   </header>
   <main>
     <nav class="nav-tabs" aria-label="頁面切換">
-      <a class="nav-tab active" href="dashboard.html">今日監控</a>
+      <a class="nav-tab active" href="index.html">今日監控</a>
       <a class="nav-tab" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
@@ -394,7 +394,7 @@ def _performance_html() -> str:
   </header>
   <main>
     <nav class="nav-tabs" aria-label="頁面切換">
-      <a class="nav-tab" href="dashboard.html">今日監控</a>
+      <a class="nav-tab" href="index.html">今日監控</a>
       <a class="nav-tab active" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
