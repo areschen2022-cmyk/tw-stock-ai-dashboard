@@ -2,15 +2,21 @@ name: 台股 AI 每日早報
 
 on:
   schedule:
-    # 00:20 UTC = 08:20 台灣時間（UTC+8）
-    - cron: "20 0 * * 1-5"   # 週一到週五
-  workflow_dispatch:          # 允許手動在 GitHub 網頁上點「Run workflow」
+    # 00:20 UTC = 08:20 台灣時間（UTC+8）  — 早報掃描
+    - cron: "20 0 * * 1-5"
+    # 01:10 UTC = 09:10 台灣時間（UTC+8）  — 盤中確認
+    - cron: "10 1 * * 1-5"
+  workflow_dispatch:   # 允許手動在 GitHub 網頁上點「Run workflow」
 
 permissions:
   contents: write   # 允許 workflow 把 dashboard 推回 repo
 
 jobs:
-  run-screener:
+  # ── Job 1：08:20 早報掃描 ─────────────────────────────────────────────
+  morning-screener:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && startsWith(github.event.schedule, '20 0'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -35,7 +41,7 @@ jobs:
         run: |
           python main.py --send-telegram --telegram-summary
 
-      - name: Commit & push dashboard
+      - name: Commit & push dashboard + sqlite
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -43,3 +49,32 @@ jobs:
           git add data/tw_stock_ai.sqlite3 || true
           git diff --cached --quiet || git commit -m "auto: dashboard $(date -u +'%Y-%m-%d')"
           git push
+
+  # ── Job 2：09:10 盤中確認 ─────────────────────────────────────────────
+  intraday-confirm:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && startsWith(github.event.schedule, '10 1'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run intraday confirmation
+        env:
+          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python scripts/intraday_confirm.py --send-telegram --check-time "09:10"
