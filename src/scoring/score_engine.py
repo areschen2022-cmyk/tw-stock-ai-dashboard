@@ -174,11 +174,16 @@ class ScoreEngine:
             prices,
         )
         f_score, f_reasons = fundamental_score(bundle.get("revenue", pd.DataFrame()))
+        valuation = bundle.get("valuation", {})
         r_score, r_reasons = risk_score(
             prices,
             bundle.get("dividend", pd.DataFrame()),
             as_of,
             dividend_warning_days=int(self.config.get("risk", {}).get("dividend_warning_days", 5)),
+            pe_ratio=valuation.get("pe") if isinstance(valuation, dict) else None,
+            pb_ratio=valuation.get("pb") if isinstance(valuation, dict) else None,
+            pe_warning=float(self.config.get("risk", {}).get("pe_warning", 80)),
+            pb_warning=float(self.config.get("risk", {}).get("pb_warning", 15)),
         )
         total = max(min(t_score + c_score + f_score + r_score + market_adj + overseas_adj + opportunity_adj, 100), 0)
         thresholds = self.config.get("thresholds", {})
