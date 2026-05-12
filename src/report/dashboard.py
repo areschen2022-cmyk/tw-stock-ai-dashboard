@@ -64,6 +64,8 @@ def build_dashboard_payload(
                 "action": item.action or "只觀察",
                 "entry_condition": item.entry_condition or "資料不足，暫不設進場條件",
                 "stop_reference": item.stop_reference or "資料不足，暫不設停損參考",
+                "stop_price": item.stop_price,
+                "entry_limit_price": item.entry_limit_price,
                 "themes": item.themes,
                 "theme_tiers": item.theme_tiers,
                 "overseas_adjustment": item.overseas_adjustment,
