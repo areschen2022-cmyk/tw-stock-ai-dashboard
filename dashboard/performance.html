@@ -63,7 +63,7 @@
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
-        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計；停損率越低越好。</div>
+        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。<b>停損</b>欄 = 訊號發出後 5 日內股價觸及或跌破預設止損價的比率（<b>越低越好</b>，代表止損設定合理、未被提前出場）。</div>
         <table>
           <thead><tr><th>題材</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>停損</th></tr></thead>
           <tbody id="themeStats"></tbody>
@@ -101,7 +101,7 @@
   "as_of": "2026-05-12",
   "days": 30,
   "stats": {
-    "signals": 66,
+    "signals": 51,
     "completed": 0,
     "win_rate_5d": null,
     "avg_return_5d": null,
@@ -118,28 +118,12 @@
       "stop_hit_rate": 87.5
     },
     {
-      "label": "矽光子/CPO",
-      "signals": 9,
-      "completed": 0,
-      "win_rate_5d": null,
-      "avg_return_5d": null,
-      "stop_hit_rate": null
-    },
-    {
       "label": "記憶體/HBM",
       "signals": 9,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
       "stop_hit_rate": 22.22222222222222
-    },
-    {
-      "label": "邊緣AI/AI PC",
-      "signals": 7,
-      "completed": 0,
-      "win_rate_5d": null,
-      "avg_return_5d": null,
-      "stop_hit_rate": null
     },
     {
       "label": "金融降息/併購",
@@ -177,7 +161,7 @@
     },
     {
       "label": "75-84",
-      "signals": 25,
+      "signals": 21,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
@@ -185,7 +169,7 @@
     },
     {
       "label": "85-100",
-      "signals": 35,
+      "signals": 24,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
@@ -207,23 +191,6 @@
   "items": [
     {
       "signal_date": "2026-05-12",
-      "stock_id": "4979",
-      "name": "華星光",
-      "grade": "A",
-      "total_score": 99,
-      "entry_price": 330.46,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "3711",
       "name": "日月光投控",
       "grade": "A",
@@ -236,23 +203,6 @@
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "3081",
-      "name": "聯亞",
-      "grade": "A",
-      "total_score": 99,
-      "entry_price": 302.64,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
       ],
       "status": "進行中"
     },
@@ -309,23 +259,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "2395",
-      "name": "研華",
-      "grade": "A",
-      "total_score": 99,
-      "entry_price": 308.24,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "6510",
       "name": "精測",
       "grade": "A",
@@ -343,23 +276,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "4908",
-      "name": "前鼎",
-      "grade": "A",
-      "total_score": 97,
-      "entry_price": 319.32,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "3583",
       "name": "辛耘",
       "grade": "A",
@@ -372,40 +288,6 @@
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "3450",
-      "name": "聯鈞",
-      "grade": "A",
-      "total_score": 97,
-      "entry_price": 302.64,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "3231",
-      "name": "緯創",
-      "grade": "A",
-      "total_score": 97,
-      "entry_price": 312.9,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
       ],
       "status": "進行中"
     },
@@ -479,23 +361,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "2324",
-      "name": "仁寶",
-      "grade": "A",
-      "total_score": 97,
-      "entry_price": 297.1,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "6643",
       "name": "M31",
       "grade": "A",
@@ -547,40 +412,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "6414",
-      "name": "樺漢",
-      "grade": "A",
-      "total_score": 86,
-      "entry_price": 312.96,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "4977",
-      "name": "眾達-KY",
-      "grade": "A",
-      "total_score": 86,
-      "entry_price": 319.38,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "3406",
       "name": "玉晶光",
       "grade": "A",
@@ -610,40 +441,6 @@
       "action": "等拉回",
       "themes": [
         "金融降息/併購"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "2357",
-      "name": "華碩",
-      "grade": "A",
-      "total_score": 86,
-      "entry_price": 324.04,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "2353",
-      "name": "宏碁",
-      "grade": "A",
-      "total_score": 86,
-      "entry_price": 301.88,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
       ],
       "status": "進行中"
     },
@@ -683,23 +480,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "6442",
-      "name": "光聖",
-      "grade": "A",
-      "total_score": 84,
-      "entry_price": 318.5,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "6187",
       "name": "萬潤",
       "grade": "A",
@@ -712,23 +492,6 @@
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "3363",
-      "name": "上詮",
-      "grade": "A",
-      "total_score": 84,
-      "entry_price": 312.96,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
       ],
       "status": "進行中"
     },
@@ -763,23 +526,6 @@
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "3163",
-      "name": "波若威",
-      "grade": "A",
-      "total_score": 84,
-      "entry_price": 301.88,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
       ],
       "status": "進行中"
     },
@@ -853,23 +599,6 @@
     },
     {
       "signal_date": "2026-05-12",
-      "stock_id": "2382",
-      "name": "廣達",
-      "grade": "A",
-      "total_score": 84,
-      "entry_price": 312.96,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "邊緣AI/AI PC"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
       "stock_id": "3563",
       "name": "牧德",
       "grade": "A",
@@ -882,23 +611,6 @@
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-12",
-      "stock_id": "6530",
-      "name": "創威",
-      "grade": "A",
-      "total_score": 82,
-      "entry_price": 307.42,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "矽光子/CPO"
       ],
       "status": "進行中"
     },
@@ -921,6 +633,21 @@
       "signal_date": "2026-05-12",
       "stock_id": "2454",
       "name": "聯發科",
+      "grade": "A",
+      "total_score": 80,
+      "entry_price": 312.96,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2382",
+      "name": "廣達",
       "grade": "A",
       "total_score": 80,
       "entry_price": 312.96,
@@ -1331,7 +1058,7 @@
         metric("已完成", stats.completed),
         metric("5日勝率", stats.win_rate_5d?.toFixed(1), "%"),
         metric("5日平均", stats.avg_return_5d?.toFixed(1), "%"),
-        metric("停損觸及", stats.stop_hit_rate?.toFixed(1), "%"),
+        `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length

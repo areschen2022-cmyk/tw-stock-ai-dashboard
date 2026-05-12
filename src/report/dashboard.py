@@ -304,7 +304,12 @@ def _html() -> str:
             <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
           </td>
           <td data-label="操作"><b>${esc(r.action || "只觀察")}</b></td>
-          <td data-label="進場/停損">${esc(r.entry_condition || "資料不足，暫不設進場條件")}<div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div></td>
+          <td data-label="進場/停損">
+            ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
+            ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
+            <div class="small">${esc(r.entry_condition || "資料不足，暫不設進場條件")}</div>
+            <div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div>
+          </td>
         </tr>`).join("");
     }
     function sourceClass(label) {
@@ -403,7 +408,7 @@ def _performance_html() -> str:
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
-        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計；停損率越低越好。</div>
+        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。<b>停損</b>欄 = 訊號發出後 5 日內股價觸及或跌破預設止損價的比率（<b>越低越好</b>，代表止損設定合理、未被提前出場）。</div>
         <table>
           <thead><tr><th>題材</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>停損</th></tr></thead>
           <tbody id="themeStats"></tbody>
@@ -456,7 +461,7 @@ def _performance_html() -> str:
         metric("已完成", stats.completed),
         metric("5日勝率", stats.win_rate_5d?.toFixed(1), "%"),
         metric("5日平均", stats.avg_return_5d?.toFixed(1), "%"),
-        metric("停損觸及", stats.stop_hit_rate?.toFixed(1), "%"),
+        `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
