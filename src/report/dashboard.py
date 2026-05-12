@@ -123,11 +123,16 @@ def write_dashboard(payload: dict, output_dir: Path) -> None:
 
 def write_performance(payload: dict, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "performance_data.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
+    json_text = json.dumps(payload, ensure_ascii=False, indent=2)
+    (output_dir / "performance_data.json").write_text(json_text, encoding="utf-8")
+    # Embed data inline so the file works when opened via file:// without a server
+    safe_json = json_text.replace("</script>", r"<\/script>")
+    inline_script = f"window.__PERFORMANCE_DATA__ = {safe_json};"
+    html = _performance_html().replace(
+        "/* __INLINE_PERF_SENTINEL__ */",
+        inline_script,
     )
-    (output_dir / "performance.html").write_text(_performance_html(), encoding="utf-8")
+    (output_dir / "performance.html").write_text(html, encoding="utf-8")
 
 
 def _html() -> str:
@@ -209,7 +214,7 @@ def _html() -> str:
   </header>
   <main>
     <nav class="nav-tabs" aria-label="頁面切換">
-      <a class="nav-tab active" href="index.html">今日監控</a>
+      <a class="nav-tab active" href="dashboard.html">今日監控</a>
       <a class="nav-tab" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
@@ -389,7 +394,7 @@ def _performance_html() -> str:
   </header>
   <main>
     <nav class="nav-tabs" aria-label="頁面切換">
-      <a class="nav-tab" href="index.html">今日監控</a>
+      <a class="nav-tab" href="dashboard.html">今日監控</a>
       <a class="nav-tab active" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
@@ -430,6 +435,7 @@ def _performance_html() -> str:
     </table>
   </main>
   <script>
+    /* __INLINE_PERF_SENTINEL__ */
     let data = null;
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -505,16 +511,21 @@ def _performance_html() -> str:
         </tr>
       `).join("");
     }
-    fetch("performance_data.json")
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then(json => { data = json; render(); })
-      .catch(err => {
-        document.querySelector("#subtitle").textContent = "資料載入失敗";
-        document.querySelector("#metrics").innerHTML = `<div class="metric"><b>錯誤</b><span>${esc(err.message)}</span></div>`;
-      });
+    if (window.__PERFORMANCE_DATA__ && window.__PERFORMANCE_DATA__ !== null) {
+      data = window.__PERFORMANCE_DATA__;
+      render();
+    } else {
+      fetch("performance_data.json")
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then(json => { data = json; render(); })
+        .catch(err => {
+          document.querySelector("#subtitle").textContent = "資料載入失敗";
+          document.querySelector("#metrics").innerHTML = `<div class="metric"><b>錯誤</b><span>${esc(err.message)}</span></div>`;
+        });
+    }
     document.querySelector("#search").addEventListener("input", render);
     document.querySelector("#grade").addEventListener("change", render);
     document.querySelector("#status").addEventListener("change", render);
