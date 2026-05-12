@@ -210,7 +210,7 @@ def main() -> int:
                 alert_text,
                 "觀察追蹤：",
                 review_text,
-                f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'dashboard.html'}",
+                f"監控頁：{config.get('runtime', {}).get('dashboard_url') or ROOT / 'dashboard' / 'index.html'}",
                 "僅供研究追蹤，不是投資建議。",
             ]
         )
