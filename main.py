@@ -82,6 +82,18 @@ def main() -> int:
 
     market_prices = provider.stock_prices(config["market"]["index_id"], start_date, as_of)
     market_adjustment, market_summary, market_warning = engine.market_adjustment(market_prices)
+
+    # 類股指數今日漲跌（TWSE OpenAPI MI_INDEX）
+    sector_ctx = ""
+    if hasattr(provider, "sector_indices_today"):
+        try:
+            sector_df = provider.sector_indices_today()
+            sector_ctx = sector_context(sector_df)
+        except Exception:
+            pass
+    if sector_ctx:
+        market_summary = f"{market_summary}｜{sector_ctx}"
+
     overseas = None
     if config.get("overseas", {}).get("enabled", False):
         overseas = analyze_overseas_sentiment(provider.overseas_bundle(start_date, as_of))
