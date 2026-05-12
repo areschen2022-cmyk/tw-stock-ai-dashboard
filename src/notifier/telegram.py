@@ -34,7 +34,7 @@ class TelegramNotifier:
     def _send_single(self, message: str) -> None:
         response = requests.post(
             f"https://api.telegram.org/bot{self.bot_token}/sendMessage",
-            json={"chat_id": self.chat_id, "text": message},
+            json={"chat_id": self.chat_id, "text": message, "parse_mode": "HTML"},
             timeout=20,
         )
         response.raise_for_status()
