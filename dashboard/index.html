@@ -1,4 +1,102 @@
-{
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>台股 AI 開盤前監控</title>
+  <style>
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:2; }
+    h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
+    .sub { color:var(--muted); font-size:14px; }
+    main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
+    .metrics { display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
+    .metric span { color:var(--muted); font-size:13px; }
+    .bands { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    h2 { font-size:16px; margin:0 0 10px; }
+    .line { color:var(--muted); margin:5px 0; font-size:14px; }
+    .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
+    .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
+    input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
+    input { min-width:260px; flex:1; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th { background:#eef1f5; font-size:12px; color:#475467; }
+    .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
+    .grade-A { color:white; background:var(--good); }
+    .grade-B { color:#3b2f00; background:#f6d365; }
+    .grade-C { color:#344054; background:#e4e7ec; }
+    .grade-- { color:#667085; background:#f2f4f7; }
+    .small { color:var(--muted); font-size:12px; margin-top:3px; }
+    .themes { color:#175cd3; }
+    a.stock-link { color:#0b4a8b; text-decoration:none; }
+    a.stock-link:hover { text-decoration:underline; }
+    .bad { color:var(--bad); }
+    .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:#98a2b3; }
+    .status-ok { background:var(--good); }
+    .status-warn { background:var(--warn); }
+    .status-bad { background:var(--bad); }
+    .tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+    .tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .tag-theme  { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .tag-chip   { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+    .tag-tech   { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+    .tag-fund   { background:#fdf4ff; color:#7e22ce; border:1px solid #e9d5ff; }
+    .tag-over   { background:#f0f9ff; color:#0c4a6e; border:1px solid #bae6fd; }
+    .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
+    @media (max-width: 900px) {
+      header { position:static; }
+      main, header { padding-left:12px; padding-right:12px; }
+      .metrics, .bands { grid-template-columns:1fr; }
+      .toolbar { align-items:stretch; }
+      input, select { width:100%; min-width:0; }
+      table, thead, tbody, tr, td { display:block; width:100%; }
+      thead { display:none; }
+      table { border:0; background:transparent; }
+      tr { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:10px; padding:10px; }
+      td { border:0; padding:5px 0; font-size:13px; }
+      td::before { content: attr(data-label); display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+      td:first-child { float:left; width:42px; padding-top:0; }
+      td:nth-child(2) { margin-left:52px; min-height:42px; padding-top:0; }
+      td:nth-child(3) { clear:both; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>台股 AI 開盤前監控</h1>
+    <div class="sub" id="subtitle">載入中...</div>
+  </header>
+  <main>
+    <nav class="nav-tabs" aria-label="頁面切換">
+      <a class="nav-tab active" href="index.html">今日監控</a>
+      <a class="nav-tab" href="performance.html">訊號成效</a>
+    </nav>
+    <div class="metrics" id="metrics"></div>
+    <div class="bands">
+      <section><h2>市場風向</h2><div id="market"></div></section>
+      <section><h2>新聞題材</h2><div id="themes"></div></section>
+      <section><h2>異常提醒</h2><div id="alerts"></div></section>
+      <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
+    </div>
+    <div class="toolbar">
+      <input id="search" placeholder="搜尋股票、題材、訊號..." />
+      <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
+    </div>
+    <table>
+      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+  <script>
+    window.__DASHBOARD_DATA__ = {
   "as_of": "2026-05-12",
   "market": {
     "summary": "健康：指數維持在主要均線上方",
@@ -1248,4 +1346,102 @@
       "trigger_summary": "題材關注 + 海外順風"
     }
   ]
-}
+};
+    let data = null;
+    const cls = g => "grade grade-" + (g === "-" ? "-" : g);
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+    const TAG_CLASS = {
+      "題材": "tag-theme", "法人": "tag-chip", "外資": "tag-chip", "投信": "tag-chip",
+      "突破": "tag-tech",  "趨勢": "tag-tech",  "技術": "tag-tech",
+      "營收": "tag-fund",
+      "美股": "tag-over",  "海外": "tag-over",
+    };
+    function tagClass(tag) {
+      for (const [kw, cls] of Object.entries(TAG_CLASS)) {
+        if (tag.includes(kw)) return "tag " + cls;
+      }
+      return "tag tag-default";
+    }
+    function renderTags(tags) {
+      if (!tags || !tags.length) return '<span class="tag tag-default">綜合訊號</span>';
+      return tags.map(t => `<span class="${tagClass(t)}">${esc(t)}</span>`).join("");
+    }
+    function render() {
+      const q = document.querySelector("#search").value.trim().toLowerCase();
+      const g = document.querySelector("#grade").value;
+      document.querySelector("#subtitle").textContent = `${data.as_of}｜僅供研究追蹤，不是投資建議`;
+      document.querySelector("#metrics").innerHTML = [
+        ["掃描", data.summary.scanned], ["有效", data.summary.valid], ["A級", data.summary.a_grade], ["B級", data.summary.b_grade], ["資料不足", data.summary.data_insufficient]
+      ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
+      document.querySelector("#market").innerHTML = `
+        <div class="line">台股：${esc(data.market.summary)}</div>
+        <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
+        <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
+        ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
+      const themeRank = Object.entries(data.themes.scores || {})
+        .filter(([,score]) => score > 0)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,5)
+        .map(([key,score]) => `<div class="line">${esc(data.themes.names[key] || key)}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
+        .join("");
+      document.querySelector("#themes").innerHTML = `
+        <div class="line">熱門：${esc(data.themes.summary)}</div>
+        ${themeRank}
+        ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${esc(h)}</div>`).join("")}`;
+      document.querySelector("#alerts").innerHTML = (data.alerts || []).length
+        ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
+        : `<div class="line">目前無重大異常</div>`;
+      document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
+        ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
+        : `<div class="line">尚無可追蹤觀察名單</div>`;
+      const rows = data.rows.filter(r => {
+        const blob = JSON.stringify(r).toLowerCase();
+        return (!q || blob.includes(q)) && (!g || r.grade === g);
+      });
+      document.querySelector("#rows").innerHTML = rows.map(r => `
+        <tr>
+          <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
+          <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
+          <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
+          <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>
+          <td data-label="四面向">
+            <div class="small">技術：${esc(r.technical || "無明顯訊號")}</div>
+            <div class="small">籌碼：${esc(r.chip || "無明顯訊號")}</div>
+            <div class="small">基本：${esc(r.fundamental || "無明顯訊號")}</div>
+            <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
+          </td>
+          <td data-label="操作"><b>${esc(r.action || "只觀察")}</b></td>
+          <td data-label="進場/停損">${esc(r.entry_condition || "資料不足，暫不設進場條件")}<div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div></td>
+        </tr>`).join("");
+    }
+    function sourceClass(label) {
+      const base = "status-dot ";
+      if (label === "正常") return base + "status-ok";
+      if (label === "部分限流" || label === "限流") return base + "status-warn";
+      if (label === "錯誤") return base + "status-bad";
+      return base;
+    }
+    if (window.__DASHBOARD_DATA__ && window.__DASHBOARD_DATA__ !== null) {
+      data = window.__DASHBOARD_DATA__;
+      render();
+    } else {
+      fetch("dashboard_data.json")
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then(json => { data = json; render(); })
+        .catch(err => {
+          document.querySelector("#subtitle").textContent = "資料載入失敗";
+          document.querySelector("#metrics").innerHTML = "";
+          document.querySelector("#market").innerHTML = `<div class="line bad">dashboard_data.json 載入失敗：${esc(err.message)}</div>`;
+        });
+    }
+    document.querySelector("#search").addEventListener("input", render);
+    document.querySelector("#grade").addEventListener("change", render);
+  </script>
+</body>
+</html>
