@@ -32,6 +32,10 @@ def detect_alerts(
         top_theme, top_count = max(theme_signal.scores.items(), key=lambda item: item[1])
         if top_count >= 3:
             alerts.append(f"題材升溫：{theme_signal.summary}")
+        # Momentum-based alert: flag any non-top theme that suddenly spikes
+        for t_key, mom in (theme_signal.momentum or {}).items():
+            if mom.trend == "急升🔥" and t_key != top_theme:
+                alerts.append(f"題材急升 {t_key}：今日{mom.today}則（3日均{mom.avg_3d:.1f}則）")
 
     ranked_scores = sorted(scores, key=lambda score: score.total_score, reverse=True)
     for score in ranked_scores:

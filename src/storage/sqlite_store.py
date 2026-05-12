@@ -95,6 +95,18 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS theme_daily_scores (
+                    score_date TEXT NOT NULL,
+                    theme_key TEXT NOT NULL,
+                    score INTEGER NOT NULL DEFAULT 0,
+                    matched_headlines_json TEXT NOT NULL DEFAULT '[]',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (score_date, theme_key)
+                )
+                """
+            )
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -388,6 +400,107 @@ class SQLiteStore:
                         json.dumps(signal.get("themes", []), ensure_ascii=False),
                     ),
                 )
+
+    def save_theme_signal_scores(
+        self,
+        scores: dict[str, int],
+        matched_headlines: dict[str, list[str]],
+        as_of: date,
+    ) -> None:
+        """Persist today's per-theme news scores and matched headlines."""
+        with self._connect() as conn:
+            for theme_key, score in scores.items():
+                headlines = matched_headlines.get(theme_key, [])
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO theme_daily_scores
+                        (score_date, theme_key, score, matched_headlines_json)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (
+                        as_of.isoformat(),
+                        theme_key,
+                        score,
+                        json.dumps(headlines[:10], ensure_ascii=False),
+                    ),
+                )
+
+    def theme_momentum(self, as_of: date, lookback_days: int = 7) -> dict[str, dict]:
+        """Return momentum stats per theme over the last *lookback_days* days.
+
+        Returns::
+
+            {
+              "ai_server": {
+                  "today": 4,
+                  "avg_3d": 2.3,
+                  "history": [4, 3, 2, 1, 0, 0, 1],   # newest-first, up to lookback_days
+                  "headlines": ["...", "..."],           # today's matched headlines
+              },
+              ...
+            }
+        """
+        since = (as_of - timedelta(days=lookback_days)).isoformat()
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT theme_key, score_date, score, matched_headlines_json
+                FROM theme_daily_scores
+                WHERE score_date >= ?
+                ORDER BY theme_key, score_date DESC
+                """,
+                (since,),
+            ).fetchall()
+
+        by_theme: dict[str, list[tuple[str, int, str]]] = {}
+        for theme_key, score_date, score, headlines_json in rows:
+            by_theme.setdefault(theme_key, []).append((score_date, score, headlines_json))
+
+        result: dict[str, dict] = {}
+        today_str = as_of.isoformat()
+        for theme_key, entries in by_theme.items():
+            # entries already sorted newest-first
+            today_score = 0
+            today_headlines: list[str] = []
+            history: list[int] = []
+            for score_date, score, hl_json in entries:
+                if score_date == today_str:
+                    today_score = score
+                    today_headlines = json.loads(hl_json or "[]")
+                else:
+                    history.append(score)
+
+            prev3 = history[:3]
+            avg_3d = sum(prev3) / len(prev3) if prev3 else 0.0
+            result[theme_key] = {
+                "today": today_score,
+                "avg_3d": round(avg_3d, 1),
+                "history": [today_score, *history],
+                "headlines": today_headlines,
+            }
+        return result
+
+    def theme_history(self, theme_key: str, days: int = 30) -> list[dict]:
+        """Return daily score history for a single theme (for debugging / dashboard)."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT score_date, score, matched_headlines_json
+                FROM theme_daily_scores
+                WHERE theme_key = ?
+                ORDER BY score_date DESC
+                LIMIT ?
+                """,
+                (theme_key, days),
+            ).fetchall()
+        return [
+            {
+                "date": row[0],
+                "score": row[1],
+                "headlines": json.loads(row[2] or "[]"),
+            }
+            for row in rows
+        ]
 
     def latest_capital_flow(self, trade_date: date) -> list[dict]:
         with self._connect() as conn:
