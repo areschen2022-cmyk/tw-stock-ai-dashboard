@@ -97,7 +97,7 @@ def main() -> int:
     overseas = None
     if config.get("overseas", {}).get("enabled", False):
         overseas = analyze_overseas_sentiment(provider.overseas_bundle(start_date, as_of))
-    theme_signal = fetch_theme_signal(config)
+    theme_signal = fetch_theme_signal(config, store=store, as_of=as_of)
 
     results = []
     semiconductor_sensitive = set(config.get("overseas", {}).get("semiconductor_sensitive", []))
