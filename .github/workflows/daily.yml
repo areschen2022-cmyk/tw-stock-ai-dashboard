@@ -54,7 +54,7 @@ jobs:
   intraday-confirm:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && startsWith(github.event.schedule, '10 1'))
+      github.event.schedule == '10 1 * * 1-5'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
