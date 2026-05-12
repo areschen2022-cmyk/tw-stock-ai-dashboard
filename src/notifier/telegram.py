@@ -25,11 +25,9 @@ class TelegramNotifier:
 
     def send(self, message: str) -> None:
         if self.dry_run:
-            try:
-                print(message)
-            except UnicodeEncodeError:
-                # Windows console may not support all Unicode characters; encode safely
-                print(message.encode("utf-8", errors="replace").decode("ascii", errors="replace"))
+            # Write directly to stdout buffer with UTF-8 to avoid cp950 issues on Windows
+            sys.stdout.buffer.write((message + "\n").encode("utf-8", errors="replace"))
+            sys.stdout.buffer.flush()
             return
         if not self.bot_token or not self.chat_id:
             raise RuntimeError("Telegram credentials missing: set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env")
