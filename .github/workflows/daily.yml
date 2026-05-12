@@ -16,7 +16,7 @@ jobs:
   morning-screener:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && startsWith(github.event.schedule, '20 0'))
+      github.event.schedule == '20 0 * * 1-5'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
