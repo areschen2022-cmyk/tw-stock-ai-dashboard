@@ -27,40 +27,44 @@ def merge_theme_database(config: dict[str, Any], project_root: Path) -> dict[str
     if not theme_db_path.exists():
         return config
 
-    database = load_yaml(theme_db_path)
+    databases = [load_yaml(theme_db_path)]
+    supplement_dir = theme_db_path.parent / "theme_universe.d"
+    if supplement_dir.exists():
+        databases.extend(load_yaml(path) for path in sorted(supplement_dir.glob("*.yaml")))
     theme_pools = config.setdefault("theme_pools", {})
     theme_stock_meta = config.setdefault("theme_stock_meta", {})
     stock_names = config.setdefault("stock_names", {})
     web_news = config.setdefault("web_news", {})
     theme_keywords = web_news.setdefault("theme_keywords", {})
 
-    for theme_key, theme_cfg in database.get("themes", {}).items():
-        pool = theme_pools.setdefault(theme_key, {})
-        pool["name"] = theme_cfg.get("name", pool.get("name", theme_key))
-        pool_stocks = pool.setdefault("stocks", {})
+    for database in databases:
+        for theme_key, theme_cfg in database.get("themes", {}).items():
+            pool = theme_pools.setdefault(theme_key, {})
+            pool["name"] = theme_cfg.get("name", pool.get("name", theme_key))
+            pool_stocks = pool.setdefault("stocks", {})
 
-        for item in theme_cfg.get("stocks", []):
-            stock_id = str(item.get("id", "")).strip()
-            name = str(item.get("name", "")).strip()
-            if not stock_id:
-                continue
-            if name:
-                pool_stocks[stock_id] = name
-                stock_names.setdefault(stock_id, name)
-            tier = str(item.get("tier", "beneficiary")).strip() or "beneficiary"
-            role = str(item.get("role", "")).strip()
-            theme_stock_meta.setdefault(stock_id, {})[theme_key] = {
-                "theme_key": theme_key,
-                "theme_name": pool["name"],
-                "tier": tier,
-                "tier_label": TIER_LABELS.get(tier, tier),
-                "role": role,
-            }
+            for item in theme_cfg.get("stocks", []):
+                stock_id = str(item.get("id", "")).strip()
+                name = str(item.get("name", "")).strip()
+                if not stock_id:
+                    continue
+                if name:
+                    pool_stocks[stock_id] = name
+                    stock_names.setdefault(stock_id, name)
+                tier = str(item.get("tier", "beneficiary")).strip() or "beneficiary"
+                role = str(item.get("role", "")).strip()
+                theme_stock_meta.setdefault(stock_id, {})[theme_key] = {
+                    "theme_key": theme_key,
+                    "theme_name": pool["name"],
+                    "tier": tier,
+                    "tier_label": TIER_LABELS.get(tier, tier),
+                    "role": role,
+                }
 
-        keywords = list(theme_keywords.get(theme_key, []))
-        for keyword in theme_cfg.get("keywords", []):
-            if keyword not in keywords:
-                keywords.append(keyword)
-        theme_keywords[theme_key] = keywords
+            keywords = list(theme_keywords.get(theme_key, []))
+            for keyword in theme_cfg.get("keywords", []):
+                if keyword not in keywords:
+                    keywords.append(keyword)
+            theme_keywords[theme_key] = keywords
 
     return config
