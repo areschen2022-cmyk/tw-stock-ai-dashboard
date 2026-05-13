@@ -94,6 +94,15 @@ def build_dashboard_payload(
                 key: len(value.get("stocks", {}))
                 for key, value in config.get("theme_pools", {}).items()
             },
+            "momentum": {
+                key: {
+                    "today": mom.today,
+                    "avg_3d": round(mom.avg_3d, 1),
+                    "trend": mom.trend,
+                    "history": mom.history[:7],
+                }
+                for key, mom in (theme_signal.momentum or {}).items()
+            } if theme_signal else {},
         },
         "source_status": source_status or {"label": "未知"},
         "alerts": alerts or [],
@@ -270,16 +279,54 @@ def _html() -> str:
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
         <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
-      const themeRank = Object.entries(data.themes.scores || {})
-        .filter(([,score]) => score > 0)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0,5)
-        .map(([key,score]) => `<div class="line">${esc(data.themes.names[key] || key)}：${score} 則｜股票池 ${data.themes.pool_counts?.[key] || 0} 檔</div>`)
-        .join("");
+      function sparkBar(history) {
+        const bars = "▁▂▃▄▅▆▇█";
+        if (!history || !history.length) return "—";
+        const max = Math.max(...history, 1);
+        return [...history].slice(0, 7).reverse().map(v =>
+          v === 0 ? "·" : bars[Math.min(7, Math.round((v / max) * 7))]
+        ).join("");
+      }
+      function trendStyle(trend) {
+        if (!trend) return "";
+        if (trend.indexOf("急升") >= 0) return "color:#b42318;font-weight:700";
+        if (trend.indexOf("升溫") >= 0) return "color:#0f7b4f;font-weight:600";
+        if (trend.indexOf("降溫") >= 0) return "color:var(--muted)";
+        if (trend.indexOf("消退") >= 0) return "color:#98a2b3";
+        return "";
+      }
+      const momentum = data.themes.momentum || {};
+      const allThemeEntries = Object.entries(data.themes.scores || {})
+        .filter(([key, score]) => score > 0 || (momentum[key] && momentum[key].avg_3d > 0))
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6);
+      const themeTableBody = allThemeEntries.map(([key, score]) => {
+        const mom = momentum[key] || {};
+        const trend = mom.trend || "-";
+        const avg3d = mom.avg_3d != null ? Number(mom.avg_3d).toFixed(1) : "-";
+        const spark = sparkBar(mom.history);
+        return `<tr style="font-size:12px">` +
+          `<td style="padding:3px 5px;color:#175cd3">${esc(data.themes.names[key] || key)}</td>` +
+          `<td style="padding:3px 5px;text-align:center">${score}</td>` +
+          `<td style="padding:3px 5px;text-align:center;color:var(--muted)">${avg3d}</td>` +
+          `<td style="padding:3px 5px;${trendStyle(trend)}">${esc(trend)}</td>` +
+          `<td style="padding:3px 5px;letter-spacing:1px;font-family:monospace;color:#475467">${spark}</td>` +
+          `</tr>`;
+      }).join("");
+      const themeHdr = `<thead><tr style="font-size:11px;color:var(--muted)">` +
+        `<th style="padding:2px 5px;text-align:left;font-weight:600">題材</th>` +
+        `<th style="padding:2px 5px;font-weight:600">今日</th>` +
+        `<th style="padding:2px 5px;font-weight:600">3日均</th>` +
+        `<th style="padding:2px 5px;font-weight:600">趨勢</th>` +
+        `<th style="padding:2px 5px;font-weight:600">近7日▶</th>` +
+        `</tr></thead>`;
+      const themeTableHtml = themeTableBody
+        ? `<table style="width:100%;border-collapse:collapse;margin:5px 0 4px">${themeHdr}<tbody>${themeTableBody}</tbody></table>`
+        : "";
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
-        ${themeRank}
-        ${data.themes.headlines.slice(0,3).map(h => `<div class="line">- ${esc(h)}</div>`).join("")}`;
+        ${themeTableHtml}
+        ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
         : `<div class="line">目前無重大異常</div>`;
