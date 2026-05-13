@@ -63,7 +63,7 @@
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
-        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計；停損率越低越好。</div>
+        <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。<b>停損</b>欄 = 訊號發出後 5 日內股價觸及或跌破預設止損價的比率（<b>越低越好</b>，代表止損設定合理、未被提前出場）。</div>
         <table>
           <thead><tr><th>題材</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>停損</th></tr></thead>
           <tbody id="themeStats"></tbody>
@@ -97,6 +97,1088 @@
     </table>
   </main>
   <script>
+    window.__PERFORMANCE_DATA__ = {
+  "as_of": "2026-05-13",
+  "days": 30,
+  "stats": {
+    "signals": 58,
+    "completed": 0,
+    "win_rate_5d": null,
+    "avg_return_5d": null,
+    "stop_hit_rate": 8.108108108108109,
+    "a_win_rate_5d": null
+  },
+  "theme_stats": [
+    {
+      "label": "先進封裝/CoWoS",
+      "signals": 23,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 6.666666666666667
+    },
+    {
+      "label": "記憶體/HBM",
+      "signals": 18,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 0.0
+    },
+    {
+      "label": "光學鏡頭/視覺",
+      "signals": 5,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 33.33333333333333
+    },
+    {
+      "label": "AI電力/重電/電網",
+      "signals": 3,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": null
+    },
+    {
+      "label": "散熱/電源",
+      "signals": 2,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": null
+    },
+    {
+      "label": "金融降息/併購",
+      "signals": 1,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 100.0
+    }
+  ],
+  "score_bands": [
+    {
+      "label": "50-64",
+      "signals": 0,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": null
+    },
+    {
+      "label": "65-74",
+      "signals": 21,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 18.181818181818183
+    },
+    {
+      "label": "75-84",
+      "signals": 18,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 0.0
+    },
+    {
+      "label": "85-100",
+      "signals": 19,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "stop_hit_rate": 7.142857142857142
+    }
+  ],
+  "entry_analysis": {
+    "triggered": {
+      "count": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null
+    },
+    "not_triggered": {
+      "count": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null
+    }
+  },
+  "items": [
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3008",
+      "name": "大立光",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 2850.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "光學鏡頭/視覺"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2408",
+      "name": "南亞科",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 321.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2344",
+      "name": "華邦電",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 121.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3583",
+      "name": "辛耘",
+      "grade": "A",
+      "total_score": 94,
+      "entry_price": 952.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3006",
+      "name": "晶豪科",
+      "grade": "A",
+      "total_score": 92,
+      "entry_price": 220.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3037",
+      "name": "欣興",
+      "grade": "A",
+      "total_score": 82,
+      "entry_price": 875.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "6510",
+      "name": "精測",
+      "grade": "A",
+      "total_score": 78,
+      "entry_price": 3860.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2301",
+      "name": "光寶科",
+      "grade": "A",
+      "total_score": 77,
+      "entry_price": 211.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI電力/重電/電網"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "8299",
+      "name": "群聯",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 2725.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "6770",
+      "name": "力積電",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 62.1,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2451",
+      "name": "創見",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 351.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "8046",
+      "name": "南電",
+      "grade": "B",
+      "total_score": 74,
+      "entry_price": 900.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "6643",
+      "name": "M31",
+      "grade": "B",
+      "total_score": 74,
+      "entry_price": 697.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3019",
+      "name": "亞光",
+      "grade": "B",
+      "total_score": 73,
+      "entry_price": 140.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "光學鏡頭/視覺"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3711",
+      "name": "日月光投控",
+      "grade": "B",
+      "total_score": 71,
+      "entry_price": 555.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2382",
+      "name": "廣達",
+      "grade": "B",
+      "total_score": 71,
+      "entry_price": 340.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "2317",
+      "name": "鴻海",
+      "grade": "B",
+      "total_score": 69,
+      "entry_price": 250.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "3264",
+      "name": "欣銓",
+      "grade": "B",
+      "total_score": 68,
+      "entry_price": 228.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "6187",
+      "name": "萬潤",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 1220.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "1514",
+      "name": "亞力",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 120.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "散熱/電源",
+        "AI電力/重電/電網"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-13",
+      "stock_id": "1504",
+      "name": "東元",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 73.2,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "散熱/電源",
+        "AI電力/重電/電網"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3583",
+      "name": "辛耘",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 952.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2408",
+      "name": "南亞科",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 301.0,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2344",
+      "name": "華邦電",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 117.5,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3006",
+      "name": "晶豪科",
+      "grade": "A",
+      "total_score": 95,
+      "entry_price": 222.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "8299",
+      "name": "群聯",
+      "grade": "A",
+      "total_score": 93,
+      "entry_price": 2670.0,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2359",
+      "name": "所羅門",
+      "grade": "A",
+      "total_score": 92,
+      "entry_price": 128.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "光學鏡頭/視覺"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2451",
+      "name": "創見",
+      "grade": "A",
+      "total_score": 91,
+      "entry_price": 343.5,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2382",
+      "name": "廣達",
+      "grade": "A",
+      "total_score": 88,
+      "entry_price": 343.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3019",
+      "name": "亞光",
+      "grade": "A",
+      "total_score": 85,
+      "entry_price": 144.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": true,
+      "action": "可追蹤突破",
+      "themes": [
+        "光學鏡頭/視覺"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2317",
+      "name": "鴻海",
+      "grade": "A",
+      "total_score": 84,
+      "entry_price": 252.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3264",
+      "name": "欣銓",
+      "grade": "A",
+      "total_score": 83,
+      "entry_price": 225.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2308",
+      "name": "台達電",
+      "grade": "A",
+      "total_score": 83,
+      "entry_price": 2245.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "6643",
+      "name": "M31",
+      "grade": "A",
+      "total_score": 82,
+      "entry_price": 683.0,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "6770",
+      "name": "力積電",
+      "grade": "A",
+      "total_score": 81,
+      "entry_price": 62.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "6510",
+      "name": "精測",
+      "grade": "A",
+      "total_score": 80,
+      "entry_price": 3790.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "等拉回",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3711",
+      "name": "日月光投控",
+      "grade": "A",
+      "total_score": 79,
+      "entry_price": 537.0,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "等拉回",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3260",
+      "name": "威剛",
+      "grade": "B",
+      "total_score": 73,
+      "entry_price": 457.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "3008",
+      "name": "大立光",
+      "grade": "B",
+      "total_score": 73,
+      "entry_price": 2795.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "光學鏡頭/視覺"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2330",
+      "name": "台積電",
+      "grade": "B",
+      "total_score": 72,
+      "entry_price": 2235.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "grade": "B",
+      "total_score": 70,
+      "entry_price": 256.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "6239",
+      "name": "力成",
+      "grade": "B",
+      "total_score": 67,
+      "entry_price": 225.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "2885",
+      "name": "元大金",
+      "grade": "B",
+      "total_score": 67,
+      "entry_price": 54.6,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": true,
+      "action": "只觀察",
+      "themes": [
+        "金融降息/併購"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-12",
+      "stock_id": "6789",
+      "name": "采鈺",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 600.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2408",
+      "name": "南亞科",
+      "grade": "A",
+      "total_score": 100,
+      "entry_price": 301.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2451",
+      "name": "創見",
+      "grade": "A",
+      "total_score": 91,
+      "entry_price": 343.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "3711",
+      "name": "日月光投控",
+      "grade": "A",
+      "total_score": 89,
+      "entry_price": 537.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2382",
+      "name": "廣達",
+      "grade": "A",
+      "total_score": 88,
+      "entry_price": 343.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "3583",
+      "name": "辛耘",
+      "grade": "A",
+      "total_score": 85,
+      "entry_price": 866.0,
+      "entry_triggered": false,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2317",
+      "name": "鴻海",
+      "grade": "A",
+      "total_score": 84,
+      "entry_price": 252.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "6643",
+      "name": "M31",
+      "grade": "A",
+      "total_score": 82,
+      "entry_price": 683.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "6510",
+      "name": "精測",
+      "grade": "A",
+      "total_score": 80,
+      "entry_price": 3790.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "等拉回",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 256.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "等拉回",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "3264",
+      "name": "欣銓",
+      "grade": "A",
+      "total_score": 75,
+      "entry_price": 225.5,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "等拉回",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2308",
+      "name": "台達電",
+      "grade": "B",
+      "total_score": 73,
+      "entry_price": 2245.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "2330",
+      "name": "台積電",
+      "grade": "B",
+      "total_score": 72,
+      "entry_price": 2235.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": true,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "6187",
+      "name": "萬潤",
+      "grade": "B",
+      "total_score": 71,
+      "entry_price": 1110.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-11",
+      "stock_id": "6789",
+      "name": "采鈺",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 600.0,
+      "entry_triggered": true,
+      "return_3d": null,
+      "return_5d": null,
+      "stop_hit": false,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status": "進行中"
+    }
+  ]
+};
     let data = null;
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -115,7 +1197,7 @@
         metric("已完成", stats.completed),
         metric("5日勝率", stats.win_rate_5d?.toFixed(1), "%"),
         metric("5日平均", stats.avg_return_5d?.toFixed(1), "%"),
-        metric("停損觸及", stats.stop_hit_rate?.toFixed(1), "%"),
+        `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
@@ -172,16 +1254,21 @@
         </tr>
       `).join("");
     }
-    fetch("performance_data.json")
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then(json => { data = json; render(); })
-      .catch(err => {
-        document.querySelector("#subtitle").textContent = "資料載入失敗";
-        document.querySelector("#metrics").innerHTML = `<div class="metric"><b>錯誤</b><span>${esc(err.message)}</span></div>`;
-      });
+    if (window.__PERFORMANCE_DATA__ && window.__PERFORMANCE_DATA__ !== null) {
+      data = window.__PERFORMANCE_DATA__;
+      render();
+    } else {
+      fetch("performance_data.json")
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then(json => { data = json; render(); })
+        .catch(err => {
+          document.querySelector("#subtitle").textContent = "資料載入失敗";
+          document.querySelector("#metrics").innerHTML = `<div class="metric"><b>錯誤</b><span>${esc(err.message)}</span></div>`;
+        });
+    }
     document.querySelector("#search").addEventListener("input", render);
     document.querySelector("#grade").addEventListener("change", render);
     document.querySelector("#status").addEventListener("change", render);
