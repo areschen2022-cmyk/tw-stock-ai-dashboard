@@ -78,6 +78,7 @@ def build_dashboard_payload(
             "label": overseas.label if overseas else "未納入",
             "summary": overseas.summary if overseas else "未納入",
             "reasons": overseas.reasons if overseas else [],
+            "sector_impacts": overseas.sector_impacts if overseas else [],
         },
         "themes": {
             "summary": theme_signal.summary if theme_signal else "未納入",
@@ -98,6 +99,15 @@ def build_dashboard_payload(
                 }
                 for key, mom in (theme_signal.momentum or {}).items()
             } if theme_signal else {},
+            "policy": {
+                "summary": theme_signal.policy.summary,
+                "theme_boosts": theme_signal.policy.theme_boosts,
+                "matched_headlines": theme_signal.policy.matched_headlines,
+            } if theme_signal and theme_signal.policy else {
+                "summary": "未納入",
+                "theme_boosts": {},
+                "matched_headlines": {},
+            },
         },
         "source_status": source_status or {"label": "未知"},
         "alerts": alerts or [],
@@ -143,6 +153,12 @@ def write_performance(payload: dict, output_dir: Path) -> None:
     (output_dir / "performance.html").write_text(html, encoding="utf-8")
 
 
+def write_theme_history(payload: dict[str, list[dict]], output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    json_text = json.dumps(payload, ensure_ascii=False, indent=2)
+    (output_dir / "theme_history.json").write_text(json_text, encoding="utf-8")
+
+
 def _html() -> str:
     return r"""<!doctype html>
 <html lang="zh-Hant">
@@ -173,6 +189,7 @@ def _html() -> str:
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .chart-wrap { height:180px; margin-top:8px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
     .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
@@ -236,7 +253,7 @@ def _html() -> str:
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
-      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
+      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
     </div>
     <table>
       <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
@@ -244,8 +261,14 @@ def _html() -> str:
     </table>
   </main>
   <script>
+    const chartScript = document.createElement("script");
+    chartScript.src = "https://cdn.jsdelivr.net/npm/chart.js";
+    chartScript.defer = true;
+    document.head.appendChild(chartScript);
     /* __INLINE_DATA_SENTINEL__ */
     let data = null;
+    let themeHistory = null;
+    let themeChart = null;
     const cls = g => "grade grade-" + (g === "-" ? "-" : g);
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -282,6 +305,7 @@ def _html() -> str:
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
+        ${(data.overseas.sector_impacts || []).slice(0,2).map(x => `<div class="line">映射：${esc(x.symbol)} ${Number(x.change_pct).toFixed(2)}% → ${esc(x.sector)}｜${esc(x.stocks)}</div>`).join("")}
         <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
       function sparkBar(history) {
@@ -330,8 +354,11 @@ def _html() -> str:
         : "";
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
+        <div class="line">政策：${esc(data.themes.policy?.summary || "未偵測到明顯政策訊號")}</div>
         ${themeTableHtml}
+        <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
+      renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
         : `<div class="line">目前無重大異常</div>`;
@@ -371,6 +398,40 @@ def _html() -> str:
       if (label === "錯誤") return base + "status-bad";
       return base;
     }
+    function renderThemeHistoryChart() {
+      const canvas = document.querySelector("#themeHistoryChart");
+      if (!canvas || !themeHistory || !window.Chart) return;
+      const names = data.themes.names || {};
+      const activeKeys = Object.keys(themeHistory)
+        .filter(key => (themeHistory[key] || []).some(row => Number(row.score) > 0))
+        .slice(0, 6);
+      if (!activeKeys.length) return;
+      const dates = [...new Set(activeKeys.flatMap(key => (themeHistory[key] || []).map(row => row.date)))]
+        .sort()
+        .slice(-14);
+      const palette = ["#0b4a8b", "#b42318", "#0f7b4f", "#9a6700", "#7e22ce", "#475467"];
+      const datasets = activeKeys.map((key, idx) => {
+        const map = Object.fromEntries((themeHistory[key] || []).map(row => [row.date, Number(row.score || 0)]));
+        return {
+          label: names[key] || key,
+          data: dates.map(date => map[date] || 0),
+          borderColor: palette[idx % palette.length],
+          backgroundColor: palette[idx % palette.length],
+          tension: 0.25,
+        };
+      });
+      if (themeChart) themeChart.destroy();
+      themeChart = new Chart(canvas, {
+        type: "line",
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom", labels: { boxWidth: 10 } } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
     if (window.__DASHBOARD_DATA__ && window.__DASHBOARD_DATA__ !== null) {
       data = window.__DASHBOARD_DATA__;
       render();
@@ -389,6 +450,14 @@ def _html() -> str:
     }
     document.querySelector("#search").addEventListener("input", render);
     document.querySelector("#grade").addEventListener("change", render);
+    fetch("theme_history.json")
+      .then(r => r.ok ? r.json() : {})
+      .then(json => {
+        themeHistory = json;
+        if (window.Chart) renderThemeHistoryChart();
+        chartScript.addEventListener("load", renderThemeHistoryChart, { once:true });
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>"""
@@ -475,12 +544,20 @@ def _performance_html() -> str:
         </table>
       </section>
     </div>
-    <section>
+  <section>
       <h2>進場條件分析</h2>
       <div class="note">比較進場條件是否對報酬有正向影響；樣本不足時數據僅供參考。</div>
       <table>
         <thead><tr><th>類型</th><th>筆數</th><th>5日勝率</th><th>5日平均報酬</th></tr></thead>
         <tbody id="entryAnalysis"></tbody>
+      </table>
+    </section>
+    <section style="margin-bottom:16px;">
+      <h2>Signal Lab：級別驗證</h2>
+      <div class="note">離線驗證 S+/S/A/B 各級別在 3 日、5 日、10 日後的平均表現；樣本未滿 30 筆前僅供觀察。</div>
+      <table>
+        <thead><tr><th>級別</th><th>訊號</th><th>3日勝率</th><th>3日平均</th><th>5日勝率</th><th>5日平均</th><th>10日勝率</th><th>10日平均</th></tr></thead>
+        <tbody id="signalLab"></tbody>
       </table>
     </section>
     <div class="toolbar">
@@ -549,6 +626,18 @@ def _performance_html() -> str:
           <td data-label="5日平均報酬">${fmtPct(row?.avg_return_5d)}</td>
         </tr>
       `).join("");
+      document.querySelector("#signalLab").innerHTML = (data.signal_lab || []).map(r => `
+        <tr>
+          <td data-label="級別">${esc(r.grade)}</td>
+          <td data-label="訊號">${esc(r.signals)}</td>
+          <td data-label="3日勝率">${fmtPct(r.win_rate_3d)}</td>
+          <td data-label="3日平均">${fmtPct(r.avg_return_3d)}</td>
+          <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+          <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+          <td data-label="10日勝率">${fmtPct(r.win_rate_10d)}</td>
+          <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
+        </tr>
+      `).join("");
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const grade = document.querySelector("#grade").value;
       const status = document.querySelector("#status").value;
@@ -565,7 +654,7 @@ def _performance_html() -> str:
           <td data-label="訊號價">${r.entry_price ?? "—"}</td>
           <td data-label="進場觸發">${fmtBool(r.entry_triggered)}</td>
           <td data-label="3日漲跌">${fmtPct(r.return_3d)}</td>
-          <td data-label="5日漲跌">${fmtPct(r.return_5d)}</td>
+          <td data-label="5日漲跌">${fmtPct(r.return_5d)}${r.return_10d != null ? `<div class="small">10日 ${fmtPct(r.return_10d)}</div>` : ""}</td>
           <td data-label="停損觸及">${fmtBool(r.stop_hit)}</td>
         </tr>
       `).join("");

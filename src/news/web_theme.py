@@ -8,6 +8,14 @@ from dataclasses import dataclass, field
 
 import requests
 
+from src.news.headline_classifier import classify_headlines
+from src.news.policy_signal import PolicySignal, classify_policy_headlines
+
+try:
+    import feedparser
+except ImportError:  # pragma: no cover - fallback for minimal local envs
+    feedparser = None
+
 log = logging.getLogger(__name__)
 
 
@@ -28,6 +36,7 @@ class ThemeSignal:
     scores: dict[str, int]
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
+    policy: PolicySignal | None = None
 
 
 # ──────────────────────────────────────────────────────────────
@@ -45,6 +54,15 @@ def _fetch_url(url: str, timeout: int = 15) -> str:
 
 
 def _rss_titles(text: str) -> list[str]:
+    if feedparser is not None:
+        feed = feedparser.parse(text)
+        titles = [
+            html.unescape(str(entry.get("title", "")).strip())
+            for entry in feed.entries
+            if entry.get("title")
+        ]
+        if titles:
+            return titles
     try:
         root = ET.fromstring(text)
     except ET.ParseError:
@@ -75,19 +93,11 @@ def _html_titles(text: str) -> list[str]:
 def _score_headlines(
     deduped: list[str],
     keyword_map: dict[str, list[str]],
+    stock_names: dict[str, str] | None = None,
 ) -> tuple[dict[str, int], dict[str, list[str]]]:
     """Return (scores, matched_headlines) for all themes."""
-    scores: dict[str, int] = {theme: 0 for theme in keyword_map}
-    matched: dict[str, list[str]] = {theme: [] for theme in keyword_map}
-    for headline in deduped:
-        lower = headline.lower()
-        for theme, keywords in keyword_map.items():
-            for keyword in keywords:
-                if keyword.lower() in lower:
-                    scores[theme] += 1
-                    matched[theme].append(headline)
-                    break
-    return scores, matched
+    result = classify_headlines(deduped, keyword_map, stock_names=stock_names)
+    return result.scores, result.matched_headlines
 
 
 def _build_momentum(raw: dict[str, dict]) -> dict[str, ThemeMomentum]:
@@ -155,7 +165,12 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
 
     # ── 2. Score themes ────────────────────────────────────────
     keyword_map = news_cfg.get("theme_keywords", {})
-    scores, matched = _score_headlines(deduped, keyword_map)
+    scores, matched = _score_headlines(
+        deduped,
+        keyword_map,
+        stock_names=config.get("stock_names", {}),
+    )
+    policy_signal = classify_policy_headlines(deduped)
 
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}
@@ -191,4 +206,5 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         scores=scores,
         matched_headlines={t: v[:5] for t, v in matched.items() if v},
         momentum=momentum,
+        policy=policy_signal,
     )

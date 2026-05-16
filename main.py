@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
@@ -17,7 +18,7 @@ from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
-from src.report.dashboard import build_dashboard_payload, write_dashboard, write_performance
+from src.report.dashboard import build_dashboard_payload, write_dashboard, write_performance, write_theme_history
 from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
@@ -43,6 +44,17 @@ def load_config(path: str) -> dict:
     return merge_theme_database(config, ROOT)
 
 
+def load_sector_map() -> dict:
+    path = ROOT / "config" / "sector_map.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        logging.warning("sector_map.json is invalid; overseas sector mapping disabled")
+        return {}
+
+
 def resolve_as_of(config: dict, cli_value: str | None) -> date:
     value = cli_value or config.get("runtime", {}).get("as_of_date")
     if value:
@@ -64,6 +76,7 @@ def main() -> int:
     )
     args = parse_args()
     config = load_config(args.config)
+    sector_map = load_sector_map()
 
     as_of = resolve_as_of(config, args.as_of_date)
     start_date = as_of - timedelta(days=int(config["data"]["lookback_days"]))
@@ -96,7 +109,7 @@ def main() -> int:
 
     overseas = None
     if config.get("overseas", {}).get("enabled", False):
-        overseas = analyze_overseas_sentiment(provider.overseas_bundle(start_date, as_of))
+        overseas = analyze_overseas_sentiment(provider.overseas_bundle(start_date, as_of), sector_map=sector_map)
     theme_signal = fetch_theme_signal(config, store=store, as_of=as_of)
 
     results = []
@@ -140,6 +153,7 @@ def main() -> int:
             overseas_adj = overseas.adjustment
             if stock_id in semiconductor_sensitive:
                 overseas_adj += overseas.semiconductor_adjustment
+            overseas_adj += (overseas.stock_adjustments or {}).get(stock_id, 0)
         opp_adj = 0
         opp_reasons: list[str] = []
         if config.get("opportunity", {}).get("enabled", False):
@@ -164,6 +178,7 @@ def main() -> int:
         )
         results.append(score)
         store.save_daily_score(score, as_of)
+        store.save_institutional_flow(stock_id, bundle.get("institutional"))
 
     source_status = provider.source_status()
     watch_reviews = store.watch_reviews(as_of)
@@ -201,10 +216,14 @@ def main() -> int:
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
+    write_theme_history(
+        store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30),
+        ROOT / "dashboard",
+    )
     telegram_message = report
     if args.telegram_summary:
         s = dashboard_payload["summary"]
-        top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"A", "B"}][:3]
+        top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A", "B"}][:3]
 
         def _entry_line(row: dict) -> str:
             action = row.get("action", "只觀察")
@@ -220,7 +239,7 @@ def main() -> int:
             f"  📌 {row['trigger_summary']}\n"
             f"  🎯 {_entry_line(row)}"
             for row in top_rows
-        ) or "▸ 今日暫無 A/B 級觀察"
+        ) or "▸ 今日暫無 S/A/B 級觀察"
         alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
         review_lines = format_watch_reviews(watch_reviews)
         review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
@@ -231,7 +250,7 @@ def main() -> int:
                 "",
                 f"🧭 風向：{dashboard_payload['overseas']['label']}",
                 f"📰 題材：{dashboard_payload['themes']['summary']}",
-                f"📊 掃描 <b>{s['scanned']}</b> 檔｜A級 <b>{s['a_grade']}</b>｜B級 <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
+                f"📊 掃描 <b>{s['scanned']}</b> 檔｜S+ <b>{s['s_plus_grade']}</b>｜S <b>{s['s_grade']}</b>｜A <b>{s['a_grade']}</b>｜B <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
                 "",
                 "🏆 <b>Top 觀察：</b>",
                 top_text,

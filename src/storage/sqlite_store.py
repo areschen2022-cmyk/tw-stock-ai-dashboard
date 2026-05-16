@@ -5,6 +5,7 @@ import sqlite3
 from datetime import date, timedelta
 from pathlib import Path
 
+from src.backtest.signal_lab import grade_return_summary
 from src.scoring.score_engine import StockScore
 from src.scoring.grade import grade_label
 
@@ -73,8 +74,10 @@ class SQLiteStore:
                 ("grade", "TEXT"),
                 ("price_3d", "REAL"),
                 ("price_5d", "REAL"),
+                ("price_10d", "REAL"),
                 ("return_3d", "REAL"),
                 ("return_5d", "REAL"),
+                ("return_10d", "REAL"),
                 ("stop_hit", "INTEGER"),
                 ("entry_triggered", "INTEGER"),
             ]:
@@ -105,6 +108,20 @@ class SQLiteStore:
                     matched_headlines_json TEXT NOT NULL DEFAULT '[]',
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (score_date, theme_key)
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS institutional_flow (
+                    trade_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    investor TEXT NOT NULL,
+                    buy_shares REAL NOT NULL DEFAULT 0,
+                    sell_shares REAL NOT NULL DEFAULT 0,
+                    net_shares REAL NOT NULL DEFAULT 0,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (trade_date, stock_id, investor)
                 )
                 """
             )
@@ -215,15 +232,17 @@ class SQLiteStore:
                     WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
                     ORDER BY as_of_date
                     """,
-                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=14)).isoformat()),
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=21)).isoformat()),
                 ).fetchall()
                 if not future_rows:
                     continue
                 prices = [float(row[1]) for row in future_rows]
                 price_3d = prices[2] if len(prices) >= 3 else None
                 price_5d = prices[4] if len(prices) >= 5 else None
+                price_10d = prices[9] if len(prices) >= 10 else None
                 return_3d = _pct_return(price_3d, entry_price)
                 return_5d = _pct_return(price_5d, entry_price)
+                return_10d = _pct_return(price_10d, entry_price)
                 stop_hit = None
                 if stop_price is not None:
                     stop_hit = int(any(price <= float(stop_price) for price in prices[:5]))
@@ -235,8 +254,10 @@ class SQLiteStore:
                     UPDATE watch_signals
                     SET price_3d = COALESCE(?, price_3d),
                         price_5d = COALESCE(?, price_5d),
+                        price_10d = COALESCE(?, price_10d),
                         return_3d = COALESCE(?, return_3d),
                         return_5d = COALESCE(?, return_5d),
+                        return_10d = COALESCE(?, return_10d),
                         stop_hit = COALESCE(?, stop_hit),
                         entry_triggered = COALESCE(?, entry_triggered)
                     WHERE signal_date = ? AND stock_id = ?
@@ -244,8 +265,10 @@ class SQLiteStore:
                     (
                         price_3d,
                         price_5d,
+                        price_10d,
                         return_3d,
                         return_5d,
+                        return_10d,
                         stop_hit,
                         entry_triggered,
                         signal_date,
@@ -291,7 +314,7 @@ class SQLiteStore:
             rows = conn.execute(
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, entry_price,
-                       entry_triggered, return_3d, return_5d, stop_hit, action, themes_json
+                       entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json
                 FROM watch_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -300,7 +323,7 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, stop_hit, action, themes_json = row
+            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json = row
             items.append(
                 {
                     "signal_date": signal_date,
@@ -312,6 +335,7 @@ class SQLiteStore:
                     "entry_triggered": _bool_or_none(entry_triggered),
                     "return_3d": return_3d,
                     "return_5d": return_5d,
+                    "return_10d": return_10d,
                     "stop_hit": _bool_or_none(stop_hit),
                     "action": action,
                     "themes": json.loads(themes_json or "[]"),
@@ -329,12 +353,14 @@ class SQLiteStore:
                 "completed": len(completed),
                 "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
                 "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+                "avg_return_10d": _avg([item["return_10d"] for item in items if item["return_10d"] is not None]),
                 "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
                 "a_win_rate_5d": _rate([item["return_5d"] > 0 for item in a_completed]),
             },
             "theme_stats": _theme_stats(items),
             "score_bands": _score_band_stats(items),
             "entry_analysis": _entry_analysis(items),
+            "signal_lab": grade_return_summary(items),
             "items": items,
         }
 
@@ -400,6 +426,33 @@ class SQLiteStore:
                         signal.get("volume_value"),
                         json.dumps(signal.get("themes", []), ensure_ascii=False),
                     ),
+                )
+
+    def save_institutional_flow(self, stock_id: str, institutional_rows) -> None:
+        """Persist daily institutional buy/sell rows for later continuity analysis."""
+        if institutional_rows is None or institutional_rows.empty:
+            return
+        required = {"date", "name"}
+        if not required.issubset(set(institutional_rows.columns)):
+            return
+        with self._connect() as conn:
+            for _, row in institutional_rows.iterrows():
+                trade_date = str(row.get("date", ""))[:10]
+                investor = str(row.get("name", "") or "unknown")
+                if not trade_date or not investor:
+                    continue
+                buy = _number(row.get("buy"))
+                sell = _number(row.get("sell"))
+                net = _number(row.get("net"))
+                if net == 0 and (buy or sell):
+                    net = buy - sell
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO institutional_flow
+                        (trade_date, stock_id, investor, buy_shares, sell_shares, net_shares)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (trade_date, stock_id, investor, buy, sell, net),
                 )
 
     def save_theme_signal_scores(
@@ -503,6 +556,9 @@ class SQLiteStore:
             for row in rows
         ]
 
+    def all_theme_history(self, theme_keys: list[str], days: int = 30) -> dict[str, list[dict]]:
+        return {theme_key: self.theme_history(theme_key, days=days) for theme_key in theme_keys}
+
     def latest_capital_flow(self, trade_date: date) -> list[dict]:
         with self._connect() as conn:
             rows = conn.execute(
@@ -534,6 +590,15 @@ def _pct_return(price: float | None, entry: float | None) -> float | None:
     if price is None or not entry:
         return None
     return (float(price) - float(entry)) / float(entry) * 100
+
+
+def _number(value) -> float:
+    try:
+        if value is None:
+            return 0.0
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _grade(score: int) -> str:
@@ -569,6 +634,7 @@ def _bucket_stats(label: str, items: list[dict]) -> dict:
         "completed": len(completed),
         "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
         "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+        "avg_return_10d": _avg([item["return_10d"] for item in items if item.get("return_10d") is not None]),
         "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
     }
 
