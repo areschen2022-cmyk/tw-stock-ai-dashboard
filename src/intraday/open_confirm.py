@@ -1,7 +1,7 @@
 """
 open_confirm.py — 9:10 intraday open-condition checker
 
-For each A/B-grade candidate saved by the morning screener, fetch the
+For each S+/S/A/B-grade candidate saved by the morning screener, fetch the
 first 9 minutes of minute data (09:00–09:08) from FinMind, then evaluate:
 
   1. Gap check  — open price <= entry_limit_price (not chasing)

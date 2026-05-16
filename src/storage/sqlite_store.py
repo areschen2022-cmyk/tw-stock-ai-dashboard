@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from src.scoring.score_engine import StockScore
+from src.scoring.grade import grade_label
 
 
 class SQLiteStore:
@@ -253,7 +254,7 @@ class SQLiteStore:
                 )
 
     def watch_candidates_today(self, as_of: date) -> list[dict]:
-        """Return today's watch candidates (grade A or B) for intraday confirmation."""
+        """Return today's watch candidates (grade S+/S/A/B) for intraday confirmation."""
         with self._connect() as conn:
             rows = conn.execute(
                 """
@@ -262,7 +263,7 @@ class SQLiteStore:
                        entry_condition, stop_reference
                 FROM watch_signals
                 WHERE signal_date = ?
-                  AND grade IN ('A', 'B')
+                  AND grade IN ('S+', 'S', 'A', 'B')
                 ORDER BY total_score DESC
                 """,
                 (as_of.isoformat(),),
@@ -536,13 +537,7 @@ def _pct_return(price: float | None, entry: float | None) -> float | None:
 
 
 def _grade(score: int) -> str:
-    if score >= 75:
-        return "A"
-    if score >= 65:
-        return "B"
-    if score >= 50:
-        return "C"
-    return "-"
+    return grade_label(score)
 
 
 def _bool_or_none(value: int | None) -> bool | None:
@@ -594,7 +589,8 @@ def _score_band_stats(items: list[dict]) -> list[dict]:
         ("50-64", 50, 64),
         ("65-74", 65, 74),
         ("75-84", 75, 84),
-        ("85-100", 85, 100),
+        ("85-94", 85, 94),
+        ("95-100", 95, 100),
     ]
     result = []
     for label, lower, upper in bands:

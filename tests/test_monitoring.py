@@ -103,8 +103,8 @@ def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     assert theme_stats["記憶體/HBM"]["signals"] == 1
     assert theme_stats["AI伺服器"]["signals"] == 1
     assert theme_stats["記憶體/HBM"]["win_rate_5d"] == 100
-    assert score_bands["85-100"]["signals"] == 1
-    assert score_bands["85-100"]["avg_return_5d"] == 10
+    assert score_bands["85-94"]["signals"] == 1
+    assert score_bands["85-94"]["avg_return_5d"] == 10
 
 
 def test_performance_summary_entry_analysis(tmp_path) -> None:

@@ -4,6 +4,7 @@ from datetime import date
 
 from src.indicators.overseas import OverseasSentiment
 from src.news.web_theme import ThemeSignal
+from src.scoring.grade import grade_description
 from src.scoring.score_engine import StockScore
 
 
@@ -22,11 +23,7 @@ def _status_text(label: str) -> str:
 
 
 def _grade(score: int) -> str:
-    if score >= 75:
-        return "A級｜優先觀察"
-    if score >= 65:
-        return "B級｜可觀察"
-    return "C級｜只追蹤"
+    return grade_description(score)
 
 
 def build_report(
@@ -75,7 +72,7 @@ def build_report(
         overseas_line,
         f"熱門題材：{theme_signal.summary if theme_signal else '未納入'}",
         f"掃描：{len(scores)} 檔｜進場觀察：{len(candidates)} 檔｜題材雷達：{len(opportunity_candidates)} 檔",
-        "分數：滿分100；75以上=A優先觀察，65以上=B可觀察。",
+        "分數：滿分100；95以上=S+，85以上=S，75以上=A，65以上=B。",
     ]
     if market_warning:
         lines.append(f"提醒：{market_warning}")

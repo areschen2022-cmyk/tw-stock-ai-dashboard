@@ -6,6 +6,7 @@ from pathlib import Path
 
 from src.indicators.overseas import OverseasSentiment
 from src.news.web_theme import ThemeSignal
+from src.scoring.grade import grade_label
 from src.scoring.score_engine import StockScore
 
 
@@ -19,13 +20,7 @@ def _status_text(label: str) -> str:
 
 
 def _grade(score: int) -> str:
-    if score >= 75:
-        return "A"
-    if score >= 65:
-        return "B"
-    if score >= 50:
-        return "C"
-    return "-"
+    return grade_label(score)
 
 
 def _first(reasons: list[str]) -> str:
@@ -110,6 +105,8 @@ def build_dashboard_payload(
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
+            "s_plus_grade": sum(1 for row in valid if row["grade"] == "S+"),
+            "s_grade": sum(1 for row in valid if row["grade"] == "S"),
             "a_grade": sum(1 for row in valid if row["grade"] == "A"),
             "b_grade": sum(1 for row in valid if row["grade"] == "B"),
             "data_insufficient": len(rows) - len(valid),
@@ -161,7 +158,7 @@ def _html() -> str:
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:var(--muted); font-size:14px; }
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
-    .metrics { display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+    .metrics { display:grid; grid-template-columns: repeat(7, minmax(110px,1fr)); gap:10px; margin-bottom:16px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
     .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
@@ -179,6 +176,8 @@ def _html() -> str:
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
     .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
+    .grade-S\+ { color:white; background:#7c2d12; }
+    .grade-S { color:white; background:#b42318; }
     .grade-A { color:white; background:var(--good); }
     .grade-B { color:#3b2f00; background:#f6d365; }
     .grade-C { color:#344054; background:#e4e7ec; }
@@ -237,7 +236,7 @@ def _html() -> str:
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
-      <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
+      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option>-">資料不足</option></select>
     </div>
     <table>
       <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
@@ -272,7 +271,13 @@ def _html() -> str:
       const g = document.querySelector("#grade").value;
       document.querySelector("#subtitle").textContent = `${data.as_of}｜僅供研究追蹤，不是投資建議`;
       document.querySelector("#metrics").innerHTML = [
-        ["掃描", data.summary.scanned], ["有效", data.summary.valid], ["A級", data.summary.a_grade], ["B級", data.summary.b_grade], ["資料不足", data.summary.data_insufficient]
+        ["掃描", data.summary.scanned],
+        ["有效", data.summary.valid],
+        ["S+級", data.summary.s_plus_grade || 0],
+        ["S級", data.summary.s_grade || 0],
+        ["A級", data.summary.a_grade],
+        ["B級", data.summary.b_grade],
+        ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
@@ -480,7 +485,7 @@ def _performance_html() -> str:
     </section>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
-      <select id="grade"><option value="">全部級別</option><option>A</option><option>B</option><option>C</option></select>
+      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
       <select id="status"><option value="">全部狀態</option><option>已完成</option><option>進行中</option></select>
     </div>
     <table>
