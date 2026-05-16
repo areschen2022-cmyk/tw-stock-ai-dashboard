@@ -27,3 +27,13 @@ def test_policy_signal_reports_theme_boosts_without_stock_scoring() -> None:
     assert signal.theme_boosts["power_grid"] == 1
     assert signal.theme_boosts["financial_revaluation"] == 1
     assert "power_grid" in signal.summary
+
+
+def test_passive_component_headline_matches_theme_keywords() -> None:
+    result = classify_headlines(
+        ["被動元件強勢撐盤，國巨、立隆電、金山電創高"],
+        {"passive_components": ["被動元件", "國巨", "立隆電", "金山電"]},
+        stock_names={"2327": "國巨", "2472": "立隆電", "8042": "金山電"},
+    )
+
+    assert result.scores["passive_components"] == 3
