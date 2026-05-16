@@ -2,23 +2,32 @@ name: 台股 AI 每日早報
 
 on:
   schedule:
-    # 00:20 UTC = 08:20 台灣時間（UTC+8）  — 早報掃描
+    # 00:00 UTC = 08:00 台灣時間：更新網站資料與 GitHub Pages 檔案，不發 Telegram。
+    - cron: "0 0 * * 1-5"
+    # 00:20 UTC = 08:20 台灣時間：只發 Telegram 早報。
     - cron: "20 0 * * 1-5"
-    # 01:10 UTC = 09:10 台灣時間（UTC+8）  — 盤中確認
-    - cron: "10 1 * * 1-5"
-  workflow_dispatch:   # 允許手動在 GitHub 網頁上點「Run workflow」
+  workflow_dispatch:
+    inputs:
+      send_telegram:
+        description: "手動執行時是否也發送 Telegram"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 permissions:
-  contents: write   # 允許 workflow 把 dashboard 推回 repo
+  contents: write
 
 jobs:
-  # ── Job 1：08:20 早報掃描 ─────────────────────────────────────────────
-  morning-screener:
+  dashboard-update:
+    name: 08:00 update dashboard
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.schedule == '20 0 * * 1-5'
+      github.event.schedule == '0 0 * * 1-5'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repo
@@ -33,30 +42,41 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run screener
+      - name: Generate dashboard without Telegram
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          python main.py --send-telegram --telegram-summary
+        run: python main.py --dry-run --telegram-summary
 
-      - name: Commit & push dashboard + sqlite
+      - name: Commit and push dashboard
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dashboard/
           git add data/tw_stock_ai.sqlite3 || true
           git diff --cached --quiet || git commit -m "auto: dashboard $(date -u +'%Y-%m-%d')"
           git push
 
-  # ── Job 2：09:10 盤中確認 ─────────────────────────────────────────────
-  intraday-confirm:
+      - name: Notify failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_ID}" \
+              -d text="台股 AI 08:00 網站更新失敗，請檢查 GitHub Actions。"
+          fi
+
+  morning-telegram:
+    name: 08:20 send Telegram
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.schedule == '10 1 * * 1-5'
+      github.event.schedule == '20 0 * * 1-5' ||
+      (github.event_name == 'workflow_dispatch' && inputs.send_telegram == 'true')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repo
@@ -71,10 +91,21 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run intraday confirmation
+      - name: Send Telegram morning report
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py --send-telegram --telegram-summary
+
+      - name: Notify failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python scripts/intraday_confirm.py --send-telegram --check-time "09:10"
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_ID}" \
+              -d text="台股 AI 08:20 Telegram 早報失敗，請檢查 GitHub Actions。"
+          fi
