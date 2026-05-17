@@ -37,3 +37,14 @@ def test_passive_component_headline_matches_theme_keywords() -> None:
     )
 
     assert result.scores["passive_components"] == 3
+
+
+def test_satellite_headline_matches_spacex_theme_keywords() -> None:
+    result = classify_headlines(
+        ["SpaceX 傳 6/12 那斯達克上市，Starlink 低軌衛星供應鏈昇達科、華通受惠"],
+        {"low_orbit_satellite": ["SpaceX", "Starlink", "低軌衛星", "昇達科", "華通"]},
+        stock_names={"3491": "昇達科", "2313": "華通"},
+    )
+
+    assert result.scores["low_orbit_satellite"] >= 3
+    assert result.matched_headlines["low_orbit_satellite"]
