@@ -19,6 +19,7 @@ from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import build_dashboard_payload, write_dashboard, write_performance, write_theme_history
+from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
@@ -182,6 +183,14 @@ def main() -> int:
 
     source_status = provider.source_status()
     watch_reviews = store.watch_reviews(as_of)
+    exit_risks = build_exit_risks(
+        results,
+        bundles,
+        as_of,
+        store,
+        config.get("stock_names", {}),
+        config,
+    )
     alerts = detect_alerts(
         results,
         as_of,
@@ -213,6 +222,7 @@ def main() -> int:
         source_status,
         alerts,
         watch_reviews,
+        exit_risks,
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
@@ -243,7 +253,12 @@ def main() -> int:
         alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
         review_lines = format_watch_reviews(watch_reviews)
         review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
-        dashboard_url = config.get('runtime', {}).get('dashboard_url') or (ROOT / 'dashboard' / 'index.html')
+        exit_text = "\n".join(
+            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:2])}"
+            for item in exit_risks[:3]
+        ) or "▸ 目前無紅黃警戒"
+        default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
+        dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
             [
                 f"🇹🇼 <b>台股 AI 早報</b>｜{as_of.isoformat()}",
@@ -257,6 +272,9 @@ def main() -> int:
                 "",
                 "🚨 <b>異常提醒：</b>",
                 alert_text,
+                "",
+                "🛡 <b>危險名單：</b>",
+                exit_text,
                 "",
                 "👁 <b>觀察追蹤：</b>",
                 review_text,

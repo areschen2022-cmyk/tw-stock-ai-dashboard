@@ -1,0 +1,73 @@
+from __future__ import annotations
+
+from datetime import date, timedelta
+
+import pandas as pd
+
+from src.report.exit_risk import build_exit_risks
+from src.scoring.score_engine import StockScore
+from src.storage.sqlite_store import SQLiteStore
+
+
+def test_build_exit_risks_flags_foreign_selling_and_price_break(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    as_of = date(2026, 5, 15)
+    score = StockScore(
+        stock_id="2330",
+        total_score=58,
+        label="WAIT",
+        price=90.0,
+        technical_score=0,
+        chip_score=0,
+        fundamental_score=0,
+        risk_score=0,
+        market_adjustment=0,
+    )
+    old_score = StockScore(
+        stock_id="2330",
+        total_score=78,
+        label="BUY_WATCH",
+        price=105.0,
+        technical_score=0,
+        chip_score=0,
+        fundamental_score=0,
+        risk_score=0,
+        market_adjustment=0,
+    )
+    store.save_daily_score(old_score, as_of - timedelta(days=1))
+
+    prices = pd.DataFrame(
+        {
+            "date": [as_of - timedelta(days=i) for i in range(24, -1, -1)],
+            "close": [110.0] * 19 + [105.0, 101.0, 98.0, 95.0, 92.0, 90.0],
+            "volume": [1000.0] * 24 + [2200.0],
+        }
+    )
+    institutional = pd.DataFrame(
+        {
+            "date": [as_of - timedelta(days=2), as_of - timedelta(days=1), as_of],
+            "name": ["Foreign_Investor", "Foreign_Investor", "Foreign_Investor"],
+            "buy": [100.0, 100.0, 100.0],
+            "sell": [300.0, 300.0, 300.0],
+        }
+    )
+    margin = pd.DataFrame(
+        {
+            "date": [as_of - timedelta(days=3), as_of - timedelta(days=2), as_of - timedelta(days=1), as_of],
+            "MarginPurchaseTodayBalance": [1000.0, 1050.0, 1090.0, 1120.0],
+        }
+    )
+
+    risks = build_exit_risks(
+        [score],
+        {"2330": {"prices": prices, "institutional": institutional, "margin": margin}},
+        as_of,
+        store,
+        {"2330": "台積電"},
+        {"exit_risk": {"enabled": True}},
+    )
+
+    assert risks
+    assert risks[0]["level"] == "紅色警戒"
+    assert any("外資" in reason for reason in risks[0]["reasons"])
+    assert any("跌破" in reason for reason in risks[0]["reasons"])

@@ -38,6 +38,7 @@ def build_dashboard_payload(
     source_status: dict | None = None,
     alerts: list[str] | None = None,
     watch_reviews: list[dict] | None = None,
+    exit_risks: list[dict] | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
     rows = []
@@ -112,6 +113,7 @@ def build_dashboard_payload(
         "source_status": source_status or {"label": "未知"},
         "alerts": alerts or [],
         "watch_reviews": watch_reviews or [],
+        "exit_risks": exit_risks or [],
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -204,6 +206,7 @@ def _html() -> str:
     a.stock-link { color:#0b4a8b; text-decoration:none; }
     a.stock-link:hover { text-decoration:underline; }
     .bad { color:var(--bad); }
+    .warn { color:var(--warn); }
     .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:#98a2b3; }
     .status-ok { background:var(--good); }
     .status-warn { background:var(--warn); }
@@ -249,6 +252,7 @@ def _html() -> str:
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
+      <section><h2>危險名單</h2><div id="exitRisks"></div></section>
       <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
     </div>
     <div class="toolbar">
@@ -362,6 +366,12 @@ def _html() -> str:
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
         : `<div class="line">目前無重大異常</div>`;
+      document.querySelector("#exitRisks").innerHTML = (data.exit_risks || []).length
+        ? data.exit_risks.slice(0,5).map(x => {
+            const cls = x.level === "紅色警戒" ? "bad" : "warn";
+            return `<div class="line ${cls}">${esc(x.stock_id)} ${esc(x.name)}｜${esc(x.level)}｜${esc((x.reasons || []).slice(0,2).join("、"))}<div class="small">${esc(x.action || "")}</div></div>`;
+          }).join("")
+        : `<div class="line">目前無紅黃警戒</div>`;
       document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
         ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
         : `<div class="line">尚無可追蹤觀察名單</div>`;
