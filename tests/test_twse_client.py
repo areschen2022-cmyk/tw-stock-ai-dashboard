@@ -73,3 +73,5 @@ def test_twse_source_status_labels_are_readable(tmp_path) -> None:
     assert client.source_status()["label"] == "限流"
     client.status_counts["error"] = 1
     assert client.source_status()["label"] == "錯誤"
+    client.status_counts["fallback"] = 1
+    assert client.source_status()["label"] == "部分限流"

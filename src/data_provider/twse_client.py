@@ -52,8 +52,11 @@ class TwseClient:
         quota = self.status_counts["quota"] + int(fallback_status.get("quota", 0))
         api = self.status_counts["api"] + int(fallback_status.get("api", 0))
         cache = self.status_counts["cache"] + int(fallback_status.get("cache", 0))
-        if error:
+        recovered = api + cache + int(self.status_counts.get("fallback", 0))
+        if error and recovered == 0:
             label = "錯誤"
+        elif error:
+            label = "部分限流"
         elif quota and api == 0 and cache == 0:
             label = "限流"
         elif quota:

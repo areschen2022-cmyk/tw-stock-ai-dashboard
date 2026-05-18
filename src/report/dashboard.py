@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import json
-from datetime import date
+import os
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from src.indicators.overseas import OverseasSentiment
 from src.news.web_theme import ThemeSignal
 from src.scoring.grade import grade_label
 from src.scoring.score_engine import StockScore
+
+TAIPEI = ZoneInfo("Asia/Taipei")
 
 
 def _status_text(label: str) -> str:
@@ -25,6 +29,49 @@ def _grade(score: int) -> str:
 
 def _first(reasons: list[str]) -> str:
     return reasons[0] if reasons else "無明顯訊號"
+
+
+def _decision_reason(item: StockScore) -> str:
+    parts = [item.trigger_summary]
+    for key in ("technical", "chip", "fundamental", "risk", "opportunity"):
+        reason = _first(item.reasons.get(key, []))
+        if reason != "無明顯訊號" and reason not in parts:
+            parts.append(reason)
+        if len(parts) >= 4:
+            break
+    return "；".join(parts)
+
+
+def _build_health_status(
+    as_of: date,
+    source_status: dict | None,
+    theme_signal: ThemeSignal | None,
+) -> dict:
+    generated_at = datetime.now(TAIPEI)
+    provider_label = str((source_status or {}).get("label", "未知"))
+    news_sources = theme_signal.source_count if theme_signal else 0
+    news_failed = theme_signal.failed_count if theme_signal else 0
+
+    if provider_label in {"錯誤", "限流"} or news_sources == 0:
+        label = "異常"
+    elif provider_label == "部分限流" or news_failed > 0:
+        label = "部分延遲"
+    else:
+        label = "正常"
+
+    return {
+        "label": label,
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "generated_date": generated_at.date().isoformat(),
+        "data_date": as_of.isoformat(),
+        "website_schedule": "08:00",
+        "telegram_schedule": "08:20",
+        "provider_label": provider_label,
+        "news_sources": news_sources,
+        "news_failed": news_failed,
+        "github_run_id": os.getenv("GITHUB_RUN_ID", ""),
+        "github_event": os.getenv("GITHUB_EVENT_NAME", "local"),
+    }
 
 
 def build_dashboard_payload(
@@ -69,6 +116,7 @@ def build_dashboard_payload(
                 "warnings": item.warnings,
                 "trigger_tags": item.trigger_tags,
                 "trigger_summary": item.trigger_summary,
+                "decision_reason": _decision_reason(item),
             }
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
@@ -111,6 +159,7 @@ def build_dashboard_payload(
             },
         },
         "source_status": source_status or {"label": "未知"},
+        "health": _build_health_status(as_of, source_status, theme_signal),
         "alerts": alerts or [],
         "watch_reviews": watch_reviews or [],
         "exit_risks": exit_risks or [],
@@ -207,6 +256,7 @@ def _html() -> str:
     a.stock-link:hover { text-decoration:underline; }
     .bad { color:var(--bad); }
     .warn { color:var(--warn); }
+    .good { color:var(--good); }
     .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:#98a2b3; }
     .status-ok { background:var(--good); }
     .status-warn { background:var(--warn); }
@@ -250,6 +300,7 @@ def _html() -> str:
     <div class="metrics" id="metrics"></div>
     <div class="bands">
       <section><h2>市場風向</h2><div id="market"></div></section>
+      <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
       <section><h2>危險名單</h2><div id="exitRisks"></div></section>
@@ -312,6 +363,14 @@ def _html() -> str:
         ${(data.overseas.sector_impacts || []).slice(0,2).map(x => `<div class="line">映射：${esc(x.symbol)} ${Number(x.change_pct).toFixed(2)}% → ${esc(x.sector)}｜${esc(x.stocks)}</div>`).join("")}
         <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
+      const health = data.health || {};
+      const healthCls = health.label === "正常" ? "good" : (health.label === "部分延遲" ? "warn" : "bad");
+      document.querySelector("#health").innerHTML = `
+        <div class="line ${healthCls}"><span class="${sourceClass(health.label === "正常" ? "正常" : health.label === "部分延遲" ? "部分限流" : "錯誤")}"></span>系統：${esc(health.label || "未知")}</div>
+        <div class="line">本次產生：${esc((health.generated_at || "").replace("T", " "))}</div>
+        <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "08:00")}｜Telegram ${esc(health.telegram_schedule || "08:20")}</div>
+        <div class="line">新聞來源：成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
+        <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";
@@ -391,6 +450,7 @@ def _html() -> str:
             <div class="small">籌碼：${esc(r.chip || "無明顯訊號")}</div>
             <div class="small">基本：${esc(r.fundamental || "無明顯訊號")}</div>
             <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
+            <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
           </td>
           <td data-label="操作"><b>${esc(r.action || "只觀察")}</b></td>
           <td data-label="進場/停損">

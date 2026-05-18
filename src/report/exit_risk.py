@@ -69,6 +69,14 @@ def build_exit_risks(
         points += margin_points
         reasons.extend(margin_reasons)
 
+        divergence_points, divergence_reasons = _chip_divergence_risk(
+            sell_reasons,
+            margin_reasons,
+            price_reasons,
+        )
+        points += divergence_points
+        reasons = [*divergence_reasons, *reasons]
+
         if previous:
             prev_score = int(previous.get("total_score") or 0)
             drop = prev_score - score.total_score
@@ -160,13 +168,21 @@ def _price_break_risk(prices: pd.DataFrame, price_drop_5d_pct: float) -> tuple[i
     reasons: list[str] = []
 
     ma5 = close.rolling(5).mean().iloc[-1]
+    ma10 = close.rolling(10).mean().iloc[-1]
     ma20 = close.rolling(20).mean().iloc[-1]
     if latest < ma5:
         points += 1
         reasons.append("跌破 MA5")
+    if latest < ma10:
+        points += 1
+        reasons.append("跌破 MA10")
     if latest < ma20:
         points += 2
         reasons.append("跌破 MA20")
+
+    if len(close) >= 4 and latest <= close.iloc[-4:-1].min():
+        points += 1
+        reasons.append("跌破近 3 日低點")
 
     if len(close) >= 6:
         ret_5d = (latest / close.iloc[-6] - 1) * 100
@@ -181,6 +197,25 @@ def _price_break_risk(prices: pd.DataFrame, price_drop_5d_pct: float) -> tuple[i
             reasons.append("放量下跌")
 
     return points, reasons
+
+
+def _chip_divergence_risk(
+    sell_reasons: list[str],
+    margin_reasons: list[str],
+    price_reasons: list[str],
+) -> tuple[int, list[str]]:
+    has_institutional_sell = any("外資" in reason or "投信" in reason for reason in sell_reasons)
+    has_margin_rise = any("融資增" in reason for reason in margin_reasons)
+    has_price_weakness = any(
+        keyword in reason
+        for reason in price_reasons
+        for keyword in ("跌破", "下跌", "跌幅")
+    )
+    if has_institutional_sell and has_margin_rise and has_price_weakness:
+        return 3, ["法人賣、融資增、股價轉弱"]
+    if has_institutional_sell and has_margin_rise:
+        return 2, ["法人賣、融資增，籌碼背離"]
+    return 0, []
 
 
 def _margin_retail_risk(

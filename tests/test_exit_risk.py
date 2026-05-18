@@ -71,3 +71,5 @@ def test_build_exit_risks_flags_foreign_selling_and_price_break(tmp_path) -> Non
     assert risks[0]["level"] == "紅色警戒"
     assert any("外資" in reason for reason in risks[0]["reasons"])
     assert any("跌破" in reason for reason in risks[0]["reasons"])
+    assert any("融資增" in reason for reason in risks[0]["reasons"])
+    assert any("法人賣" in reason for reason in risks[0]["reasons"])
