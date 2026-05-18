@@ -70,3 +70,11 @@ def test_real_theme_database_includes_satellite_and_passive_components() -> None
     assert merged["theme_pools"]["passive_components"]["stocks"]["8042"] == "金山電"
     assert "國巨" in merged["web_news"]["theme_keywords"]["passive_components"]
     assert "立隆電" in merged["web_news"]["theme_keywords"]["passive_components"]
+
+    assert merged["theme_pools"]["network_optical_communication"]["name"] == "網通光通訊"
+    assert merged["theme_pools"]["network_optical_communication"]["stocks"]["2345"] == "智邦"
+    assert "網通光通訊" in merged["web_news"]["theme_keywords"]["network_optical_communication"]
+
+    assert merged["theme_pools"]["defense_policy"]["name"] == "防禦與政策"
+    assert merged["theme_pools"]["defense_policy"]["stocks"]["2634"] == "漢翔"
+    assert "政策受惠" in merged["web_news"]["theme_keywords"]["defense_policy"]

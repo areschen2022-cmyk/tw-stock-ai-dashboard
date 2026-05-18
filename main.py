@@ -4,8 +4,9 @@ import argparse
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 
@@ -27,6 +28,7 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 ROOT = Path(__file__).resolve().parent
+TAIPEI = ZoneInfo("Asia/Taipei")
 
 
 def parse_args() -> argparse.Namespace:
@@ -56,11 +58,25 @@ def load_sector_map() -> dict:
         return {}
 
 
+def _previous_weekday(value: date) -> date:
+    while value.weekday() >= 5:
+        value -= timedelta(days=1)
+    return value
+
+
+def default_as_of(now: datetime | None = None) -> date:
+    local_now = now.astimezone(TAIPEI) if now else datetime.now(TAIPEI)
+    candidate = local_now.date()
+    if local_now.weekday() >= 5 or local_now.time() < time(14, 30):
+        candidate -= timedelta(days=1)
+    return _previous_weekday(candidate)
+
+
 def resolve_as_of(config: dict, cli_value: str | None) -> date:
     value = cli_value or config.get("runtime", {}).get("as_of_date")
     if value:
         return datetime.strptime(value, "%Y-%m-%d").date()
-    return date.today()
+    return default_as_of()
 
 
 def main() -> int:

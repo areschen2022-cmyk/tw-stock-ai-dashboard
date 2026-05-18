@@ -2,10 +2,11 @@ name: 台股 AI 每日早報
 
 on:
   schedule:
-    # 00:00 UTC = 08:00 台灣時間：更新網站資料與 GitHub Pages 檔案，不發 Telegram。
-    - cron: "0 0 * * 1-5"
-    # 00:20 UTC = 08:20 台灣時間：只發 Telegram 早報。
-    - cron: "20 0 * * 1-5"
+    # 00:08 UTC = 08:08 台灣時間：更新網站資料與 GitHub Pages 檔案，不發 Telegram。
+    # 避開 GitHub Actions 整點高峰，降低 schedule 被延遲或丟棄的機率。
+    - cron: "8 0 * * 1-5"
+    # 00:28 UTC = 08:28 台灣時間：只發 Telegram 早報。
+    - cron: "28 0 * * 1-5"
   workflow_dispatch:
     inputs:
       send_telegram:
@@ -22,10 +23,10 @@ permissions:
 
 jobs:
   dashboard-update:
-    name: 08:00 update dashboard
+    name: 08:08 update dashboard
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.schedule == '0 0 * * 1-5'
+      github.event.schedule == '8 0 * * 1-5'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -51,17 +52,24 @@ jobs:
 
       - name: Commit and push dashboard
         run: |
+          mkdir -p docs
+          cp -f dashboard/index.html docs/index.html
+          cp -f dashboard/dashboard_data.json docs/dashboard_data.json
+          cp -f dashboard/performance.html docs/performance.html
+          cp -f dashboard/performance_data.json docs/performance_data.json
+          cp -f dashboard/theme_history.json docs/theme_history.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dashboard/
+          git add docs/
           git add data/tw_stock_ai.sqlite3 || true
           git diff --cached --quiet || git commit -m "auto: dashboard $(date -u +'%Y-%m-%d')"
           git push
 
   morning-telegram:
-    name: 08:20 send Telegram
+    name: 08:28 send Telegram
     if: >-
-      github.event.schedule == '20 0 * * 1-5' ||
+      github.event.schedule == '28 0 * * 1-5' ||
       (github.event_name == 'workflow_dispatch' && inputs.send_telegram == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
