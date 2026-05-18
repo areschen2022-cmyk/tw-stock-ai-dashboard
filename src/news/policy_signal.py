@@ -11,6 +11,14 @@ POLICY_KEYWORDS: dict[str, list[str]] = {
     "financial_revaluation": ["降息", "併購", "金融整併", "壽險"],
 }
 
+POLICY_THEME_NAMES: dict[str, str] = {
+    "power_grid": "能源與重電",
+    "defense_ai": "防禦與政策",
+    "advanced_packaging": "先進封裝/CoWoS",
+    "silicon_photonics": "矽光子/CPO",
+    "financial_revaluation": "金融評價修復",
+}
+
 
 @dataclass
 class PolicySignal:
@@ -41,7 +49,7 @@ def classify_policy_headlines(
         reverse=True,
     )
     if active:
-        summary = "、".join(f"{theme}:{score}" for theme, score in active[:4])
+        summary = "、".join(f"{POLICY_THEME_NAMES.get(theme, theme)}:{score}" for theme, score in active[:4])
     else:
         summary = "未偵測到明顯政策訊號"
     return PolicySignal(

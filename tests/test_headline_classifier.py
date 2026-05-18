@@ -28,7 +28,8 @@ def test_policy_signal_reports_theme_boosts_without_stock_scoring() -> None:
 
     assert signal.theme_boosts["power_grid"] == 1
     assert signal.theme_boosts["financial_revaluation"] == 1
-    assert "power_grid" in signal.summary
+    assert "能源與重電" in signal.summary
+    assert "金融評價修復" in signal.summary
 
 
 def test_passive_component_headline_matches_theme_keywords() -> None:

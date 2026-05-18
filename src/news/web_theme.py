@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 import requests
 
+from src.news.cnyes_api import fetch_cnyes_news
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import PolicySignal, classify_policy_headlines
 
@@ -154,8 +155,32 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
 
     # ── 1. Collect headlines ───────────────────────────────────
     headlines: list[str] = []
+    scoring_headlines: list[str] = []
     source_count = 0
     failed_count = 0
+
+    cnyes_cfg = news_cfg.get("cnyes_api", {})
+    if cnyes_cfg.get("enabled", False):
+        try:
+            articles = fetch_cnyes_news(
+                days_back=int(cnyes_cfg.get("days_back", 1)),
+                limit=int(cnyes_cfg.get("limit", 50)),
+                max_pages=int(cnyes_cfg.get("max_pages", 3)),
+                timeout=int(cnyes_cfg.get("timeout", 10)),
+            )
+        except (requests.RequestException, ValueError) as exc:
+            log.warning("fetch_theme_signal: failed cnyes_api — %s", exc)
+            failed_count += 1
+        else:
+            if articles:
+                source_count += 1
+                stock_names = config.get("stock_names", {})
+                headlines.extend(article.title for article in articles[:20])
+                scoring_headlines.extend(article.scoring_text(stock_names) for article in articles)
+            else:
+                log.warning("fetch_theme_signal: no usable titles from cnyes_api")
+                failed_count += 1
+
     for url in news_cfg.get("urls", []):
         try:
             text = _fetch_url(url)
@@ -172,17 +197,19 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
             log.warning("fetch_theme_signal: no usable titles from %s", url)
             failed_count += 1
         headlines.extend(titles[:15])
+        scoring_headlines.extend(titles[:15])
 
     deduped = list(dict.fromkeys(headlines))
+    deduped_scoring = list(dict.fromkeys(scoring_headlines or headlines))
 
     # ── 2. Score themes ────────────────────────────────────────
     keyword_map = news_cfg.get("theme_keywords", {})
     scores, matched = _score_headlines(
-        deduped,
+        deduped_scoring,
         keyword_map,
         stock_names=config.get("stock_names", {}),
     )
-    policy_signal = classify_policy_headlines(deduped)
+    policy_signal = classify_policy_headlines(deduped_scoring)
 
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}

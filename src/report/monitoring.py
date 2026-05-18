@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from src.indicators.overseas import OverseasSentiment
+from src.news.policy_signal import POLICY_THEME_NAMES
 from src.news.web_theme import ThemeSignal
 from src.scoring.score_engine import StockScore
 from src.storage.sqlite_store import SQLiteStore
@@ -15,6 +16,7 @@ def detect_alerts(
     source_status: dict,
     overseas: OverseasSentiment | None,
     theme_signal: ThemeSignal | None,
+    theme_names: dict[str, str] | None = None,
     score_jump_threshold: int = 20,
     max_items: int = 5,
 ) -> list[str]:
@@ -38,7 +40,8 @@ def detect_alerts(
         # Momentum-based alert: flag any non-top theme that suddenly spikes
         for t_key, mom in (theme_signal.momentum or {}).items():
             if mom.trend == "急升🔥" and t_key != top_theme:
-                alerts.append(f"題材急升 {t_key}：今日{mom.today}則（3日均{mom.avg_3d:.1f}則）")
+                theme_name = (theme_names or {}).get(t_key, POLICY_THEME_NAMES.get(t_key, t_key))
+                alerts.append(f"題材急升 {theme_name}：今日{mom.today}則（3日均{mom.avg_3d:.1f}則）")
 
     ranked_scores = sorted(scores, key=lambda score: score.total_score, reverse=True)
     for score in ranked_scores:

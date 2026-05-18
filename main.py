@@ -216,6 +216,7 @@ def main() -> int:
         source_status,
         overseas,
         theme_signal,
+        {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
     )
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
     store.update_forward_returns(as_of)
