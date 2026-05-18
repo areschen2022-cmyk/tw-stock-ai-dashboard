@@ -28,6 +28,9 @@ def detect_alerts(
     if overseas and overseas.label == "偏空":
         alerts.append(f"海外偏空：{overseas.summary}")
 
+    if theme_signal and theme_signal.source_count == 0:
+        alerts.append("新聞題材資料源異常：全部來源未取得可用標題")
+
     if theme_signal and theme_signal.scores:
         top_theme, top_count = max(theme_signal.scores.items(), key=lambda item: item[1])
         if top_count >= 3:

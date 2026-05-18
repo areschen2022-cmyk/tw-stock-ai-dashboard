@@ -250,9 +250,9 @@ web_news:
     - "https://tw.stock.yahoo.com/rss?category=news"
     - "https://tw.stock.yahoo.com/rss?category=tw-market"
     - "https://tw.stock.yahoo.com/rss?category=intl-markets"
-    - "https://www.wantgoo.com/"
-    - "https://www.sinotrade.com.tw/richclub/hotstock"
-    - "https://www.cmoney.tw/forum/concept"
+    # WantGoo /stock, Sinotrade hotstock, and CMoney concept are useful manual references,
+    # but they are JS/Cloudflare-rendered pages and are intentionally excluded from
+    # automated requests to avoid noisy or blocked headlines.
     - "https://m.cnyes.com/news/cat/tw_stock_news?type=rss"
     - "https://news.cnyes.com/news/cat/tw_stock_news"
     - "https://news.cnyes.com/news/cat/tw_quo"

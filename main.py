@@ -79,6 +79,12 @@ def resolve_as_of(config: dict, cli_value: str | None) -> date:
     return default_as_of()
 
 
+def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
+    if not active_theme_keys:
+        return {}
+    return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
+
+
 def main() -> int:
     load_dotenv(ROOT / ".env")
     (ROOT / "logs").mkdir(exist_ok=True)
@@ -136,11 +142,7 @@ def main() -> int:
     theme_stock_meta = config.get("theme_stock_meta", {})
     theme_pools = config.get("theme_pools", {})
     active_theme_keys = set(theme_signal.active_themes)
-    selected_theme_pools = {
-        key: value
-        for key, value in theme_pools.items()
-        if not active_theme_keys or key in active_theme_keys
-    }
+    selected_theme_pools = select_theme_pools(theme_pools, active_theme_keys)
     for theme_key, theme_cfg in selected_theme_pools.items():
         theme_name = theme_cfg.get("name", "題材")
         for stock_id in theme_cfg.get("stocks", {}):

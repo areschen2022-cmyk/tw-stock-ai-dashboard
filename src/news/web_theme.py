@@ -37,6 +37,8 @@ class ThemeSignal:
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
     policy: PolicySignal | None = None
+    source_count: int = 0
+    failed_count: int = 0
 
 
 # ──────────────────────────────────────────────────────────────
@@ -50,6 +52,8 @@ def _fetch_url(url: str, timeout: int = 15) -> str:
         headers={"User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0)"},
     )
     response.raise_for_status()
+    if "Just a moment..." in response.text and "challenges.cloudflare.com" in response.text:
+        raise requests.RequestException(f"Cloudflare challenge page returned for {url}")
     return response.text
 
 
@@ -150,15 +154,23 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
 
     # ── 1. Collect headlines ───────────────────────────────────
     headlines: list[str] = []
+    source_count = 0
+    failed_count = 0
     for url in news_cfg.get("urls", []):
         try:
             text = _fetch_url(url)
         except requests.RequestException as exc:
             log.warning("fetch_theme_signal: failed %s — %s", url, exc)
+            failed_count += 1
             continue
         titles = _rss_titles(text)
         if not titles:
             titles = _html_titles(text)
+        if titles:
+            source_count += 1
+        else:
+            log.warning("fetch_theme_signal: no usable titles from %s", url)
+            failed_count += 1
         headlines.extend(titles[:15])
 
     deduped = list(dict.fromkeys(headlines))
@@ -207,4 +219,6 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         matched_headlines={t: v[:5] for t, v in matched.items() if v},
         momentum=momentum,
         policy=policy_signal,
+        source_count=source_count,
+        failed_count=failed_count,
     )

@@ -1,5 +1,7 @@
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import classify_policy_headlines
+from src.news.web_theme import fetch_theme_signal
+from src.report.monitoring import detect_alerts
 
 
 def test_headline_classifier_filters_negative_context_and_boosts_stock_relevance() -> None:
@@ -48,3 +50,48 @@ def test_satellite_headline_matches_spacex_theme_keywords() -> None:
 
     assert result.scores["low_orbit_satellite"] >= 3
     assert result.matched_headlines["low_orbit_satellite"]
+
+
+def test_cloudflare_challenge_is_not_treated_as_news(monkeypatch, tmp_path) -> None:
+    class Response:
+        text = "<html><title>Just a moment...</title><script src='https://challenges.cloudflare.com/x'></script></html>"
+
+        def raise_for_status(self) -> None:
+            return None
+
+    monkeypatch.setattr("src.news.web_theme.requests.get", lambda *args, **kwargs: Response())
+
+    signal = fetch_theme_signal(
+        {
+            "web_news": {
+                "enabled": True,
+                "urls": ["https://www.wantgoo.com/stock"],
+                "theme_keywords": {"memory": ["記憶體"]},
+            },
+            "stock_names": {},
+            "opportunity": {"max_active_themes": 5},
+            "theme_pools": {},
+        }
+    )
+
+    assert signal.source_count == 0
+    assert signal.failed_count == 1
+    assert signal.active_themes == []
+
+
+def test_news_source_failure_generates_alert(tmp_path) -> None:
+    from datetime import date
+
+    from src.news.web_theme import ThemeSignal
+    from src.storage.sqlite_store import SQLiteStore
+
+    alerts = detect_alerts(
+        [],
+        date(2026, 5, 18),
+        SQLiteStore(tmp_path / "test.sqlite3"),
+        {"label": "正常"},
+        overseas=None,
+        theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {"memory": 0}, source_count=0, failed_count=3),
+    )
+
+    assert "新聞題材資料源異常" in alerts[0]
