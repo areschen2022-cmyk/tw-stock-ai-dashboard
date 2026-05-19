@@ -302,6 +302,7 @@ def _html() -> str:
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
+      <section><h2>AI 複核</h2><div id="aiCouncil"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
       <section><h2>危險名單</h2><div id="exitRisks"></div></section>
       <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
@@ -421,6 +422,10 @@ def _html() -> str:
         ${themeTableHtml}
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
+      const ai = data.ai_council || {};
+      document.querySelector("#aiCouncil").innerHTML = (ai.reviews || []).length
+        ? ai.reviews.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜信心 ${Math.round((r.confidence || 0) * 100)}%<div class="small">${esc(r.reason || "")}</div></div>`).join("")
+        : `<div class="line">${ai.enabled ? "今日未取得 AI 複核結果" : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
@@ -630,6 +635,14 @@ def _performance_html() -> str:
         <tbody id="signalLab"></tbody>
       </table>
     </section>
+    <section style="margin-bottom:16px;">
+      <h2>AI 複核勝率</h2>
+      <div class="note">統計 OpenRouter 多模型共識建議後的 5 日勝率；AI 只做複核與記錄，不直接改變原始分數。</div>
+      <table>
+        <thead><tr><th>AI 建議</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>10日平均</th></tr></thead>
+        <tbody id="aiCouncilStats"></tbody>
+      </table>
+    </section>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
       <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
@@ -705,6 +718,16 @@ def _performance_html() -> str:
           <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
           <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
           <td data-label="10日勝率">${fmtPct(r.win_rate_10d)}</td>
+          <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
+        </tr>
+      `).join("");
+      document.querySelector("#aiCouncilStats").innerHTML = (data.ai_council?.by_action || []).map(r => `
+        <tr>
+          <td data-label="AI 建議">${esc(r.action)}</td>
+          <td data-label="訊號">${esc(r.signals)}</td>
+          <td data-label="完成">${esc(r.completed)}</td>
+          <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+          <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
           <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
         </tr>
       `).join("");

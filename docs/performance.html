@@ -94,6 +94,14 @@
         <tbody id="signalLab"></tbody>
       </table>
     </section>
+    <section style="margin-bottom:16px;">
+      <h2>AI 複核勝率</h2>
+      <div class="note">統計 OpenRouter 多模型共識建議後的 5 日勝率；AI 只做複核與記錄，不直接改變原始分數。</div>
+      <table>
+        <thead><tr><th>AI 建議</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>10日平均</th></tr></thead>
+        <tbody id="aiCouncilStats"></tbody>
+      </table>
+    </section>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
       <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
@@ -304,6 +312,49 @@
       "avg_return_10d": null
     }
   ],
+  "ai_council": {
+    "items": [],
+    "by_action": [
+      {
+        "action": "可追",
+        "signals": 0,
+        "completed": 0,
+        "win_rate_5d": null,
+        "avg_return_5d": null,
+        "avg_return_10d": null
+      },
+      {
+        "action": "等拉回",
+        "signals": 0,
+        "completed": 0,
+        "win_rate_5d": null,
+        "avg_return_5d": null,
+        "avg_return_10d": null
+      },
+      {
+        "action": "只觀察",
+        "signals": 0,
+        "completed": 0,
+        "win_rate_5d": null,
+        "avg_return_5d": null,
+        "avg_return_10d": null
+      },
+      {
+        "action": "避免",
+        "signals": 0,
+        "completed": 0,
+        "win_rate_5d": null,
+        "avg_return_5d": null,
+        "avg_return_10d": null
+      }
+    ],
+    "stats": {
+      "signals": 0,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null
+    }
+  },
   "items": [
     {
       "signal_date": "2026-05-18",
@@ -2732,6 +2783,16 @@
           <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
           <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
           <td data-label="10日勝率">${fmtPct(r.win_rate_10d)}</td>
+          <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
+        </tr>
+      `).join("");
+      document.querySelector("#aiCouncilStats").innerHTML = (data.ai_council?.by_action || []).map(r => `
+        <tr>
+          <td data-label="AI 建議">${esc(r.action)}</td>
+          <td data-label="訊號">${esc(r.signals)}</td>
+          <td data-label="完成">${esc(r.completed)}</td>
+          <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+          <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
           <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
         </tr>
       `).join("");

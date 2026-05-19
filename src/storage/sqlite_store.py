@@ -125,6 +125,27 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS ai_council_reviews (
+                    review_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    score INTEGER,
+                    grade TEXT,
+                    consensus_action TEXT NOT NULL,
+                    confidence REAL,
+                    model_count INTEGER NOT NULL DEFAULT 0,
+                    reason TEXT NOT NULL DEFAULT '',
+                    model_reviews_json TEXT NOT NULL DEFAULT '[]',
+                    return_3d REAL,
+                    return_5d REAL,
+                    return_10d REAL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (review_date, stock_id)
+                )
+                """
+            )
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -275,6 +296,84 @@ class SQLiteStore:
                         stock_id,
                     ),
                 )
+            self._update_ai_forward_returns(conn, as_of)
+
+    def _update_ai_forward_returns(self, conn: sqlite3.Connection, as_of: date) -> None:
+        rows = conn.execute(
+            """
+            SELECT review_date, stock_id
+            FROM ai_council_reviews
+            WHERE review_date < ?
+              AND return_5d IS NULL
+            """,
+            (as_of.isoformat(),),
+        ).fetchall()
+        for review_date, stock_id in rows:
+            base = conn.execute(
+                """
+                SELECT price FROM daily_scores
+                WHERE as_of_date = ? AND stock_id = ? AND price IS NOT NULL
+                """,
+                (review_date, stock_id),
+            ).fetchone()
+            if not base:
+                continue
+            future_rows = conn.execute(
+                """
+                SELECT as_of_date, price
+                FROM daily_scores
+                WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
+                ORDER BY as_of_date
+                """,
+                (stock_id, review_date, (date.fromisoformat(review_date) + timedelta(days=21)).isoformat()),
+            ).fetchall()
+            if not future_rows:
+                continue
+            prices = [float(row[1]) for row in future_rows]
+            entry_price = float(base[0])
+            conn.execute(
+                """
+                UPDATE ai_council_reviews
+                SET return_3d = COALESCE(?, return_3d),
+                    return_5d = COALESCE(?, return_5d),
+                    return_10d = COALESCE(?, return_10d)
+                WHERE review_date = ? AND stock_id = ?
+                """,
+                (
+                    _pct_return(prices[2] if len(prices) >= 3 else None, entry_price),
+                    _pct_return(prices[4] if len(prices) >= 5 else None, entry_price),
+                    _pct_return(prices[9] if len(prices) >= 10 else None, entry_price),
+                    review_date,
+                    stock_id,
+                ),
+            )
+
+    def save_ai_council_reviews(self, reviews: list[dict], as_of: date) -> None:
+        if not reviews:
+            return
+        with self._connect() as conn:
+            conn.execute("DELETE FROM ai_council_reviews WHERE review_date = ?", (as_of.isoformat(),))
+            for review in reviews:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO ai_council_reviews (
+                        review_date, stock_id, name, score, grade, consensus_action,
+                        confidence, model_count, reason, model_reviews_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        as_of.isoformat(),
+                        review["stock_id"],
+                        review.get("name", review["stock_id"]),
+                        review.get("score"),
+                        review.get("grade"),
+                        review.get("consensus_action", "只觀察"),
+                        review.get("confidence"),
+                        review.get("model_count", 0),
+                        review.get("reason", ""),
+                        json.dumps(review.get("model_reviews", []), ensure_ascii=False),
+                    ),
+                )
 
     def watch_candidates_today(self, as_of: date) -> list[dict]:
         """Return today's watch candidates (grade S+/S/A/B) for intraday confirmation."""
@@ -361,7 +460,65 @@ class SQLiteStore:
             "score_bands": _score_band_stats(items),
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
+            "ai_council": self.ai_council_summary(as_of, days=days),
             "items": items,
+        }
+
+    def ai_council_summary(self, as_of: date, days: int = 30) -> dict:
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT review_date, stock_id, name, score, grade, consensus_action,
+                       confidence, model_count, reason, return_3d, return_5d, return_10d
+                FROM ai_council_reviews
+                WHERE review_date >= ?
+                ORDER BY review_date DESC, score DESC
+                """,
+                (since.isoformat(),),
+            ).fetchall()
+        items = [
+            {
+                "review_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "score": row[3],
+                "grade": row[4],
+                "consensus_action": row[5],
+                "confidence": row[6],
+                "model_count": row[7],
+                "reason": row[8],
+                "return_3d": row[9],
+                "return_5d": row[10],
+                "return_10d": row[11],
+                "status": "已完成" if row[10] is not None else "進行中",
+            }
+            for row in rows
+        ]
+        by_action = []
+        for action in ["可追", "等拉回", "只觀察", "避免"]:
+            bucket = [item for item in items if item["consensus_action"] == action]
+            completed = [item for item in bucket if item["return_5d"] is not None]
+            by_action.append(
+                {
+                    "action": action,
+                    "signals": len(bucket),
+                    "completed": len(completed),
+                    "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
+                    "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+                    "avg_return_10d": _avg([item["return_10d"] for item in bucket if item["return_10d"] is not None]),
+                }
+            )
+        completed_all = [item for item in items if item["return_5d"] is not None]
+        return {
+            "items": items,
+            "by_action": by_action,
+            "stats": {
+                "signals": len(items),
+                "completed": len(completed_all),
+                "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed_all]),
+                "avg_return_5d": _avg([item["return_5d"] for item in completed_all]),
+            },
         }
 
     def watch_reviews(self, as_of: date, max_age_days: int = 5) -> list[dict]:

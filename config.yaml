@@ -244,6 +244,16 @@ exit_risk:
   margin_rise_pct: 0.08
   price_drop_5d_pct: -5.0
 
+ai_council:
+  enabled: false
+  top_n: 5
+  timeout: 45
+  max_tokens: 900
+  models:
+    - "openai/gpt-4.1-mini"
+    - "anthropic/claude-3.5-haiku"
+    - "google/gemini-2.0-flash-001"
+
 web_news:
   enabled: true
   cnyes_api:

@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 
+from src.ai.model_council import run_ai_council
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
@@ -243,6 +244,17 @@ def main() -> int:
         watch_reviews,
         exit_risks,
     )
+    ai_reviews = run_ai_council(
+        [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A"}],
+        as_of,
+        config,
+    )
+    store.save_ai_council_reviews(ai_reviews, as_of)
+    store.update_forward_returns(as_of)
+    dashboard_payload["ai_council"] = {
+        "enabled": bool(config.get("ai_council", {}).get("enabled", False)),
+        "reviews": ai_reviews,
+    }
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
     write_theme_history(
