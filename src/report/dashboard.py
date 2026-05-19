@@ -64,8 +64,8 @@ def _build_health_status(
         "generated_at": generated_at.isoformat(timespec="seconds"),
         "generated_date": generated_at.date().isoformat(),
         "data_date": as_of.isoformat(),
-        "website_schedule": "08:00",
-        "telegram_schedule": "08:20",
+        "website_schedule": "08:08",
+        "telegram_schedule": "08:28",
         "provider_label": provider_label,
         "news_sources": news_sources,
         "news_failed": news_failed,
@@ -368,7 +368,7 @@ def _html() -> str:
       document.querySelector("#health").innerHTML = `
         <div class="line ${healthCls}"><span class="${sourceClass(health.label === "正常" ? "正常" : health.label === "部分延遲" ? "部分限流" : "錯誤")}"></span>系統：${esc(health.label || "未知")}</div>
         <div class="line">本次產生：${esc((health.generated_at || "").replace("T", " "))}</div>
-        <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "08:00")}｜Telegram ${esc(health.telegram_schedule || "08:20")}</div>
+        <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "08:08")}｜Telegram ${esc(health.telegram_schedule || "08:28")}</div>
         <div class="line">新聞來源：成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
         <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
       function sparkBar(history) {
