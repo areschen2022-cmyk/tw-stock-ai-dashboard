@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 from datetime import date
 from typing import Any
 
@@ -20,6 +22,7 @@ def run_ai_council(
     as_of: date,
     config: dict,
     client: OpenRouterClient | None = None,
+    store=None,
 ) -> list[dict[str, Any]]:
     cfg = config.get("ai_council", {})
     if not cfg.get("enabled", False):
@@ -39,17 +42,43 @@ def run_ai_council(
     pick_action = str(cfg.get("pick_action", "可追"))
 
     candidates = [_candidate_payload(row) for row in rows[:top_n]]
+    perf_context = ""
+    if store is not None:
+        try:
+            perf_context = _build_perf_context(store.ai_council_summary(as_of))
+            if perf_context:
+                log.info("AI council: injecting performance context (%d chars)", len(perf_context))
+        except Exception as exc:
+            log.warning("AI council: failed to load performance context: %s", exc)
+
     model_reviews: list[dict[str, Any]] = []
-    for model in models:
+    timeout = int(cfg.get("timeout", 45))
+
+    def _call_model(model: str) -> dict[str, Any] | None:
         try:
             content = client.chat_json(
                 model,
-                _messages(as_of, candidates),
+                _messages(as_of, candidates, perf_context=perf_context),
                 max_tokens=int(cfg.get("max_tokens", 900)),
             )
-            model_reviews.append(_parse_model_review(model, content))
+            return _parse_model_review(model, content)
         except Exception as exc:
             log.warning("AI council model failed %s: %s", model, exc)
+            return None
+
+    pool = ThreadPoolExecutor(max_workers=max(1, len(models)))
+    try:
+        futures = {pool.submit(_call_model, model): model for model in models}
+        try:
+            for future in as_completed(futures, timeout=timeout + 5):
+                result = future.result()
+                if result is not None:
+                    model_reviews.append(result)
+        except TimeoutError:
+            pending = [model for future, model in futures.items() if not future.done()]
+            log.warning("AI council timed out waiting for models: %s", ", ".join(pending))
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
 
     return _consensus(
         as_of,
@@ -67,18 +96,50 @@ def _candidate_payload(row: dict) -> dict:
         "score": row.get("score"),
         "grade": row.get("grade"),
         "action": row.get("action"),
-        "decision_reason": row.get("decision_reason") or row.get("trigger_summary"),
+        "decision_reason": row.get("trigger_summary") or row.get("decision_reason"),
         "technical": row.get("technical"),
         "chip": row.get("chip"),
         "fundamental": row.get("fundamental"),
         "risk": row.get("risk"),
-        "entry_limit_price": row.get("entry_limit_price"),
-        "stop_price": row.get("stop_price"),
         "themes": row.get("themes", []),
     }
 
 
-def _messages(as_of: date, candidates: list[dict]) -> list[dict[str, str]]:
+def _build_perf_context(summary: dict, min_completed: int = 20) -> str:
+    rows = []
+    for row in summary.get("by_action", []):
+        if int(row.get("completed") or 0) >= min_completed:
+            rows.append(
+                f"{row['action']}：{row['completed']}筆，"
+                f"5日勝率 {row['win_rate_5d']}%，平均報酬 {row['avg_return_5d']}%"
+            )
+    if not rows:
+        return ""
+    return (
+        "【本系統近期追蹤績效，僅供參考，不代表未來表現】\n"
+        + "；".join(rows)
+        + "\n請用此資料校準信心，但不要只因歷史勝率高低直接改變方向。"
+    )
+
+
+def _messages(as_of: date, candidates: list[dict], perf_context: str = "") -> list[dict[str, str]]:
+    user_payload: dict[str, Any] = {
+        "as_of": as_of.isoformat(),
+        "task": "逐檔給出 action: 可追/等拉回/只觀察/避免，並用一句話說明主要風險或優勢。",
+        "schema": {
+            "reviews": [
+                {
+                    "stock_id": "string",
+                    "action": "可追|等拉回|只觀察|避免",
+                    "confidence": 0.0,
+                    "reason": "string",
+                }
+            ]
+        },
+        "candidates": candidates,
+    }
+    if perf_context:
+        user_payload["system_track_record"] = perf_context
     return [
         {
             "role": "system",
@@ -89,30 +150,21 @@ def _messages(as_of: date, candidates: list[dict]) -> list[dict[str, str]]:
         },
         {
             "role": "user",
-            "content": json.dumps(
-                {
-                    "as_of": as_of.isoformat(),
-                    "task": "逐檔給出 action: 可追/等拉回/只觀察/避免，並用一句話說明主要風險或優勢。",
-                    "schema": {
-                        "reviews": [
-                            {
-                                "stock_id": "string",
-                                "action": "可追|等拉回|只觀察|避免",
-                                "confidence": 0.0,
-                                "reason": "string",
-                            }
-                        ]
-                    },
-                    "candidates": candidates,
-                },
-                ensure_ascii=False,
-            ),
+            "content": json.dumps(user_payload, ensure_ascii=False),
         },
     ]
 
 
 def _parse_model_review(model: str, content: str) -> dict[str, Any]:
-    payload = json.loads(content)
+    stripped = content.strip()
+    if stripped.startswith("```"):
+        stripped = re.sub(r"^```(?:json)?\s*", "", stripped, flags=re.IGNORECASE)
+        stripped = re.sub(r"\s*```$", "", stripped)
+    try:
+        payload = json.loads(stripped)
+    except json.JSONDecodeError as exc:
+        log.warning("AI council JSON parse failed for %s: %s | content: %.200s", model, exc, content)
+        return {"model": model, "reviews": []}
     rows = payload.get("reviews") if isinstance(payload, dict) else []
     parsed = []
     for row in rows or []:

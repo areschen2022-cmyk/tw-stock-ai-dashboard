@@ -21,6 +21,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: tw-stock-ai-daily
+  cancel-in-progress: false
+
 jobs:
   dashboard-update:
     name: 08:08 update dashboard

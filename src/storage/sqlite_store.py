@@ -136,6 +136,9 @@ class SQLiteStore:
                     consensus_action TEXT NOT NULL,
                     confidence REAL,
                     model_count INTEGER NOT NULL DEFAULT 0,
+                    agreement_count INTEGER NOT NULL DEFAULT 0,
+                    pick_agreement_count INTEGER NOT NULL DEFAULT 0,
+                    is_ai_pick INTEGER NOT NULL DEFAULT 0,
                     reason TEXT NOT NULL DEFAULT '',
                     model_reviews_json TEXT NOT NULL DEFAULT '[]',
                     return_3d REAL,
@@ -146,6 +149,14 @@ class SQLiteStore:
                 )
                 """
             )
+            ai_columns = {row[1] for row in conn.execute("PRAGMA table_info(ai_council_reviews)").fetchall()}
+            for column, definition in [
+                ("agreement_count", "INTEGER NOT NULL DEFAULT 0"),
+                ("pick_agreement_count", "INTEGER NOT NULL DEFAULT 0"),
+                ("is_ai_pick", "INTEGER NOT NULL DEFAULT 0"),
+            ]:
+                if column not in ai_columns:
+                    conn.execute(f"ALTER TABLE ai_council_reviews ADD COLUMN {column} {definition}")
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -349,17 +360,18 @@ class SQLiteStore:
             )
 
     def save_ai_council_reviews(self, reviews: list[dict], as_of: date) -> None:
-        if not reviews:
-            return
         with self._connect() as conn:
             conn.execute("DELETE FROM ai_council_reviews WHERE review_date = ?", (as_of.isoformat(),))
+            if not reviews:
+                return
             for review in reviews:
                 conn.execute(
                     """
                     INSERT OR REPLACE INTO ai_council_reviews (
                         review_date, stock_id, name, score, grade, consensus_action,
-                        confidence, model_count, reason, model_reviews_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        confidence, model_count, agreement_count, pick_agreement_count,
+                        is_ai_pick, reason, model_reviews_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -370,6 +382,9 @@ class SQLiteStore:
                         review.get("consensus_action", "只觀察"),
                         review.get("confidence"),
                         review.get("model_count", 0),
+                        review.get("agreement_count", 0),
+                        review.get("pick_agreement_count", 0),
+                        int(bool(review.get("is_ai_pick", False))),
                         review.get("reason", ""),
                         json.dumps(review.get("model_reviews", []), ensure_ascii=False),
                     ),
@@ -470,7 +485,8 @@ class SQLiteStore:
             rows = conn.execute(
                 """
                 SELECT review_date, stock_id, name, score, grade, consensus_action,
-                       confidence, model_count, reason, return_3d, return_5d, return_10d
+                       confidence, model_count, agreement_count, pick_agreement_count,
+                       is_ai_pick, reason, return_3d, return_5d, return_10d
                 FROM ai_council_reviews
                 WHERE review_date >= ?
                 ORDER BY review_date DESC, score DESC
@@ -487,11 +503,14 @@ class SQLiteStore:
                 "consensus_action": row[5],
                 "confidence": row[6],
                 "model_count": row[7],
-                "reason": row[8],
-                "return_3d": row[9],
-                "return_5d": row[10],
-                "return_10d": row[11],
-                "status": "已完成" if row[10] is not None else "進行中",
+                "agreement_count": row[8],
+                "pick_agreement_count": row[9],
+                "is_ai_pick": _bool_or_none(row[10]),
+                "reason": row[11],
+                "return_3d": row[12],
+                "return_5d": row[13],
+                "return_10d": row[14],
+                "status": "已完成" if row[13] is not None else "進行中",
             }
             for row in rows
         ]

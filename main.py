@@ -142,7 +142,7 @@ def main() -> int:
     stock_theme_details: dict[str, list[dict]] = {stock_id: [] for stock_id in config["stocks"]}
     theme_stock_meta = config.get("theme_stock_meta", {})
     theme_pools = config.get("theme_pools", {})
-    active_theme_keys = set(theme_signal.active_themes)
+    active_theme_keys = set(theme_signal.active_themes) if theme_signal and theme_signal.active_themes else set()
     selected_theme_pools = select_theme_pools(theme_pools, active_theme_keys)
     for theme_key, theme_cfg in selected_theme_pools.items():
         theme_name = theme_cfg.get("name", "題材")
@@ -248,6 +248,7 @@ def main() -> int:
         [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A"}],
         as_of,
         config,
+        store=store,
     )
     store.save_ai_council_reviews(ai_reviews, as_of)
     store.update_forward_returns(as_of)

@@ -23,6 +23,19 @@ class _FakeClient:
         )
 
 
+class _FencedJsonClient:
+    enabled = True
+
+    def __init__(self) -> None:
+        self.messages = []
+
+    def chat_json(self, model, messages, max_tokens=900):
+        self.messages.append(messages)
+        return """```json
+{"reviews":[{"stock_id":"2408","action":"可追","confidence":0.8,"reason":"JSON fenced"}]}
+```"""
+
+
 def test_ai_council_builds_consensus() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "測試"}]
     reviews = run_ai_council(
@@ -59,6 +72,34 @@ def test_ai_council_requires_five_buy_votes_for_pick() -> None:
     assert reviews[0]["is_ai_pick"] is True
 
 
+def test_ai_council_accepts_fenced_json_and_redacts_strategy_prices() -> None:
+    client = _FencedJsonClient()
+    rows = [
+        {
+            "stock_id": "2408",
+            "name": "南亞科",
+            "score": 90,
+            "grade": "S",
+            "trigger_summary": "題材強共振",
+            "entry_limit_price": 100,
+            "stop_price": 90,
+        }
+    ]
+
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {"ai_council": {"enabled": True, "top_n": 1, "models": ["model-a"]}},
+        client=client,
+    )
+    payload = json.loads(client.messages[0][1]["content"])
+
+    assert reviews[0]["consensus_action"] == "可追"
+    assert "entry_limit_price" not in payload["candidates"][0]
+    assert "stop_price" not in payload["candidates"][0]
+    assert payload["candidates"][0]["decision_reason"] == "題材強共振"
+
+
 def test_ai_council_summary_tracks_forward_win_rate(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)
@@ -74,6 +115,9 @@ def test_ai_council_summary_tracks_forward_win_rate(tmp_path) -> None:
                 "consensus_action": "可追",
                 "confidence": 0.8,
                 "model_count": 2,
+                "agreement_count": 2,
+                "pick_agreement_count": 2,
+                "is_ai_pick": False,
                 "reason": "AI 共識偏多",
             }
         ],
@@ -89,3 +133,5 @@ def test_ai_council_summary_tracks_forward_win_rate(tmp_path) -> None:
     assert by_action["可追"]["completed"] == 1
     assert by_action["可追"]["win_rate_5d"] == 100
     assert by_action["可追"]["avg_return_5d"] == 10
+    assert summary["items"][0]["agreement_count"] == 2
+    assert summary["items"][0]["pick_agreement_count"] == 2
