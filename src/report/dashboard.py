@@ -302,7 +302,7 @@ def _html() -> str:
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
-      <section><h2>AI 複核</h2><div id="aiCouncil"></div></section>
+      <section><h2>AI 自選股（5票共識）</h2><div id="aiCouncil"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
       <section><h2>危險名單</h2><div id="exitRisks"></div></section>
       <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
@@ -423,9 +423,10 @@ def _html() -> str:
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
       const ai = data.ai_council || {};
-      document.querySelector("#aiCouncil").innerHTML = (ai.reviews || []).length
-        ? ai.reviews.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜信心 ${Math.round((r.confidence || 0) * 100)}%<div class="small">${esc(r.reason || "")}</div></div>`).join("")
-        : `<div class="line">${ai.enabled ? "今日未取得 AI 複核結果" : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
+      const aiPicks = ai.picks || [];
+      document.querySelector("#aiCouncil").innerHTML = aiPicks.length
+        ? aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(ai.min_agree_count || 5)} 位AI同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
+        : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(ai.min_agree_count || 5)} 位AI同意的自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")

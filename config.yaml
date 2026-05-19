@@ -247,12 +247,16 @@ exit_risk:
 ai_council:
   enabled: true
   top_n: 5
+  min_agree_count: 5
+  pick_action: "可追"
   timeout: 45
   max_tokens: 900
   models:
     - "openai/gpt-4.1-mini"
     - "anthropic/claude-3.5-haiku"
     - "google/gemini-2.0-flash-001"
+    - "meta-llama/llama-3.3-70b-instruct"
+    - "deepseek/deepseek-chat"
 
 web_news:
   enabled: true

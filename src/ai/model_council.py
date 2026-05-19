@@ -35,6 +35,9 @@ def run_ai_council(
     if not models:
         return []
 
+    min_agree_count = int(cfg.get("min_agree_count", 5))
+    pick_action = str(cfg.get("pick_action", "可追"))
+
     candidates = [_candidate_payload(row) for row in rows[:top_n]]
     model_reviews: list[dict[str, Any]] = []
     for model in models:
@@ -48,7 +51,13 @@ def run_ai_council(
         except Exception as exc:
             log.warning("AI council model failed %s: %s", model, exc)
 
-    return _consensus(as_of, candidates, model_reviews)
+    return _consensus(
+        as_of,
+        candidates,
+        model_reviews,
+        min_agree_count=min_agree_count,
+        pick_action=pick_action,
+    )
 
 
 def _candidate_payload(row: dict) -> dict:
@@ -121,7 +130,14 @@ def _parse_model_review(model: str, content: str) -> dict[str, Any]:
     return {"model": model, "reviews": parsed}
 
 
-def _consensus(as_of: date, candidates: list[dict], model_reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _consensus(
+    as_of: date,
+    candidates: list[dict],
+    model_reviews: list[dict[str, Any]],
+    *,
+    min_agree_count: int = 5,
+    pick_action: str = "可追",
+) -> list[dict[str, Any]]:
     by_stock: dict[str, list[dict[str, Any]]] = {str(row["stock_id"]): [] for row in candidates}
     for model_result in model_reviews:
         model = model_result["model"]
@@ -142,6 +158,8 @@ def _consensus(as_of: date, candidates: list[dict], model_reviews: list[dict[str
             key=lambda action: (action_counts[action], ACTION_RANK[action]),
             reverse=True,
         )[0]
+        agreement_count = action_counts[consensus_action]
+        pick_agreement_count = action_counts.get(pick_action, 0)
         avg_confidence = sum(float(row["confidence"]) for row in reviews) / len(reviews)
         reasons = [row["reason"] for row in reviews if row.get("reason")]
         results.append(
@@ -154,6 +172,9 @@ def _consensus(as_of: date, candidates: list[dict], model_reviews: list[dict[str
                 "consensus_action": consensus_action,
                 "confidence": round(avg_confidence, 2),
                 "model_count": len(reviews),
+                "agreement_count": agreement_count,
+                "pick_agreement_count": pick_agreement_count,
+                "is_ai_pick": consensus_action == pick_action and pick_agreement_count >= min_agree_count,
                 "reason": "；".join(reasons[:2])[:180],
                 "model_reviews": reviews,
             }

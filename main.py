@@ -254,6 +254,9 @@ def main() -> int:
     dashboard_payload["ai_council"] = {
         "enabled": bool(config.get("ai_council", {}).get("enabled", False)),
         "reviews": ai_reviews,
+        "picks": [review for review in ai_reviews if review.get("is_ai_pick")],
+        "min_agree_count": int(config.get("ai_council", {}).get("min_agree_count", 5)),
+        "pick_action": str(config.get("ai_council", {}).get("pick_action", "可追")),
     }
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
