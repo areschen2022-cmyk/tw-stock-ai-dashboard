@@ -66,7 +66,8 @@ def run_ai_council(
             log.warning("AI council model failed %s: %s", model, exc)
             return None
 
-    pool = ThreadPoolExecutor(max_workers=max(1, len(models)))
+    max_workers = max(1, min(len(models), int(cfg.get("max_workers", len(models)))))
+    pool = ThreadPoolExecutor(max_workers=max_workers)
     try:
         futures = {pool.submit(_call_model, model): model for model in models}
         try:

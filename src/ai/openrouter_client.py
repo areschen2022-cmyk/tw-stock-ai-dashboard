@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import Any
 
 import requests
@@ -28,10 +29,10 @@ class OpenRouterClient:
             "max_tokens": max_tokens,
             "response_format": {"type": "json_object"},
         }
-        response = self._post(body)
+        response = self._post_with_retry(body)
         if response.status_code == 400 and "response_format" in response.text:
             body.pop("response_format", None)
-            response = self._post(body)
+            response = self._post_with_retry(body)
         response.raise_for_status()
         payload: dict[str, Any] = response.json()
         choices = payload.get("choices") or []
@@ -52,3 +53,20 @@ class OpenRouterClient:
             timeout=self.timeout,
         )
         return response
+
+    def _post_with_retry(self, body: dict[str, Any]) -> requests.Response:
+        last_response: requests.Response | None = None
+        for attempt in range(3):
+            response = self._post(body)
+            if response.status_code != 429:
+                return response
+            last_response = response
+            retry_after = response.headers.get("Retry-After")
+            if retry_after and retry_after.isdigit():
+                wait_seconds = min(20, int(retry_after))
+            else:
+                wait_seconds = 4 * (attempt + 1)
+            time.sleep(wait_seconds)
+        if last_response is None:
+            raise RuntimeError("OpenRouter retry failed before first response")
+        return last_response
