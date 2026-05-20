@@ -21,6 +21,25 @@ class OpenRouterClient:
     def chat_json(self, model: str, messages: list[dict[str, str]], max_tokens: int = 900) -> str:
         if not self.api_key:
             raise RuntimeError("OPENROUTER_API_KEY is not set")
+        body: dict[str, Any] = {
+            "model": model,
+            "messages": messages,
+            "temperature": 0.2,
+            "max_tokens": max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+        response = self._post(body)
+        if response.status_code == 400 and "response_format" in response.text:
+            body.pop("response_format", None)
+            response = self._post(body)
+        response.raise_for_status()
+        payload: dict[str, Any] = response.json()
+        choices = payload.get("choices") or []
+        if not choices:
+            raise RuntimeError("OpenRouter returned no choices")
+        return str(choices[0].get("message", {}).get("content") or "")
+
+    def _post(self, body: dict[str, Any]) -> requests.Response:
         response = requests.post(
             OPENROUTER_URL,
             headers={
@@ -29,18 +48,7 @@ class OpenRouterClient:
                 "HTTP-Referer": "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/",
                 "X-Title": "tw-stock-ai",
             },
-            json={
-                "model": model,
-                "messages": messages,
-                "temperature": 0.2,
-                "max_tokens": max_tokens,
-                "response_format": {"type": "json_object"},
-            },
+            json=body,
             timeout=self.timeout,
         )
-        response.raise_for_status()
-        payload: dict[str, Any] = response.json()
-        choices = payload.get("choices") or []
-        if not choices:
-            raise RuntimeError("OpenRouter returned no choices")
-        return str(choices[0].get("message", {}).get("content") or "")
+        return response
