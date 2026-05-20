@@ -70,7 +70,12 @@ class FinMindClient:
         }
         if self.token:
             params["token"] = self.token
-        response = requests.get(self.BASE_URL, params=params, timeout=self.timeout)
+        try:
+            response = requests.get(self.BASE_URL, params=params, timeout=self.timeout)
+        except requests.RequestException as exc:
+            logging.warning("FinMind request failed for %s %s: %s", dataset, data_id, exc)
+            self._count("error")
+            return pd.DataFrame()
         if response.status_code in {402, 429}:
             logging.warning("FinMind quota/permission issue for %s %s: %s", dataset, data_id, response.status_code)
             self._count("quota")
@@ -80,7 +85,12 @@ class FinMindClient:
         except requests.HTTPError:
             self._count("error")
             raise
-        payload = response.json()
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            logging.warning("FinMind returned invalid json for %s %s: %s", dataset, data_id, exc)
+            self._count("error")
+            return pd.DataFrame()
         if not payload.get("data"):
             self._count("empty")
             return pd.DataFrame()
