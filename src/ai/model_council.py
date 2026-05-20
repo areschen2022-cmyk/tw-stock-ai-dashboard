@@ -6,6 +6,7 @@ import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 from datetime import date
+from math import ceil
 from typing import Any
 
 from src.ai.openrouter_client import OpenRouterClient
@@ -67,11 +68,13 @@ def run_ai_council(
             return None
 
     max_workers = max(1, min(len(models), int(cfg.get("max_workers", len(models)))))
+    default_total_timeout = (timeout + 5) * ceil(len(models) / max_workers)
+    total_timeout = int(cfg.get("total_timeout", default_total_timeout))
     pool = ThreadPoolExecutor(max_workers=max_workers)
     try:
         futures = {pool.submit(_call_model, model): model for model in models}
         try:
-            for future in as_completed(futures, timeout=timeout + 5):
+            for future in as_completed(futures, timeout=total_timeout):
                 result = future.result()
                 if result is not None:
                     model_reviews.append(result)
