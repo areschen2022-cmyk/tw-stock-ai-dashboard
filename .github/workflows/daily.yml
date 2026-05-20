@@ -1,12 +1,15 @@
 name: 台股 AI 每日早報
 
 on:
+  push:
+    branches:
+      - main
   schedule:
-    # 00:08 UTC = 08:08 台灣時間：更新網站資料與 GitHub Pages 檔案，不發 Telegram。
+    # 23:58 UTC(日一二三四) = 07:58 台灣時間(週一至週五)：更新網站資料與 GitHub Pages 檔案，不發 Telegram。
     # 避開 GitHub Actions 整點高峰，降低 schedule 被延遲或丟棄的機率。
-    - cron: "8 0 * * 1-5"
-    # 00:28 UTC = 08:28 台灣時間：只發 Telegram 早報。
-    - cron: "28 0 * * 1-5"
+    - cron: "58 23 * * 0-4"
+    # 00:18 UTC = 08:18 台灣時間：只發 Telegram 早報。
+    - cron: "18 0 * * 1-5"
   workflow_dispatch:
     inputs:
       send_telegram:
@@ -27,10 +30,11 @@ concurrency:
 
 jobs:
   dashboard-update:
-    name: 08:08 update dashboard
+    name: 07:58 update dashboard
     if: >-
+      github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
-      github.event.schedule == '8 0 * * 1-5'
+      github.event.schedule == '58 23 * * 0-4'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -80,13 +84,13 @@ jobs:
           if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
             curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
               -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d text="台股 AI 08:08 網站更新失敗，請檢查 GitHub Actions。"
+            -d text="台股 AI 07:58 網站更新失敗，請檢查 GitHub Actions。"
           fi
 
   morning-telegram:
-    name: 08:28 send Telegram
+    name: 08:18 send Telegram
     if: >-
-      github.event.schedule == '28 0 * * 1-5' ||
+      github.event.schedule == '18 0 * * 1-5' ||
       (github.event_name == 'workflow_dispatch' && inputs.send_telegram == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -120,5 +124,5 @@ jobs:
           if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
             curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
               -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d text="台股 AI 08:28 Telegram 早報失敗，請檢查 GitHub Actions。"
+            -d text="台股 AI 08:18 Telegram 早報失敗，請檢查 GitHub Actions。"
           fi
