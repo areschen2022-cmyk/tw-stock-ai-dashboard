@@ -424,9 +424,14 @@ def _html() -> str:
         ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
       const ai = data.ai_council || {};
       const aiPicks = ai.picks || [];
+      const aiStatus = ai.status || {};
+      const aiAvailability = aiStatus.requested_models
+        ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
+        : "";
       document.querySelector("#aiCouncil").innerHTML = aiPicks.length
         ? aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(ai.min_agree_count || 5)} 位AI同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
         : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(ai.min_agree_count || 5)} 位AI同意的自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
+      if (aiAvailability) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiAvailability);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
@@ -434,7 +439,7 @@ def _html() -> str:
       document.querySelector("#exitRisks").innerHTML = (data.exit_risks || []).length
         ? data.exit_risks.slice(0,5).map(x => {
             const cls = x.level === "紅色警戒" ? "bad" : "warn";
-            return `<div class="line ${cls}">${esc(x.stock_id)} ${esc(x.name)}｜${esc(x.level)}｜${esc((x.reasons || []).slice(0,2).join("、"))}<div class="small">${esc(x.action || "")}</div></div>`;
+            return `<div class="line ${cls}">${esc(x.stock_id)} ${esc(x.name)}｜${esc(x.level)}｜危險分 ${esc(x.risk_score || 0)}｜${esc((x.reasons || []).slice(0,2).join("、"))}<div class="small">${esc(x.action || "")}</div></div>`;
           }).join("")
         : `<div class="line">目前無紅黃警戒</div>`;
       document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length

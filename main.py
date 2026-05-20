@@ -244,11 +244,13 @@ def main() -> int:
         watch_reviews,
         exit_risks,
     )
+    ai_status = {}
     ai_reviews = run_ai_council(
         [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A"}],
         as_of,
         config,
         store=store,
+        status_out=ai_status,
     )
     store.save_ai_council_reviews(ai_reviews, as_of)
     store.update_forward_returns(as_of)
@@ -256,6 +258,7 @@ def main() -> int:
         "enabled": bool(config.get("ai_council", {}).get("enabled", False)),
         "reviews": ai_reviews,
         "picks": [review for review in ai_reviews if review.get("is_ai_pick")],
+        "status": ai_status,
         "min_agree_count": int(config.get("ai_council", {}).get("min_agree_count", 5)),
         "pick_action": str(config.get("ai_council", {}).get("pick_action", "可追")),
     }
@@ -289,7 +292,7 @@ def main() -> int:
         review_lines = format_watch_reviews(watch_reviews)
         review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
         exit_text = "\n".join(
-            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:2])}"
+            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜危險分 {item.get('risk_score', 0)}｜{'、'.join(item['reasons'][:2])}"
             for item in exit_risks[:3]
         ) or "▸ 目前無紅黃警戒"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"

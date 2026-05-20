@@ -38,17 +38,22 @@ class _FencedJsonClient:
 
 def test_ai_council_builds_consensus() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "測試"}]
+    status = {}
     reviews = run_ai_council(
         rows,
         date(2026, 5, 19),
         {"ai_council": {"enabled": True, "top_n": 1, "models": ["model-a", "model-b"]}},
         client=_FakeClient(),
+        status_out=status,
     )
 
     assert reviews[0]["stock_id"] == "2408"
     assert reviews[0]["consensus_action"] == "可追"
     assert reviews[0]["model_count"] == 2
     assert reviews[0]["is_ai_pick"] is False
+    assert status["requested_models"] == 2
+    assert status["successful_models"] == 2
+    assert status["available_ratio"] == 1
 
 
 def test_ai_council_requires_five_buy_votes_for_pick() -> None:

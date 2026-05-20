@@ -24,6 +24,7 @@ def run_ai_council(
     config: dict,
     client: OpenRouterClient | None = None,
     store=None,
+    status_out: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     cfg = config.get("ai_council", {})
     if not cfg.get("enabled", False):
@@ -53,6 +54,8 @@ def run_ai_council(
             log.warning("AI council: failed to load performance context: %s", exc)
 
     model_reviews: list[dict[str, Any]] = []
+    failed_models: list[str] = []
+    timed_out_models: list[str] = []
     timeout = int(cfg.get("timeout", 45))
 
     def _call_model(model: str) -> dict[str, Any] | None:
@@ -78,11 +81,27 @@ def run_ai_council(
                 result = future.result()
                 if result is not None:
                     model_reviews.append(result)
+                else:
+                    failed_models.append(futures[future])
         except TimeoutError:
             pending = [model for future, model in futures.items() if not future.done()]
+            timed_out_models.extend(pending)
             log.warning("AI council timed out waiting for models: %s", ", ".join(pending))
     finally:
         pool.shutdown(wait=False, cancel_futures=True)
+
+    if status_out is not None:
+        successful_models = [item["model"] for item in model_reviews]
+        status_out.update(
+            {
+                "requested_models": len(models),
+                "successful_models": len(successful_models),
+                "failed_models": failed_models,
+                "timed_out_models": timed_out_models,
+                "success_model_names": successful_models,
+                "available_ratio": round(len(successful_models) / len(models), 2) if models else 0,
+            }
+        )
 
     return _consensus(
         as_of,
