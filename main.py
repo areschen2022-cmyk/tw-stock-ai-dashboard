@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
@@ -115,6 +116,9 @@ def main() -> int:
     else:
         provider = FinMindClient()
     store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
+    if args.send_telegram and not dry_run and store.has_delivered_today("telegram", as_of, "morning_report"):
+        logging.info("Telegram morning report already delivered for %s; skipping.", as_of)
+        return 0
     engine = ScoreEngine(config)
 
     market_prices = provider.stock_prices(config["market"]["index_id"], start_date, as_of)
@@ -321,8 +325,18 @@ def main() -> int:
                 "⚠️ 僅供研究追蹤，不是投資建議。",
             ]
         )
+    if not dry_run and store.has_delivered_today("telegram", as_of, "morning_report"):
+        logging.info("Telegram morning report already delivered for %s; skipping.", as_of)
+        return 0
     notifier = TelegramNotifier.from_env(dry_run=dry_run)
     notifier.send(telegram_message)
+    if not dry_run:
+        store.record_delivery(
+            "telegram",
+            as_of,
+            "morning_report",
+            run_id=os.getenv("GITHUB_RUN_ID", ""),
+        )
     logging.info("Processed %s stocks for %s", len(results), as_of)
     return 0
 

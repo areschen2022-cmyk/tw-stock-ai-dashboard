@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from src.backtest.signal_lab import grade_return_summary
 from src.scoring.score_engine import StockScore
 from src.scoring.grade import grade_label
+
+TAIPEI = ZoneInfo("Asia/Taipei")
 
 
 class SQLiteStore:
@@ -157,6 +160,54 @@ class SQLiteStore:
             ]:
                 if column not in ai_columns:
                     conn.execute(f"ALTER TABLE ai_council_reviews ADD COLUMN {column} {definition}")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS delivery_log (
+                    channel TEXT NOT NULL,
+                    delivery_date TEXT NOT NULL,
+                    message_type TEXT NOT NULL,
+                    sent_at TEXT NOT NULL,
+                    run_id TEXT NOT NULL DEFAULT '',
+                    PRIMARY KEY (channel, delivery_date, message_type)
+                )
+                """
+            )
+
+    def has_delivered_today(self, channel: str, delivery_date: date, message_type: str) -> bool:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT 1
+                FROM delivery_log
+                WHERE channel = ? AND delivery_date = ? AND message_type = ?
+                LIMIT 1
+                """,
+                (channel, delivery_date.isoformat(), message_type),
+            ).fetchone()
+        return row is not None
+
+    def record_delivery(
+        self,
+        channel: str,
+        delivery_date: date,
+        message_type: str,
+        run_id: str = "",
+    ) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO delivery_log
+                    (channel, delivery_date, message_type, sent_at, run_id)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    channel,
+                    delivery_date.isoformat(),
+                    message_type,
+                    datetime.now(TAIPEI).isoformat(timespec="seconds"),
+                    run_id,
+                ),
+            )
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
