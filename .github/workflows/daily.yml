@@ -60,6 +60,14 @@ jobs:
 
       - name: Commit and push dashboard
         run: |
+          git fetch origin main
+          current_head="$(git rev-parse HEAD)"
+          remote_head="$(git rev-parse origin/main)"
+          if [ "$current_head" != "$remote_head" ]; then
+            echo "Remote main moved from ${current_head} to ${remote_head}."
+            echo "This workflow run is stale, so dashboard output will not be pushed."
+            exit 0
+          fi
           mkdir -p docs
           cp -f dashboard/index.html docs/index.html
           cp -f dashboard/dashboard_data.json docs/dashboard_data.json
@@ -71,8 +79,19 @@ jobs:
           git add dashboard/
           git add docs/
           git add data/tw_stock_ai.sqlite3 || true
-          git diff --cached --quiet || git commit -m "auto: dashboard $(date -u +'%Y-%m-%d')"
-          git push
+          if git diff --cached --quiet; then
+            echo "No dashboard changes"
+            exit 0
+          fi
+          git commit -m "auto: dashboard $(date -u +'%Y-%m-%d')"
+          if ! git push 2>push.err; then
+            cat push.err
+            if grep -qE "fetch first|non-fast-forward|failed to push some refs" push.err; then
+              echo "Remote main changed during this run; skip stale dashboard push."
+              exit 0
+            fi
+            exit 1
+          fi
 
       - name: Notify dashboard failure
         if: failure()
