@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 
-from src.ai.model_council import run_ai_council
+from src.ai.model_council import run_ai_council, select_ai_picks
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
@@ -258,13 +258,25 @@ def main() -> int:
     )
     store.save_ai_council_reviews(ai_reviews, as_of)
     store.update_forward_returns(as_of)
+    ai_cfg = config.get("ai_council", {})
+    ai_min_agree_count = int(ai_cfg.get("min_agree_count", 5))
+    ai_pick_action = str(ai_cfg.get("pick_action", "可追"))
+    ai_fallback_count = int(ai_cfg.get("fallback_pick_count", 3))
+    ai_picks, ai_using_fallback = select_ai_picks(
+        ai_reviews,
+        min_agree_count=ai_min_agree_count,
+        pick_action=ai_pick_action,
+        fallback_count=ai_fallback_count,
+    )
     dashboard_payload["ai_council"] = {
-        "enabled": bool(config.get("ai_council", {}).get("enabled", False)),
+        "enabled": bool(ai_cfg.get("enabled", False)),
         "reviews": ai_reviews,
-        "picks": [review for review in ai_reviews if review.get("is_ai_pick")],
+        "picks": ai_picks,
+        "using_fallback_picks": ai_using_fallback,
         "status": ai_status,
-        "min_agree_count": int(config.get("ai_council", {}).get("min_agree_count", 5)),
-        "pick_action": str(config.get("ai_council", {}).get("pick_action", "可追")),
+        "min_agree_count": ai_min_agree_count,
+        "fallback_pick_count": ai_fallback_count,
+        "pick_action": ai_pick_action,
     }
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")

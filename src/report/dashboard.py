@@ -302,7 +302,7 @@ def _html() -> str:
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
-      <section><h2>AI 自選股（5票共識）</h2><div id="aiCouncil"></div></section>
+      <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
       <section><h2>危險名單</h2><div id="exitRisks"></div></section>
       <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
@@ -428,8 +428,11 @@ def _html() -> str:
       const aiAvailability = aiStatus.requested_models
         ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
         : "";
+      const aiFallbackNote = ai.using_fallback_picks
+        ? `<div class="line warn">未達 ${esc(ai.min_agree_count || 5)} 票強共識，先顯示 AI 首選觀察</div>`
+        : "";
       document.querySelector("#aiCouncil").innerHTML = aiPicks.length
-        ? aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(ai.min_agree_count || 5)} 位AI同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
+        ? aiFallbackNote + aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(ai.min_agree_count || 5)} 位AI同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
         : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(ai.min_agree_count || 5)} 位AI同意的自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
       if (aiAvailability) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiAvailability);
       renderThemeHistoryChart();

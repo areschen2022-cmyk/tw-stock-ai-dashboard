@@ -257,6 +257,40 @@ def _consensus(
     return results
 
 
+def select_ai_picks(
+    reviews: list[dict[str, Any]],
+    *,
+    min_agree_count: int = 5,
+    pick_action: str = "可追",
+    fallback_count: int = 0,
+) -> tuple[list[dict[str, Any]], bool]:
+    strong_picks = [review for review in reviews if review.get("is_ai_pick")]
+    if strong_picks or fallback_count <= 0:
+        return strong_picks, False
+
+    fallback_candidates = [
+        review
+        for review in reviews
+        if review.get("consensus_action") == pick_action and int(review.get("pick_agreement_count") or 0) > 0
+    ]
+    fallback_candidates.sort(
+        key=lambda review: (
+            int(review.get("pick_agreement_count") or 0),
+            int(review.get("agreement_count") or 0),
+            float(review.get("confidence") or 0),
+            int(review.get("score") or 0),
+        ),
+        reverse=True,
+    )
+    fallback_picks = []
+    for review in fallback_candidates[:fallback_count]:
+        copied = dict(review)
+        copied["is_ai_fallback_pick"] = True
+        copied["strong_pick_required_votes"] = min_agree_count
+        fallback_picks.append(copied)
+    return fallback_picks, bool(fallback_picks)
+
+
 def _float(value, default: float) -> float:
     try:
         return float(value)
