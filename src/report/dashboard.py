@@ -612,6 +612,22 @@ def _performance_html() -> str:
     <div class="metrics" id="metrics"></div>
     <div class="analysis-grid">
       <section>
+        <h2>5日強勢榜</h2>
+        <table>
+          <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>題材</th></tr></thead>
+          <tbody id="leaderTop"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>5日弱勢榜</h2>
+        <table>
+          <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>停損</th></tr></thead>
+          <tbody id="leaderBottom"></tbody>
+        </table>
+      </section>
+    </div>
+    <div class="analysis-grid">
+      <section>
         <h2>題材成效</h2>
         <div class="note">同一訊號若屬於多個題材，會分別計入各題材統計。<b>停損</b>欄 = 訊號發出後 5 日內股價觸及或跌破預設止損價的比率（<b>越低越好</b>，代表止損設定合理、未被提前出場）。</div>
         <table>
@@ -628,6 +644,29 @@ def _performance_html() -> str:
         </table>
       </section>
     </div>
+    <div class="analysis-grid">
+      <section>
+        <h2>操作建議成效</h2>
+        <table>
+          <thead><tr><th>建議</th><th>訊號數</th><th>完成數</th><th>5日勝率</th><th>5日平均</th></tr></thead>
+          <tbody id="actionStats"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>題材排行榜</h2>
+        <table>
+          <thead><tr><th>題材</th><th>完成數</th><th>5日勝率</th><th>5日平均</th><th>停損率</th></tr></thead>
+          <tbody id="topThemes"></tbody>
+        </table>
+      </section>
+    </div>
+    <section style="margin-bottom:16px;">
+      <h2>資料品質</h2>
+      <table>
+        <thead><tr><th>項目</th><th>數值</th></tr></thead>
+        <tbody id="dataQuality"></tbody>
+      </table>
+    </section>
   <section>
       <h2>進場條件分析</h2>
       <div class="note">比較進場條件是否對報酬有正向影響；樣本不足時數據僅供參考。</div>
@@ -676,6 +715,7 @@ def _performance_html() -> str:
     }
     function render() {
       const stats = data.stats || {};
+      const quality = data.data_quality || {};
       document.querySelector("#subtitle").textContent = `${data.as_of}｜近 ${data.days} 天｜僅供研究追蹤`;
       document.querySelector("#metrics").innerHTML = [
         metric("訊號總數", stats.signals),
@@ -685,6 +725,20 @@ def _performance_html() -> str:
         `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
+      const leaderRow = (r, includeStop=false) => `
+        <tr>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
+          <td data-label="訊號日">${esc(r.signal_date)}</td>
+          <td data-label="等級">${esc(r.grade)}</td>
+          <td data-label="5日報酬">${fmtPct(r.return_5d)}</td>
+          <td data-label="${includeStop ? "停損" : "題材"}">${includeStop ? fmtBool(r.stop_hit) : esc((r.themes || []).slice(0, 2).join(" / ") || "—")}</td>
+        </tr>`;
+      document.querySelector("#leaderTop").innerHTML = (data.leaderboard?.top_5d || []).length
+        ? data.leaderboard.top_5d.slice(0, 5).map(r => leaderRow(r)).join("")
+        : `<tr><td data-label="5日強勢榜" colspan="5">尚無完成追蹤訊號</td></tr>`;
+      document.querySelector("#leaderBottom").innerHTML = (data.leaderboard?.bottom_5d || []).length
+        ? data.leaderboard.bottom_5d.slice(0, 5).map(r => leaderRow(r, true)).join("")
+        : `<tr><td data-label="5日弱勢榜" colspan="5">尚無完成追蹤訊號</td></tr>`;
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `
           <tr>
@@ -706,6 +760,38 @@ def _performance_html() -> str:
           <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
         </tr>
       `).join("");
+      document.querySelector("#actionStats").innerHTML = (data.action_stats || []).length
+        ? data.action_stats.map(r => `
+          <tr>
+            <td data-label="建議">${esc(r.label)}</td>
+            <td data-label="訊號數">${esc(r.signals)}</td>
+            <td data-label="完成數">${esc(r.completed)}</td>
+            <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+            <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td data-label="操作建議成效" colspan="5">尚無操作建議統計</td></tr>`;
+      document.querySelector("#topThemes").innerHTML = (data.top_themes || []).length
+        ? data.top_themes.map(r => `
+          <tr>
+            <td data-label="題材">${esc(r.label)}</td>
+            <td data-label="完成數">${esc(r.completed)}</td>
+            <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+            <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+            <td data-label="停損率">${fmtNeutralPct(r.stop_hit_rate)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td data-label="題材排行榜" colspan="5">尚無完成追蹤題材</td></tr>`;
+      document.querySelector("#dataQuality").innerHTML = [
+        ["訊號總數", quality.signals],
+        ["5日完成", quality.completed_5d],
+        ["5日待追蹤", quality.pending_5d],
+        ["5日完成率", quality.completion_rate_5d == null ? "—" : `${Number(quality.completion_rate_5d).toFixed(1)}%`],
+        ["進場觸發樣本", quality.entry_trigger_known],
+        ["進場觸發率", quality.entry_trigger_rate == null ? "—" : `${Number(quality.entry_trigger_rate).toFixed(1)}%`],
+        ["停損樣本", quality.stop_known],
+        ["停損率", quality.stop_hit_rate == null ? "—" : `${Number(quality.stop_hit_rate).toFixed(1)}%`],
+      ].map(([label, value]) => `<tr><td data-label="項目">${esc(label)}</td><td data-label="數值">${esc(value ?? "—")}</td></tr>`).join("");
       const entry = data.entry_analysis || {};
       document.querySelector("#entryAnalysis").innerHTML = [
         ["有觸發進場", entry.triggered],

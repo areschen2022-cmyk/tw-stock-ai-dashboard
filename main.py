@@ -279,7 +279,8 @@ def main() -> int:
         "pick_action": ai_pick_action,
     }
     write_dashboard(dashboard_payload, ROOT / "dashboard")
-    write_performance(store.performance_summary(as_of, days=30), ROOT / "dashboard")
+    performance_payload = store.performance_summary(as_of, days=30)
+    write_performance(performance_payload, ROOT / "dashboard")
     write_theme_history(
         store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30),
         ROOT / "dashboard",
@@ -298,6 +299,13 @@ def main() -> int:
             numbers = "｜".join(x for x in [limit_str, stop_str] if x)
             return f"{action}" + (f"（{numbers}）" if numbers else "")
 
+        def _fmt_perf_pct(value: object, signed: bool = False) -> str:
+            if value is None:
+                return "—"
+            numeric = float(value)
+            sign = "+" if signed and numeric > 0 else ""
+            return f"{sign}{numeric:.1f}%"
+
         top_text = "\n".join(
             f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row['score']}/100｜{row['grade']}級\n"
             f"  📌 {row['trigger_summary']}\n"
@@ -311,6 +319,20 @@ def main() -> int:
             f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜危險分 {item.get('risk_score', 0)}｜{'、'.join(item['reasons'][:2])}"
             for item in exit_risks[:3]
         ) or "▸ 目前無紅黃警戒"
+        perf_stats = performance_payload.get("stats", {})
+        perf_quality = performance_payload.get("data_quality", {})
+        top_signal = (performance_payload.get("leaderboard", {}).get("top_5d") or [None])[0]
+        perf_text = (
+            f"近30日：{perf_stats.get('completed', 0)}/{perf_stats.get('signals', 0)} 已完成｜"
+            f"5日勝率 {_fmt_perf_pct(perf_stats.get('win_rate_5d'))}｜"
+            f"平均 {_fmt_perf_pct(perf_stats.get('avg_return_5d'), signed=True)}｜"
+            f"完成率 {_fmt_perf_pct(perf_quality.get('completion_rate_5d'))}"
+        )
+        if top_signal:
+            perf_text += (
+                f"\n▸ 最佳：<b>{top_signal['stock_id']} {top_signal['name']}</b>｜"
+                f"5日 {_fmt_perf_pct(top_signal.get('return_5d'), signed=True)}"
+            )
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
@@ -332,6 +354,9 @@ def main() -> int:
                 "",
                 "👁 <b>觀察追蹤：</b>",
                 review_text,
+                "",
+                "📈 <b>訊號成效：</b>",
+                perf_text,
                 "",
                 f"🔗 <a href=\"{dashboard_url}\">開啟監控頁</a>",
                 "⚠️ 僅供研究追蹤，不是投資建議。",

@@ -523,6 +523,10 @@ class SQLiteStore:
                 "a_win_rate_5d": _rate([item["return_5d"] > 0 for item in a_completed]),
             },
             "theme_stats": _theme_stats(items),
+            "top_themes": _top_buckets(_theme_stats(items), min_completed=1, limit=5),
+            "action_stats": _action_stats(items),
+            "leaderboard": _leaderboard(items, limit=8),
+            "data_quality": _performance_data_quality(items),
             "score_bands": _score_band_stats(items),
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
@@ -875,6 +879,77 @@ def _theme_stats(items: list[dict]) -> list[dict]:
         _bucket_stats(theme, bucket_items)
         for theme, bucket_items in sorted(buckets.items(), key=lambda entry: (-len(entry[1]), entry[0]))
     ]
+
+
+def _action_stats(items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        label = str(item.get("action") or "未分類")
+        buckets.setdefault(label, []).append(item)
+    return [
+        _bucket_stats(action, bucket_items)
+        for action, bucket_items in sorted(buckets.items(), key=lambda entry: (-len(entry[1]), entry[0]))
+    ]
+
+
+def _top_buckets(buckets: list[dict], min_completed: int = 1, limit: int = 5) -> list[dict]:
+    eligible = [bucket for bucket in buckets if int(bucket.get("completed") or 0) >= min_completed]
+    eligible.sort(
+        key=lambda bucket: (
+            float(bucket.get("avg_return_5d") if bucket.get("avg_return_5d") is not None else -999),
+            float(bucket.get("win_rate_5d") if bucket.get("win_rate_5d") is not None else -999),
+            int(bucket.get("completed") or 0),
+        ),
+        reverse=True,
+    )
+    return eligible[:limit]
+
+
+def _leaderboard(items: list[dict], limit: int = 8) -> dict:
+    completed_5d = [item for item in items if item.get("return_5d") is not None]
+    completed_3d = [item for item in items if item.get("return_3d") is not None]
+
+    def _rank(source: list[dict], key: str, reverse: bool) -> list[dict]:
+        ranked = sorted(source, key=lambda item: float(item.get(key) or 0), reverse=reverse)[:limit]
+        return [
+            {
+                "signal_date": item.get("signal_date"),
+                "stock_id": item.get("stock_id"),
+                "name": item.get("name"),
+                "grade": item.get("grade"),
+                "total_score": item.get("total_score"),
+                "action": item.get("action"),
+                "themes": item.get("themes", []),
+                "return_3d": item.get("return_3d"),
+                "return_5d": item.get("return_5d"),
+                "return_10d": item.get("return_10d"),
+                "stop_hit": item.get("stop_hit"),
+            }
+            for item in ranked
+        ]
+
+    return {
+        "top_5d": _rank(completed_5d, "return_5d", True),
+        "bottom_5d": _rank(completed_5d, "return_5d", False),
+        "top_3d": _rank(completed_3d, "return_3d", True),
+    }
+
+
+def _performance_data_quality(items: list[dict]) -> dict:
+    completed_5d = [item for item in items if item.get("return_5d") is not None]
+    pending_5d = [item for item in items if item.get("return_5d") is None]
+    entry_known = [item for item in items if item.get("entry_triggered") is not None]
+    stop_known = [item for item in items if item.get("stop_hit") is not None]
+    return {
+        "signals": len(items),
+        "completed_5d": len(completed_5d),
+        "pending_5d": len(pending_5d),
+        "completion_rate_5d": _rate([item.get("return_5d") is not None for item in items]),
+        "entry_trigger_known": len(entry_known),
+        "entry_trigger_rate": _rate([item.get("entry_triggered") for item in entry_known]),
+        "stop_known": len(stop_known),
+        "stop_hit_rate": _rate([item.get("stop_hit") for item in stop_known]),
+    }
 
 
 def _score_band_stats(items: list[dict]) -> list[dict]:
