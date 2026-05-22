@@ -36,7 +36,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     )
 
     assert payload["health"]["label"] == "正常"
-    assert payload["health"]["website_schedule"] == "07:05 / 07:35"
-    assert payload["health"]["telegram_schedule"] == "08:10 / 08:25"
+    assert payload["health"]["website_schedule"] == "04:30 / 05:00"
+    assert payload["health"]["telegram_schedule"] == "08:00 / 08:15"
     assert payload["health"]["news_sources"] == 2
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]

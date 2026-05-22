@@ -28,3 +28,7 @@ The monitoring dashboard is generated in `dashboard/`. To publish it through Git
 ```powershell
 .\scripts\publish_pages.ps1 -Message "Update dashboard"
 ```
+
+## External Scheduler
+
+Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispatch` for more reliable timing than GitHub's native schedule. See `docs/external_scheduler.md`.
