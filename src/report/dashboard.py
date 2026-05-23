@@ -65,6 +65,100 @@ def _decision_reason(item: StockScore) -> str:
     return "；".join(parts)
 
 
+def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_risks: list[dict] | None = None) -> dict:
+    ai_ids = {str(item.get("stock_id")) for item in ai_picks or []}
+    exit_ids = {str(item.get("stock_id")) for item in exit_risks or []}
+    ranked = sorted(rows, key=lambda row: (int(row.get("score") or 0), str(row.get("stock_id") or "")), reverse=True)
+
+    def _compact(row: dict, reason: str = "") -> dict:
+        return {
+            "stock_id": row.get("stock_id"),
+            "name": row.get("name"),
+            "score": row.get("score"),
+            "grade": row.get("grade"),
+            "action": row.get("action"),
+            "reason": reason or row.get("trigger_summary") or row.get("decision_reason") or "",
+            "entry_limit_price": row.get("entry_limit_price"),
+            "stop_price": row.get("stop_price"),
+            "themes": row.get("themes", []),
+        }
+
+    chase = [
+        _compact(row)
+        for row in ranked
+        if row.get("grade") in {"S+", "S", "A"}
+        and "可追" in str(row.get("action") or "")
+        and str(row.get("stock_id")) not in exit_ids
+    ][:5]
+    pullback = [
+        _compact(row)
+        for row in ranked
+        if row.get("grade") in {"S+", "S", "A", "B"} and "等拉回" in str(row.get("action") or "")
+    ][:5]
+    ai_watch = [_compact(row, "AI 首選觀察") for row in ranked if str(row.get("stock_id")) in ai_ids][:5]
+    risk = [
+        {
+            "stock_id": item.get("stock_id"),
+            "name": item.get("name"),
+            "level": item.get("level"),
+            "risk_score": item.get("risk_score"),
+            "reason": "、".join((item.get("reasons") or [])[:2]),
+            "action": item.get("action"),
+        }
+        for item in (exit_risks or [])[:5]
+    ]
+    return {
+        "chase": chase,
+        "pullback": pullback,
+        "ai_watch": ai_watch,
+        "risk": risk,
+        "summary": {
+            "chase": len(chase),
+            "pullback": len(pullback),
+            "ai_watch": len(ai_watch),
+            "risk": len(risk),
+        },
+    }
+
+
+def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict | None = None) -> dict:
+    status = source_status or {}
+    api = int(status.get("api") or 0)
+    cache = int(status.get("cache") or 0)
+    quota = int(status.get("quota") or 0)
+    error = int(status.get("error") or 0)
+    empty = int(status.get("empty") or 0)
+    usable = api + cache
+    total_fetches = usable + quota + error + empty
+    source_score = 100 if total_fetches == 0 else round(max(0, min(100, usable / total_fetches * 100 - quota * 3 - error * 5)))
+    scored_rows = [row for row in rows if row.get("price") is not None and row.get("score") is not None]
+    coverage = round(len(scored_rows) / len(rows) * 100, 1) if rows else 0
+    ai_health = (ai_status or {}).get("health") or {}
+    score = round(source_score * 0.65 + coverage * 0.25 + float(ai_health.get("score", 0)) * 0.10)
+    if score >= 85:
+        label = "高"
+    elif score >= 65:
+        label = "中"
+    else:
+        label = "偏低"
+    warnings = []
+    if quota:
+        warnings.append(f"資料源限流 {quota} 次")
+    if error:
+        warnings.append(f"資料源錯誤 {error} 次")
+    if coverage < 90 and rows:
+        warnings.append(f"股票資料覆蓋率 {coverage}%")
+    if ai_health and ai_health.get("label") in {"降級可用", "不穩定"}:
+        warnings.append(f"AI 模型{ai_health.get('label')}")
+    return {
+        "label": label,
+        "score": score,
+        "source_score": source_score,
+        "coverage": coverage,
+        "warnings": warnings,
+    }
+
+
 def _build_health_status(
     as_of: date,
     source_status: dict | None,
@@ -110,6 +204,8 @@ def build_dashboard_payload(
     alerts: list[str] | None = None,
     watch_reviews: list[dict] | None = None,
     exit_risks: list[dict] | None = None,
+    ai_picks: list[dict] | None = None,
+    ai_status: dict | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
     rows = []
@@ -187,6 +283,8 @@ def build_dashboard_payload(
         "alerts": alerts or [],
         "watch_reviews": watch_reviews or [],
         "exit_risks": exit_risks or [],
+        "action_lists": _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks),
+        "data_quality": _data_quality(source_status, rows, ai_status=ai_status),
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -198,6 +296,28 @@ def build_dashboard_payload(
         },
         "rows": rows,
     }
+
+
+def enrich_dashboard_payload(
+    payload: dict,
+    *,
+    source_status: dict | None = None,
+    ai_picks: list[dict] | None = None,
+    ai_status: dict | None = None,
+    exit_risks: list[dict] | None = None,
+) -> dict:
+    rows = payload.get("rows", [])
+    payload["action_lists"] = _action_lists(
+        rows,
+        ai_picks=ai_picks,
+        exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
+    )
+    payload["data_quality"] = _data_quality(
+        source_status if source_status is not None else payload.get("source_status", {}),
+        rows,
+        ai_status=ai_status,
+    )
+    return payload
 
 
 def write_dashboard(payload: dict, output_dir: Path) -> None:
@@ -325,6 +445,8 @@ def _html() -> str:
     <div class="bands">
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
+      <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
+      <section><h2>資料品質</h2><div id="dataQuality"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
       <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
       <section><h2>異常提醒</h2><div id="alerts"></div></section>
@@ -400,6 +522,23 @@ def _html() -> str:
         <div class="line">排程監控：${esc(health.scheduler || "local")}｜${esc(health.scheduled_task || "-")}｜預定 ${esc(targetText)}｜延遲 ${esc(delayText)}</div>
         <div class="line">新聞來源：成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
         <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
+      function compactAction(row) {
+        const score = row.score != null ? `｜${esc(row.score)}/100` : "";
+        const grade = row.grade ? `｜${esc(row.grade)}` : row.level ? `｜${esc(row.level)}` : "";
+        return `<div class="line"><b>${esc(row.stock_id)} ${esc(row.name)}</b>${score}${grade}<div class="small">${esc(row.reason || row.action || "")}</div></div>`;
+      }
+      const actionLists = data.action_lists || {};
+      document.querySelector("#actionLists").innerHTML = `
+        <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
+        ${(actionLists.chase || []).slice(0,3).map(compactAction).join("") || '<div class="line">今日暫無高分可追清單</div>'}
+        <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
+        ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
+      const quality = data.data_quality || {};
+      const qualityCls = quality.label === "高" ? "good" : quality.label === "中" ? "warn" : "bad";
+      document.querySelector("#dataQuality").innerHTML = `
+        <div class="line ${qualityCls}"><b>${esc(quality.label || "未知")}</b>｜${esc(quality.score ?? "—")}/100</div>
+        <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
+        ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";
@@ -711,6 +850,22 @@ def _performance_html() -> str:
         <tbody id="signalLab"></tbody>
       </table>
     </section>
+    <div class="analysis-grid">
+      <section>
+        <h2>回測強項</h2>
+        <table>
+          <thead><tr><th>類型</th><th>區塊</th><th>樣本</th><th>5日勝率</th><th>5日平均</th></tr></thead>
+          <tbody id="bestSegments"></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>需檢討區塊</h2>
+        <table>
+          <thead><tr><th>類型</th><th>區塊</th><th>樣本</th><th>5日勝率</th><th>5日平均</th></tr></thead>
+          <tbody id="weakSegments"></tbody>
+        </table>
+      </section>
+    </div>
     <section style="margin-bottom:16px;">
       <h2>AI 複核勝率</h2>
       <div class="note">統計 OpenRouter 多模型共識建議後的 5 日勝率；AI 只做複核與記錄，不直接改變原始分數。</div>
@@ -844,6 +999,20 @@ def _performance_html() -> str:
           <td data-label="10日平均">${fmtPct(r.avg_return_10d)}</td>
         </tr>
       `).join("");
+      const segmentRow = r => `
+        <tr>
+          <td data-label="類型">${esc(r.group)}</td>
+          <td data-label="區塊">${esc(r.label)}</td>
+          <td data-label="樣本">${esc(r.completed)}</td>
+          <td data-label="5日勝率">${fmtPct(r.win_rate_5d)}</td>
+          <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+        </tr>`;
+      document.querySelector("#bestSegments").innerHTML = (data.backtest_insights?.best_segments || []).length
+        ? data.backtest_insights.best_segments.slice(0,5).map(segmentRow).join("")
+        : `<tr><td data-label="回測強項" colspan="5">樣本不足</td></tr>`;
+      document.querySelector("#weakSegments").innerHTML = (data.backtest_insights?.weak_segments || []).length
+        ? data.backtest_insights.weak_segments.slice(0,5).map(segmentRow).join("")
+        : `<tr><td data-label="需檢討區塊" colspan="5">暫無負報酬區塊</td></tr>`;
       document.querySelector("#aiCouncilStats").innerHTML = (data.ai_council?.by_action || []).map(r => `
         <tr>
           <td data-label="AI 建議">${esc(r.action)}</td>

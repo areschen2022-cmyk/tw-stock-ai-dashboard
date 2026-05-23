@@ -530,6 +530,7 @@ class SQLiteStore:
             "score_bands": _score_band_stats(items),
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
+            "backtest_insights": _backtest_insights(items),
             "ai_council": self.ai_council_summary(as_of, days=days),
             "items": items,
         }
@@ -950,6 +951,69 @@ def _performance_data_quality(items: list[dict]) -> dict:
         "stop_known": len(stop_known),
         "stop_hit_rate": _rate([item.get("stop_hit") for item in stop_known]),
     }
+
+
+def _backtest_insights(items: list[dict]) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    grade_rows = grade_return_summary(items)
+    action_rows = _action_stats(items)
+    theme_rows = _theme_stats(items)
+    candidates = []
+    for group, rows in [
+        ("grade", grade_rows),
+        ("action", action_rows),
+        ("theme", theme_rows),
+    ]:
+        label_key = "grade" if group == "grade" else "label"
+        for row in rows:
+            completed_count = int(row.get("completed") or row.get("completed_5d") or 0)
+            if completed_count <= 0:
+                continue
+            candidates.append(
+                {
+                    "group": group,
+                    "label": row.get(label_key),
+                    "signals": row.get("signals"),
+                    "completed": completed_count,
+                    "win_rate_5d": row.get("win_rate_5d"),
+                    "avg_return_5d": row.get("avg_return_5d"),
+                    "stop_hit_rate": row.get("stop_hit_rate"),
+                }
+            )
+    candidates.sort(
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else -999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else -999),
+            int(row.get("completed") or 0),
+        ),
+        reverse=True,
+    )
+    weak = [row for row in candidates if row.get("avg_return_5d") is not None and float(row["avg_return_5d"]) < 0]
+    weak.sort(
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else 999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else 999),
+        )
+    )
+    return {
+        "sample": len(completed),
+        "best_segments": candidates[:5],
+        "weak_segments": weak[:5],
+        "notes": _backtest_notes(completed, candidates, weak),
+    }
+
+
+def _backtest_notes(completed: list[dict], candidates: list[dict], weak: list[dict]) -> list[str]:
+    notes = []
+    if len(completed) < 20:
+        notes.append("樣本低於 20 筆，暫不建議調整門檻")
+    if candidates:
+        best = candidates[0]
+        notes.append(f"目前最佳區塊：{best['group']} {best['label']}，5日平均 {best['avg_return_5d']}%")
+    if weak:
+        worst = weak[0]
+        notes.append(f"需檢討區塊：{worst['group']} {worst['label']}，5日平均 {worst['avg_return_5d']}%")
+    return notes
 
 
 def _score_band_stats(items: list[dict]) -> list[dict]:

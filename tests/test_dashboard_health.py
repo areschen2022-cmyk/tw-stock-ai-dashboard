@@ -40,6 +40,8 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["health"]["telegram_schedule"] == "08:00 / 08:15"
     assert payload["health"]["news_sources"] == 2
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]
+    assert payload["action_lists"]["summary"]["chase"] == 0
+    assert payload["data_quality"]["label"] in {"高", "中", "偏低"}
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

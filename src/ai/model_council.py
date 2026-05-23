@@ -92,6 +92,12 @@ def run_ai_council(
 
     if status_out is not None:
         successful_models = [item["model"] for item in model_reviews]
+        health = model_health(
+            requested_models=models,
+            successful_models=successful_models,
+            failed_models=failed_models,
+            timed_out_models=timed_out_models,
+        )
         status_out.update(
             {
                 "requested_models": len(models),
@@ -100,6 +106,7 @@ def run_ai_council(
                 "timed_out_models": timed_out_models,
                 "success_model_names": successful_models,
                 "available_ratio": round(len(successful_models) / len(models), 2) if models else 0,
+                "health": health,
             }
         )
 
@@ -289,6 +296,40 @@ def select_ai_picks(
         copied["strong_pick_required_votes"] = min_agree_count
         fallback_picks.append(copied)
     return fallback_picks, bool(fallback_picks)
+
+
+def model_health(
+    *,
+    requested_models: list[str],
+    successful_models: list[str],
+    failed_models: list[str],
+    timed_out_models: list[str],
+) -> dict[str, Any]:
+    requested = len(requested_models)
+    success = len(successful_models)
+    failed = len(failed_models)
+    timed_out = len(timed_out_models)
+    available_ratio = (success / requested) if requested else 0
+    timeout_ratio = (timed_out / requested) if requested else 0
+    score = round(max(0, min(100, available_ratio * 100 - timeout_ratio * 25)))
+    if requested == 0:
+        label = "未設定"
+    elif score >= 80:
+        label = "穩定"
+    elif score >= 50:
+        label = "降級可用"
+    else:
+        label = "不穩定"
+    return {
+        "label": label,
+        "score": score,
+        "requested": requested,
+        "success": success,
+        "failed": failed,
+        "timed_out": timed_out,
+        "available_ratio": round(available_ratio, 2),
+        "timeout_ratio": round(timeout_ratio, 2),
+    }
 
 
 def _float(value, default: float) -> float:

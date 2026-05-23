@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from datetime import date, timedelta
 
-from src.ai.model_council import run_ai_council, select_ai_picks
+from src.ai.model_council import model_health, run_ai_council, select_ai_picks
 from src.scoring.score_engine import StockScore
 from src.storage.sqlite_store import SQLiteStore
 
@@ -54,6 +54,7 @@ def test_ai_council_builds_consensus() -> None:
     assert status["requested_models"] == 2
     assert status["successful_models"] == 2
     assert status["available_ratio"] == 1
+    assert status["health"]["label"] == "穩定"
 
 
 def test_ai_council_requires_five_buy_votes_for_pick() -> None:
@@ -157,3 +158,16 @@ def test_ai_council_summary_tracks_forward_win_rate(tmp_path) -> None:
     assert by_action["可追"]["avg_return_5d"] == 10
     assert summary["items"][0]["agreement_count"] == 2
     assert summary["items"][0]["pick_agreement_count"] == 2
+
+
+def test_model_health_scores_timeout_and_failures() -> None:
+    health = model_health(
+        requested_models=["a", "b", "c", "d"],
+        successful_models=["a", "b"],
+        failed_models=["c"],
+        timed_out_models=["d"],
+    )
+
+    assert health["score"] == 44
+    assert health["label"] == "不穩定"
+    assert health["available_ratio"] == 0.5

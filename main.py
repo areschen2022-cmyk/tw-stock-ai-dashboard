@@ -21,7 +21,7 @@ from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
-from src.report.dashboard import build_dashboard_payload, write_dashboard, write_performance, write_theme_history
+from src.report.dashboard import build_dashboard_payload, enrich_dashboard_payload, write_dashboard, write_performance, write_theme_history
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts, format_watch_reviews
 from src.report.report_builder import build_report
@@ -278,6 +278,13 @@ def main() -> int:
         "fallback_pick_count": ai_fallback_count,
         "pick_action": ai_pick_action,
     }
+    enrich_dashboard_payload(
+        dashboard_payload,
+        source_status=source_status,
+        ai_picks=ai_picks,
+        ai_status=ai_status,
+        exit_risks=exit_risks,
+    )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")
@@ -288,7 +295,9 @@ def main() -> int:
     telegram_message = report
     if args.telegram_summary:
         s = dashboard_payload["summary"]
-        top_rows = [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A", "B"}][:3]
+        action_lists = dashboard_payload.get("action_lists", {})
+        data_quality = dashboard_payload.get("data_quality", {})
+        ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
 
         def _entry_line(row: dict) -> str:
             action = row.get("action", "只觀察")
@@ -306,12 +315,17 @@ def main() -> int:
             sign = "+" if signed and numeric > 0 else ""
             return f"{sign}{numeric:.1f}%"
 
-        top_text = "\n".join(
-            f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row['score']}/100｜{row['grade']}級\n"
-            f"  📌 {row['trigger_summary']}\n"
-            f"  🎯 {_entry_line(row)}"
-            for row in top_rows
-        ) or "▸ 今日暫無 S/A/B 級觀察"
+        def _list_text(rows: list[dict], empty: str, limit: int = 3) -> str:
+            return "\n".join(
+                f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row.get('score', row.get('risk_score', 0))}/100｜{row.get('grade', row.get('level', '-'))}\n"
+                f"  📌 {row.get('reason') or row.get('trigger_summary') or ''}\n"
+                f"  🎯 {_entry_line(row) if row.get('entry_limit_price') or row.get('stop_price') else row.get('action', '')}"
+                for row in rows[:limit]
+            ) or empty
+
+        must_watch_text = _list_text(action_lists.get("chase", []), "▸ 今日暫無高分可追清單")
+        ai_watch_text = _list_text(action_lists.get("ai_watch", []), "▸ AI 暫無首選觀察")
+        pullback_text = _list_text(action_lists.get("pullback", []), "▸ 今日暫無等拉回清單", limit=2)
         alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
         review_lines = format_watch_reviews(watch_reviews)
         review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
@@ -338,6 +352,12 @@ def main() -> int:
         schedule_text = "未記錄"
         if schedule_delay is not None:
             schedule_text = f"{float(schedule_delay):.1f} 分"
+        quality_text = (
+            f"{data_quality.get('label', '未知')}｜分數 {data_quality.get('score', '—')}/100｜"
+            f"覆蓋率 {data_quality.get('coverage', '—')}%｜AI {ai_health.get('label', '未啟用')}"
+        )
+        if data_quality.get("warnings"):
+            quality_text += "\n" + "\n".join(f"⚠️ {item}" for item in data_quality["warnings"][:3])
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
@@ -349,8 +369,14 @@ def main() -> int:
                 f"📊 掃描 <b>{s['scanned']}</b> 檔｜S+ <b>{s['s_plus_grade']}</b>｜S <b>{s['s_grade']}</b>｜A <b>{s['a_grade']}</b>｜B <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
                 f"⏱ 排程：{health.get('scheduler', 'local')}｜{health.get('scheduled_task') or '-'}｜延遲 {schedule_text}",
                 "",
-                "🏆 <b>Top 觀察：</b>",
-                top_text,
+                "🔥 <b>今日必看：</b>",
+                must_watch_text,
+                "",
+                "🤖 <b>AI 首選觀察：</b>",
+                ai_watch_text,
+                "",
+                "⏳ <b>等拉回：</b>",
+                pullback_text,
                 "",
                 "🚨 <b>異常提醒：</b>",
                 alert_text,
@@ -363,6 +389,9 @@ def main() -> int:
                 "",
                 "📈 <b>訊號成效：</b>",
                 perf_text,
+                "",
+                "🧪 <b>資料品質：</b>",
+                quality_text,
                 "",
                 f"🔗 <a href=\"{dashboard_url}\">開啟監控頁</a>",
                 "⚠️ 僅供研究追蹤，不是投資建議。",
