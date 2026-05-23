@@ -950,7 +950,21 @@ def _performance_data_quality(items: list[dict]) -> dict:
         "entry_trigger_rate": _rate([item.get("entry_triggered") for item in entry_known]),
         "stop_known": len(stop_known),
         "stop_hit_rate": _rate([item.get("stop_hit") for item in stop_known]),
+        "pending_examples": _pending_examples(pending_5d, limit=8),
     }
+
+
+def _pending_examples(items: list[dict], limit: int = 8) -> list[dict]:
+    return [
+        {
+            "signal_date": item.get("signal_date"),
+            "stock_id": item.get("stock_id"),
+            "name": item.get("name"),
+            "grade": item.get("grade"),
+            "action": item.get("action"),
+        }
+        for item in sorted(items, key=lambda row: (str(row.get("signal_date") or ""), int(row.get("total_score") or 0)), reverse=True)[:limit]
+    ]
 
 
 def _backtest_insights(items: list[dict]) -> dict:

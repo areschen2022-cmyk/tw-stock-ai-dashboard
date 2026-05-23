@@ -358,6 +358,13 @@ def main() -> int:
         )
         if data_quality.get("warnings"):
             quality_text += "\n" + "\n".join(f"⚠️ {item}" for item in data_quality["warnings"][:3])
+        if data_quality.get("details"):
+            detail_lines = []
+            for item in data_quality["details"][:3]:
+                detail_lines.append(
+                    f"▸ {item.get('type')}｜{item.get('dataset')}｜{item.get('data_id')}｜{item.get('reason') or item.get('period') or '-'}"
+                )
+            quality_text += "\n" + "\n".join(detail_lines)
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(

@@ -51,3 +51,18 @@ def test_finmind_monthly_cache_reuses_complete_months(tmp_path, monkeypatch) -> 
     ]
     assert client.status_counts["api"] == 1
     assert client.status_counts["cache"] == 2
+
+
+def test_finmind_source_status_includes_events(monkeypatch, tmp_path) -> None:
+    class Response:
+        status_code = 429
+        text = ""
+
+    monkeypatch.setattr("src.data_provider.finmind_client.requests.get", lambda *args, **kwargs: Response())
+    client = FinMindClient(cache_dir=tmp_path)
+
+    client.stock_prices("2330", date(2026, 5, 1), date(2026, 5, 1))
+    status = client.source_status()
+
+    assert status["events"][0]["type"] == "quota"
+    assert status["events"][0]["data_id"] == "2330"

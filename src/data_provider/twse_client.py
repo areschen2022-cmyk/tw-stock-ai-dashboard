@@ -30,6 +30,7 @@ class TwseClient:
         self.cache_dir = cache_dir or Path("data") / "cache" / "twse"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.status_counts = {"api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0, "fallback": 0}
+        self.status_events: list[dict[str, Any]] = []
         self._lock = Lock()
         self._today_all_lock = Lock()
         self._today_all_df: pd.DataFrame | None = None  # in-memory cache for STOCK_DAY_ALL
@@ -42,12 +43,15 @@ class TwseClient:
             "Accept": "application/json,text/plain,*/*",
         }
 
-    def _count(self, key: str) -> None:
+    def _count(self, key: str, *, record_event: bool = True, **event: Any) -> None:
         with self._lock:
             self.status_counts[key] += 1
+            if record_event and key in {"quota", "error", "empty", "fallback"}:
+                self.status_events.append({"type": key, **event})
 
     def source_status(self) -> dict[str, Any]:
         fallback_status = self.fallback.source_status()
+        fallback_events = fallback_status.get("events", []) if isinstance(fallback_status, dict) else []
         error = self.status_counts["error"] + int(fallback_status.get("error", 0))
         quota = self.status_counts["quota"] + int(fallback_status.get("quota", 0))
         api = self.status_counts["api"] + int(fallback_status.get("api", 0))
@@ -72,6 +76,7 @@ class TwseClient:
             "cache": cache,
             "quota": quota,
             "error": error,
+            "events": [*self.status_events, *fallback_events][-20:],
             "fallback_status": fallback_status,
         }
 
@@ -112,12 +117,12 @@ class TwseClient:
                 payload = response.json()
             except Exception:
                 logging.warning("TWSE STOCK_DAY_ALL fetch failed")
-                self._count("error")
+                self._count("error", dataset="STOCK_DAY_ALL", data_id="all", reason="fetch_failed")
                 self._today_all_df = pd.DataFrame()
                 return pd.DataFrame()
             df = pd.DataFrame(payload) if isinstance(payload, list) else pd.DataFrame()
             if df.empty:
-                self._count("empty")
+                self._count("empty", dataset="STOCK_DAY_ALL", data_id="all")
                 self._today_all_df = pd.DataFrame()
                 return df
             df.to_json(cache_path, orient="records", force_ascii=False)
@@ -193,17 +198,17 @@ class TwseClient:
             response = requests.get(self.STOCK_DAY_URL, params=params, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()
             if "json" not in response.headers.get("Content-Type", "").lower() and response.text.lstrip().startswith("<"):
-                self._count("empty")
+                self._count("empty", dataset="STOCK_DAY", data_id=stock_id, period=key, reason="html")
                 logging.warning("TWSE returned non-json stock price page for %s %s", stock_id, key)
                 return pd.DataFrame()
             payload = response.json()
         except Exception:
-            self._count("error")
+            self._count("error", dataset="STOCK_DAY", data_id=stock_id, period=key, reason="fetch_failed")
             logging.warning("TWSE stock price fetch failed for %s %s", stock_id, key)
             return pd.DataFrame()
         rows = payload.get("data") or []
         if not rows:
-            self._count("empty")
+            self._count("empty", dataset="STOCK_DAY", data_id=stock_id, period=key)
             return pd.DataFrame()
         parsed = []
         for row in rows:
@@ -234,27 +239,27 @@ class TwseClient:
             else:
                 frames.append(frame)
         if missing:
-            self._count("fallback")
+            self._count("fallback", dataset="stock_prices", data_id=stock_id, reason="twse_month_missing")
             fallback = self.fallback.stock_prices(stock_id, start_date, end_date)
             if not fallback.empty:
                 return fallback
         if not frames:
-            self._count("fallback")
+            self._count("fallback", dataset="stock_prices", data_id=stock_id, reason="twse_all_missing")
             return self.fallback.stock_prices(stock_id, start_date, end_date)
         df = pd.concat(frames, ignore_index=True)
         dates = pd.to_datetime(df["date"], errors="coerce").dt.date
         return df[(dates >= start_date) & (dates <= end_date)]
 
     def institutional(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        self._count("fallback")
+        self._count("fallback", record_event=False)
         return self.fallback.institutional(stock_id, start_date, end_date)
 
     def margin(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        self._count("fallback")
+        self._count("fallback", record_event=False)
         return self.fallback.margin(stock_id, start_date, end_date)
 
     def monthly_revenue(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        self._count("fallback")
+        self._count("fallback", record_event=False)
         return self.fallback.monthly_revenue(stock_id, start_date, end_date)
 
     def dividend(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
@@ -268,13 +273,13 @@ class TwseClient:
                 response.raise_for_status()
                 df = pd.DataFrame(response.json())
             except Exception:
-                self._count("error")
+                self._count("error", dataset="TWT48U_ALL", data_id="all", reason="fetch_failed")
                 logging.exception("TWSE dividend fetch failed")
-                self._count("fallback")
+                self._count("fallback", dataset="dividend", data_id=stock_id)
                 return self.fallback.dividend(stock_id, start_date, end_date)
             if df.empty:
-                self._count("empty")
-                self._count("fallback")
+                self._count("empty", dataset="TWT48U_ALL", data_id="all")
+                self._count("fallback", dataset="dividend", data_id=stock_id)
                 return self.fallback.dividend(stock_id, start_date, end_date)
             df.to_json(cache_path, orient="records", force_ascii=False, date_format="iso")
             self._count("api")
@@ -313,12 +318,12 @@ class TwseClient:
                 response.raise_for_status()
                 df = pd.DataFrame(response.json())
             except Exception:
-                self._count("error")
+                self._count("error", dataset="BWIBBU_ALL", data_id="all", reason="fetch_failed")
                 logging.warning("TWSE valuation (BWIBBU_ALL) fetch failed")
                 self._valuation_df = pd.DataFrame()
                 return pd.DataFrame()
             if df.empty:
-                self._count("empty")
+                self._count("empty", dataset="BWIBBU_ALL", data_id="all")
                 self._valuation_df = pd.DataFrame()
                 return pd.DataFrame()
             df.to_json(cache_path, orient="records", force_ascii=False)
@@ -368,12 +373,12 @@ class TwseClient:
                 response.raise_for_status()
                 raw = pd.DataFrame(response.json())
             except Exception:
-                self._count("error")
+                self._count("error", dataset="MI_INDEX", data_id="all", reason="fetch_failed")
                 logging.warning("TWSE sector index (MI_INDEX) fetch failed")
                 self._sector_df = pd.DataFrame()
                 return pd.DataFrame()
             if raw.empty:
-                self._count("empty")
+                self._count("empty", dataset="MI_INDEX", data_id="all")
                 self._sector_df = pd.DataFrame()
                 return pd.DataFrame()
             rename_map = {
@@ -404,7 +409,7 @@ class TwseClient:
             return df
 
     def overseas_bundle(self, start_date: date, end_date: date) -> dict[str, pd.DataFrame]:
-        self._count("fallback")
+        self._count("fallback", record_event=False)
         return self.fallback.overseas_bundle(start_date, end_date)
 
     def stock_bundle(

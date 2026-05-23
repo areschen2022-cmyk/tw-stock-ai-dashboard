@@ -32,7 +32,14 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
         {"stock_names": {"2330": "台積電"}, "theme_pools": {}},
         overseas=None,
         theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {}, source_count=2, failed_count=0),
-        source_status={"label": "正常", "api": 1, "cache": 0, "quota": 0, "error": 0},
+        source_status={
+            "label": "正常",
+            "api": 1,
+            "cache": 0,
+            "quota": 0,
+            "error": 0,
+            "events": [{"type": "empty", "dataset": "STOCK_DAY", "data_id": "2330", "period": "2026-05"}],
+        },
     )
 
     assert payload["health"]["label"] == "正常"
@@ -42,6 +49,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]
     assert payload["action_lists"]["summary"]["chase"] == 0
     assert payload["data_quality"]["label"] in {"高", "中", "偏低"}
+    assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

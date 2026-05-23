@@ -75,3 +75,14 @@ def test_twse_source_status_labels_are_readable(tmp_path) -> None:
     assert client.source_status()["label"] == "錯誤"
     client.status_counts["fallback"] = 1
     assert client.source_status()["label"] == "部分限流"
+
+
+def test_twse_source_status_includes_events(tmp_path) -> None:
+    client = TwseClient(fallback=_Fallback(), cache_dir=tmp_path)
+
+    client._count("empty", dataset="STOCK_DAY", data_id="2330", period="2026-05")
+    status = client.source_status()
+
+    assert status["events"][0]["type"] == "empty"
+    assert status["events"][0]["dataset"] == "STOCK_DAY"
+    assert status["events"][0]["data_id"] == "2330"

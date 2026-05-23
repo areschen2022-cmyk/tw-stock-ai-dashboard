@@ -22,11 +22,14 @@ class FinMindClient:
         self.cache_dir = cache_dir or Path("data") / "cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.status_counts = {"api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0}
+        self.status_events: list[dict[str, Any]] = []
         self._lock = Lock()
 
-    def _count(self, key: str) -> None:
+    def _count(self, key: str, **event: Any) -> None:
         with self._lock:
             self.status_counts[key] += 1
+            if key in {"quota", "error", "empty"}:
+                self.status_events.append({"type": key, **event})
 
     def _cache_path(self, dataset: str, data_id: str, year: int, month: int, current: bool = False) -> Path:
         safe_id = data_id.replace("^", "idx_").replace("/", "_").replace(" ", "_")
@@ -74,25 +77,25 @@ class FinMindClient:
             response = requests.get(self.BASE_URL, params=params, timeout=self.timeout)
         except requests.RequestException as exc:
             logging.warning("FinMind request failed for %s %s: %s", dataset, data_id, exc)
-            self._count("error")
+            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), reason=str(exc)[:120])
             return pd.DataFrame()
         if response.status_code in {402, 429}:
             logging.warning("FinMind quota/permission issue for %s %s: %s", dataset, data_id, response.status_code)
-            self._count("quota")
+            self._count("quota", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), status_code=response.status_code)
             return pd.DataFrame()
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            self._count("error")
+            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), status_code=response.status_code)
             raise
         try:
             payload = response.json()
         except ValueError as exc:
             logging.warning("FinMind returned invalid json for %s %s: %s", dataset, data_id, exc)
-            self._count("error")
+            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), reason="invalid_json")
             return pd.DataFrame()
         if not payload.get("data"):
-            self._count("empty")
+            self._count("empty", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat())
             return pd.DataFrame()
         df = pd.DataFrame(payload["data"])
         self._count("api")
@@ -162,7 +165,7 @@ class FinMindClient:
             label = "正常"
         else:
             label = "無資料"
-        return {"label": label, **self.status_counts}
+        return {"label": label, **self.status_counts, "events": self.status_events[-20:]}
 
     def stock_prices(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
         df = self._fetch("TaiwanStockPrice", stock_id, start_date, end_date)

@@ -150,12 +150,34 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
         warnings.append(f"股票資料覆蓋率 {coverage}%")
     if ai_health and ai_health.get("label") in {"降級可用", "不穩定"}:
         warnings.append(f"AI 模型{ai_health.get('label')}")
+    events = list(status.get("events") or [])[-10:]
+    event_summary: dict[str, int] = {}
+    for event in events:
+        key = str(event.get("type") or "unknown")
+        event_summary[key] = event_summary.get(key, 0) + 1
+    details = []
+    for event in events[-6:]:
+        dataset = event.get("dataset") or "unknown"
+        data_id = event.get("data_id") or "-"
+        period = event.get("period") or event.get("start_date") or event.get("year") or ""
+        reason = event.get("reason") or event.get("status_code") or ""
+        details.append(
+            {
+                "type": event.get("type"),
+                "dataset": dataset,
+                "data_id": data_id,
+                "period": period,
+                "reason": reason,
+            }
+        )
     return {
         "label": label,
         "score": score,
         "source_score": source_score,
         "coverage": coverage,
         "warnings": warnings,
+        "event_summary": event_summary,
+        "details": details,
     }
 
 
@@ -538,7 +560,8 @@ def _html() -> str:
       document.querySelector("#dataQuality").innerHTML = `
         <div class="line ${qualityCls}"><b>${esc(quality.label || "未知")}</b>｜${esc(quality.score ?? "—")}/100</div>
         <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
-        ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}`;
+        ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
+        ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(x.type)}｜${esc(x.dataset)}｜${esc(x.data_id)}｜${esc(x.reason || x.period || "-")}</div>`).join("") : ""}`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";
@@ -975,6 +998,12 @@ def _performance_html() -> str:
         ["停損樣本", quality.stop_known],
         ["停損率", quality.stop_hit_rate == null ? "—" : `${Number(quality.stop_hit_rate).toFixed(1)}%`],
       ].map(([label, value]) => `<tr><td data-label="項目">${esc(label)}</td><td data-label="數值">${esc(value ?? "—")}</td></tr>`).join("");
+      if ((quality.pending_examples || []).length) {
+        document.querySelector("#dataQuality").insertAdjacentHTML(
+          "beforeend",
+          `<tr><td data-label="項目">待追蹤範例</td><td data-label="數值">${quality.pending_examples.slice(0,4).map(x => `${esc(x.signal_date)} ${esc(x.stock_id)} ${esc(x.name)}`).join("<br>")}</td></tr>`
+        );
+      }
       const entry = data.entry_analysis || {};
       document.querySelector("#entryAnalysis").innerHTML = [
         ["有觸發進場", entry.triggered],

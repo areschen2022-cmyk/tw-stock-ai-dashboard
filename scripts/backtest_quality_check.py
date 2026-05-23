@@ -89,6 +89,10 @@ def run_check(root: Path, days: int, extreme_limit_pct: float) -> tuple[int, lis
     print(f"signals={len(items)} completed_5d={len(completed)}")
     print(f"win_rate_5d={summary.get('stats', {}).get('win_rate_5d')} avg_return_5d={summary.get('stats', {}).get('avg_return_5d')}")
     print(f"ai_signals={ai_summary.get('stats', {}).get('signals')} ai_completed={ai_summary.get('stats', {}).get('completed')}")
+    if quality.get("pending_examples"):
+        print("pending_examples=" + ", ".join(
+            f"{item['signal_date']}:{item['stock_id']}" for item in quality["pending_examples"][:8]
+        ))
     for note in summary.get("backtest_insights", {}).get("notes", []):
         print(f"note={note}")
     if issues:
