@@ -63,6 +63,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]
     assert payload["action_lists"]["summary"]["chase"] == 0
     assert payload["data_quality"]["label"] in {"high", "medium", "low"}
+    assert payload["data_quality"]["label_text"] in {"高", "中", "偏低"}
     assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
     assert payload["data_quality"]["recovery_status"]["retryable"] == 1
     assert payload["decision_summary"]["top_theme"] == "defense_policy"

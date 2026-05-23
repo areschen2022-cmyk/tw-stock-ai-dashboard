@@ -62,6 +62,19 @@ US_POLICY_RULES: tuple[dict, ...] = (
     },
 )
 
+US_POLICY_LABEL_ZH = {
+    "Trump tariff / China tariff": "川普/中國關稅",
+    "AI chip export control": "AI晶片出口管制",
+    "House / Senate China bill": "美國國會對中法案",
+    "Defense bill / NDAA": "國防授權法案/NDAA",
+    "SpaceX / Starlink": "SpaceX/Starlink",
+    "Data center power": "資料中心電力",
+    "AI capex / hyperscaler": "AI資本支出/雲端大廠",
+}
+
+US_DIRECTION_ZH = {"risk": "偏風險", "bullish": "偏利多", "mixed": "多空交錯"}
+US_CONFIDENCE_ZH = {"confirmed": "已確認", "signal": "訊號", "watch": "觀察"}
+
 CONFIRMED_TERMS = ("announces", "announced", "passes", "passed", "approves", "approved", "signs", "signed")
 WATCH_TERMS = ("may", "could", "proposal", "draft", "considering", "expected", "hearing", "urges")
 
@@ -156,7 +169,9 @@ def classify_us_policy_events(headlines: list[str]) -> list[dict]:
             events.append(
                 {
                     "event": rule["label"],
+                    "event_zh": US_POLICY_LABEL_ZH.get(str(rule["label"]), str(rule["label"])),
                     "headline": headline,
+                    "headline_zh": _policy_headline_zh(str(rule["label"]), str(rule["direction"]), confidence),
                     "themes": list(rule["themes"]),
                     "direction": rule["direction"],
                     "sensitivity": rule["sensitivity"],
@@ -166,3 +181,10 @@ def classify_us_policy_events(headlines: list[str]) -> list[dict]:
             )
     events.sort(key=lambda item: (item["sensitivity"] == "high", item["score"]), reverse=True)
     return events
+
+
+def _policy_headline_zh(label: str, direction: str, confidence: str) -> str:
+    return (
+        f"{US_POLICY_LABEL_ZH.get(label, label)}出現{US_CONFIDENCE_ZH.get(confidence, confidence)}；"
+        f"對相關台股題材影響為{US_DIRECTION_ZH.get(direction, direction)}。"
+    )

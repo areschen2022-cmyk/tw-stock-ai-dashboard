@@ -43,6 +43,8 @@ def test_us_policy_radar_boosts_sensitive_themes() -> None:
     assert signal.theme_boosts["defense_policy"] > 0
     assert signal.theme_boosts["advanced_packaging"] > 0
     assert signal.us_events[0]["sensitivity"] == "high"
+    assert signal.us_events[0]["event_zh"]
+    assert signal.us_events[0]["headline_zh"]
 
 
 def test_passive_component_headline_matches_theme_keywords() -> None:

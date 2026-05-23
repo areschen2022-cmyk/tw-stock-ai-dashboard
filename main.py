@@ -15,6 +15,7 @@ from src.ai.model_council import run_ai_council, select_ai_picks
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
+from src.data_provider.retry_queue import run_retry_queue
 from src.data_provider.twse_client import TwseClient
 from src.indicators.market import sector_context
 from src.indicators.overseas import analyze_overseas_sentiment
@@ -85,6 +86,66 @@ def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     if not active_theme_keys:
         return {}
     return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
+
+
+def _zh_posture(value: str) -> str:
+    return {
+        "active_watch": "積極觀察",
+        "selective_watch": "精選觀察",
+        "risk_control": "風險控管",
+    }.get(value, value)
+
+
+def _zh_policy_event(value: object) -> str:
+    return {
+        "Trump tariff / China tariff": "川普/中國關稅",
+        "AI chip export control": "AI晶片出口管制",
+        "House / Senate China bill": "美國國會對中法案",
+        "Defense bill / NDAA": "國防授權法案/NDAA",
+        "SpaceX / Starlink": "SpaceX/Starlink",
+        "Data center power": "資料中心電力",
+        "AI capex / hyperscaler": "AI資本支出/雲端大廠",
+    }.get(str(value or ""), str(value or ""))
+
+
+def _zh_policy_level(value: object) -> str:
+    return {
+        "high": "高敏感",
+        "medium": "中敏感",
+        "low": "低敏感",
+        "confirmed": "已確認",
+        "signal": "訊號",
+        "watch": "觀察",
+        "bullish": "利多",
+        "risk": "風險",
+        "mixed": "多空交錯",
+    }.get(str(value or ""), str(value or ""))
+
+
+def _zh_data_event(value: object) -> str:
+    return {
+        "fallback": "備援資料",
+        "empty": "空資料",
+        "error": "抓取失敗",
+        "quota": "限流",
+    }.get(str(value or ""), str(value or ""))
+
+
+def _zh_dataset(value: object) -> str:
+    return {
+        "STOCK_DAY": "個股月成交",
+        "stock_prices": "股價序列",
+        "STOCK_DAY_ALL": "全市場日成交",
+    }.get(str(value or ""), str(value or ""))
+
+
+def _zh_data_reason(value: object) -> str:
+    return {
+        "html": "TWSE 回傳網頁非資料",
+        "fetch_failed": "抓取失敗",
+        "twse_month_missing": "TWSE 月資料缺口",
+        "empty_after_retry": "補抓後仍無資料",
+    }.get(str(value or ""), str(value or ""))
 
 
 def main() -> int:
@@ -285,6 +346,18 @@ def main() -> int:
         ai_status=ai_status,
         exit_risks=exit_risks,
     )
+    retry_cfg = config.get("data_retry", {})
+    if retry_cfg.get("enabled", True):
+        store.enqueue_data_retry((dashboard_payload.get("data_quality") or {}).get("details", []))
+        dashboard_payload["data_retry"] = run_retry_queue(
+            provider,
+            store,
+            as_of=as_of,
+            lookback_start=start_date,
+            limit=int(retry_cfg.get("limit", 8)),
+        )
+    else:
+        dashboard_payload["data_retry"] = store.retry_queue_summary()
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")
@@ -297,6 +370,7 @@ def main() -> int:
         s = dashboard_payload["summary"]
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
+        data_retry = dashboard_payload.get("data_retry", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
         decision = dashboard_payload.get("decision_summary", {})
         us_events = dashboard_payload.get("themes", {}).get("policy", {}).get("us_events", [])
@@ -350,12 +424,13 @@ def main() -> int:
                 f"5日 {_fmt_perf_pct(top_signal.get('return_5d'), signed=True)}"
             )
         health = dashboard_payload.get("health", {})
+        theme_names = dashboard_payload.get("themes", {}).get("names", {})
         schedule_delay = health.get("schedule_delay_minutes")
         schedule_text = "未記錄"
         if schedule_delay is not None:
             schedule_text = f"{float(schedule_delay):.1f} 分"
         quality_text = (
-            f"{data_quality.get('label', '未知')}｜分數 {data_quality.get('score', '—')}/100｜"
+            f"{data_quality.get('label_text') or data_quality.get('label', '未知')}｜分數 {data_quality.get('score', '—')}/100｜"
             f"覆蓋率 {data_quality.get('coverage', '—')}%｜AI {ai_health.get('label', '未啟用')}"
         )
         if data_quality.get("warnings"):
@@ -364,22 +439,32 @@ def main() -> int:
             detail_lines = []
             for item in data_quality["details"][:3]:
                 detail_lines.append(
-                    f"▸ {item.get('type')}｜{item.get('dataset')}｜{item.get('data_id')}｜{item.get('reason') or item.get('period') or '-'}"
+                    f"▸ {_zh_data_event(item.get('type'))}｜{_zh_dataset(item.get('dataset'))}｜{item.get('data_id')}｜{_zh_data_reason(item.get('reason') or item.get('period') or '-')}"
                 )
             quality_text += "\n" + "\n".join(detail_lines)
         recovery = data_quality.get("recovery_status", {})
         if recovery and recovery.get("label") != "clean":
-            quality_text += f"\nRecovery {recovery.get('label')} | retry {recovery.get('retryable', 0)} | blocked {recovery.get('blocked', 0)}"
+            recovery_label = {
+                "retry_ready": "可自動補抓",
+                "manual_check": "需人工檢查",
+                "clean": "正常",
+            }.get(recovery.get("label"), recovery.get("label"))
+            quality_text += f"\n補抓狀態：{recovery_label}｜可補抓 {recovery.get('retryable', 0)}｜暫停 {recovery.get('blocked', 0)}"
+        if data_retry:
+            quality_text += (
+                f"\nRetry Queue：待補 {data_retry.get('pending', 0)}｜"
+                f"已補 {data_retry.get('recovered', 0)}｜失敗 {data_retry.get('failed', 0)}"
+            )
         decision_text = (
-            f"{decision.get('posture', 'selective_watch')} | "
-            f"watch {decision.get('watch_count', 0)} | pullback {decision.get('pullback_count', 0)} | "
-            f"risk {decision.get('risk_count', 0)} | top {decision.get('top_theme') or '-'}"
+            f"{_zh_posture(decision.get('posture', 'selective_watch'))}｜"
+            f"觀察 {decision.get('watch_count', 0)}｜拉回 {decision.get('pullback_count', 0)}｜"
+            f"風險 {decision.get('risk_count', 0)}｜主題 {theme_names.get(decision.get('top_theme'), decision.get('top_theme') or '-')}"
         )
         us_policy_text = "\n".join(
-            f"- {item.get('event')} | {item.get('sensitivity')} | {item.get('confidence')}\n  {item.get('headline')}"
+            f"- {item.get('event_zh') or _zh_policy_event(item.get('event'))}｜{_zh_policy_level(item.get('sensitivity'))}｜{_zh_policy_level(item.get('confidence'))}\n  {item.get('headline_zh') or item.get('headline')}"
             for item in us_events[:3]
-        ) or "- No high-sensitivity US policy signal in latest headlines"
-        quality_text += f"\nDecision {decision_text}\nUS Radar:\n{us_policy_text}"
+        ) or "- 最新新聞未偵測到高敏感美國政策訊號"
+        quality_text += f"\n今日決策：{decision_text}\n美國政策雷達：\n{us_policy_text}"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(

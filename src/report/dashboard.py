@@ -186,6 +186,7 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
         label = "medium"
     else:
         label = "low"
+    label_text = {"high": "高", "medium": "中", "low": "偏低"}[label]
     warnings = []
     if quota:
         warnings.append(f"資料源限流 {quota} 次")
@@ -218,6 +219,7 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
     recovery_status = _data_recovery_status(details)
     return {
         "label": label,
+        "label_text": label_text,
         "score": score,
         "source_score": source_score,
         "coverage": coverage,
@@ -559,7 +561,7 @@ def _html() -> str:
     </nav>
     <div class="metrics" id="metrics"></div>
     <div class="bands">
-      <section><h2>Today Decision</h2><div id="decisionSummary"></div></section>
+      <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
@@ -592,6 +594,30 @@ def _html() -> str:
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[ch]));
+    const zh = (map, value, fallback = "") => map[value] || value || fallback;
+    const QUALITY_TEXT = { high: "高", medium: "中", low: "偏低" };
+    const RECOVERY_TEXT = { retry_ready: "可自動補抓", manual_check: "需人工檢查", clean: "正常" };
+    const EVENT_TYPE_TEXT = { fallback: "備援資料", empty: "空資料", error: "抓取失敗", quota: "限流" };
+    const DATASET_TEXT = { STOCK_DAY: "個股月成交", stock_prices: "股價序列" };
+    const REASON_TEXT = { twse_month_missing: "TWSE 月資料缺口", html: "TWSE 回傳網頁非資料", fetch_failed: "抓取失敗" };
+    const RETRY_STATUS_TEXT = { pending: "待補抓", recovered: "已補回", failed: "補抓失敗" };
+    const POLICY_EVENT_TEXT = {
+      "Trump tariff / China tariff": "川普/中國關稅",
+      "AI chip export control": "AI晶片出口管制",
+      "House / Senate China bill": "美國國會對中法案",
+      "Defense bill / NDAA": "國防授權法案/NDAA",
+      "SpaceX / Starlink": "SpaceX/Starlink",
+      "Data center power": "資料中心電力",
+      "AI capex / hyperscaler": "AI資本支出/雲端大廠",
+    };
+    const POLICY_LEVEL_TEXT = {
+      high: "高敏感", medium: "中敏感", low: "低敏感",
+      confirmed: "已確認", signal: "訊號", watch: "觀察",
+      bullish: "利多", risk: "風險", mixed: "多空交錯",
+    };
+    function themeName(key) {
+      return data?.themes?.names?.[key] || key || "-";
+    }
     const TAG_CLASS = {
       "題材": "tag-theme", "法人": "tag-chip", "外資": "tag-chip", "投信": "tag-chip",
       "突破": "tag-tech",  "趨勢": "tag-tech",  "技術": "tag-tech",
@@ -611,18 +637,18 @@ def _html() -> str:
     function render() {
       if (!document.querySelector("#quickFilter")) {
         document.querySelector("#grade").insertAdjacentHTML("afterend", `<select id="quickFilter">
-          <option value="">All signals</option>
-          <option value="strong">S+/S only</option>
-          <option value="chase">Can chase/watch</option>
-          <option value="risk">Risk warning</option>
-          <option value="ai">AI consensus</option>
-          <option value="new">Today new</option>
-          <option value="top_theme">Top theme</option>
+          <option value="">全部訊號</option>
+          <option value="strong">S+/S 強勢</option>
+          <option value="chase">可追蹤/觀察</option>
+          <option value="risk">風險警示</option>
+          <option value="ai">AI 共識</option>
+          <option value="new">今日新增</option>
+          <option value="top_theme">主題焦點</option>
         </select>`);
         document.querySelector("#quickFilter").addEventListener("change", render);
       }
       if (!document.querySelector("#usPolicyRadar")) {
-        document.querySelector("#dataQuality").closest("section").insertAdjacentHTML("afterend", `<section><h2>US Policy Radar</h2><div id="usPolicyRadar"></div></section>`);
+        document.querySelector("#dataQuality").closest("section").insertAdjacentHTML("afterend", `<section><h2>美國政策雷達</h2><div id="usPolicyRadar"></div></section>`);
       }
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
@@ -638,15 +664,16 @@ def _html() -> str:
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
       const postureText = {
-        active_watch: "Active watch",
-        selective_watch: "Selective watch",
-        risk_control: "Risk control",
-      }[decision.posture] || "Selective watch";
+        active_watch: "積極觀察",
+        selective_watch: "精選觀察",
+        risk_control: "風險控管",
+      }[decision.posture] || "精選觀察";
+      const decisionTopTheme = themeName(decision.top_theme);
       document.querySelector("#decisionSummary").innerHTML = `
         <div class="line"><b>${esc(postureText)}</b></div>
-        <div class="line">Watch ${esc(decision.watch_count ?? 0)} | Pullback ${esc(decision.pullback_count ?? 0)} | Risk ${esc(decision.risk_count ?? 0)}</div>
-        <div class="line">Strong grades ${esc(decision.strong_grade_count ?? 0)} | Data ${esc(decision.data_quality || "-")}</div>
-        <div class="line">Top theme: ${esc(decision.top_theme || "-")}</div>`;
+        <div class="line">觀察 ${esc(decision.watch_count ?? 0)}｜拉回 ${esc(decision.pullback_count ?? 0)}｜風險 ${esc(decision.risk_count ?? 0)}</div>
+        <div class="line">強勢等級 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
+        <div class="line">主題焦點：${esc(decisionTopTheme)}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
@@ -678,20 +705,27 @@ def _html() -> str:
         ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
       const quality = data.data_quality || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
+      const retry = data.data_retry || {};
+      const retryCounts = retry.status_counts || {};
+      const retryLines = (retry.items || []).slice(0,3).map(x =>
+        `<div class="line small">${esc(zh(RETRY_STATUS_TEXT, x.status))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(x.period || "-")}｜${esc(x.attempts || 0)} 次${x.last_error ? `｜${esc(x.last_error)}` : ""}</div>`
+      ).join("");
       document.querySelector("#dataQuality").innerHTML = `
-        <div class="line ${qualityCls}"><b>${esc(quality.label || "未知")}</b>｜${esc(quality.score ?? "—")}/100</div>
+        <div class="line ${qualityCls}"><b>${esc(quality.label_text || zh(QUALITY_TEXT, quality.label, "未知"))}</b>｜${esc(quality.score ?? "—")}/100</div>
         <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
         ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
-        ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(x.type)}｜${esc(x.dataset)}｜${esc(x.data_id)}｜${esc(x.reason || x.period || "-")}</div>`).join("") : ""}`;
+        ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(zh(EVENT_TYPE_TEXT, x.type))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(zh(REASON_TEXT, x.reason || x.period || "-"))}</div>`).join("") : ""}
+        <div class="line"><b>補抓佇列</b>：待補 ${esc(retry.pending || retryCounts.pending || 0)}｜已補 ${esc(retry.recovered || retryCounts.recovered || 0)}｜失敗 ${esc(retry.failed || retryCounts.failed || 0)}</div>
+        ${retryLines}`;
       const recovery = quality.recovery_status || {};
       if (recovery.label && recovery.label !== "clean") {
         document.querySelector("#dataQuality").insertAdjacentHTML("beforeend",
-          `<div class="line warn">Recovery: ${esc(recovery.label)} | retryable ${esc(recovery.retryable || 0)} | blocked ${esc(recovery.blocked || 0)}</div>`);
+          `<div class="line warn">補抓狀態：${esc(zh(RECOVERY_TEXT, recovery.label))}｜可補抓 ${esc(recovery.retryable || 0)}｜暫停 ${esc(recovery.blocked || 0)}</div>`);
       }
       const usEvents = data.themes?.policy?.us_events || [];
       document.querySelector("#usPolicyRadar").innerHTML = usEvents.length
-        ? usEvents.slice(0,4).map(e => `<div class="line"><b>${esc(e.event)}</b> | ${esc(e.sensitivity)} | ${esc(e.confidence)} | ${esc(e.direction)}<div class="small">${esc((e.themes || []).join(" / "))}</div><div class="small">${esc(e.headline)}</div></div>`).join("")
-        : `<div class="line">No high-sensitivity US policy signal in latest headlines.</div>`;
+        ? usEvents.slice(0,4).map(e => `<div class="line"><b>${esc(e.event_zh || zh(POLICY_EVENT_TEXT, e.event))}</b>｜${esc(zh(POLICY_LEVEL_TEXT, e.sensitivity))}｜${esc(zh(POLICY_LEVEL_TEXT, e.confidence))}｜${esc(zh(POLICY_LEVEL_TEXT, e.direction))}<div class="small">${esc((e.themes || []).map(themeName).join(" / "))}</div><div class="small">${esc(e.headline_zh || e.headline)}</div></div>`).join("")
+        : `<div class="line">最新新聞未偵測到高敏感美國政策訊號。</div>`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";

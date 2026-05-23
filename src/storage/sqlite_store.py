@@ -172,6 +172,23 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS data_retry_queue (
+                    dataset TEXT NOT NULL,
+                    data_id TEXT NOT NULL,
+                    period TEXT NOT NULL DEFAULT '',
+                    reason TEXT NOT NULL DEFAULT '',
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    first_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    last_attempt_at TEXT,
+                    last_error TEXT NOT NULL DEFAULT '',
+                    recovered_at TEXT,
+                    PRIMARY KEY (dataset, data_id, period)
+                )
+                """
+            )
 
     def has_delivered_today(self, channel: str, delivery_date: date, message_type: str) -> bool:
         with self._connect() as conn:
@@ -208,6 +225,114 @@ class SQLiteStore:
                     run_id,
                 ),
             )
+
+    def enqueue_data_retry(self, details: list[dict]) -> int:
+        retryable_types = {"empty", "error", "fallback"}
+        queued = 0
+        now = datetime.now(TAIPEI).isoformat(timespec="seconds")
+        with self._connect() as conn:
+            for item in details:
+                reason = str(item.get("reason") or "")
+                if item.get("type") not in retryable_types or "quota" in reason.lower():
+                    continue
+                dataset = str(item.get("dataset") or "").strip()
+                data_id = str(item.get("data_id") or "").strip()
+                period = str(item.get("period") or "").strip()
+                if not dataset or not data_id or data_id == "-":
+                    continue
+                cursor = conn.execute(
+                    """
+                    INSERT OR IGNORE INTO data_retry_queue
+                        (dataset, data_id, period, reason, status, first_seen_at)
+                    VALUES (?, ?, ?, ?, 'pending', ?)
+                    """,
+                    (dataset, data_id, period, reason, now),
+                )
+                queued += cursor.rowcount
+                conn.execute(
+                    """
+                    UPDATE data_retry_queue
+                    SET reason = ?,
+                        status = CASE WHEN status = 'recovered' THEN status ELSE 'pending' END
+                    WHERE dataset = ? AND data_id = ? AND period = ?
+                    """,
+                    (reason, dataset, data_id, period),
+                )
+        return queued
+
+    def pending_data_retries(self, limit: int = 8) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT dataset, data_id, period, reason, status, attempts, first_seen_at,
+                       last_attempt_at, last_error, recovered_at
+                FROM data_retry_queue
+                WHERE status IN ('pending', 'failed')
+                  AND attempts < 3
+                ORDER BY attempts ASC, first_seen_at ASC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [_retry_row(row) for row in rows]
+
+    def record_retry_attempt(
+        self,
+        dataset: str,
+        data_id: str,
+        period: str,
+        *,
+        ok: bool,
+        last_error: str = "",
+    ) -> None:
+        now = datetime.now(TAIPEI).isoformat(timespec="seconds")
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE data_retry_queue
+                SET attempts = attempts + 1,
+                    last_attempt_at = ?,
+                    last_error = ?,
+                    status = CASE
+                        WHEN ? THEN 'recovered'
+                        WHEN attempts + 1 >= 3 THEN 'failed'
+                        ELSE 'pending'
+                    END,
+                    recovered_at = CASE WHEN ? THEN ? ELSE recovered_at END
+                WHERE dataset = ? AND data_id = ? AND period = ?
+                """,
+                (now, last_error[:300], int(ok), int(ok), now, dataset, data_id, period),
+            )
+
+    def retry_queue_summary(self, limit: int = 8) -> dict:
+        with self._connect() as conn:
+            counts = {
+                row[0]: row[1]
+                for row in conn.execute(
+                    """
+                    SELECT status, COUNT(*)
+                    FROM data_retry_queue
+                    GROUP BY status
+                    """
+                ).fetchall()
+            }
+            rows = conn.execute(
+                """
+                SELECT dataset, data_id, period, reason, status, attempts, first_seen_at,
+                       last_attempt_at, last_error, recovered_at
+                FROM data_retry_queue
+                ORDER BY COALESCE(last_attempt_at, first_seen_at) DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return {
+            "status_counts": counts,
+            "pending": counts.get("pending", 0),
+            "failed": counts.get("failed", 0),
+            "recovered": counts.get("recovered", 0),
+            "items": [_retry_row(row) for row in rows],
+        }
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
         with self._connect() as conn:
@@ -1099,4 +1224,19 @@ def _entry_analysis(items: list[dict]) -> dict:
             "win_rate_5d": _rate([item["return_5d"] > 0 for item in not_triggered]),
             "avg_return_5d": _avg([item["return_5d"] for item in not_triggered]),
         },
+    }
+
+
+def _retry_row(row: tuple) -> dict:
+    return {
+        "dataset": row[0],
+        "data_id": row[1],
+        "period": row[2],
+        "reason": row[3],
+        "status": row[4],
+        "attempts": row[5],
+        "first_seen_at": row[6],
+        "last_attempt_at": row[7],
+        "last_error": row[8],
+        "recovered_at": row[9],
     }
