@@ -10,7 +10,26 @@ const CRON_TASKS = {
   "15 0 * * 1-5": "telegram",
 };
 
-async function dispatchWorkflow(task, env) {
+function toTaipeiIso(timestamp) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+    .formatToParts(new Date(timestamp))
+    .reduce((acc, part) => {
+      acc[part.type] = part.value;
+      return acc;
+    }, {});
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}+08:00`;
+}
+
+async function dispatchWorkflow(task, env, metadata = {}) {
   if (!env.GITHUB_TOKEN) {
     throw new Error("Missing GITHUB_TOKEN Worker secret");
   }
@@ -31,6 +50,9 @@ async function dispatchWorkflow(task, env) {
         inputs: {
           task,
           send_telegram: task === "telegram" ? "true" : "false",
+          scheduled_at_taipei: metadata.scheduledAtTaipei || "",
+          scheduler: metadata.scheduler || "cloudflare-worker",
+          scheduler_cron: metadata.cron || "",
         },
       }),
     },
@@ -42,13 +64,14 @@ async function dispatchWorkflow(task, env) {
   }
 }
 
-async function handleCron(cron, env) {
+async function handleCron(cron, env, scheduledTime) {
   const task = CRON_TASKS[cron];
   if (!task) {
     throw new Error(`No task mapped for cron: ${cron}`);
   }
-  await dispatchWorkflow(task, env);
-  return { ok: true, task, cron };
+  const scheduledAtTaipei = toTaipeiIso(scheduledTime);
+  await dispatchWorkflow(task, env, { cron, scheduledAtTaipei, scheduler: "cloudflare-worker" });
+  return { ok: true, task, cron, scheduled_at_taipei: scheduledAtTaipei };
 }
 
 async function handleRequest(request, env) {
@@ -70,8 +93,13 @@ async function handleRequest(request, env) {
       return Response.json({ ok: false, error: "task must be dashboard, telegram, or all" }, { status: 400 });
     }
 
-    await dispatchWorkflow(task, env);
-    return Response.json({ ok: true, task });
+    const scheduledAtTaipei = url.searchParams.get("scheduled_at_taipei") || "";
+    await dispatchWorkflow(task, env, {
+      scheduledAtTaipei,
+      scheduler: "cloudflare-worker-http",
+      cron: "manual-http",
+    });
+    return Response.json({ ok: true, task, scheduled_at_taipei: scheduledAtTaipei });
   }
 
   return Response.json({ ok: false, error: "not found" }, { status: 404 });
@@ -79,7 +107,7 @@ async function handleRequest(request, env) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(handleCron(event.cron, env));
+    ctx.waitUntil(handleCron(event.cron, env, event.scheduledTime));
   },
 
   async fetch(request, env) {

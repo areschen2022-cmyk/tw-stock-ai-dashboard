@@ -54,7 +54,18 @@ The Worker sends:
   "ref": "main",
   "inputs": {
     "task": "dashboard|telegram|all",
-    "send_telegram": "true|false"
+    "send_telegram": "true|false",
+    "scheduled_at_taipei": "2026-05-23T08:00:00+08:00",
+    "scheduler": "cloudflare-worker",
+    "scheduler_cron": "0 0 * * 1-5"
   }
 }
+```
+
+`scheduled_at_taipei` is used by the dashboard health panel and Telegram summary
+to show how many minutes the actual run lagged behind the intended trigger time.
+For manual HTTP testing, you can pass it as a query parameter:
+
+```text
+https://<worker-host>/dispatch?task=dashboard&scheduled_at_taipei=2026-05-23T04:30:00%2B08:00&secret=<DISPATCH_SECRET>
 ```

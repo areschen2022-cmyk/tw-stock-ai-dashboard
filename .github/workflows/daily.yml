@@ -30,6 +30,18 @@ on:
         options:
           - "false"
           - "true"
+      scheduled_at_taipei:
+        description: "Optional ISO timestamp for the intended Asia/Taipei run time"
+        required: false
+        default: ""
+      scheduler:
+        description: "Optional scheduler name, for example cloudflare-worker"
+        required: false
+        default: ""
+      scheduler_cron:
+        description: "Optional original scheduler cron expression"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -68,6 +80,29 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Set scheduler metadata
+        env:
+          INPUT_SCHEDULED_AT_TAIPEI: ${{ inputs.scheduled_at_taipei }}
+          INPUT_SCHEDULER: ${{ inputs.scheduler }}
+          INPUT_SCHEDULER_CRON: ${{ inputs.scheduler_cron }}
+        run: |
+          task="dashboard"
+          scheduler="${INPUT_SCHEDULER:-${GITHUB_EVENT_NAME}}"
+          cron="${INPUT_SCHEDULER_CRON:-${{ github.event.schedule }}}"
+          target="${INPUT_SCHEDULED_AT_TAIPEI}"
+          if [ -z "$target" ]; then
+            case "${{ github.event.schedule }}" in
+              "30 20 * * 0-4") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T04:30:00+08:00" ;;
+              "0 21 * * 0-4") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T05:00:00+08:00" ;;
+            esac
+          fi
+          {
+            echo "SCHEDULED_TASK=$task"
+            echo "SCHEDULED_BY=$scheduler"
+            echo "SCHEDULED_CRON=$cron"
+            echo "SCHEDULED_TARGET_TAIPEI=$target"
+          } >> "$GITHUB_ENV"
 
       - name: Generate dashboard without Telegram
         env:
@@ -155,6 +190,29 @@ jobs:
 
       - name: Sync latest persisted state
         run: git pull --ff-only
+
+      - name: Set scheduler metadata
+        env:
+          INPUT_SCHEDULED_AT_TAIPEI: ${{ inputs.scheduled_at_taipei }}
+          INPUT_SCHEDULER: ${{ inputs.scheduler }}
+          INPUT_SCHEDULER_CRON: ${{ inputs.scheduler_cron }}
+        run: |
+          task="telegram"
+          scheduler="${INPUT_SCHEDULER:-${GITHUB_EVENT_NAME}}"
+          cron="${INPUT_SCHEDULER_CRON:-${{ github.event.schedule }}}"
+          target="${INPUT_SCHEDULED_AT_TAIPEI}"
+          if [ -z "$target" ]; then
+            case "${{ github.event.schedule }}" in
+              "0 0 * * 1-5") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T08:00:00+08:00" ;;
+              "15 0 * * 1-5") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T08:15:00+08:00" ;;
+            esac
+          fi
+          {
+            echo "SCHEDULED_TASK=$task"
+            echo "SCHEDULED_BY=$scheduler"
+            echo "SCHEDULED_CRON=$cron"
+            echo "SCHEDULED_TARGET_TAIPEI=$target"
+          } >> "$GITHUB_ENV"
 
       - name: Send Telegram morning report
         env:

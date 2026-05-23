@@ -333,6 +333,11 @@ def main() -> int:
                 f"\n▸ 最佳：<b>{top_signal['stock_id']} {top_signal['name']}</b>｜"
                 f"5日 {_fmt_perf_pct(top_signal.get('return_5d'), signed=True)}"
             )
+        health = dashboard_payload.get("health", {})
+        schedule_delay = health.get("schedule_delay_minutes")
+        schedule_text = "未記錄"
+        if schedule_delay is not None:
+            schedule_text = f"{float(schedule_delay):.1f} 分"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
@@ -342,6 +347,7 @@ def main() -> int:
                 f"🧭 風向：{dashboard_payload['overseas']['label']}",
                 f"📰 題材：{dashboard_payload['themes']['summary']}",
                 f"📊 掃描 <b>{s['scanned']}</b> 檔｜S+ <b>{s['s_plus_grade']}</b>｜S <b>{s['s_grade']}</b>｜A <b>{s['a_grade']}</b>｜B <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
+                f"⏱ 排程：{health.get('scheduler', 'local')}｜{health.get('scheduled_task') or '-'}｜延遲 {schedule_text}",
                 "",
                 "🏆 <b>Top 觀察：</b>",
                 top_text,

@@ -40,3 +40,27 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["health"]["telegram_schedule"] == "08:00 / 08:15"
     assert payload["health"]["news_sources"] == 2
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]
+
+
+def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:
+    monkeypatch.setenv("SCHEDULED_TARGET_TAIPEI", "2026-05-18T04:30:00+08:00")
+    monkeypatch.setenv("SCHEDULED_BY", "cloudflare-worker")
+    monkeypatch.setenv("SCHEDULED_TASK", "dashboard")
+    monkeypatch.setenv("SCHEDULED_CRON", "30 20 * * 0-4")
+
+    payload = build_dashboard_payload(
+        [],
+        date(2026, 5, 18),
+        "健康",
+        None,
+        {"stock_names": {}, "theme_pools": {}},
+        overseas=None,
+        theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {}, source_count=1, failed_count=0),
+        source_status={"label": "正常", "api": 1, "cache": 0, "quota": 0, "error": 0},
+    )
+
+    assert payload["health"]["scheduler"] == "cloudflare-worker"
+    assert payload["health"]["scheduled_task"] == "dashboard"
+    assert payload["health"]["scheduled_cron"] == "30 20 * * 0-4"
+    assert payload["health"]["scheduled_target_taipei"] == "2026-05-18T04:30:00+08:00"
+    assert isinstance(payload["health"]["schedule_delay_minutes"], float)

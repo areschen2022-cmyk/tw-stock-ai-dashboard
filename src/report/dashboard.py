@@ -14,6 +14,29 @@ from src.scoring.score_engine import StockScore
 TAIPEI = ZoneInfo("Asia/Taipei")
 
 
+def _scheduled_metadata(generated_at: datetime) -> dict:
+    target_raw = os.getenv("SCHEDULED_TARGET_TAIPEI", "").strip()
+    target_dt = None
+    delay_minutes = None
+    if target_raw:
+        try:
+            target_dt = datetime.fromisoformat(target_raw)
+            if target_dt.tzinfo is None:
+                target_dt = target_dt.replace(tzinfo=TAIPEI)
+            target_dt = target_dt.astimezone(TAIPEI)
+            delay_minutes = round((generated_at - target_dt).total_seconds() / 60, 1)
+        except ValueError:
+            target_dt = None
+
+    return {
+        "scheduler": os.getenv("SCHEDULED_BY", "") or os.getenv("GITHUB_EVENT_NAME", "local"),
+        "scheduled_task": os.getenv("SCHEDULED_TASK", ""),
+        "scheduled_cron": os.getenv("SCHEDULED_CRON", ""),
+        "scheduled_target_taipei": target_dt.isoformat(timespec="seconds") if target_dt else target_raw,
+        "schedule_delay_minutes": delay_minutes,
+    }
+
+
 def _status_text(label: str) -> str:
     return {
         "BUY_WATCH": "買進觀察",
@@ -71,6 +94,7 @@ def _build_health_status(
         "news_failed": news_failed,
         "github_run_id": os.getenv("GITHUB_RUN_ID", ""),
         "github_event": os.getenv("GITHUB_EVENT_NAME", "local"),
+        **_scheduled_metadata(generated_at),
     }
 
 
@@ -366,10 +390,14 @@ def _html() -> str:
         ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
       const health = data.health || {};
       const healthCls = health.label === "正常" ? "good" : (health.label === "部分延遲" ? "warn" : "bad");
+      const delay = health.schedule_delay_minutes;
+      const delayText = delay === null || delay === undefined ? "未記錄" : `${Number(delay).toFixed(1)} 分`;
+      const targetText = health.scheduled_target_taipei ? health.scheduled_target_taipei.replace("T", " ") : "未記錄";
       document.querySelector("#health").innerHTML = `
         <div class="line ${healthCls}"><span class="${sourceClass(health.label === "正常" ? "正常" : health.label === "部分延遲" ? "部分限流" : "錯誤")}"></span>系統：${esc(health.label || "未知")}</div>
         <div class="line">本次產生：${esc((health.generated_at || "").replace("T", " "))}</div>
         <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "07:58")}｜Telegram ${esc(health.telegram_schedule || "08:18")}</div>
+        <div class="line">排程監控：${esc(health.scheduler || "local")}｜${esc(health.scheduled_task || "-")}｜預定 ${esc(targetText)}｜延遲 ${esc(delayText)}</div>
         <div class="line">新聞來源：成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
         <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
       function sparkBar(history) {

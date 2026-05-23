@@ -31,4 +31,4 @@ The monitoring dashboard is generated in `dashboard/`. To publish it through Git
 
 ## External Scheduler
 
-Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispatch` for more reliable timing than GitHub's native schedule. See `docs/external_scheduler.md`.
+Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispatch` for more reliable timing than GitHub's native schedule. The Worker also passes the intended Asia/Taipei trigger time so the dashboard can show schedule delay minutes. See `docs/external_scheduler.md`.
