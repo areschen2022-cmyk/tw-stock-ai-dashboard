@@ -199,6 +199,27 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         headlines.extend(titles[:15])
         scoring_headlines.extend(titles[:15])
 
+    us_policy_cfg = news_cfg.get("us_policy_radar", {})
+    if us_policy_cfg.get("enabled", False):
+        for url in us_policy_cfg.get("urls", []):
+            try:
+                text = _fetch_url(url, timeout=int(us_policy_cfg.get("timeout", 15)))
+            except requests.RequestException as exc:
+                log.warning("fetch_theme_signal: failed us_policy %s — %s", url, exc)
+                failed_count += 1
+                continue
+            titles = _rss_titles(text)
+            if not titles:
+                titles = _html_titles(text)
+            if titles:
+                source_count += 1
+                limit = int(us_policy_cfg.get("per_source_limit", 12))
+                headlines.extend(titles[:limit])
+                scoring_headlines.extend(titles[:limit])
+            else:
+                log.warning("fetch_theme_signal: no usable titles from us_policy %s", url)
+                failed_count += 1
+
     deduped = list(dict.fromkeys(headlines))
     deduped_scoring = list(dict.fromkeys(scoring_headlines or headlines))
 
@@ -210,6 +231,16 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         stock_names=config.get("stock_names", {}),
     )
     policy_signal = classify_policy_headlines(deduped_scoring)
+    if us_policy_cfg.get("enabled", False):
+        max_boost = int(us_policy_cfg.get("max_theme_boost", 24))
+        for theme, boost in policy_signal.theme_boosts.items():
+            if theme in keyword_map or theme in config.get("theme_pools", {}):
+                scores[theme] = int(scores.get(theme, 0)) + min(int(boost), max_boost)
+                if theme in policy_signal.matched_headlines:
+                    matched.setdefault(theme, [])
+                    for headline in policy_signal.matched_headlines[theme]:
+                        if headline not in matched[theme]:
+                            matched[theme].append(headline)
 
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}

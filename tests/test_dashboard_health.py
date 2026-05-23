@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from src.news.policy_signal import PolicySignal
 from src.news.web_theme import ThemeSignal
 from src.report.dashboard import build_dashboard_payload
 from src.scoring.score_engine import StockScore
@@ -31,7 +32,20 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
         None,
         {"stock_names": {"2330": "台積電"}, "theme_pools": {}},
         overseas=None,
-        theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {}, source_count=2, failed_count=0),
+        theme_signal=ThemeSignal(
+            ["defense_policy"],
+            "未偵測到明顯題材",
+            [],
+            {},
+            source_count=2,
+            failed_count=0,
+            policy=PolicySignal(
+                "US policy",
+                {"defense_policy": 15},
+                {},
+                [{"event": "Defense bill / NDAA", "sensitivity": "high", "confidence": "confirmed"}],
+            ),
+        ),
         source_status={
             "label": "正常",
             "api": 1,
@@ -48,8 +62,11 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["health"]["news_sources"] == 2
     assert "突破 20 日高點" in payload["rows"][0]["decision_reason"]
     assert payload["action_lists"]["summary"]["chase"] == 0
-    assert payload["data_quality"]["label"] in {"高", "中", "偏低"}
+    assert payload["data_quality"]["label"] in {"high", "medium", "low"}
     assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
+    assert payload["data_quality"]["recovery_status"]["retryable"] == 1
+    assert payload["decision_summary"]["top_theme"] == "defense_policy"
+    assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

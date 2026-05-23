@@ -489,6 +489,7 @@ class SQLiteStore:
         items = []
         for row in rows:
             signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json = row
+            status_code = _return_status_code(signal_date, return_5d, as_of, horizon_days=5)
             items.append(
                 {
                     "signal_date": signal_date,
@@ -504,6 +505,12 @@ class SQLiteStore:
                     "stop_hit": _bool_or_none(stop_hit),
                     "action": action,
                     "themes": json.loads(themes_json or "[]"),
+                    "status_code": status_code,
+                    "status_label": {
+                        "completed_5d": "completed",
+                        "pending_5d": "pending",
+                        "data_missing": "data_missing",
+                    }[status_code],
                     "status": "已完成" if return_5d is not None else "進行中",
                 }
             )
@@ -936,21 +943,42 @@ def _leaderboard(items: list[dict], limit: int = 8) -> dict:
     }
 
 
+def _return_status_code(signal_date: str, return_5d: float | None, as_of: date, horizon_days: int = 5) -> str:
+    if return_5d is not None:
+        return "completed_5d"
+    try:
+        signal_day = date.fromisoformat(str(signal_date)[:10])
+    except ValueError:
+        return "data_missing"
+    age_days = (as_of - signal_day).days
+    if age_days < horizon_days + 2:
+        return "pending_5d"
+    return "data_missing"
+
+
 def _performance_data_quality(items: list[dict]) -> dict:
     completed_5d = [item for item in items if item.get("return_5d") is not None]
-    pending_5d = [item for item in items if item.get("return_5d") is None]
+    pending_5d = [item for item in items if item.get("status_code") == "pending_5d"]
+    missing_5d = [item for item in items if item.get("status_code") == "data_missing"]
     entry_known = [item for item in items if item.get("entry_triggered") is not None]
     stop_known = [item for item in items if item.get("stop_hit") is not None]
     return {
         "signals": len(items),
         "completed_5d": len(completed_5d),
         "pending_5d": len(pending_5d),
+        "data_missing_5d": len(missing_5d),
         "completion_rate_5d": _rate([item.get("return_5d") is not None for item in items]),
         "entry_trigger_known": len(entry_known),
         "entry_trigger_rate": _rate([item.get("entry_triggered") for item in entry_known]),
         "stop_known": len(stop_known),
         "stop_hit_rate": _rate([item.get("stop_hit") for item in stop_known]),
+        "status_counts": {
+            "completed_5d": len(completed_5d),
+            "pending_5d": len(pending_5d),
+            "data_missing": len(missing_5d),
+        },
         "pending_examples": _pending_examples(pending_5d, limit=8),
+        "missing_examples": _pending_examples(missing_5d, limit=8),
     }
 
 

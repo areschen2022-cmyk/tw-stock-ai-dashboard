@@ -3,6 +3,69 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 
+US_POLICY_RULES: tuple[dict, ...] = (
+    {
+        "label": "Trump tariff / China tariff",
+        "themes": ["materials_recovery", "ai_server", "advanced_packaging"],
+        "direction": "risk",
+        "sensitivity": "high",
+        "weight": 12,
+        "keywords": ["trump tariff", "tariff", "china tariff", "reciprocal tariff", "trade war"],
+    },
+    {
+        "label": "AI chip export control",
+        "themes": ["advanced_packaging", "ai_server", "memory"],
+        "direction": "risk",
+        "sensitivity": "high",
+        "weight": 18,
+        "keywords": ["export control", "ai chip export", "chip export", "entity list", "semiconductor ban"],
+    },
+    {
+        "label": "House / Senate China bill",
+        "themes": ["defense_policy", "defense_ai", "network_optical_communication"],
+        "direction": "mixed",
+        "sensitivity": "high",
+        "weight": 15,
+        "keywords": ["house passes", "senate passes", "china bill", "select committee", "sanction"],
+    },
+    {
+        "label": "Defense bill / NDAA",
+        "themes": ["defense_policy", "defense_ai", "low_orbit_satellite"],
+        "direction": "bullish",
+        "sensitivity": "high",
+        "weight": 15,
+        "keywords": ["ndaa", "defense bill", "pentagon", "missile defense", "drone defense", "dod"],
+    },
+    {
+        "label": "SpaceX / Starlink",
+        "themes": ["low_orbit_satellite", "network_optical_communication", "silicon_photonics"],
+        "direction": "bullish",
+        "sensitivity": "medium",
+        "weight": 10,
+        "keywords": ["spacex", "starlink", "kuiper", "satellite internet", "leo satellite"],
+    },
+    {
+        "label": "Data center power",
+        "themes": ["power_grid", "energy_grid", "cooling_power"],
+        "direction": "bullish",
+        "sensitivity": "high",
+        "weight": 14,
+        "keywords": ["data center power", "grid upgrade", "nuclear power", "smr", "power demand", "electricity demand"],
+    },
+    {
+        "label": "AI capex / hyperscaler",
+        "themes": ["ai_server", "cooling_power", "advanced_packaging", "memory"],
+        "direction": "bullish",
+        "sensitivity": "medium",
+        "weight": 9,
+        "keywords": ["ai capex", "cloud capex", "hyperscaler", "nvidia", "amd", "broadcom", "blackwell"],
+    },
+)
+
+CONFIRMED_TERMS = ("announces", "announced", "passes", "passed", "approves", "approved", "signs", "signed")
+WATCH_TERMS = ("may", "could", "proposal", "draft", "considering", "expected", "hearing", "urges")
+
+
 POLICY_KEYWORDS: dict[str, list[str]] = {
     "power_grid": ["電網", "電力", "核電", "儲能", "變壓器", "電力基礎建設"],
     "defense_ai": ["國防", "軍工", "無人機", "軍備", "防衛"],
@@ -25,6 +88,7 @@ class PolicySignal:
     summary: str
     theme_boosts: dict[str, int] = field(default_factory=dict)
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
+    us_events: list[dict] = field(default_factory=list)
 
 
 def classify_policy_headlines(
@@ -35,6 +99,14 @@ def classify_policy_headlines(
     keyword_map = policy_keywords or POLICY_KEYWORDS
     boosts: dict[str, int] = {theme: 0 for theme in keyword_map}
     matched: dict[str, list[str]] = {theme: [] for theme in keyword_map}
+
+    us_events = classify_us_policy_events(headlines)
+    for event in us_events:
+        for theme in event["themes"]:
+            boosts.setdefault(theme, 0)
+            matched.setdefault(theme, [])
+            boosts[theme] += int(event["score"])
+            matched[theme].append(event["headline"])
 
     for headline in headlines:
         lower = headline.lower()
@@ -56,4 +128,41 @@ def classify_policy_headlines(
         summary=summary,
         theme_boosts={theme: score for theme, score in active},
         matched_headlines={theme: rows[:5] for theme, rows in matched.items() if rows},
+        us_events=us_events[:8],
     )
+
+
+def classify_us_policy_events(headlines: list[str]) -> list[dict]:
+    """Return high-sensitivity US policy events that may lead Taiwan themes."""
+    events: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+    for headline in headlines:
+        lower = headline.lower()
+        for rule in US_POLICY_RULES:
+            if not any(keyword in lower for keyword in rule["keywords"]):
+                continue
+            confidence = "confirmed" if any(term in lower for term in CONFIRMED_TERMS) else "watch"
+            if confidence == "watch" and not any(term in lower for term in WATCH_TERMS):
+                confidence = "signal"
+            score = int(rule["weight"])
+            if confidence == "confirmed":
+                score += 4
+            elif confidence == "watch":
+                score = max(3, score - 5)
+            key = (str(rule["label"]), headline)
+            if key in seen:
+                continue
+            seen.add(key)
+            events.append(
+                {
+                    "event": rule["label"],
+                    "headline": headline,
+                    "themes": list(rule["themes"]),
+                    "direction": rule["direction"],
+                    "sensitivity": rule["sensitivity"],
+                    "confidence": confidence,
+                    "score": score,
+                }
+            )
+    events.sort(key=lambda item: (item["sensitivity"] == "high", item["score"]), reverse=True)
+    return events

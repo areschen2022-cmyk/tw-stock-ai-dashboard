@@ -298,6 +298,8 @@ def main() -> int:
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
+        decision = dashboard_payload.get("decision_summary", {})
+        us_events = dashboard_payload.get("themes", {}).get("policy", {}).get("us_events", [])
 
         def _entry_line(row: dict) -> str:
             action = row.get("action", "只觀察")
@@ -365,6 +367,19 @@ def main() -> int:
                     f"▸ {item.get('type')}｜{item.get('dataset')}｜{item.get('data_id')}｜{item.get('reason') or item.get('period') or '-'}"
                 )
             quality_text += "\n" + "\n".join(detail_lines)
+        recovery = data_quality.get("recovery_status", {})
+        if recovery and recovery.get("label") != "clean":
+            quality_text += f"\nRecovery {recovery.get('label')} | retry {recovery.get('retryable', 0)} | blocked {recovery.get('blocked', 0)}"
+        decision_text = (
+            f"{decision.get('posture', 'selective_watch')} | "
+            f"watch {decision.get('watch_count', 0)} | pullback {decision.get('pullback_count', 0)} | "
+            f"risk {decision.get('risk_count', 0)} | top {decision.get('top_theme') or '-'}"
+        )
+        us_policy_text = "\n".join(
+            f"- {item.get('event')} | {item.get('sensitivity')} | {item.get('confidence')}\n  {item.get('headline')}"
+            for item in us_events[:3]
+        ) or "- No high-sensitivity US policy signal in latest headlines"
+        quality_text += f"\nDecision {decision_text}\nUS Radar:\n{us_policy_text}"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(

@@ -121,6 +121,39 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
     }
 
 
+def _data_recovery_status(details: list[dict]) -> dict:
+    if not details:
+        return {"label": "clean", "retryable": 0, "blocked": 0, "items": []}
+    retryable = []
+    blocked = []
+    for item in details:
+        reason = str(item.get("reason") or "")
+        row = {
+            "dataset": item.get("dataset"),
+            "data_id": item.get("data_id"),
+            "period": item.get("period"),
+            "type": item.get("type"),
+            "next_step": "retry_range",
+        }
+        if item.get("type") in {"empty", "error", "fallback"} and "quota" not in reason.lower():
+            retryable.append(row)
+        else:
+            row["next_step"] = "wait_or_manual_check"
+            blocked.append(row)
+    if blocked and not retryable:
+        label = "manual_check"
+    elif retryable:
+        label = "retry_ready"
+    else:
+        label = "clean"
+    return {
+        "label": label,
+        "retryable": len(retryable),
+        "blocked": len(blocked),
+        "items": (retryable + blocked)[:6],
+    }
+
+
 def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict | None = None) -> dict:
     status = source_status or {}
     api = int(status.get("api") or 0)
@@ -141,6 +174,18 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
         label = "中"
     else:
         label = "偏低"
+    if score >= 85:
+        label = "高"
+    elif score >= 65:
+        label = "中"
+    else:
+        label = "偏低"
+    if score >= 85:
+        label = "high"
+    elif score >= 65:
+        label = "medium"
+    else:
+        label = "low"
     warnings = []
     if quota:
         warnings.append(f"資料源限流 {quota} 次")
@@ -170,6 +215,7 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
                 "reason": reason,
             }
         )
+    recovery_status = _data_recovery_status(details)
     return {
         "label": label,
         "score": score,
@@ -178,6 +224,38 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
         "warnings": warnings,
         "event_summary": event_summary,
         "details": details,
+        "recovery_status": recovery_status,
+    }
+
+
+def _decision_summary(rows: list[dict], action_lists: dict, data_quality: dict, health: dict, theme_signal: ThemeSignal | None) -> dict:
+    risk_count = int((action_lists.get("summary") or {}).get("risk") or 0)
+    chase_count = int((action_lists.get("summary") or {}).get("chase") or 0)
+    pullback_count = int((action_lists.get("summary") or {}).get("pullback") or 0)
+    s_count = sum(1 for row in rows if row.get("grade") in {"S+", "S"})
+    quality_label = str(data_quality.get("label") or "")
+    health_label = str(health.get("label") or "")
+    if health_label in {"甇?虜", "正常"} and quality_label in {"擃?", "高", "high"} and chase_count:
+        posture = "active_watch"
+    elif risk_count or quality_label in {"??", "偏低", "low"}:
+        posture = "risk_control"
+    else:
+        posture = "selective_watch"
+    return {
+        "posture": posture,
+        "watch_count": chase_count,
+        "pullback_count": pullback_count,
+        "risk_count": risk_count,
+        "strong_grade_count": s_count,
+        "data_quality": data_quality.get("label"),
+        "ai_status": "available",
+        "top_theme": (theme_signal.active_themes[0] if theme_signal and theme_signal.active_themes else ""),
+        "notes": [
+            f"watch={chase_count}",
+            f"pullback={pullback_count}",
+            f"risk={risk_count}",
+            f"data_quality={data_quality.get('label')}",
+        ],
     }
 
 
@@ -262,6 +340,9 @@ def build_dashboard_payload(
             }
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
+    action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
+    data_quality = _data_quality(source_status, rows, ai_status=ai_status)
+    health = _build_health_status(as_of, source_status, theme_signal)
     return {
         "as_of": as_of.isoformat(),
         "market": {"summary": market_summary, "warning": market_warning},
@@ -294,19 +375,22 @@ def build_dashboard_payload(
                 "summary": theme_signal.policy.summary,
                 "theme_boosts": theme_signal.policy.theme_boosts,
                 "matched_headlines": theme_signal.policy.matched_headlines,
+                "us_events": theme_signal.policy.us_events,
             } if theme_signal and theme_signal.policy else {
                 "summary": "未納入",
                 "theme_boosts": {},
                 "matched_headlines": {},
+                "us_events": [],
             },
         },
         "source_status": source_status or {"label": "未知"},
-        "health": _build_health_status(as_of, source_status, theme_signal),
+        "health": health,
         "alerts": alerts or [],
         "watch_reviews": watch_reviews or [],
         "exit_risks": exit_risks or [],
-        "action_lists": _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks),
-        "data_quality": _data_quality(source_status, rows, ai_status=ai_status),
+        "action_lists": action_lists,
+        "data_quality": data_quality,
+        "decision_summary": _decision_summary(rows, action_lists, data_quality, health, theme_signal),
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -339,6 +423,16 @@ def enrich_dashboard_payload(
         rows,
         ai_status=ai_status,
     )
+    previous_top_theme = (payload.get("decision_summary") or {}).get("top_theme")
+    payload["decision_summary"] = _decision_summary(
+        rows,
+        payload.get("action_lists", {}),
+        payload.get("data_quality", {}),
+        payload.get("health", {}),
+        None,
+    )
+    if previous_top_theme and not payload["decision_summary"].get("top_theme"):
+        payload["decision_summary"]["top_theme"] = previous_top_theme
     return payload
 
 
@@ -465,6 +559,7 @@ def _html() -> str:
     </nav>
     <div class="metrics" id="metrics"></div>
     <div class="bands">
+      <section><h2>Today Decision</h2><div id="decisionSummary"></div></section>
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
@@ -514,6 +609,21 @@ def _html() -> str:
       return tags.map(t => `<span class="${tagClass(t)}">${esc(t)}</span>`).join("");
     }
     function render() {
+      if (!document.querySelector("#quickFilter")) {
+        document.querySelector("#grade").insertAdjacentHTML("afterend", `<select id="quickFilter">
+          <option value="">All signals</option>
+          <option value="strong">S+/S only</option>
+          <option value="chase">Can chase/watch</option>
+          <option value="risk">Risk warning</option>
+          <option value="ai">AI consensus</option>
+          <option value="new">Today new</option>
+          <option value="top_theme">Top theme</option>
+        </select>`);
+        document.querySelector("#quickFilter").addEventListener("change", render);
+      }
+      if (!document.querySelector("#usPolicyRadar")) {
+        document.querySelector("#dataQuality").closest("section").insertAdjacentHTML("afterend", `<section><h2>US Policy Radar</h2><div id="usPolicyRadar"></div></section>`);
+      }
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
       document.querySelector("#subtitle").textContent = `${data.as_of}｜僅供研究追蹤，不是投資建議`;
@@ -526,6 +636,17 @@ def _html() -> str:
         ["B級", data.summary.b_grade],
         ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
+      const decision = data.decision_summary || {};
+      const postureText = {
+        active_watch: "Active watch",
+        selective_watch: "Selective watch",
+        risk_control: "Risk control",
+      }[decision.posture] || "Selective watch";
+      document.querySelector("#decisionSummary").innerHTML = `
+        <div class="line"><b>${esc(postureText)}</b></div>
+        <div class="line">Watch ${esc(decision.watch_count ?? 0)} | Pullback ${esc(decision.pullback_count ?? 0)} | Risk ${esc(decision.risk_count ?? 0)}</div>
+        <div class="line">Strong grades ${esc(decision.strong_grade_count ?? 0)} | Data ${esc(decision.data_quality || "-")}</div>
+        <div class="line">Top theme: ${esc(decision.top_theme || "-")}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
@@ -556,12 +677,21 @@ def _html() -> str:
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
         ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
       const quality = data.data_quality || {};
-      const qualityCls = quality.label === "高" ? "good" : quality.label === "中" ? "warn" : "bad";
+      const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       document.querySelector("#dataQuality").innerHTML = `
         <div class="line ${qualityCls}"><b>${esc(quality.label || "未知")}</b>｜${esc(quality.score ?? "—")}/100</div>
         <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
         ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
         ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(x.type)}｜${esc(x.dataset)}｜${esc(x.data_id)}｜${esc(x.reason || x.period || "-")}</div>`).join("") : ""}`;
+      const recovery = quality.recovery_status || {};
+      if (recovery.label && recovery.label !== "clean") {
+        document.querySelector("#dataQuality").insertAdjacentHTML("beforeend",
+          `<div class="line warn">Recovery: ${esc(recovery.label)} | retryable ${esc(recovery.retryable || 0)} | blocked ${esc(recovery.blocked || 0)}</div>`);
+      }
+      const usEvents = data.themes?.policy?.us_events || [];
+      document.querySelector("#usPolicyRadar").innerHTML = usEvents.length
+        ? usEvents.slice(0,4).map(e => `<div class="line"><b>${esc(e.event)}</b> | ${esc(e.sensitivity)} | ${esc(e.confidence)} | ${esc(e.direction)}<div class="small">${esc((e.themes || []).join(" / "))}</div><div class="small">${esc(e.headline)}</div></div>`).join("")
+        : `<div class="line">No high-sensitivity US policy signal in latest headlines.</div>`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";
@@ -638,9 +768,22 @@ def _html() -> str:
       document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
         ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
         : `<div class="line">尚無可追蹤觀察名單</div>`;
+      const quick = document.querySelector("#quickFilter")?.value || "";
+      const aiIds = new Set((data.action_lists?.ai_watch || []).map(x => String(x.stock_id)));
+      const riskIds = new Set((data.exit_risks || []).map(x => String(x.stock_id)));
+      const topTheme = data.decision_summary?.top_theme || "";
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
-        return (!q || blob.includes(q)) && (!g || r.grade === g);
+        const action = String(r.action || "");
+        const quickOk =
+          !quick ||
+          (quick === "strong" && ["S+", "S"].includes(r.grade)) ||
+          (quick === "chase" && action.includes("追")) ||
+          (quick === "risk" && riskIds.has(String(r.stock_id))) ||
+          (quick === "ai" && aiIds.has(String(r.stock_id))) ||
+          (quick === "new" && String(data.as_of || "") === String(r.signal_date || data.as_of || "")) ||
+          (quick === "top_theme" && (r.themes || []).includes(topTheme));
+        return quickOk && (!q || blob.includes(q)) && (!g || r.grade === g);
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
@@ -992,6 +1135,7 @@ def _performance_html() -> str:
         ["訊號總數", quality.signals],
         ["5日完成", quality.completed_5d],
         ["5日待追蹤", quality.pending_5d],
+        ["5日資料缺口", quality.data_missing_5d],
         ["5日完成率", quality.completion_rate_5d == null ? "—" : `${Number(quality.completion_rate_5d).toFixed(1)}%`],
         ["進場觸發樣本", quality.entry_trigger_known],
         ["進場觸發率", quality.entry_trigger_rate == null ? "—" : `${Number(quality.entry_trigger_rate).toFixed(1)}%`],
@@ -1002,6 +1146,12 @@ def _performance_html() -> str:
         document.querySelector("#dataQuality").insertAdjacentHTML(
           "beforeend",
           `<tr><td data-label="項目">待追蹤範例</td><td data-label="數值">${quality.pending_examples.slice(0,4).map(x => `${esc(x.signal_date)} ${esc(x.stock_id)} ${esc(x.name)}`).join("<br>")}</td></tr>`
+        );
+      }
+      if ((quality.missing_examples || []).length) {
+        document.querySelector("#dataQuality").insertAdjacentHTML(
+          "beforeend",
+          `<tr><td data-label="項目">資料缺口範例</td><td data-label="數值">${quality.missing_examples.slice(0,4).map(x => `${esc(x.signal_date)} ${esc(x.stock_id)} ${esc(x.name)}`).join("<br>")}</td></tr>`
         );
       }
       const entry = data.entry_analysis || {};

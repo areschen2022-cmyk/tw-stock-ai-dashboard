@@ -109,6 +109,8 @@ def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     assert summary["leaderboard"]["top_5d"][0]["stock_id"] == "2408"
     assert summary["data_quality"]["completion_rate_5d"] == 100
     assert summary["data_quality"]["pending_examples"] == []
+    assert summary["data_quality"]["status_counts"]["completed_5d"] == 1
+    assert summary["data_quality"]["status_counts"]["data_missing"] == 0
     assert summary["backtest_insights"]["sample"] == 1
     assert summary["backtest_insights"]["best_segments"]
 
