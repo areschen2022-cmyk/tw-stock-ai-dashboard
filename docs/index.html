@@ -86,6 +86,7 @@
     </nav>
     <div class="metrics" id="metrics"></div>
     <div class="bands">
+      <section><h2>Today Decision</h2><div id="decisionSummary"></div></section>
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
       <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
@@ -125,7 +126,7 @@
       "SOX 半導體 +1.99%",
       "TSM ADR -0.65%",
       "台指期夜盤 202606 +0.69%",
-      "美債10年殖利率 +0.00%",
+      "美債10年殖利率 -0.22%",
       "NVDA -1.90% → CPO封裝/未分類（2330,2454,3711）",
       "LITE -1.82% → 光通訊光模組（6442,4979,3163）",
       "MU -1.46% → 記憶體/HBM（2408,2344,2337,5483）",
@@ -165,43 +166,43 @@
     ]
   },
   "themes": {
-    "summary": "先進封裝/CoWoS(升溫↑)、AI伺服器(升溫↑)、原物料/低基期傳產(急升🔥)、記憶體/HBM(降溫↓)、AI國防/軍工(急升🔥)",
+    "summary": "先進封裝/CoWoS(急升🔥)、AI伺服器(急升🔥)、記憶體/HBM(急升🔥)、低軌衛星/SpaceX(急升🔥)、矽光子/CPO(急升🔥)",
     "active": [
       "advanced_packaging",
       "ai_server",
-      "materials_recovery",
       "memory",
-      "defense_ai"
+      "low_orbit_satellite",
+      "silicon_photonics"
     ],
     "headlines": [
+      "AI算力引爆ABF載板「超級大缺貨」！材料龍頭開漲，台廠搶下超額紅利",
       "〈熱門股〉群創FOPLP題材發威 外資掃貨股價衝16年新高",
       "〈熱門股〉功率元件搭AI浪潮 德微單周飆漲32%創19個月新高",
       "〈熱門股〉今國光獲利契機獲外資搶補 股價周漲28%創近20年新高",
       "〈熱門股〉錼創擁Micro LED CPO題材 本周強漲近15%",
       "電子權值股走強、外資單日回補萬張助攻 00999A止跌回穩",
       "AMD蘇姿丰來台固樁、中工變天、三星罷工暫緩 本周大事回顧",
-      "不只年產3億度電！台電21部風機水下變養魚「珊瑚礁」 獲頒首波海洋有效保育區",
-      "美國總統川普最新持股曝光 這檔ETF竟重疊25%"
+      "不只年產3億度電！台電21部風機水下變養魚「珊瑚礁」 獲頒首波海洋有效保育區"
     ],
     "scores": {
-      "ai_server": 18,
-      "cooling_power": 4,
-      "silicon_photonics": 11,
-      "advanced_packaging": 54,
-      "memory": 12,
+      "ai_server": 44,
+      "cooling_power": 28,
+      "silicon_photonics": 35,
+      "advanced_packaging": 81,
+      "memory": 39,
       "robotics": 1,
-      "power_grid": 10,
-      "defense_ai": 12,
+      "power_grid": 30,
+      "defense_ai": 13,
       "optoelectronics_panel": 11,
-      "optics_lens": 1,
+      "optics_lens": 25,
       "edge_ai_device": 1,
-      "energy_grid": 4,
-      "financial_revaluation": 4,
-      "materials_recovery": 13,
-      "passive_components": 11,
-      "low_orbit_satellite": 12,
-      "network_optical_communication": 7,
-      "defense_policy": 5
+      "energy_grid": 19,
+      "financial_revaluation": 8,
+      "materials_recovery": 34,
+      "passive_components": 9,
+      "low_orbit_satellite": 38,
+      "network_optical_communication": 31,
+      "defense_policy": 4
     },
     "names": {
       "ai_server": "AI伺服器",
@@ -245,11 +246,11 @@
     },
     "momentum": {
       "advanced_packaging": {
-        "today": 54,
+        "today": 81,
         "avg_3d": 44.7,
-        "trend": "升溫↑",
+        "trend": "急升🔥",
         "history": [
-          54,
+          81,
           39,
           55,
           40,
@@ -259,11 +260,11 @@
         ]
       },
       "ai_server": {
-        "today": 18,
+        "today": 44,
         "avg_3d": 12.7,
-        "trend": "升溫↑",
+        "trend": "急升🔥",
         "history": [
-          18,
+          44,
           20,
           13,
           5,
@@ -273,11 +274,11 @@
         ]
       },
       "cooling_power": {
-        "today": 4,
+        "today": 28,
         "avg_3d": 3.7,
-        "trend": "升溫↑",
+        "trend": "急升🔥",
         "history": [
-          4,
+          28,
           6,
           4,
           1,
@@ -287,11 +288,11 @@
         ]
       },
       "defense_ai": {
-        "today": 12,
+        "today": 13,
         "avg_3d": 6.3,
         "trend": "急升🔥",
         "history": [
-          12,
+          13,
           2,
           11,
           6,
@@ -301,11 +302,11 @@
         ]
       },
       "defense_policy": {
-        "today": 5,
+        "today": 4,
         "avg_3d": 9.0,
         "trend": "降溫↓",
         "history": [
-          5,
+          4,
           2,
           13,
           12,
@@ -328,11 +329,11 @@
         ]
       },
       "energy_grid": {
-        "today": 4,
+        "today": 19,
         "avg_3d": 4.7,
-        "trend": "-",
+        "trend": "急升🔥",
         "history": [
-          4,
+          19,
           2,
           9,
           3,
@@ -342,11 +343,11 @@
         ]
       },
       "financial_revaluation": {
-        "today": 4,
+        "today": 8,
         "avg_3d": 18.7,
         "trend": "降溫↓",
         "history": [
-          4,
+          8,
           12,
           20,
           24,
@@ -356,11 +357,11 @@
         ]
       },
       "low_orbit_satellite": {
-        "today": 12,
+        "today": 38,
         "avg_3d": 8.3,
-        "trend": "升溫↑",
+        "trend": "急升🔥",
         "history": [
-          12,
+          38,
           14,
           5,
           6,
@@ -369,11 +370,11 @@
         ]
       },
       "materials_recovery": {
-        "today": 13,
+        "today": 34,
         "avg_3d": 7.0,
         "trend": "急升🔥",
         "history": [
-          13,
+          34,
           10,
           6,
           5,
@@ -383,11 +384,11 @@
         ]
       },
       "memory": {
-        "today": 12,
+        "today": 39,
         "avg_3d": 23.7,
-        "trend": "降溫↓",
+        "trend": "急升🔥",
         "history": [
-          12,
+          39,
           20,
           25,
           26,
@@ -397,11 +398,11 @@
         ]
       },
       "network_optical_communication": {
-        "today": 7,
+        "today": 31,
         "avg_3d": 4.0,
         "trend": "急升🔥",
         "history": [
-          7,
+          31,
           0,
           5,
           7,
@@ -410,11 +411,11 @@
         ]
       },
       "optics_lens": {
-        "today": 1,
+        "today": 25,
         "avg_3d": 2.3,
-        "trend": "降溫↓",
+        "trend": "急升🔥",
         "history": [
-          1,
+          25,
           2,
           0,
           5,
@@ -438,11 +439,11 @@
         ]
       },
       "passive_components": {
-        "today": 11,
+        "today": 9,
         "avg_3d": 13.7,
         "trend": "-",
         "history": [
-          11,
+          9,
           6,
           25,
           10,
@@ -452,11 +453,11 @@
         ]
       },
       "power_grid": {
-        "today": 10,
+        "today": 30,
         "avg_3d": 12.3,
-        "trend": "-",
+        "trend": "急升🔥",
         "history": [
-          10,
+          30,
           13,
           20,
           4,
@@ -480,11 +481,11 @@
         ]
       },
       "silicon_photonics": {
-        "today": 11,
+        "today": 35,
         "avg_3d": 5.0,
         "trend": "急升🔥",
         "history": [
-          11,
+          35,
           3,
           3,
           9,
@@ -495,16 +496,24 @@
       }
     },
     "policy": {
-      "summary": "矽光子/CPO:5、能源與重電:3、防禦與政策:1、先進封裝/CoWoS:1",
+      "summary": "先進封裝/CoWoS:158、ai_server:156、cooling_power:86、materials_recovery:84",
       "theme_boosts": {
-        "silicon_photonics": 5,
-        "power_grid": 3,
+        "advanced_packaging": 158,
+        "ai_server": 156,
+        "cooling_power": 86,
+        "materials_recovery": 84,
+        "memory": 72,
+        "silicon_photonics": 35,
+        "low_orbit_satellite": 30,
+        "network_optical_communication": 30,
+        "power_grid": 17,
+        "energy_grid": 14,
         "defense_ai": 1,
-        "advanced_packaging": 1,
         "financial_revaluation": 1
       },
       "matched_headlines": {
         "power_grid": [
+          "Big Tech’s AI Data Center Power Demands Trigger $15B PJM Auction and a Nuclear SMR Boom - TradingKey",
           "不只年產3億度電！台電21部風機水下變養魚「珊瑚礁」 獲頒首波海洋有效保育區 離岸風場助海域生態發展！台電致力營造電力場域生態共融，繼 3 月以大甲溪及萬大電廠獲國內陸域「保育共生地」認證場域，台電再以台電離岸一期風場榮獲我國首波海洋有效保育區認定，昨（22）日舉行頒獎典禮。台電表示，離岸一期 21 部風 ESG 保育 海洋 台宿 離岸風場 海洋有效保育區 綠電",
           "洪麗寗：AI時代下電力與產能密不可分 緯穎已將電力布局至2028年 隨著 AI 蓬勃發展，市場聚焦電力供應問題，緯穎董事長洪麗寗今 (22) 日出席「天下 45 週年 旗艦論壇」，指出在 AI 時代下，電力與產能之間的關係密不可分，電力成為決定產能的重要關鍵，因此緯穎已經電力布局至 2028 年。 緯穎 AI伺服器 電力 產能 6669 緯穎",
           "〈華新股東會〉三大事業展望正向 營運逐季增 今年營收獲利可望優於去年 華新 (1605-TW) 今 (22) 日召開股東會，董事長焦佑倫會後接受媒體訪問，預期今年不銹鋼、電線電纜與資源三大事業今年表現都將優於去年，帶動整體營運逐季增溫，下半年優於上半年，看好今年營收與獲利優於去年。 華新 股東會 不銹鋼 線纜 資源 核電 1605 華新"
@@ -513,154 +522,321 @@
           "漢翔通過100%盈餘配發 營運定調航太核心、轉型創新 漢翔通過 100% 盈餘配發 營運定調航太核心、轉型創新 漢翔 航太 無人機 2634 漢翔"
         ],
         "advanced_packaging": [
-          "〈蘇姿丰演講〉蘇姿丰：不預期最先進晶片可銷往中國 會聚焦AI PC與邊緣AI 輝達 (NVDA-US) 執行長黃仁勳稱已將中國先進 AI 晶片市場拱手讓給華為，對此，超微 (AMD-US) 執行長蘇姿丰今 (22) 日參與天下雜誌論壇，會後表示，中國仍是 AMD 非常重要的市場，公司有非常廣泛的產品進入中國，不過，在 輝達 AMD 超微 中國 出口管制 禁令"
+          "US Weighs Chip Tariffs to Spur Domestic Growth, Trade Chief Says - Bloomberg.com",
+          "Trump administration imposes 25% tariffs on advanced semiconductors to boost domestic manufacturing - Crypto Briefing",
+          "U.S. weighs chip tariffs to spur domestic growth, trade chief says - The Japan Times",
+          "No ‘immediate’ tariffs on semiconductors - Semafor",
+          "U.S. flags chip tariffs in push on Korean memory makers to speed up US chip investments - aju press"
         ],
         "silicon_photonics": [
+          "AI與低軌衛星雙主軸發威！00401A淨值衝破13元大關 40天狂飆3成勝大盤 4 月 10 日正式掛牌的 00401A，搭上 SpaceX 將於 6 月 IPO 的話題，本週漲勢凌厲 今 (22) 日收盤時的淨值已強勢站上 13 元。根據公開訊息顯示，在 4 月 10 日至 5 月 22 日期間，台股大盤指數累計上漲 19%，而 00401A 的 主動式 ETF 低軌衛星 IPO SpaceX 美股 掩護性買權 台股 淨值 2454 4958 3491 6285 聯發科 昇達科 啟碁",
+          "Ukraine retakes 400km² after Russian Starlink blackout - MSN",
+          "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN",
           "〈熱門股〉錼創擁Micro LED CPO題材 本周強漲近15% Micro LED 廠錼創 - KY(6854-TW) 於 Micro LED 技術領先，受惠於 Micro LED CPO 題材獲市場資金追捧，於本周四、周五連續上漲兩日，23 日收盤價為 169.5 元，周漲約 14%，周成交量 455 錼創-KY Micro LED CPO 6854",
-          "明泰將於COMPUTEX 2026發表AI資料中心新世代方案 整合高速網路與水冷節能技術 網通大廠明泰科技 (3380-TW) 於 COMPUTEX 2026 推出結合「網路效能、節能與智能（高算力）」的 AI 資料中心新世代方案，透過 64-Port 2OU 1.6T AI Data Center Switch，提供 1. 明泰 網通 水冷 博通 3380 明泰",
-          "AI光纖需求炸裂！沛亨Q1營收、EPS雙創同期新高訂單能見度直達2027年初 光纖 振曜 光通訊 電源管理 POS 優分析",
-          "〈焦點股〉Coherent光通訊訂單強勁唱高調 波若威、前鼎漲停領族群發光 Coherent (COHR-US) 釋出光通訊需求樂觀強勁，訂單已見到 2028 年，客戶更看到 2030 年，隨著需求旺盛下，有望挹注 AI 及光通訊需求爆發，激勵矽光 (CPO) 族群指標股波若威開高走高，攜手前鼎雙雙漲停板。 焦點股 光通訊 矽光子 波若威 前鼎 Coherent 3163 4908 4977 3234 4979 3081 6442 3363 波若威 前鼎 眾達-KY 華星光 聯亞 光聖 上詮",
-          "〈焦點股〉鼎元出關首日猛如虎 攻上漲停板創波段高點 LED 廠鼎元 (2426-TW) 今 (22) 日處置期屆滿正式解禁出關，受惠於公司已切入 Micro LED CPO 供應鏈，吸引買盤進入股價點火，早盤迅速攻上漲停價 83.2 元，成交量較前一日放大逾五倍，已經連續 4 個交易日上漲、 鼎元 LED CPO 2426 2409 3714 友達 富采"
+          "明泰將於COMPUTEX 2026發表AI資料中心新世代方案 整合高速網路與水冷節能技術 網通大廠明泰科技 (3380-TW) 於 COMPUTEX 2026 推出結合「網路效能、節能與智能（高算力）」的 AI 資料中心新世代方案，透過 64-Port 2OU 1.6T AI Data Center Switch，提供 1. 明泰 網通 水冷 博通 3380 明泰"
         ],
         "financial_revaluation": [
           "〈遠東銀股東會〉評估併安泰、國票皆無果！周添財：下半年靠投資+海外雙引擎做大規模 遠東銀行 (2845-TW) 今 (22) 日舉行 2026 年度股東常會，由董事長周添財親自主持。展望下半年，遠銀全面啟動轉型大計，鎖定「投資」與「海外」雙引擎衝刺獲利 遠東商銀 股東會 周添財 併購 2845"
+        ],
+        "energy_grid": [
+          "Big Tech’s AI Data Center Power Demands Trigger $15B PJM Auction and a Nuclear SMR Boom - TradingKey"
+        ],
+        "cooling_power": [
+          "Big Tech’s AI Data Center Power Demands Trigger $15B PJM Auction and a Nuclear SMR Boom - TradingKey",
+          "AMD蘇姿丰來台固樁、中工變天、三星罷工暫緩 本周大事回顧 AMD 執行長蘇姿丰周五指出，半導體與 AI 高速成長，持續深化與台灣供應鏈的合作，而 AMD 也斥資逾 100 億美元投資台灣產業；中工周四召開股東會，寶佳拿下 4 席，鄭斯聰出任董事長，中工變天；三星電子工會周三決定暫緩罷工計畫。 本周大事 蘇姿丰 AMD 中工 三星罷工 2515 2530 2891 2408 中信金 南亞科",
+          "〈熱門股〉輝達財報報喜、AMD加持 英業達周漲逾1成股價寫近2年高 輝達 (NVDA-US) 本週公告第一季財報，表現優於預期，加上 AMD(AMD-US) 宣布將斥資超過 100 億美元，投資台灣產業，激勵英業達 (2356-TW) 本周大漲逾 1 成，股價也寫下近 2 年來新高。 英業達 AI伺服器 AMD 輝達 2356 英業達",
+          "NVIDIA營運報告改版，認為偏利空解讀 永誠資產管理處 NVIDIA AI 數據中心 財報 趨勢分析 永誠投顧",
+          "〈蘇姿丰演講〉AI基建市場未來四年內破兆美元 CPU未來五年年增逾35% 超微 (AMD-US) 執行長蘇姿丰 (Lisa Su) 今 (22) 日會後受訪表示，AI 基礎建設市場正快速成長，預估光是資料中心相關市場，未來三至四年規模就將超過 1 兆美元。尤其隨著 AI 推論與代理式 AI (agentic AI) 需 蘇姿丰 AMD CPU AI 2330 台積電"
+        ],
+        "materials_recovery": [
+          "US Weighs Chip Tariffs to Spur Domestic Growth, Trade Chief Says - Bloomberg.com",
+          "Trump administration imposes 25% tariffs on advanced semiconductors to boost domestic manufacturing - Crypto Briefing",
+          "U.S. weighs chip tariffs to spur domestic growth, trade chief says - The Japan Times",
+          "No ‘immediate’ tariffs on semiconductors - Semafor",
+          "U.S. flags chip tariffs in push on Korean memory makers to speed up US chip investments - aju press"
+        ],
+        "ai_server": [
+          "US Weighs Chip Tariffs to Spur Domestic Growth, Trade Chief Says - Bloomberg.com",
+          "Trump administration imposes 25% tariffs on advanced semiconductors to boost domestic manufacturing - Crypto Briefing",
+          "U.S. weighs chip tariffs to spur domestic growth, trade chief says - The Japan Times",
+          "No ‘immediate’ tariffs on semiconductors - Semafor",
+          "U.S. flags chip tariffs in push on Korean memory makers to speed up US chip investments - aju press"
+        ],
+        "low_orbit_satellite": [
+          "AI與低軌衛星雙主軸發威！00401A淨值衝破13元大關 40天狂飆3成勝大盤 4 月 10 日正式掛牌的 00401A，搭上 SpaceX 將於 6 月 IPO 的話題，本週漲勢凌厲 今 (22) 日收盤時的淨值已強勢站上 13 元。根據公開訊息顯示，在 4 月 10 日至 5 月 22 日期間，台股大盤指數累計上漲 19%，而 00401A 的 主動式 ETF 低軌衛星 IPO SpaceX 美股 掩護性買權 台股 淨值 2454 4958 3491 6285 聯發科 昇達科 啟碁",
+          "Ukraine retakes 400km² after Russian Starlink blackout - MSN",
+          "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN"
+        ],
+        "network_optical_communication": [
+          "AI與低軌衛星雙主軸發威！00401A淨值衝破13元大關 40天狂飆3成勝大盤 4 月 10 日正式掛牌的 00401A，搭上 SpaceX 將於 6 月 IPO 的話題，本週漲勢凌厲 今 (22) 日收盤時的淨值已強勢站上 13 元。根據公開訊息顯示，在 4 月 10 日至 5 月 22 日期間，台股大盤指數累計上漲 19%，而 00401A 的 主動式 ETF 低軌衛星 IPO SpaceX 美股 掩護性買權 台股 淨值 2454 4958 3491 6285 聯發科 昇達科 啟碁",
+          "Ukraine retakes 400km² after Russian Starlink blackout - MSN",
+          "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN"
+        ],
+        "memory": [
+          "AMD蘇姿丰來台固樁、中工變天、三星罷工暫緩 本周大事回顧 AMD 執行長蘇姿丰周五指出，半導體與 AI 高速成長，持續深化與台灣供應鏈的合作，而 AMD 也斥資逾 100 億美元投資台灣產業；中工周四召開股東會，寶佳拿下 4 席，鄭斯聰出任董事長，中工變天；三星電子工會周三決定暫緩罷工計畫。 本周大事 蘇姿丰 AMD 中工 三星罷工 2515 2530 2891 2408 中信金 南亞科",
+          "〈熱門股〉輝達財報報喜、AMD加持 英業達周漲逾1成股價寫近2年高 輝達 (NVDA-US) 本週公告第一季財報，表現優於預期，加上 AMD(AMD-US) 宣布將斥資超過 100 億美元，投資台灣產業，激勵英業達 (2356-TW) 本周大漲逾 1 成，股價也寫下近 2 年來新高。 英業達 AI伺服器 AMD 輝達 2356 英業達",
+          "NVIDIA營運報告改版，認為偏利空解讀 永誠資產管理處 NVIDIA AI 數據中心 財報 趨勢分析 永誠投顧",
+          "〈蘇姿丰演講〉AI基建市場未來四年內破兆美元 CPU未來五年年增逾35% 超微 (AMD-US) 執行長蘇姿丰 (Lisa Su) 今 (22) 日會後受訪表示，AI 基礎建設市場正快速成長，預估光是資料中心相關市場，未來三至四年規模就將超過 1 兆美元。尤其隨著 AI 推論與代理式 AI (agentic AI) 需 蘇姿丰 AMD CPU AI 2330 台積電",
+          "〈蘇姿丰演講〉蘇姿丰：不預期最先進晶片可銷往中國 會聚焦AI PC與邊緣AI 輝達 (NVDA-US) 執行長黃仁勳稱已將中國先進 AI 晶片市場拱手讓給華為，對此，超微 (AMD-US) 執行長蘇姿丰今 (22) 日參與天下雜誌論壇，會後表示，中國仍是 AMD 非常重要的市場，公司有非常廣泛的產品進入中國，不過，在 輝達 AMD 超微 中國 出口管制 禁令"
         ]
-      }
+      },
+      "us_events": [
+        {
+          "event": "Data center power",
+          "headline": "Big Tech’s AI Data Center Power Demands Trigger $15B PJM Auction and a Nuclear SMR Boom - TradingKey",
+          "themes": [
+            "power_grid",
+            "energy_grid",
+            "cooling_power"
+          ],
+          "direction": "bullish",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 14
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "US Weighs Chip Tariffs to Spur Domestic Growth, Trade Chief Says - Bloomberg.com",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "Trump administration imposes 25% tariffs on advanced semiconductors to boost domestic manufacturing - Crypto Briefing",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "U.S. weighs chip tariffs to spur domestic growth, trade chief says - The Japan Times",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "No ‘immediate’ tariffs on semiconductors - Semafor",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "U.S. flags chip tariffs in push on Korean memory makers to speed up US chip investments - aju press",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "USTR says no immediate chip tariffs coming: report - The Korea Times",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        },
+        {
+          "event": "Trump tariff / China tariff",
+          "headline": "U.S. Trade Representative: Comprehensive Semiconductor Tariffs to Be Imposed \"at the Appropriate Time\" - 아시아경제",
+          "themes": [
+            "materials_recovery",
+            "ai_server",
+            "advanced_packaging"
+          ],
+          "direction": "risk",
+          "sensitivity": "high",
+          "confidence": "signal",
+          "score": 12
+        }
+      ]
     }
   },
   "source_status": {
     "label": "正常",
-    "api": 485,
-    "cache": 8,
+    "api": 328,
+    "cache": 7,
     "quota": 0,
     "error": 0,
-    "empty": 89,
-    "fallback": 192,
+    "empty": 390,
+    "fallback": 268,
     "events": [
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "6414",
-        "period": "2026-03"
+        "data_id": "2355",
+        "period": "2026-02",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "2367",
+        "period": "2026-04",
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "6414",
+        "data_id": "2367",
         "reason": "twse_month_missing"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2025-11"
+        "data_id": "3019",
+        "period": "2025-11",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2025-12"
+        "data_id": "2355",
+        "period": "2026-03",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2026-01"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "3305",
-        "period": "2026-03"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2026-02"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2026-03"
+        "data_id": "2355",
+        "period": "2026-04",
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "3305",
+        "data_id": "2355",
         "reason": "twse_month_missing"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2026-04"
+        "data_id": "3019",
+        "period": "2025-12",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "8255",
-        "period": "2026-05"
+        "data_id": "3019",
+        "period": "2026-01",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "3019",
+        "period": "2026-02",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6282",
+        "period": "2025-11",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "3019",
+        "period": "2026-03",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6282",
+        "period": "2025-12",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "3019",
+        "period": "2026-04",
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "8255",
+        "data_id": "3019",
         "reason": "twse_month_missing"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2025-11"
+        "data_id": "6282",
+        "period": "2026-01",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2025-12"
+        "data_id": "6282",
+        "period": "2026-02",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-01"
+        "data_id": "6282",
+        "period": "2026-03",
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-02"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-03"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-04"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-05"
+        "data_id": "6282",
+        "period": "2026-04",
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "1815",
+        "data_id": "6282",
         "reason": "twse_month_missing"
       }
     ],
     "fallback_status": {
       "label": "正常",
-      "api": 203,
+      "api": 279,
       "cache": 0,
       "quota": 0,
       "error": 0,
@@ -669,16 +845,16 @@
     }
   },
   "health": {
-    "label": "正常",
-    "generated_at": "2026-05-23T16:42:59+08:00",
+    "label": "部分延遲",
+    "generated_at": "2026-05-23T23:38:48+08:00",
     "generated_date": "2026-05-23",
     "data_date": "2026-05-22",
     "website_schedule": "04:30 / 05:00",
     "telegram_schedule": "08:00 / 08:15",
     "provider_label": "正常",
-    "news_sources": 7,
-    "news_failed": 0,
-    "github_run_id": "26328344458",
+    "news_sources": 11,
+    "news_failed": 1,
+    "github_run_id": "26336701151",
     "github_event": "push",
     "scheduler": "push",
     "scheduled_task": "dashboard",
@@ -687,11 +863,11 @@
     "schedule_delay_minutes": null
   },
   "alerts": [
-    "題材升溫：先進封裝/CoWoS(升溫↑)、AI伺服器(升溫↑)、原物料/低基期傳產(急升🔥)、記憶體/HBM(降溫↓)、AI國防/軍工(急升🔥)",
-    "題材急升 AI國防/軍工：今日12則（3日均6.3則）",
-    "題材急升 原物料/低基期傳產：今日13則（3日均7.0則）",
-    "題材急升 網通光通訊：今日7則（3日均4.0則）",
-    "題材急升 矽光子/CPO：今日11則（3日均5.0則）"
+    "題材升溫：先進封裝/CoWoS(急升🔥)、AI伺服器(急升🔥)、記憶體/HBM(急升🔥)、低軌衛星/SpaceX(急升🔥)、矽光子/CPO(急升🔥)",
+    "題材急升 AI伺服器：今日44則（3日均12.7則）",
+    "題材急升 散熱/液冷：今日28則（3日均3.7則）",
+    "題材急升 AI國防/軍工：今日13則（3日均6.3則）",
+    "題材急升 電力能源/重電：今日19則（3日均4.7則）"
   ],
   "watch_reviews": [
     {
@@ -716,7 +892,7 @@
       "signal_score": 100,
       "entry_price": 933.0,
       "current_price": 896.0,
-      "current_score": 82,
+      "current_score": 79,
       "current_label": "BUY_WATCH",
       "change_pct": -3.965702036441586,
       "action": "可追蹤突破",
@@ -761,7 +937,7 @@
       "signal_score": 96,
       "entry_price": 54.1,
       "current_price": 59.5,
-      "current_score": 95,
+      "current_score": 100,
       "current_label": "BUY_WATCH",
       "change_pct": 9.981515711645098,
       "action": "可追蹤突破",
@@ -867,7 +1043,7 @@
       "signal_score": 84,
       "entry_price": 463.5,
       "current_price": 469.0,
-      "current_score": 100,
+      "current_score": 86,
       "current_label": "BUY_WATCH",
       "change_pct": 1.186623516720604,
       "action": "可追蹤突破",
@@ -882,7 +1058,7 @@
       "signal_score": 84,
       "entry_price": 4895.0,
       "current_price": 5090.0,
-      "current_score": 76,
+      "current_score": 73,
       "current_label": "BUY_WATCH",
       "change_pct": 3.983656792645557,
       "action": "可追蹤突破",
@@ -927,8 +1103,8 @@
       "signal_score": 80,
       "entry_price": 861.0,
       "current_price": 875.0,
-      "current_score": 56,
-      "current_label": "WAIT",
+      "current_score": 66,
+      "current_label": "BUY_WATCH",
       "change_pct": 1.6260162601626018,
       "action": "等拉回",
       "themes": [
@@ -957,7 +1133,7 @@
       "signal_score": 79,
       "entry_price": 140.0,
       "current_price": 144.5,
-      "current_score": 100,
+      "current_score": 89,
       "current_label": "BUY_WATCH",
       "change_pct": 3.214285714285714,
       "action": "等拉回",
@@ -987,7 +1163,7 @@
       "signal_score": 78,
       "entry_price": 114.0,
       "current_price": 125.0,
-      "current_score": 94,
+      "current_score": 86,
       "current_label": "BUY_WATCH",
       "change_pct": 9.649122807017543,
       "action": "等拉回",
@@ -1017,7 +1193,7 @@
       "signal_score": 75,
       "entry_price": 222.0,
       "current_price": 237.5,
-      "current_score": 98,
+      "current_score": 84,
       "current_label": "BUY_WATCH",
       "change_pct": 6.981981981981981,
       "action": "等拉回",
@@ -1032,7 +1208,7 @@
       "signal_score": 75,
       "entry_price": 316.5,
       "current_price": 322.5,
-      "current_score": 87,
+      "current_score": 84,
       "current_label": "BUY_WATCH",
       "change_pct": 1.8957345971563981,
       "action": "等拉回",
@@ -1063,7 +1239,7 @@
       "signal_score": 73,
       "entry_price": 313.5,
       "current_price": 316.5,
-      "current_score": 93,
+      "current_score": 80,
       "current_label": "BUY_WATCH",
       "change_pct": 0.9569377990430622,
       "action": "只觀察",
@@ -1093,7 +1269,7 @@
       "signal_score": 70,
       "entry_price": 59.1,
       "current_price": 63.8,
-      "current_score": 100,
+      "current_score": 92,
       "current_label": "BUY_WATCH",
       "change_pct": 7.952622673434849,
       "action": "只觀察",
@@ -1108,7 +1284,7 @@
       "signal_score": 70,
       "entry_price": 78.7,
       "current_price": 79.7,
-      "current_score": 87,
+      "current_score": 69,
       "current_label": "BUY_WATCH",
       "change_pct": 1.2706480304955527,
       "action": "只觀察",
@@ -1121,7 +1297,7 @@
       "signal_score": 70,
       "entry_price": 293.0,
       "current_price": 310.5,
-      "current_score": 76,
+      "current_score": 68,
       "current_label": "BUY_WATCH",
       "change_pct": 5.972696245733788,
       "action": "只觀察",
@@ -1151,8 +1327,8 @@
       "signal_score": 68,
       "entry_price": 4905.0,
       "current_price": 4895.0,
-      "current_score": 65,
-      "current_label": "BUY_WATCH",
+      "current_score": 57,
+      "current_label": "WAIT",
       "change_pct": -0.20387359836901123,
       "action": "只觀察",
       "themes": [
@@ -1166,7 +1342,7 @@
       "signal_score": 65,
       "entry_price": 5345.0,
       "current_price": 5525.0,
-      "current_score": 74,
+      "current_score": 66,
       "current_label": "BUY_WATCH",
       "change_pct": 3.367633302151544,
       "action": "只觀察",
@@ -1211,8 +1387,8 @@
       "signal_score": 65,
       "entry_price": 2495.0,
       "current_price": 2545.0,
-      "current_score": 73,
-      "current_label": "BUY_WATCH",
+      "current_score": 59,
+      "current_label": "WAIT",
       "change_pct": 2.004008016032064,
       "action": "只觀察",
       "themes": [
@@ -1256,7 +1432,7 @@
       "signal_score": 76,
       "entry_price": 115.5,
       "current_price": 125.0,
-      "current_score": 94,
+      "current_score": 86,
       "current_label": "BUY_WATCH",
       "change_pct": 8.225108225108226,
       "action": "等拉回",
@@ -1271,7 +1447,7 @@
       "signal_score": 74,
       "entry_price": 77.9,
       "current_price": 79.7,
-      "current_score": 87,
+      "current_score": 69,
       "current_label": "BUY_WATCH",
       "change_pct": 2.3106546854942196,
       "action": "只觀察",
@@ -1299,7 +1475,7 @@
       "signal_score": 73,
       "entry_price": 829.0,
       "current_price": 934.0,
-      "current_score": 83,
+      "current_score": 81,
       "current_label": "BUY_WATCH",
       "change_pct": 12.665862484921592,
       "action": "只觀察",
@@ -1344,8 +1520,8 @@
       "signal_score": 71,
       "entry_price": 826.0,
       "current_price": 875.0,
-      "current_score": 56,
-      "current_label": "WAIT",
+      "current_score": 66,
+      "current_label": "BUY_WATCH",
       "change_pct": 5.932203389830509,
       "action": "只觀察",
       "themes": [
@@ -1359,7 +1535,7 @@
       "signal_score": 71,
       "entry_price": 309.5,
       "current_price": 316.5,
-      "current_score": 93,
+      "current_score": 80,
       "current_label": "BUY_WATCH",
       "change_pct": 2.2617124394184165,
       "action": "只觀察",
@@ -1389,8 +1565,8 @@
       "signal_score": 69,
       "entry_price": 95.8,
       "current_price": 95.1,
-      "current_score": 62,
-      "current_label": "WAIT",
+      "current_score": 43,
+      "current_label": "AVOID",
       "change_pct": -0.7306889352818402,
       "action": "只觀察",
       "themes": [
@@ -1404,7 +1580,7 @@
       "signal_score": 68,
       "entry_price": 275.0,
       "current_price": 310.5,
-      "current_score": 76,
+      "current_score": 68,
       "current_label": "BUY_WATCH",
       "change_pct": 12.909090909090908,
       "action": "只觀察",
@@ -1464,7 +1640,7 @@
       "signal_score": 85,
       "entry_price": 62.0,
       "current_price": 63.8,
-      "current_score": 100,
+      "current_score": 92,
       "current_label": "BUY_WATCH",
       "change_pct": 2.903225806451608,
       "action": "可追蹤突破",
@@ -1479,7 +1655,7 @@
       "signal_score": 79,
       "entry_price": 252.0,
       "current_price": 237.5,
-      "current_score": 98,
+      "current_score": 84,
       "current_label": "BUY_WATCH",
       "change_pct": -5.753968253968254,
       "action": "等拉回",
@@ -1494,7 +1670,7 @@
       "signal_score": 78,
       "entry_price": 130.5,
       "current_price": 125.0,
-      "current_score": 94,
+      "current_score": 86,
       "current_label": "BUY_WATCH",
       "change_pct": -4.21455938697318,
       "action": "等拉回",
@@ -1522,8 +1698,8 @@
       "signal_score": 69,
       "entry_price": 900.0,
       "current_price": 875.0,
-      "current_score": 56,
-      "current_label": "WAIT",
+      "current_score": 66,
+      "current_label": "BUY_WATCH",
       "change_pct": -2.7777777777777777,
       "action": "只觀察",
       "themes": [
@@ -1537,7 +1713,7 @@
       "signal_score": 68,
       "entry_price": 76.8,
       "current_price": 79.7,
-      "current_score": 87,
+      "current_score": 69,
       "current_label": "BUY_WATCH",
       "change_pct": 3.776041666666674,
       "action": "只觀察",
@@ -1567,7 +1743,7 @@
       "signal_score": 100,
       "entry_price": 62.8,
       "current_price": 63.8,
-      "current_score": 100,
+      "current_score": 92,
       "current_label": "BUY_WATCH",
       "change_pct": 1.5923566878980893,
       "action": "可追蹤突破",
@@ -1597,7 +1773,7 @@
       "signal_score": 100,
       "entry_price": 251.0,
       "current_price": 237.5,
-      "current_score": 98,
+      "current_score": 84,
       "current_label": "BUY_WATCH",
       "change_pct": -5.378486055776892,
       "action": "可追蹤突破",
@@ -1612,7 +1788,7 @@
       "signal_score": 95,
       "entry_price": 129.5,
       "current_price": 125.0,
-      "current_score": 94,
+      "current_score": 86,
       "current_label": "BUY_WATCH",
       "change_pct": -3.474903474903475,
       "action": "可追蹤突破",
@@ -1627,8 +1803,8 @@
       "signal_score": 84,
       "entry_price": 96.1,
       "current_price": 95.1,
-      "current_score": 62,
-      "current_label": "WAIT",
+      "current_score": 43,
+      "current_label": "AVOID",
       "change_pct": -1.040582726326743,
       "action": "可追蹤突破",
       "themes": []
@@ -1640,7 +1816,7 @@
       "signal_score": 78,
       "entry_price": 336.0,
       "current_price": 316.5,
-      "current_score": 93,
+      "current_score": 80,
       "current_label": "BUY_WATCH",
       "change_pct": -5.803571428571429,
       "action": "等拉回",
@@ -1670,7 +1846,7 @@
       "signal_score": 76,
       "entry_price": 77.9,
       "current_price": 79.7,
-      "current_score": 87,
+      "current_score": 69,
       "current_label": "BUY_WATCH",
       "change_pct": 2.3106546854942196,
       "action": "等拉回",
@@ -1711,7 +1887,7 @@
       "signal_score": 71,
       "entry_price": 311.5,
       "current_price": 310.5,
-      "current_score": 76,
+      "current_score": 68,
       "current_label": "BUY_WATCH",
       "change_pct": -0.32102728731942215,
       "action": "只觀察",
@@ -1756,7 +1932,7 @@
       "name": "穎崴",
       "level": "紅色警戒",
       "risk_score": 17,
-      "current_score": 49,
+      "current_score": 42,
       "previous_score": 41,
       "price": 8700.0,
       "reasons": [
@@ -1787,8 +1963,8 @@
       "stock_id": "1301",
       "name": "台塑",
       "level": "紅色警戒",
-      "risk_score": 12,
-      "current_score": 39,
+      "risk_score": 10,
+      "current_score": 33,
       "previous_score": 34,
       "price": 45.25,
       "reasons": [
@@ -1816,6 +1992,22 @@
       "action": "準備減碼或停利，跌破停損不硬凹"
     },
     {
+      "stock_id": "2881",
+      "name": "富邦金",
+      "level": "紅色警戒",
+      "risk_score": 9,
+      "current_score": 43,
+      "previous_score": 47,
+      "price": 95.1,
+      "reasons": [
+        "法人賣、融資增、股價轉弱",
+        "投信近 3 日偏賣",
+        "跌破 MA5",
+        "跌破 MA10"
+      ],
+      "action": "準備減碼或停利，跌破停損不硬凹"
+    },
+    {
       "stock_id": "8299",
       "name": "群聯",
       "level": "紅色警戒",
@@ -1832,49 +2024,33 @@
       "action": "準備減碼或停利，跌破停損不硬凹"
     },
     {
-      "stock_id": "1101",
-      "name": "台泥",
+      "stock_id": "6442",
+      "name": "光聖",
       "level": "紅色警戒",
       "risk_score": 8,
       "current_score": 30,
-      "previous_score": 26,
-      "price": 24.1,
+      "previous_score": 35,
+      "price": 1875.0,
       "reasons": [
-        "外資連 3 日賣超",
+        "法人賣、融資增、股價轉弱",
+        "外資近 3 日偏賣",
         "外資 5 日合計賣超",
-        "跌破 MA5",
-        "跌破 MA10"
+        "跌破 MA20"
       ],
       "action": "準備減碼或停利，跌破停損不硬凹"
     },
     {
-      "stock_id": "1102",
-      "name": "亞泥",
+      "stock_id": "8271",
+      "name": "宇瞻",
       "level": "紅色警戒",
       "risk_score": 8,
-      "current_score": 34,
-      "previous_score": 23,
-      "price": 34.4,
+      "current_score": 50,
+      "previous_score": 59,
+      "price": 224.5,
       "reasons": [
-        "外資連 3 日賣超",
+        "外資近 3 日偏賣",
+        "投信近 3 日偏賣",
         "外資 5 日合計賣超",
-        "跌破 MA5",
-        "跌破 MA10"
-      ],
-      "action": "準備減碼或停利，跌破停損不硬凹"
-    },
-    {
-      "stock_id": "2002",
-      "name": "中鋼",
-      "level": "紅色警戒",
-      "risk_score": 8,
-      "current_score": 41,
-      "previous_score": 30,
-      "price": 18.15,
-      "reasons": [
-        "外資連 3 日賣超",
-        "外資 5 日合計賣超",
-        "跌破 MA5",
         "跌破 MA10"
       ],
       "action": "準備減碼或停利，跌破停損不硬凹"
@@ -1883,16 +2059,29 @@
   "action_lists": {
     "chase": [
       {
-        "stock_id": "6770",
-        "name": "力積電",
+        "stock_id": "6282",
+        "name": "康舒",
         "score": 100,
         "grade": "S+",
         "action": "可追蹤突破",
         "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-        "entry_limit_price": 65.08,
-        "stop_price": 51.8,
+        "entry_limit_price": 58.55,
+        "stop_price": 50.3,
         "themes": [
-          "記憶體/HBM"
+          "低軌衛星/SpaceX"
+        ]
+      },
+      {
+        "stock_id": "6274",
+        "name": "台燿",
+        "score": 100,
+        "grade": "S+",
+        "action": "可追蹤突破",
+        "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
+        "entry_limit_price": 1484.1,
+        "stop_price": 1190.0,
+        "themes": [
+          "低軌衛星/SpaceX"
         ]
       },
       {
@@ -1903,22 +2092,22 @@
         "action": "可追蹤突破",
         "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
         "entry_limit_price": 89.56,
-        "stop_price": 80.9,
+        "stop_price": 79.9,
         "themes": [
           "AI伺服器"
         ]
       },
       {
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "3491",
+        "name": "昇達科",
         "score": 100,
         "grade": "S+",
         "action": "可追蹤突破",
         "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-        "entry_limit_price": 147.39,
-        "stop_price": 136.0,
+        "entry_limit_price": 1968.6,
+        "stop_price": 1730.0,
         "themes": [
-          "AI伺服器"
+          "低軌衛星/SpaceX"
         ]
       },
       {
@@ -1929,26 +2118,65 @@
         "action": "可追蹤突破",
         "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
         "entry_limit_price": 989.4,
-        "stop_price": 782.0,
+        "stop_price": 793.0,
+        "themes": [
+          "先進封裝/CoWoS"
+        ]
+      }
+    ],
+    "pullback": [
+      {
+        "stock_id": "3081",
+        "name": "聯亞",
+        "score": 82,
+        "grade": "A",
+        "action": "等拉回",
+        "reason": "題材升溫 + 法人共振 + 營收加速 + 海外順風",
+        "entry_limit_price": 2764.2,
+        "stop_price": 2460.0,
+        "themes": [
+          "矽光子/CPO"
+        ]
+      },
+      {
+        "stock_id": "3563",
+        "name": "牧德",
+        "score": 79,
+        "grade": "A",
+        "action": "等拉回",
+        "reason": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
+        "entry_limit_price": 918.4,
+        "stop_price": 835.0,
         "themes": [
           "先進封裝/CoWoS"
         ]
       },
       {
-        "stock_id": "2395",
-        "name": "研華",
-        "score": 100,
-        "grade": "S+",
-        "action": "可追蹤突破",
-        "reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-        "entry_limit_price": 478.38,
-        "stop_price": 357.5,
+        "stock_id": "2313",
+        "name": "華通",
+        "score": 79,
+        "grade": "A",
+        "action": "等拉回",
+        "reason": "題材強共振 + 外資買超 + 技術突破 + 海外順風",
+        "entry_limit_price": 284.95,
+        "stop_price": 250.0,
         "themes": [
-          "AI伺服器"
+          "低軌衛星/SpaceX"
         ]
-      }
-    ],
-    "pullback": [
+      },
+      {
+        "stock_id": "6271",
+        "name": "同欣電",
+        "score": 78,
+        "grade": "A",
+        "action": "等拉回",
+        "reason": "題材強共振 + 法人共振 + 技術突破 + 海外順風",
+        "entry_limit_price": 232.16,
+        "stop_price": 181.0,
+        "themes": [
+          "低軌衛星/SpaceX"
+        ]
+      },
       {
         "stock_id": "6239",
         "name": "力成",
@@ -1961,96 +2189,44 @@
         "themes": [
           "記憶體/HBM"
         ]
-      },
-      {
-        "stock_id": "2382",
-        "name": "廣達",
-        "score": 78,
-        "grade": "A",
-        "action": "等拉回",
-        "reason": "題材升溫 + 投信買超 + 技術偏多 + 營收加速 + 美股映射",
-        "entry_limit_price": 323.9,
-        "stop_price": 305.5,
-        "themes": [
-          "AI伺服器"
-        ]
-      },
-      {
-        "stock_id": "3013",
-        "name": "晟銘電",
-        "score": 77,
-        "grade": "A",
-        "action": "等拉回",
-        "reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
-        "entry_limit_price": 113.26,
-        "stop_price": 98.3,
-        "themes": [
-          "AI伺服器"
-        ]
-      },
-      {
-        "stock_id": "8255",
-        "name": "朋億",
-        "score": 76,
-        "grade": "A",
-        "action": "等拉回",
-        "reason": "題材強共振 + 外資買超 + 技術突破 + 海外順風",
-        "entry_limit_price": 160.92,
-        "stop_price": 150.0,
-        "themes": [
-          "AI國防/軍工"
-        ]
-      },
-      {
-        "stock_id": "5274",
-        "name": "信驊",
-        "score": 76,
-        "grade": "A",
-        "action": "等拉回",
-        "reason": "題材關注 + 外資買超 + 營收加速 + 海外順風",
-        "entry_limit_price": 18224.5,
-        "stop_price": 15485.0,
-        "themes": [
-          "AI伺服器"
-        ]
       }
     ],
     "ai_watch": [
       {
-        "stock_id": "6770",
-        "name": "力積電",
+        "stock_id": "6274",
+        "name": "台燿",
         "score": 100,
         "grade": "S+",
         "action": "可追蹤突破",
         "reason": "AI 首選觀察",
-        "entry_limit_price": 65.08,
-        "stop_price": 51.8,
+        "entry_limit_price": 1484.1,
+        "stop_price": 1190.0,
         "themes": [
-          "記憶體/HBM"
+          "低軌衛星/SpaceX"
         ]
       },
       {
-        "stock_id": "3706",
-        "name": "神達",
+        "stock_id": "3491",
+        "name": "昇達科",
         "score": 100,
         "grade": "S+",
         "action": "可追蹤突破",
         "reason": "AI 首選觀察",
-        "entry_limit_price": 89.56,
-        "stop_price": 80.9,
+        "entry_limit_price": 1968.6,
+        "stop_price": 1730.0,
         "themes": [
-          "AI伺服器"
+          "低軌衛星/SpaceX"
         ]
       },
       {
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "2356",
+        "name": "英業達",
         "score": 100,
         "grade": "S+",
         "action": "可追蹤突破",
         "reason": "AI 首選觀察",
-        "entry_limit_price": 147.39,
-        "stop_price": 136.0,
+        "entry_limit_price": 60.69,
+        "stop_price": 50.4,
         "themes": [
           "AI伺服器"
         ]
@@ -2077,7 +2253,7 @@
         "stock_id": "1301",
         "name": "台塑",
         "level": "紅色警戒",
-        "risk_score": 12,
+        "risk_score": 10,
         "reason": "外資連 3 日賣超、投信連 3 日賣超",
         "action": "準備減碼或停利，跌破停損不硬凹"
       },
@@ -2090,11 +2266,11 @@
         "action": "準備減碼或停利，跌破停損不硬凹"
       },
       {
-        "stock_id": "8299",
-        "name": "群聯",
+        "stock_id": "2881",
+        "name": "富邦金",
         "level": "紅色警戒",
         "risk_score": 9,
-        "reason": "外資連 3 日賣超、投信連 3 日賣超",
+        "reason": "法人賣、融資增、股價轉弱、投信近 3 日偏賣",
         "action": "準備減碼或停利，跌破停損不硬凹"
       }
     ],
@@ -2106,9 +2282,9 @@
     }
   },
   "data_quality": {
-    "label": "高",
-    "score": 86,
-    "source_score": 85,
+    "label": "low",
+    "score": 61,
+    "source_score": 46,
     "coverage": 100.0,
     "warnings": [
       "AI 模型降級可用"
@@ -2119,85 +2295,150 @@
     },
     "details": [
       {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "3019",
+        "period": "",
+        "reason": "twse_month_missing"
+      },
+      {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
+        "data_id": "6282",
         "period": "2026-01",
-        "reason": ""
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
+        "data_id": "6282",
         "period": "2026-02",
-        "reason": ""
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
+        "data_id": "6282",
         "period": "2026-03",
-        "reason": ""
+        "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "1815",
+        "data_id": "6282",
         "period": "2026-04",
-        "reason": ""
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "1815",
-        "period": "2026-05",
-        "reason": ""
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "1815",
+        "data_id": "6282",
         "period": "",
         "reason": "twse_month_missing"
       }
+    ],
+    "recovery_status": {
+      "label": "retry_ready",
+      "retryable": 6,
+      "blocked": 0,
+      "items": [
+        {
+          "dataset": "stock_prices",
+          "data_id": "3019",
+          "period": "",
+          "type": "fallback",
+          "next_step": "retry_range"
+        },
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "6282",
+          "period": "2026-01",
+          "type": "empty",
+          "next_step": "retry_range"
+        },
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "6282",
+          "period": "2026-02",
+          "type": "empty",
+          "next_step": "retry_range"
+        },
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "6282",
+          "period": "2026-03",
+          "type": "empty",
+          "next_step": "retry_range"
+        },
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "6282",
+          "period": "2026-04",
+          "type": "empty",
+          "next_step": "retry_range"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "6282",
+          "period": "",
+          "type": "fallback",
+          "next_step": "retry_range"
+        }
+      ]
+    }
+  },
+  "decision_summary": {
+    "posture": "risk_control",
+    "watch_count": 5,
+    "pullback_count": 5,
+    "risk_count": 5,
+    "strong_grade_count": 18,
+    "data_quality": "low",
+    "ai_status": "available",
+    "top_theme": "advanced_packaging",
+    "notes": [
+      "watch=5",
+      "pullback=5",
+      "risk=5",
+      "data_quality=low"
     ]
   },
   "summary": {
-    "scanned": 58,
-    "valid": 58,
+    "scanned": 68,
+    "valid": 68,
     "s_plus_grade": 8,
-    "s_grade": 9,
-    "a_grade": 11,
-    "b_grade": 8,
+    "s_grade": 10,
+    "a_grade": 15,
+    "b_grade": 10,
     "data_insufficient": 0
   },
   "rows": [
     {
-      "stock_id": "3231",
-      "name": "緯創",
+      "stock_id": "2356",
+      "name": "英業達",
       "score": 100,
       "grade": "S+",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 144.5,
+      "price": 59.5,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 112.0%",
+      "fundamental": "最新月營收年增 36.5%",
       "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
+      "opportunity": "成交量放大 2.8 倍",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 146.00，跳空不追超過 147.39（+2%）；開盤前5分鐘量 >= 2098 張（日均量5%）",
-      "stop_reference": "跌破 136.00（MA5 141.00 / 昨低 139.50 / 近3日低 136.00 三者取低）止損出場",
-      "stop_price": 136.0,
-      "entry_limit_price": 147.39,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 59.50，跳空不追超過 60.69（+2%）；開盤前5分鐘量 >= 2235 張（日均量5%）",
+      "stop_reference": "跌破 50.40（MA5 53.72 / 昨低 54.80 / 近3日低 50.40 三者取低）止損出場",
+      "stop_price": 50.4,
+      "entry_limit_price": 60.69,
       "themes": [
         "AI伺服器"
       ],
       "theme_tiers": [
-        "AI伺服器:核心"
+        "AI伺服器:受惠"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 14,
+      "opportunity_score": 22,
       "warnings": [],
       "trigger_tags": [
         "題材強共振",
@@ -2207,7 +2448,7 @@
         "海外順風"
       ],
       "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 112.0%"
+      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 36.5%"
     },
     {
       "stock_id": "3706",
@@ -2221,11 +2462,11 @@
       "chip": "外資近 3 日買超",
       "fundamental": "最新月營收年增 31.9%",
       "risk": "風險條件可接受",
-      "opportunity": "成交量放大 3.0 倍",
+      "opportunity": "成交量放大 2.4 倍",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 88.40，跳空不追超過 89.56（+2%）；開盤前5分鐘量 >= 616 張（日均量5%）",
-      "stop_reference": "跌破 80.90（MA5 82.74 / 昨低 83.60 / 近3日低 80.90 三者取低）止損出場",
-      "stop_price": 80.9,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 88.40，跳空不追超過 89.56（+2%）；開盤前5分鐘量 >= 766 張（日均量5%）",
+      "stop_reference": "跌破 79.90（MA5 82.48 / 昨低 83.60 / 近3日低 79.90 三者取低）止損出場",
+      "stop_price": 79.9,
       "entry_limit_price": 89.56,
       "themes": [
         "AI伺服器"
@@ -2247,41 +2488,6 @@
       "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 31.9%"
     },
     {
-      "stock_id": "2395",
-      "name": "研華",
-      "score": 100,
-      "grade": "S+",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 469.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 34.6%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "突破近 20 日高點",
-      "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 472.50，跳空不追超過 478.38（+2%）；開盤前5分鐘量 >= 148 張（日均量5%）",
-      "stop_reference": "跌破 357.50（MA5 384.90 / 昨低 458.50 / 近3日低 357.50 三者取低）止損出場",
-      "stop_price": 357.5,
-      "entry_limit_price": 478.38,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 11,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "法人共振",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 34.6%"
-    },
-    {
       "stock_id": "3037",
       "name": "欣興",
       "score": 100,
@@ -2295,9 +2501,9 @@
       "risk": "本益比偏高 142.7x（>80x 扣分）",
       "opportunity": "突破近 20 日高點",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 986.00，跳空不追超過 989.40（+2%）；開盤前5分鐘量 >= 1221 張（日均量5%）",
-      "stop_reference": "跌破 782.00（MA5 864.00 / 昨低 931.00 / 近3日低 782.00 三者取低）止損出場",
-      "stop_price": 782.0,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 986.00，跳空不追超過 989.40（+2%）；開盤前5分鐘量 >= 1484 張（日均量5%）",
+      "stop_reference": "跌破 793.00（MA5 866.40 / 昨低 931.00 / 近3日低 793.00 三者取低）止損出場",
+      "stop_price": 793.0,
       "entry_limit_price": 989.4,
       "themes": [
         "先進封裝/CoWoS"
@@ -2317,28 +2523,65 @@
       "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 27.6%"
     },
     {
-      "stock_id": "6770",
-      "name": "力積電",
+      "stock_id": "3491",
+      "name": "昇達科",
       "score": 100,
       "grade": "S+",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 63.8,
+      "price": 1930.0,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 32.5%",
+      "fundamental": "最新月營收年增 84.0%",
       "risk": "風險條件可接受",
       "opportunity": "突破近 20 日高點",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 64.80，跳空不追超過 65.08（+2%）；開盤前5分鐘量 >= 6162 張（日均量5%）",
-      "stop_reference": "跌破 51.80（MA5 55.74 / 昨低 60.20 / 近3日低 51.80 三者取低）止損出場",
-      "stop_price": 51.8,
-      "entry_limit_price": 65.08,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 1980.00，跳空不追超過 1968.60（+2%）；開盤前5分鐘量 >= 128 張（日均量5%）",
+      "stop_reference": "跌破 1730.00（MA5 1831.00 / 昨低 1825.00 / 近3日低 1730.00 三者取低）止損出場",
+      "stop_price": 1730.0,
+      "entry_limit_price": 1968.6,
       "themes": [
-        "記憶體/HBM"
+        "低軌衛星/SpaceX"
       ],
       "theme_tiers": [
-        "記憶體/HBM:受惠"
+        "低軌衛星/SpaceX:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 14,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術突破",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
+      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 84.0%"
+    },
+    {
+      "stock_id": "6274",
+      "name": "台燿",
+      "score": 100,
+      "grade": "S+",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 1455.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 95.6%",
+      "risk": "風險條件可接受",
+      "opportunity": "突破近 20 日高點",
+      "action": "可追蹤突破",
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 1455.00，跳空不追超過 1484.10（+2%）；開盤前5分鐘量 >= 233 張（日均量5%）",
+      "stop_reference": "跌破 1190.00（MA5 1294.00 / 昨低 1445.00 / 近3日低 1190.00 三者取低）止損出場",
+      "stop_price": 1190.0,
+      "entry_limit_price": 1484.1,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
       ],
       "overseas_adjustment": 3,
       "opportunity_score": 12,
@@ -2351,44 +2594,44 @@
         "海外順風"
       ],
       "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 32.5%"
+      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 95.6%"
     },
     {
-      "stock_id": "3006",
-      "name": "晶豪科",
-      "score": 98,
+      "stock_id": "6282",
+      "name": "康舒",
+      "score": 100,
       "grade": "S+",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 237.5,
+      "price": 57.4,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 349.2%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
+      "fundamental": "最新月營收年增 34.6%",
+      "risk": "本益比偏高 114.8x（>80x 扣分）",
+      "opportunity": "成交量放大 2.2 倍",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 244.00，跳空不追超過 242.25（+2%）；開盤前5分鐘量 >= 977 張（日均量5%）",
-      "stop_reference": "跌破 168.50（MA5 186.90 / 昨低 224.00 / 近3日低 168.50 三者取低）止損出場",
-      "stop_price": 168.5,
-      "entry_limit_price": 242.25,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 58.30，跳空不追超過 58.55（+2%）；開盤前5分鐘量 >= 1763 張（日均量5%）",
+      "stop_reference": "跌破 50.30（MA5 52.68 / 昨低 54.40 / 近3日低 50.30 三者取低）止損出場",
+      "stop_price": 50.3,
+      "entry_limit_price": 58.55,
       "themes": [
-        "記憶體/HBM"
+        "低軌衛星/SpaceX"
       ],
       "theme_tiers": [
-        "記憶體/HBM:受惠"
+        "低軌衛星/SpaceX:投機"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 12,
+      "opportunity_score": 20,
       "warnings": [],
       "trigger_tags": [
         "題材強共振",
-        "外資買超",
+        "法人共振",
         "技術突破",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 349.2%"
+      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
+      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 34.6%"
     },
     {
       "stock_id": "3189",
@@ -2404,9 +2647,9 @@
       "risk": "本益比偏高 171.6x（>80x 扣分）",
       "opportunity": "突破近 20 日高點",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 609.00，跳空不追超過 621.18（+2%）；開盤前5分鐘量 >= 1748 張（日均量5%）",
-      "stop_reference": "跌破 490.00（MA5 533.60 / 昨低 588.00 / 近3日低 490.00 三者取低）止損出場",
-      "stop_price": 490.0,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 609.00，跳空不追超過 621.18（+2%）；開盤前5分鐘量 >= 1638 張（日均量5%）",
+      "stop_reference": "跌破 481.00（MA5 537.00 / 昨低 588.00 / 近3日低 481.00 三者取低）止損出場",
+      "stop_price": 481.0,
       "entry_limit_price": 621.18,
       "themes": [
         "先進封裝/CoWoS"
@@ -2426,41 +2669,41 @@
       "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 26.8%"
     },
     {
-      "stock_id": "2356",
-      "name": "英業達",
+      "stock_id": "3019",
+      "name": "亞光",
       "score": 95,
       "grade": "S+",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 59.5,
+      "price": 153.5,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 36.5%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "成交量放大 4.1 倍",
+      "fundamental": "最新月營收年增 20.0%",
+      "risk": "風險條件可接受",
+      "opportunity": "突破近 20 日高點",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 59.50，跳空不追超過 60.69（+2%）；開盤前5分鐘量 >= 1502 張（日均量5%）",
-      "stop_reference": "跌破 45.80（MA5 48.95 / 昨低 54.80 / 近3日低 45.80 三者取低）止損出場",
-      "stop_price": 45.8,
-      "entry_limit_price": 60.69,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 157.50，跳空不追超過 156.57（+2%）；開盤前5分鐘量 >= 534 張（日均量5%）",
+      "stop_reference": "跌破 147.50（MA5 151.00 / 昨低 150.50 / 近3日低 147.50 三者取低）止損出場",
+      "stop_price": 147.5,
+      "entry_limit_price": 156.57,
       "themes": [
-        "AI伺服器"
+        "低軌衛星/SpaceX"
       ],
       "theme_tiers": [
-        "AI伺服器:受惠"
+        "低軌衛星/SpaceX:投機"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 22,
+      "opportunity_score": 10,
       "warnings": [],
       "trigger_tags": [
         "題材強共振",
-        "法人共振",
+        "外資買超",
         "技術突破",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 36.5%"
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 20.0%"
     },
     {
       "stock_id": "2317",
@@ -2537,149 +2780,78 @@
       "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 美股映射；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 19.2%"
     },
     {
-      "stock_id": "2344",
-      "name": "華邦電",
-      "score": 94,
+      "stock_id": "6770",
+      "name": "力積電",
+      "score": 92,
       "grade": "S",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 125.0,
+      "price": 63.8,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 182.2%",
+      "fundamental": "最新月營收年增 32.5%",
       "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
+      "opportunity": "題材分層：記憶體/HBM(受惠)",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 125.00，跳空不追超過 127.50（+2%）；開盤前5分鐘量 >= 7800 張（日均量5%）",
-      "stop_reference": "跌破 88.80（MA5 99.38 / 昨低 115.50 / 近3日低 88.80 三者取低）止損出場",
-      "stop_price": 88.8,
-      "entry_limit_price": 127.5,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 64.80，跳空不追超過 65.08（+2%）；開盤前5分鐘量 >= 8737 張（日均量5%）",
+      "stop_reference": "跌破 56.60（MA5 60.24 / 昨低 60.20 / 近3日低 56.60 三者取低）止損出場",
+      "stop_price": 56.6,
+      "entry_limit_price": 65.08,
       "themes": [
         "記憶體/HBM"
       ],
       "theme_tiers": [
-        "記憶體/HBM:核心"
+        "記憶體/HBM:受惠"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 14,
+      "opportunity_score": 4,
       "warnings": [],
       "trigger_tags": [
-        "題材強共振",
-        "外資買超",
-        "技術突破",
+        "題材關注",
+        "法人共振",
+        "技術偏多",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 182.2%"
+      "trigger_summary": "題材關注 + 法人共振 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 法人共振 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 32.5%"
     },
     {
-      "stock_id": "1605",
-      "name": "華新",
-      "score": 94,
+      "stock_id": "3231",
+      "name": "緯創",
+      "score": 89,
       "grade": "S",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 36.5,
+      "price": 144.5,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "基本面中性",
+      "fundamental": "最新月營收年增 112.0%",
       "risk": "風險條件可接受",
-      "opportunity": "成交量放大 2.2 倍",
+      "opportunity": "題材分層：AI伺服器(核心)",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 37.10，跳空不追超過 37.23（+2%）；開盤前5分鐘量 >= 1374 張（日均量5%）",
-      "stop_reference": "跌破 30.10（MA5 31.58 / 昨低 35.30 / 近3日低 30.10 三者取低）止損出場",
-      "stop_price": 30.1,
-      "entry_limit_price": 37.23,
+      "entry_condition": "強勢型：開盤站穩昨高 146.00，跳空不追超過 147.39（+2%）；開盤前5分鐘量 >= 2227 張（日均量5%）",
+      "stop_reference": "跌破 132.00（MA5 137.00 / 昨低 139.50 / 近3日低 132.00 三者取低）止損出場",
+      "stop_price": 132.0,
+      "entry_limit_price": 147.39,
       "themes": [
-        "原物料/低基期傳產"
+        "AI伺服器"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:受惠"
+        "AI伺服器:核心"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 22,
+      "opportunity_score": 6,
       "warnings": [],
       "trigger_tags": [
-        "題材強共振",
+        "題材升溫",
         "法人共振",
-        "技術突破",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
-    },
-    {
-      "stock_id": "2451",
-      "name": "創見",
-      "score": 93,
-      "grade": "S",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 316.5,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 594.4%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 324.00，跳空不追超過 322.83（+2%）；開盤前5分鐘量 >= 450 張（日均量5%）",
-      "stop_reference": "跌破 252.00（MA5 272.10 / 昨低 314.50 / 近3日低 252.00 三者取低）止損出場",
-      "stop_price": 252.0,
-      "entry_limit_price": 322.83,
-      "themes": [
-        "記憶體/HBM"
-      ],
-      "theme_tiers": [
-        "記憶體/HBM:投機"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 10,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "法人共振",
-        "技術突破",
+        "技術偏多",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 594.4%"
-    },
-    {
-      "stock_id": "3305",
-      "name": "昇貿",
-      "score": 91,
-      "grade": "S",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 146.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 60.2%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 149.00，跳空不追超過 148.92（+2%）；開盤前5分鐘量 >= 572 張（日均量5%）",
-      "stop_reference": "跌破 133.00（MA5 139.00 / 昨低 138.00 / 近3日低 133.00 三者取低）止損出場",
-      "stop_price": 133.0,
-      "entry_limit_price": 148.92,
-      "themes": [
-        "AI國防/軍工"
-      ],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 11,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "外資買超",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 60.2%"
+      "trigger_summary": "題材升溫 + 法人共振 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材升溫 + 法人共振 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 112.0%"
     },
     {
       "stock_id": "2330",
@@ -2719,63 +2891,68 @@
       "decision_reason": "題材升溫 + 法人共振 + 技術偏多 + 營收加速 + 美股映射；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 17.5%"
     },
     {
-      "stock_id": "2882",
-      "name": "國泰金",
-      "score": 87,
+      "stock_id": "4908",
+      "name": "前鼎",
+      "score": 88,
       "grade": "S",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 79.7,
+      "price": 267.0,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 359.9%",
+      "fundamental": "近 3 個月營收皆優於去年同期",
       "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
+      "opportunity": "成交量放大 2.5 倍",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 79.80，跳空不追超過 81.29（+2%）；開盤前5分鐘量 >= 1492 張（日均量5%）",
-      "stop_reference": "跌破 75.90（MA5 76.94 / 昨低 78.20 / 近3日低 75.90 三者取低）止損出場",
-      "stop_price": 75.9,
-      "entry_limit_price": 81.29,
-      "themes": [],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 8,
-      "warnings": [],
-      "trigger_tags": [
-        "外資買超",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 359.9%"
-    },
-    {
-      "stock_id": "2376",
-      "name": "技嘉",
-      "score": 87,
-      "grade": "S",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 322.5,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 73.7%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "突破近 20 日高點",
-      "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 325.00，跳空不追超過 328.95（+2%）；開盤前5分鐘量 >= 510 張（日均量5%）",
-      "stop_reference": "跌破 271.00（MA5 286.90 / 昨低 311.50 / 近3日低 271.00 三者取低）止損出場",
-      "stop_price": 271.0,
-      "entry_limit_price": 328.95,
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 267.00，跳空不追超過 272.34（+2%）；開盤前5分鐘量 >= 84 張（日均量5%）",
+      "stop_reference": "跌破 231.00（MA5 244.70 / 昨低 248.00 / 近3日低 231.00 三者取低）止損出場",
+      "stop_price": 231.0,
+      "entry_limit_price": 272.34,
       "themes": [
-        "AI伺服器"
+        "矽光子/CPO"
       ],
       "theme_tiers": [
-        "AI伺服器:受惠"
+        "矽光子/CPO:受惠"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 12,
+      "opportunity_score": 22,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "外資買超",
+        "技術突破",
+        "營收回升",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收回升 + 海外順風",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收回升 + 海外順風；收盤價站上 MA20；外資近 3 日買超；近 3 個月營收皆優於去年同期"
+    },
+    {
+      "stock_id": "2383",
+      "name": "台光電",
+      "score": 87,
+      "grade": "S",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 5005.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 93.6%",
+      "risk": "本益比偏高 108.6x（>80x 扣分）",
+      "opportunity": "突破近 20 日高點",
+      "action": "可追蹤突破",
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 5085.00，跳空不追超過 5105.10（+2%）；開盤前5分鐘量 >= 152 張（日均量5%）",
+      "stop_reference": "跌破 4360.00（MA5 4634.00 / 昨低 4800.00 / 近3日低 4360.00 三者取低）止損出場",
+      "stop_price": 4360.0,
+      "entry_limit_price": 5105.1,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 14,
       "warnings": [],
       "trigger_tags": [
         "題材強共振",
@@ -2785,12 +2962,229 @@
         "海外順風"
       ],
       "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 73.7%"
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 93.6%"
+    },
+    {
+      "stock_id": "2395",
+      "name": "研華",
+      "score": 86,
+      "grade": "S",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 469.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 34.6%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材：AI伺服器",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 472.50，跳空不追超過 478.38（+2%）；開盤前5分鐘量 >= 256 張（日均量5%）",
+      "stop_reference": "跌破 457.50（MA5 463.30 / 昨低 458.50 / 近3日低 457.50 三者取低）止損出場",
+      "stop_price": 457.5,
+      "entry_limit_price": 478.38,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [],
+      "overseas_adjustment": 3,
+      "opportunity_score": 3,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "法人共振",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 法人共振 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 法人共振 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 34.6%"
+    },
+    {
+      "stock_id": "2344",
+      "name": "華邦電",
+      "score": 86,
+      "grade": "S",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 125.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 182.2%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：記憶體/HBM(核心)",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 125.00，跳空不追超過 127.50（+2%）；開盤前5分鐘量 >= 10803 張（日均量5%）",
+      "stop_reference": "跌破 112.00（MA5 120.50 / 昨低 115.50 / 近3日低 112.00 三者取低）止損出場",
+      "stop_price": 112.0,
+      "entry_limit_price": 127.5,
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "theme_tiers": [
+        "記憶體/HBM:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材升溫 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 182.2%"
+    },
+    {
+      "stock_id": "3105",
+      "name": "穩懋",
+      "score": 85,
+      "grade": "S",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 531.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 48.9%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：低軌衛星/SpaceX(受惠)",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 531.00，跳空不追超過 541.62（+2%）；開盤前5分鐘量 >= 1478 張（日均量5%）",
+      "stop_reference": "跌破 442.50（MA5 473.50 / 昨低 499.50 / 近3日低 442.50 三者取低）止損出場",
+      "stop_price": 442.5,
+      "entry_limit_price": 541.62,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "法人共振",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 法人共振 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 法人共振 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 48.9%"
+    },
+    {
+      "stock_id": "2376",
+      "name": "技嘉",
+      "score": 84,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 322.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 73.7%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：AI伺服器(受惠)",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 325.00，跳空不追超過 328.95（+2%）；開盤前5分鐘量 >= 781 張（日均量5%）",
+      "stop_reference": "跌破 300.00（MA5 315.30 / 昨低 311.50 / 近3日低 300.00 三者取低）止損出場",
+      "stop_price": 300.0,
+      "entry_limit_price": 328.95,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 73.7%"
+    },
+    {
+      "stock_id": "3006",
+      "name": "晶豪科",
+      "score": 84,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 237.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 349.2%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：記憶體/HBM(受惠)",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 244.00，跳空不追超過 242.25（+2%）；開盤前5分鐘量 >= 1528 張（日均量5%）",
+      "stop_reference": "跌破 216.00（MA5 234.00 / 昨低 224.00 / 近3日低 216.00 三者取低）止損出場",
+      "stop_price": 216.0,
+      "entry_limit_price": 242.25,
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "theme_tiers": [
+        "記憶體/HBM:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 349.2%"
+    },
+    {
+      "stock_id": "3081",
+      "name": "聯亞",
+      "score": 82,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 2710.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 115.4%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：矽光子/CPO(核心)",
+      "action": "等拉回",
+      "entry_condition": "目前已在 MA20（2688.00）附近，量縮整理後出現放量（前5分鐘 >= 163 張）再進場；不追超過 2764.20（+2%）",
+      "stop_reference": "收盤跌破 MA20（2688.00）不回則止損，最寬參考 2460.00",
+      "stop_price": 2460.0,
+      "entry_limit_price": 2764.2,
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "法人共振",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 法人共振 + 營收加速 + 海外順風",
+      "decision_reason": "題材升溫 + 法人共振 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 115.4%"
     },
     {
       "stock_id": "8046",
       "name": "南電",
-      "score": 83,
+      "score": 81,
       "grade": "A",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
@@ -2801,9 +3195,9 @@
       "risk": "本益比偏高 197.9x（>80x 扣分）",
       "opportunity": "題材：先進封裝/CoWoS",
       "action": "可追蹤突破",
-      "entry_condition": "強勢型：開盤站穩昨高 952.00，跳空不追超過 952.68（+2%）；開盤前5分鐘量 >= 1162 張（日均量5%）",
-      "stop_reference": "跌破 904.00（MA5 940.00 / 昨低 904.00 / 近3日低 904.00 三者取低）止損出場",
-      "stop_price": 904.0,
+      "entry_condition": "強勢型：開盤站穩昨高 952.00，跳空不追超過 952.68（+2%）；開盤前5分鐘量 >= 884 張（日均量5%）",
+      "stop_reference": "跌破 783.00（MA5 844.80 / 昨低 904.00 / 近3日低 783.00 三者取低）止損出場",
+      "stop_price": 783.0,
       "entry_limit_price": 952.68,
       "themes": [
         "先進封裝/CoWoS"
@@ -2822,9 +3216,83 @@
       "decision_reason": "題材關注 + 法人共振 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 39.5%"
     },
     {
+      "stock_id": "6285",
+      "name": "啟碁",
+      "score": 81,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 296.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 15.6%",
+      "risk": "風險條件可接受",
+      "opportunity": "突破近 20 日高點",
+      "action": "可追蹤突破",
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 298.00，跳空不追超過 301.92（+2%）；開盤前5分鐘量 >= 1588 張（日均量5%）",
+      "stop_reference": "跌破 276.00（MA5 286.70 / 昨低 279.00 / 近3日低 276.00 三者取低）止損出場",
+      "stop_price": 276.0,
+      "entry_limit_price": 301.92,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 12,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "外資買超",
+        "技術突破",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 15.6%"
+    },
+    {
+      "stock_id": "2451",
+      "name": "創見",
+      "score": 80,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 316.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 594.4%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：記憶體/HBM(投機)",
+      "action": "可追蹤突破",
+      "entry_condition": "強勢型：開盤站穩昨高 324.00，跳空不追超過 322.83（+2%）；開盤前5分鐘量 >= 573 張（日均量5%）",
+      "stop_reference": "跌破 303.00（MA5 314.90 / 昨低 314.50 / 近3日低 303.00 三者取低）止損出場",
+      "stop_price": 303.0,
+      "entry_limit_price": 322.83,
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "theme_tiers": [
+        "記憶體/HBM:投機"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 2,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "法人共振",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 法人共振 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 法人共振 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 594.4%"
+    },
+    {
       "stock_id": "3563",
       "name": "牧德",
-      "score": 82,
+      "score": 79,
       "grade": "A",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
@@ -2833,64 +3301,64 @@
       "chip": "投信近 3 日買超",
       "fundamental": "最新月營收月增 1.4%",
       "risk": "風險條件可接受",
-      "opportunity": "題材：先進封裝/CoWoS/AI國防/軍工",
-      "action": "可追蹤突破",
-      "entry_condition": "強勢型：開盤站穩昨高 939.00，跳空不追超過 913.92（+2%）；開盤前5分鐘量 >= 114 張（日均量5%）",
-      "stop_reference": "跌破 835.00（MA5 884.80 / 昨低 891.00 / 近3日低 835.00 三者取低）止損出場",
+      "opportunity": "題材：先進封裝/CoWoS",
+      "action": "等拉回",
+      "entry_condition": "等回測 MA20（859.90）或近3日低（835.00），量縮整理後出現放量（前5分鐘 >= 114 張）再進場；不追超過 918.40（+2.5%）",
+      "stop_reference": "收盤跌破 MA20（859.90）不回則止損，最寬參考 835.00",
       "stop_price": 835.0,
-      "entry_limit_price": 913.92,
+      "entry_limit_price": 918.4,
       "themes": [
-        "先進封裝/CoWoS",
-        "AI國防/軍工"
+        "先進封裝/CoWoS"
       ],
       "theme_tiers": [],
       "overseas_adjustment": 3,
-      "opportunity_score": 6,
+      "opportunity_score": 3,
       "warnings": [],
       "trigger_tags": [
-        "題材升溫",
+        "題材關注",
         "投信買超",
         "技術偏多",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材升溫 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
-      "decision_reason": "題材升溫 + 投信買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收月增 1.4%"
+      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收月增 1.4%"
     },
     {
-      "stock_id": "3443",
-      "name": "創意",
-      "score": 80,
+      "stock_id": "2313",
+      "name": "華通",
+      "score": 79,
       "grade": "A",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 5140.0,
+      "price": 278.0,
       "technical": "收盤價站上 MA20",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 156.9%",
-      "risk": "本益比偏高 154.6x（>80x 扣分）",
+      "chip": "外資近 3 日買超",
+      "fundamental": "基本面中性",
+      "risk": "風險條件可接受",
       "opportunity": "突破近 20 日高點",
-      "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 5195.00，跳空不追超過 5242.80（+2%）；開盤前5分鐘量 >= 105 張（日均量5%）",
-      "stop_reference": "跌破 3960.00（MA5 4333.00 / 昨低 4955.00 / 近3日低 3960.00 三者取低）止損出場",
-      "stop_price": 3960.0,
-      "entry_limit_price": 5242.8,
+      "action": "等拉回",
+      "entry_condition": "等回測 MA20（249.30）或近3日低（250.00），量縮整理後出現放量（前5分鐘 >= 4438 張）再進場；不追超過 284.95（+2.5%）",
+      "stop_reference": "收盤跌破 MA20（249.30）不回則止損，最寬參考 250.00",
+      "stop_price": 250.0,
+      "entry_limit_price": 284.95,
       "themes": [
-        "AI伺服器"
+        "低軌衛星/SpaceX"
       ],
-      "theme_tiers": [],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:核心"
+      ],
       "overseas_adjustment": 3,
-      "opportunity_score": 11,
+      "opportunity_score": 14,
       "warnings": [],
       "trigger_tags": [
         "題材強共振",
-        "投信買超",
+        "外資買超",
         "技術突破",
-        "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 投信買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 投信買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 156.9%"
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 海外順風",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
     },
     {
       "stock_id": "2382",
@@ -2966,6 +3434,42 @@
       "decision_reason": "題材強共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 32.5%"
     },
     {
+      "stock_id": "6271",
+      "name": "同欣電",
+      "score": 78,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 226.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收月增 4.0%",
+      "risk": "風險條件可接受",
+      "opportunity": "突破近 20 日高點",
+      "action": "等拉回",
+      "entry_condition": "等回測 MA20（183.35）或近3日低（181.00），量縮整理後出現放量（前5分鐘 >= 319 張）再進場；不追超過 232.16（+2.5%）",
+      "stop_reference": "收盤跌破 MA20（183.35）不回則止損，最寬參考 181.00",
+      "stop_price": 181.0,
+      "entry_limit_price": 232.16,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 12,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術突破",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 法人共振 + 技術突破 + 海外順風",
+      "decision_reason": "題材強共振 + 法人共振 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 4.0%"
+    },
+    {
       "stock_id": "3013",
       "name": "晟銘電",
       "score": 77,
@@ -3001,6 +3505,79 @@
       ],
       "trigger_summary": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
       "decision_reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 40.7%"
+    },
+    {
+      "stock_id": "3138",
+      "name": "耀登",
+      "score": 77,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 169.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 16.6%",
+      "risk": "本益比偏高 110.1x（>80x 扣分）",
+      "opportunity": "題材分層：低軌衛星/SpaceX(受惠)",
+      "action": "等拉回",
+      "entry_condition": "等回測 MA20（158.03）或近3日低（162.50），量縮整理後出現放量（前5分鐘 >= 101 張）再進場；不追超過 173.74（+2.5%）",
+      "stop_reference": "收盤跌破 MA20（158.03）不回則止損，最寬參考 162.50",
+      "stop_price": 162.5,
+      "entry_limit_price": 173.74,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 16.6%"
+    },
+    {
+      "stock_id": "2367",
+      "name": "燿華",
+      "score": 77,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 66.8,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "基本面中性",
+      "risk": "風險條件可接受",
+      "opportunity": "突破近 20 日高點",
+      "action": "等拉回",
+      "entry_condition": "等回測 MA20（61.72）或近3日低（62.60），量縮整理後出現放量（前5分鐘 >= 2534 張）再進場；不追超過 68.47（+2.5%）",
+      "stop_reference": "收盤跌破 MA20（61.72）不回則止損，最寬參考 62.60",
+      "stop_price": 62.6,
+      "entry_limit_price": 68.47,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 12,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "外資買超",
+        "技術突破",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 海外順風",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
     },
     {
       "stock_id": "5274",
@@ -3039,128 +3616,23 @@
     {
       "stock_id": "2059",
       "name": "川湖",
-      "score": 76,
-      "grade": "A",
+      "score": 73,
+      "grade": "B",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
       "price": 5090.0,
       "technical": "收盤價站上 MA20",
       "chip": "整體法人近 3 日買超",
       "fundamental": "最新月營收年增 79.1%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "突破近 20 日高點",
-      "action": "等拉回",
-      "entry_condition": "等回測 MA20（3689.25）或近3日低（3885.00），量縮整理後出現放量（前5分鐘 >= 41 張）再進場；不追超過 5217.25（+2.5%）",
-      "stop_reference": "收盤跌破 MA20（3689.25）不回則止損，最寬參考 3885.00",
-      "stop_price": 3885.0,
+      "risk": "股價淨值比極高 15.4x（>15x 扣分）",
+      "opportunity": "題材：AI伺服器",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（4740.00）且開盤前5分鐘量 >= 40 張；條件同時滿足再考慮，不追超過 5217.25（+2.5%）",
+      "stop_reference": "跌破 4475.00 不考慮進場",
+      "stop_price": 4475.0,
       "entry_limit_price": 5217.25,
       "themes": [
         "AI伺服器"
-      ],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 11,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "法人關注",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 法人關注 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 法人關注 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 79.1%"
-    },
-    {
-      "stock_id": "2408",
-      "name": "南亞科",
-      "score": 76,
-      "grade": "A",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 310.5,
-      "technical": "收盤價站上 MA20",
-      "chip": "籌碼面中性",
-      "fundamental": "最新月營收年增 717.3%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "突破近 20 日高點",
-      "action": "等拉回",
-      "entry_condition": "等回測 MA20（220.75）或近3日低（214.50），量縮整理後出現放量（前5分鐘 >= 5427 張）再進場；不追超過 318.26（+2.5%）",
-      "stop_reference": "收盤跌破 MA20（220.75）不回則止損，最寬參考 214.50",
-      "stop_price": 214.5,
-      "entry_limit_price": 318.26,
-      "themes": [
-        "記憶體/HBM"
-      ],
-      "theme_tiers": [
-        "記憶體/HBM:核心"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 14,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；籌碼面中性；最新月營收年增 717.3%"
-    },
-    {
-      "stock_id": "8255",
-      "name": "朋億",
-      "score": 76,
-      "grade": "A",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 157.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "基本面中性",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "等拉回",
-      "entry_condition": "等回測 MA20（144.15）或近3日低（150.00），量縮整理後出現放量（前5分鐘 >= 73 張）再進場；不追超過 160.92（+2.5%）",
-      "stop_reference": "收盤跌破 MA20（144.15）不回則止損，最寬參考 150.00",
-      "stop_price": 150.0,
-      "entry_limit_price": 160.92,
-      "themes": [
-        "AI國防/軍工"
-      ],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 11,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "外資買超",
-        "技術突破",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
-    },
-    {
-      "stock_id": "6414",
-      "name": "樺漢",
-      "score": 75,
-      "grade": "A",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 350.5,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 22.1%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "題材：AI國防/軍工",
-      "action": "等拉回",
-      "entry_condition": "等回測 MA20（336.70）或近3日低（324.00），量縮整理後出現放量（前5分鐘 >= 100 張）再進場；不追超過 359.26（+2.5%）",
-      "stop_reference": "收盤跌破 MA20（336.70）不回則止損，最寬參考 324.00",
-      "stop_price": 324.0,
-      "entry_limit_price": 359.26,
-      "themes": [
-        "AI國防/軍工"
       ],
       "theme_tiers": [],
       "overseas_adjustment": 3,
@@ -3168,123 +3640,13 @@
       "warnings": [],
       "trigger_tags": [
         "題材關注",
-        "法人共振",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材關注 + 法人共振 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 法人共振 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 22.1%"
-    },
-    {
-      "stock_id": "6669",
-      "name": "緯穎",
-      "score": 74,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 5525.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 29.7%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（4947.00）且開盤前5分鐘量 >= 121 張；條件同時滿足再考慮，不追超過 5663.12（+2.5%）",
-      "stop_reference": "跌破 4660.00 不考慮進場",
-      "stop_price": 4660.0,
-      "entry_limit_price": 5663.12,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:核心"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 14,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "外資買超",
-        "技術突破",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 29.7%"
-    },
-    {
-      "stock_id": "2449",
-      "name": "京元電子",
-      "score": 74,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 296.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 34.6%",
-      "risk": "風險條件可接受",
-      "opportunity": "題材分層：先進封裝/CoWoS(受惠)",
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（289.80）且開盤前5分鐘量 >= 1503 張；條件同時滿足再考慮，不追超過 303.40（+2.5%）",
-      "stop_reference": "跌破 272.50 不考慮進場",
-      "stop_price": 272.5,
-      "entry_limit_price": 303.4,
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "theme_tiers": [
-        "先進封裝/CoWoS:受惠"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 4,
-      "warnings": [],
-      "trigger_tags": [
-        "題材關注",
-        "外資買超",
+        "法人關注",
         "技術偏多",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 34.6%"
-    },
-    {
-      "stock_id": "3017",
-      "name": "奇鋐",
-      "score": 73,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 2545.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 71.6%",
-      "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：AI伺服器(受惠)",
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（2766.00）且開盤前5分鐘量 >= 222 張；條件同時滿足再考慮，不追超過 2608.62（+2.5%）",
-      "stop_reference": "跌破 2470.00 不考慮進場",
-      "stop_price": 2470.0,
-      "entry_limit_price": 2608.62,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:受惠"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 4,
-      "warnings": [],
-      "trigger_tags": [
-        "題材關注",
-        "投信買超",
-        "技術偏多",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 71.6%"
+      "trigger_summary": "題材關注 + 法人關注 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 法人關注 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 79.1%"
     },
     {
       "stock_id": "2308",
@@ -3324,77 +3686,181 @@
       "decision_reason": "題材關注 + 法人關注 + 技術偏多 + 營收加速 + 美股映射；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 43.9%"
     },
     {
-      "stock_id": "1802",
-      "name": "台玻",
+      "stock_id": "2882",
+      "name": "國泰金",
       "score": 69,
       "grade": "B",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 70.5,
+      "price": 79.7,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "基本面中性",
-      "risk": "本益比偏高 542.3x（>80x 扣分）",
-      "opportunity": "題材分層：原物料/低基期傳產(受惠)",
+      "fundamental": "最新月營收年增 359.9%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "尚無明顯異常訊號",
       "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（67.70）且開盤前5分鐘量 >= 8111 張；條件同時滿足再考慮，不追超過 72.61（+3%）",
-      "stop_reference": "跌破 65.30 不考慮進場",
-      "stop_price": 65.3,
-      "entry_limit_price": 72.61,
+      "entry_condition": "觀察站穩 MA5（78.18）且開盤前5分鐘量 >= 1757 張；條件同時滿足再考慮，不追超過 82.09（+3%）",
+      "stop_reference": "跌破 77.00 不考慮進場",
+      "stop_price": 77.0,
+      "entry_limit_price": 82.09,
+      "themes": [],
+      "theme_tiers": [],
+      "overseas_adjustment": 3,
+      "opportunity_score": 0,
+      "warnings": [],
+      "trigger_tags": [
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 359.9%"
+    },
+    {
+      "stock_id": "2408",
+      "name": "南亞科",
+      "score": 68,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 310.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "籌碼面中性",
+      "fundamental": "最新月營收年增 717.3%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：記憶體/HBM(核心)",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（291.60）且開盤前5分鐘量 >= 7336 張；條件同時滿足再考慮，不追超過 319.81（+3%）",
+      "stop_reference": "跌破 265.50 不考慮進場",
+      "stop_price": 265.5,
+      "entry_limit_price": 319.81,
       "themes": [
-        "原物料/低基期傳產"
+        "記憶體/HBM"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:受惠"
+        "記憶體/HBM:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材升溫 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；籌碼面中性；最新月營收年增 717.3%"
+    },
+    {
+      "stock_id": "2355",
+      "name": "敬鵬",
+      "score": 67,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 65.2,
+      "technical": "收盤價站上 MA20",
+      "chip": "融資餘額短期增加過快",
+      "fundamental": "基本面中性",
+      "risk": "風險條件可接受",
+      "opportunity": "成交量放大 2.5 倍",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（62.08）且開盤前5分鐘量 >= 1357 張；條件同時滿足再考慮，不追超過 67.16（+3%）",
+      "stop_reference": "跌破 58.20 不考慮進場",
+      "stop_price": 58.2,
+      "entry_limit_price": 67.16,
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:投機"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 20,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "技術突破",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 技術突破 + 海外順風",
+      "decision_reason": "題材強共振 + 技術突破 + 海外順風；收盤價站上 MA20；融資餘額短期增加過快；基本面中性"
+    },
+    {
+      "stock_id": "6669",
+      "name": "緯穎",
+      "score": 66,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 5525.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 29.7%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：AI伺服器(核心)",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（5152.00）且開盤前5分鐘量 >= 134 張；條件同時滿足再考慮，不追超過 5690.75（+3%）",
+      "stop_reference": "跌破 4775.00 不考慮進場",
+      "stop_price": 4775.0,
+      "entry_limit_price": 5690.75,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "外資買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 外資買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材升溫 + 外資買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 29.7%"
+    },
+    {
+      "stock_id": "3583",
+      "name": "辛耘",
+      "score": 66,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 875.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 10.8%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：先進封裝/CoWoS(受惠)",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（860.80）且開盤前5分鐘量 >= 169 張；條件同時滿足再考慮，不追超過 901.25（+3%）",
+      "stop_reference": "跌破 809.00 不考慮進場",
+      "stop_price": 809.0,
+      "entry_limit_price": 901.25,
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "theme_tiers": [
+        "先進封裝/CoWoS:受惠"
       ],
       "overseas_adjustment": 3,
       "opportunity_score": 4,
       "warnings": [],
       "trigger_tags": [
         "題材關注",
-        "法人共振",
-        "技術偏多",
-        "海外順風"
-      ],
-      "trigger_summary": "題材關注 + 法人共振 + 技術偏多 + 海外順風",
-      "decision_reason": "題材關注 + 法人共振 + 技術偏多 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
-    },
-    {
-      "stock_id": "8210",
-      "name": "勤誠",
-      "score": 68,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 1345.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "投信近 3 日買超",
-      "fundamental": "近 3 個月營收皆優於去年同期",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（1186.00）且開盤前5分鐘量 >= 177 張；條件同時滿足再考慮，不追超過 1385.35（+3%）",
-      "stop_reference": "跌破 1110.00 不考慮進場",
-      "stop_price": 1110.0,
-      "entry_limit_price": 1385.35,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:受惠"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 12,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
         "投信買超",
-        "技術突破",
-        "營收回升",
+        "技術偏多",
+        "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 投信買超 + 技術突破 + 營收回升 + 海外順風",
-      "decision_reason": "題材強共振 + 投信買超 + 技術突破 + 營收回升 + 海外順風；收盤價站上 MA20；投信近 3 日買超；近 3 個月營收皆優於去年同期"
+      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 10.8%"
     },
     {
       "stock_id": "8299",
@@ -3433,38 +3899,75 @@
       "decision_reason": "題材關注 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；籌碼面中性；最新月營收年增 236.6%"
     },
     {
-      "stock_id": "3661",
-      "name": "世芯-KY",
+      "stock_id": "3443",
+      "name": "創意",
       "score": 65,
       "grade": "B",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 4895.0,
+      "price": 5140.0,
       "technical": "收盤價站上 MA20",
       "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收月增 10.3%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
+      "fundamental": "最新月營收年增 156.9%",
+      "risk": "本益比偏高 154.6x（>80x 扣分）",
+      "opportunity": "題材：AI伺服器",
       "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（4239.00）且開盤前5分鐘量 >= 134 張；條件同時滿足再考慮，不追超過 5041.85（+3%）",
-      "stop_reference": "跌破 3900.00 不考慮進場",
-      "stop_price": 3900.0,
-      "entry_limit_price": 5041.85,
+      "entry_condition": "觀察站穩 MA5（4803.00）且開盤前5分鐘量 >= 124 張；條件同時滿足再考慮，不追超過 5294.20（+3%）",
+      "stop_reference": "跌破 4420.00 不考慮進場",
+      "stop_price": 4420.0,
+      "entry_limit_price": 5294.2,
       "themes": [
         "AI伺服器"
       ],
       "theme_tiers": [],
       "overseas_adjustment": 3,
-      "opportunity_score": 11,
+      "opportunity_score": 3,
       "warnings": [],
       "trigger_tags": [
-        "題材強共振",
+        "題材關注",
         "投信買超",
-        "技術突破",
+        "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材強共振 + 投信買超 + 技術突破 + 海外順風",
-      "decision_reason": "題材強共振 + 投信買超 + 技術突破 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收月增 10.3%"
+      "trigger_summary": "題材關注 + 投信買超 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 156.9%"
+    },
+    {
+      "stock_id": "3450",
+      "name": "聯鈞",
+      "score": 65,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 459.5,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 45.5%",
+      "risk": "本益比偏高 136.8x（>80x 扣分）",
+      "opportunity": "題材分層：矽光子/CPO(受惠)",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（423.10）且開盤前5分鐘量 >= 766 張；條件同時滿足再考慮，不追超過 473.29（+3%）",
+      "stop_reference": "跌破 395.00 不考慮進場",
+      "stop_price": 395.0,
+      "entry_limit_price": 473.29,
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 45.5%"
     },
     {
       "stock_id": "3264",
@@ -3503,135 +4006,31 @@
       "decision_reason": "題材關注 + 法人關注 + 營收加速 + 海外順風；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 27.8%"
     },
     {
-      "stock_id": "8271",
-      "name": "宇瞻",
-      "score": 64,
-      "grade": "C",
-      "label": "WAIT",
-      "label_text": "等待",
-      "price": 224.5,
-      "technical": "收盤價站上 MA20",
-      "chip": "籌碼面中性",
-      "fundamental": "最新月營收年增 360.8%",
-      "risk": "風險條件可接受",
-      "opportunity": "題材分層：記憶體/HBM(投機)",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（187.57）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 214.00",
-      "stop_price": 214.0,
-      "entry_limit_price": 231.24,
-      "themes": [
-        "記憶體/HBM"
-      ],
-      "theme_tiers": [
-        "記憶體/HBM:投機"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 2,
-      "warnings": [],
-      "trigger_tags": [
-        "題材關注",
-        "技術偏多",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材關注 + 技術偏多 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；籌碼面中性；最新月營收年增 360.8%"
-    },
-    {
-      "stock_id": "1303",
-      "name": "南亞",
-      "score": 63,
-      "grade": "C",
-      "label": "WAIT",
-      "label_text": "等待",
-      "price": 86.7,
-      "technical": "收盤價站上 MA20",
-      "chip": "整體法人近 3 日買超",
-      "fundamental": "最新月營收年增 19.4%",
-      "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：原物料/低基期傳產(核心)",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（86.53）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 86.70",
-      "stop_price": 86.7,
-      "entry_limit_price": 89.3,
-      "themes": [
-        "原物料/低基期傳產"
-      ],
-      "theme_tiers": [
-        "原物料/低基期傳產:核心"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 6,
-      "warnings": [],
-      "trigger_tags": [
-        "題材升溫",
-        "法人關注",
-        "技術偏多",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材升溫 + 法人關注 + 技術偏多 + 營收加速 + 海外順風",
-      "decision_reason": "題材升溫 + 法人關注 + 技術偏多 + 營收加速 + 海外順風；收盤價站上 MA20；整體法人近 3 日買超；最新月營收年增 19.4%"
-    },
-    {
-      "stock_id": "2881",
-      "name": "富邦金",
+      "stock_id": "6530",
+      "name": "創威",
       "score": 62,
       "grade": "C",
       "label": "WAIT",
       "label_text": "等待",
-      "price": 95.1,
+      "price": 111.5,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收月增 303.0%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（88.53）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 89.10",
-      "stop_price": 89.1,
-      "entry_limit_price": 97.95,
-      "themes": [],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 8,
-      "warnings": [],
-      "trigger_tags": [
-        "外資買超",
-        "技術突破",
-        "海外順風"
-      ],
-      "trigger_summary": "外資買超 + 技術突破 + 海外順風",
-      "decision_reason": "外資買超 + 技術突破 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 303.0%"
-    },
-    {
-      "stock_id": "1815",
-      "name": "富喬",
-      "score": 60,
-      "grade": "C",
-      "label": "WAIT",
-      "label_text": "等待",
-      "price": 107.0,
-      "technical": "技術面中性",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 53.2%",
+      "fundamental": "最新月營收年增 18.1%",
       "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：原物料/低基期傳產(受惠)",
+      "opportunity": "題材分層：矽光子/CPO(投機)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（107.55）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 99.10",
-      "stop_price": 99.1,
-      "entry_limit_price": 110.21,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（111.17）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 101.00",
+      "stop_price": 101.0,
+      "entry_limit_price": 114.84,
       "themes": [
-        "原物料/低基期傳產"
+        "矽光子/CPO"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:受惠"
+        "矽光子/CPO:投機"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 4,
+      "opportunity_score": 2,
       "warnings": [],
       "trigger_tags": [
         "題材關注",
@@ -3640,12 +4039,47 @@
         "海外順風"
       ],
       "trigger_summary": "題材關注 + 外資買超 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 外資買超 + 營收加速 + 海外順風；技術面中性；外資近 3 日買超；最新月營收年增 53.2%"
+      "decision_reason": "題材關注 + 外資買超 + 營收加速 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 18.1%"
+    },
+    {
+      "stock_id": "3363",
+      "name": "上詮",
+      "score": 61,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 852.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收月增 9.1%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：矽光子/CPO(受惠)",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（818.65）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 768.00",
+      "stop_price": 768.0,
+      "entry_limit_price": 877.56,
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 投信買超 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收月增 9.1%"
     },
     {
       "stock_id": "2454",
       "name": "聯發科",
-      "score": 57,
+      "score": 59,
       "grade": "C",
       "label": "WAIT",
       "label_text": "等待",
@@ -3660,42 +4094,47 @@
       "stop_reference": "觀察支撐 2500.00",
       "stop_price": 2500.0,
       "entry_limit_price": 3975.8,
-      "themes": [],
-      "theme_tiers": [],
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "theme_tiers": [
+        "低軌衛星/SpaceX:投機"
+      ],
       "overseas_adjustment": 5,
-      "opportunity_score": 8,
+      "opportunity_score": 10,
       "warnings": [],
       "trigger_tags": [
+        "題材強共振",
         "投信買超",
         "技術突破",
         "美股映射"
       ],
-      "trigger_summary": "投信買超 + 技術突破 + 美股映射",
-      "decision_reason": "投信買超 + 技術突破 + 美股映射；收盤價站上 MA20；投信近 3 日買超；基本面中性"
+      "trigger_summary": "題材強共振 + 投信買超 + 技術突破 + 美股映射",
+      "decision_reason": "題材強共振 + 投信買超 + 技術突破 + 美股映射；收盤價站上 MA20；投信近 3 日買超；基本面中性"
     },
     {
-      "stock_id": "3583",
-      "name": "辛耘",
-      "score": 56,
+      "stock_id": "3017",
+      "name": "奇鋐",
+      "score": 59,
       "grade": "C",
       "label": "WAIT",
       "label_text": "等待",
-      "price": 875.0,
-      "technical": "收盤價站上 MA20",
+      "price": 2545.0,
+      "technical": "RSI 位於健康區間（54）",
       "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 10.8%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "題材分層：先進封裝/CoWoS(受惠)",
+      "fundamental": "最新月營收年增 71.6%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：AI伺服器(受惠)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（720.25）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 721.00",
-      "stop_price": 721.0,
-      "entry_limit_price": 901.25,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（2598.25）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 2325.00",
+      "stop_price": 2325.0,
+      "entry_limit_price": 2621.35,
       "themes": [
-        "先進封裝/CoWoS"
+        "AI伺服器"
       ],
       "theme_tiers": [
-        "先進封裝/CoWoS:受惠"
+        "AI伺服器:受惠"
       ],
       "overseas_adjustment": 3,
       "opportunity_score": 4,
@@ -3707,32 +4146,211 @@
         "海外順風"
       ],
       "trigger_summary": "題材關注 + 投信買超 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 10.8%"
+      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 海外順風；RSI 位於健康區間（54）；投信近 3 日買超；最新月營收年增 71.6%"
     },
     {
-      "stock_id": "2634",
-      "name": "漢翔",
-      "score": 54,
+      "stock_id": "4977",
+      "name": "眾達-KY",
+      "score": 59,
       "grade": "C",
       "label": "WAIT",
       "label_text": "等待",
-      "price": 46.5,
-      "technical": "技術面中性",
+      "price": 219.5,
+      "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 12.3%",
+      "fundamental": "基本面中性",
       "risk": "風險條件可接受",
-      "opportunity": "題材：AI國防/軍工",
+      "opportunity": "題材分層：矽光子/CPO(核心)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（48.01）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 46.25",
-      "stop_price": 46.25,
-      "entry_limit_price": 47.9,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（211.15）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 201.00",
+      "stop_price": 201.0,
+      "entry_limit_price": 226.09,
       "themes": [
-        "AI國防/軍工"
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "外資買超",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 外資買超 + 海外順風",
+      "decision_reason": "題材升溫 + 外資買超 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
+    },
+    {
+      "stock_id": "3661",
+      "name": "世芯-KY",
+      "score": 57,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 4895.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收月增 10.3%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材：AI伺服器",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（4574.25）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 4455.00",
+      "stop_price": 4455.0,
+      "entry_limit_price": 5041.85,
+      "themes": [
+        "AI伺服器"
       ],
       "theme_tiers": [],
       "overseas_adjustment": 3,
       "opportunity_score": 3,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "技術偏多",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收月增 10.3%"
+    },
+    {
+      "stock_id": "8210",
+      "name": "勤誠",
+      "score": 55,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 1345.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "近 3 個月營收皆優於去年同期",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：AI伺服器(受惠)",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（1320.25）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 1270.00",
+      "stop_price": 1270.0,
+      "entry_limit_price": 1385.35,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "技術偏多",
+        "營收回升",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 投信買超 + 技術偏多 + 營收回升 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 技術偏多 + 營收回升 + 海外順風；收盤價站上 MA20；投信近 3 日買超；近 3 個月營收皆優於去年同期"
+    },
+    {
+      "stock_id": "4979",
+      "name": "華星光",
+      "score": 54,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 630.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "基本面中性",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：矽光子/CPO(核心)",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（612.00）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 523.00",
+      "stop_price": 523.0,
+      "entry_limit_price": 648.9,
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:核心"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "外資買超",
+        "海外順風"
+      ],
+      "trigger_summary": "題材升溫 + 外資買超 + 海外順風",
+      "decision_reason": "題材升溫 + 外資買超 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
+    },
+    {
+      "stock_id": "3163",
+      "name": "波若威",
+      "score": 53,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 1145.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 16.5%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：矽光子/CPO(受惠)",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（1060.60）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 904.00",
+      "stop_price": 904.0,
+      "entry_limit_price": 1179.35,
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "theme_tiers": [
+        "矽光子/CPO:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
+      "warnings": [],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材關注 + 投信買超 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 海外順風；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 16.5%"
+    },
+    {
+      "stock_id": "2449",
+      "name": "京元電子",
+      "score": 50,
+      "grade": "C",
+      "label": "WAIT",
+      "label_text": "等待",
+      "price": 296.0,
+      "technical": "技術面中性",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 34.6%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：先進封裝/CoWoS(受惠)",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（302.43）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 276.50",
+      "stop_price": 276.5,
+      "entry_limit_price": 304.88,
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "theme_tiers": [
+        "先進封裝/CoWoS:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 4,
       "warnings": [],
       "trigger_tags": [
         "題材關注",
@@ -3741,42 +4359,42 @@
         "海外順風"
       ],
       "trigger_summary": "題材關注 + 外資買超 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 外資買超 + 營收加速 + 海外順風；技術面中性；外資近 3 日買超；最新月營收年增 12.3%"
+      "decision_reason": "題材關注 + 外資買超 + 營收加速 + 海外順風；技術面中性；外資近 3 日買超；最新月營收年增 34.6%"
     },
     {
-      "stock_id": "6789",
-      "name": "采鈺",
-      "score": 52,
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "score": 50,
       "grade": "C",
       "label": "WAIT",
       "label_text": "等待",
-      "price": 556.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "基本面中性",
-      "risk": "本益比偏高 119.6x（>80x 扣分）",
-      "opportunity": "題材分層：先進封裝/CoWoS(投機)",
+      "price": 224.5,
+      "technical": "RSI 位於健康區間（53）",
+      "chip": "籌碼面中性",
+      "fundamental": "最新月營收年增 360.8%",
+      "risk": "風險條件可接受",
+      "opportunity": "題材分層：記憶體/HBM(投機)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（452.70）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 532.00",
-      "stop_price": 532.0,
-      "entry_limit_price": 572.68,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（232.22）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 211.50",
+      "stop_price": 211.5,
+      "entry_limit_price": 231.24,
       "themes": [
-        "先進封裝/CoWoS"
+        "記憶體/HBM"
       ],
       "theme_tiers": [
-        "先進封裝/CoWoS:投機"
+        "記憶體/HBM:投機"
       ],
       "overseas_adjustment": 3,
       "opportunity_score": 2,
       "warnings": [],
       "trigger_tags": [
         "題材關注",
-        "法人共振",
+        "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材關注 + 法人共振 + 海外順風",
-      "decision_reason": "題材關注 + 法人共振 + 海外順風；收盤價站上 MA20；外資近 3 日買超；基本面中性"
+      "trigger_summary": "題材關注 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 營收加速 + 海外順風；RSI 位於健康區間（53）；籌碼面中性；最新月營收年增 360.8%"
     },
     {
       "stock_id": "3131",
@@ -3850,41 +4468,6 @@
       "decision_reason": "題材關注 + 外資買超 + 營收加速 + 海外順風；技術面中性；外資近 3 日買超；最新月營收年增 30.2%"
     },
     {
-      "stock_id": "6515",
-      "name": "穎崴",
-      "score": 49,
-      "grade": "-",
-      "label": "AVOID",
-      "label_text": "避開",
-      "price": 8700.0,
-      "technical": "MA5 高於 MA20，短線趨勢偏多",
-      "chip": "融資餘額短期增加過快",
-      "fundamental": "最新月營收年增 50.5%",
-      "risk": "本益比偏高 178.3x（>80x 扣分）",
-      "opportunity": "成交量放大 2.3 倍",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（9283.75）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 8615.00",
-      "stop_price": 8615.0,
-      "entry_limit_price": 8961.0,
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "theme_tiers": [
-        "先進封裝/CoWoS:受惠"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 14,
-      "warnings": [],
-      "trigger_tags": [
-        "題材強共振",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材強共振 + 營收加速 + 海外順風",
-      "decision_reason": "題材強共振 + 營收加速 + 海外順風；MA5 高於 MA20，短線趨勢偏多；融資餘額短期增加過快；最新月營收年增 50.5%"
-    },
-    {
       "stock_id": "6187",
       "name": "萬潤",
       "score": 47,
@@ -3955,6 +4538,37 @@
       "decision_reason": "題材關注 + 營收加速 + 海外順風；技術面中性；籌碼面中性；最新月營收年增 169.5%"
     },
     {
+      "stock_id": "2881",
+      "name": "富邦金",
+      "score": 43,
+      "grade": "-",
+      "label": "AVOID",
+      "label_text": "避開",
+      "price": 95.1,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收月增 303.0%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "尚無明顯異常訊號",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（93.34）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 94.30",
+      "stop_price": 94.3,
+      "entry_limit_price": 97.95,
+      "themes": [],
+      "theme_tiers": [],
+      "overseas_adjustment": 3,
+      "opportunity_score": 0,
+      "warnings": [],
+      "trigger_tags": [
+        "外資買超",
+        "技術偏多",
+        "海外順風"
+      ],
+      "trigger_summary": "外資買超 + 技術偏多 + 海外順風",
+      "decision_reason": "外資買超 + 技術偏多 + 海外順風；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 303.0%"
+    },
+    {
       "stock_id": "3324",
       "name": "雙鴻",
       "score": 43,
@@ -3990,74 +4604,74 @@
       "decision_reason": "題材關注 + 營收加速 + 海外順風；技術面中性；籌碼面中性；最新月營收年增 40.9%"
     },
     {
-      "stock_id": "2002",
-      "name": "中鋼",
-      "score": 41,
+      "stock_id": "6213",
+      "name": "聯茂",
+      "score": 43,
       "grade": "-",
       "label": "AVOID",
       "label_text": "避開",
-      "price": 18.15,
-      "technical": "技術面中性",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收月增 7.9%",
-      "risk": "風險條件可接受",
-      "opportunity": "題材分層：原物料/低基期傳產(核心)",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（19.54）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 18.10",
-      "stop_price": 18.1,
-      "entry_limit_price": 18.69,
-      "themes": [
-        "原物料/低基期傳產"
-      ],
-      "theme_tiers": [
-        "原物料/低基期傳產:核心"
-      ],
-      "overseas_adjustment": 3,
-      "opportunity_score": 6,
-      "warnings": [],
-      "trigger_tags": [
-        "題材升溫",
-        "投信買超",
-        "海外順風"
-      ],
-      "trigger_summary": "題材升溫 + 投信買超 + 海外順風",
-      "decision_reason": "題材升溫 + 投信買超 + 海外順風；技術面中性；投信近 3 日買超；最新月營收月增 7.9%"
-    },
-    {
-      "stock_id": "1301",
-      "name": "台塑",
-      "score": 39,
-      "grade": "-",
-      "label": "AVOID",
-      "label_text": "避開",
-      "price": 45.25,
-      "technical": "技術面中性",
+      "price": 262.0,
+      "technical": "RSI 位於健康區間（54）",
       "chip": "籌碼面中性",
-      "fundamental": "最新月營收年增 13.3%",
-      "risk": "風險條件可接受",
-      "opportunity": "題材分層：原物料/低基期傳產(核心)",
+      "fundamental": "最新月營收年增 13.8%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：低軌衛星/SpaceX(受惠)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（50.38）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 45.20",
-      "stop_price": 45.2,
-      "entry_limit_price": 46.61,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（268.75）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 230.00",
+      "stop_price": 230.0,
+      "entry_limit_price": 269.86,
       "themes": [
-        "原物料/低基期傳產"
+        "低軌衛星/SpaceX"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:核心"
+        "低軌衛星/SpaceX:受惠"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 6,
+      "opportunity_score": 4,
       "warnings": [],
       "trigger_tags": [
-        "題材升溫",
+        "題材關注",
         "營收加速",
         "海外順風"
       ],
-      "trigger_summary": "題材升溫 + 營收加速 + 海外順風",
-      "decision_reason": "題材升溫 + 營收加速 + 海外順風；技術面中性；籌碼面中性；最新月營收年增 13.3%"
+      "trigger_summary": "題材關注 + 營收加速 + 海外順風",
+      "decision_reason": "題材關注 + 營收加速 + 海外順風；RSI 位於健康區間（54）；籌碼面中性；最新月營收年增 13.8%"
+    },
+    {
+      "stock_id": "6515",
+      "name": "穎崴",
+      "score": 42,
+      "grade": "-",
+      "label": "AVOID",
+      "label_text": "避開",
+      "price": 8700.0,
+      "technical": "成交量明顯放大",
+      "chip": "融資餘額短期增加過快",
+      "fundamental": "最新月營收年增 50.5%",
+      "risk": "本益比偏高 178.3x（>80x 扣分）",
+      "opportunity": "成交量放大 2.4 倍",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（9898.75）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 8615.00",
+      "stop_price": 8615.0,
+      "entry_limit_price": 8961.0,
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "theme_tiers": [
+        "先進封裝/CoWoS:受惠"
+      ],
+      "overseas_adjustment": 3,
+      "opportunity_score": 14,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "題材強共振 + 營收加速 + 海外順風",
+      "decision_reason": "題材強共振 + 營收加速 + 海外順風；成交量明顯放大；融資餘額短期增加過快；最新月營收年增 50.5%"
     },
     {
       "stock_id": "6643",
@@ -4095,72 +4709,39 @@
       "decision_reason": "題材關注 + 營收加速 + 海外順風；RSI 位於健康區間（53）；籌碼面中性；最新月營收年增 30.7%"
     },
     {
-      "stock_id": "4438",
-      "name": "廣積",
-      "score": 37,
+      "stock_id": "6789",
+      "name": "采鈺",
+      "score": 38,
       "grade": "-",
       "label": "AVOID",
       "label_text": "避開",
-      "price": 57.9,
-      "technical": "收盤價站上 MA20",
-      "chip": "融券餘額偏低，籌碼警訊不足以形成軋空條件",
-      "fundamental": "最新月營收年增 38.3%",
+      "price": 556.0,
+      "technical": "RSI 位於健康區間（57）",
+      "chip": "外資近 3 日買超",
+      "fundamental": "基本面中性",
       "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材：AI國防/軍工",
+      "opportunity": "題材分層：先進封裝/CoWoS(投機)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（57.15）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 55.60",
-      "stop_price": 55.6,
-      "entry_limit_price": 59.64,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（569.00）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 506.00",
+      "stop_price": 506.0,
+      "entry_limit_price": 572.68,
       "themes": [
-        "AI國防/軍工"
-      ],
-      "theme_tiers": [],
-      "overseas_adjustment": 3,
-      "opportunity_score": 3,
-      "warnings": [],
-      "trigger_tags": [
-        "題材關注",
-        "營收加速",
-        "海外順風"
-      ],
-      "trigger_summary": "題材關注 + 營收加速 + 海外順風",
-      "decision_reason": "題材關注 + 營收加速 + 海外順風；收盤價站上 MA20；融券餘額偏低，籌碼警訊不足以形成軋空條件；最新月營收年增 38.3%"
-    },
-    {
-      "stock_id": "1102",
-      "name": "亞泥",
-      "score": 34,
-      "grade": "-",
-      "label": "AVOID",
-      "label_text": "避開",
-      "price": 34.4,
-      "technical": "技術面中性",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收月增 6.5%",
-      "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：原物料/低基期傳產(受惠)",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（35.44）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 34.40",
-      "stop_price": 34.4,
-      "entry_limit_price": 35.43,
-      "themes": [
-        "原物料/低基期傳產"
+        "先進封裝/CoWoS"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:受惠"
+        "先進封裝/CoWoS:投機"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 4,
+      "opportunity_score": 2,
       "warnings": [],
       "trigger_tags": [
         "題材關注",
-        "投信買超",
+        "法人共振",
         "海外順風"
       ],
-      "trigger_summary": "題材關注 + 投信買超 + 海外順風",
-      "decision_reason": "題材關注 + 投信買超 + 海外順風；技術面中性；投信近 3 日買超；最新月營收月增 6.5%"
+      "trigger_summary": "題材關注 + 法人共振 + 海外順風",
+      "decision_reason": "題材關注 + 法人共振 + 海外順風；RSI 位於健康區間（57）；外資近 3 日買超；基本面中性"
     },
     {
       "stock_id": "6505",
@@ -4176,9 +4757,9 @@
       "risk": "風險條件可接受",
       "opportunity": "尚無明顯異常訊號",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（53.77）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 50.60",
-      "stop_price": 50.6,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（52.80）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 50.30",
+      "stop_price": 50.3,
       "entry_limit_price": 52.53,
       "themes": [],
       "theme_tiers": [],
@@ -4193,39 +4774,71 @@
       "decision_reason": "營收加速 + 海外順風；技術面中性；籌碼面中性；最新月營收年增 33.0%"
     },
     {
-      "stock_id": "1101",
-      "name": "台泥",
+      "stock_id": "1301",
+      "name": "台塑",
+      "score": 33,
+      "grade": "-",
+      "label": "AVOID",
+      "label_text": "避開",
+      "price": 45.25,
+      "technical": "技術面中性",
+      "chip": "籌碼面中性",
+      "fundamental": "最新月營收年增 13.3%",
+      "risk": "風險條件可接受",
+      "opportunity": "尚無明顯異常訊號",
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（48.44）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 45.00",
+      "stop_price": 45.0,
+      "entry_limit_price": 46.61,
+      "themes": [],
+      "theme_tiers": [],
+      "overseas_adjustment": 3,
+      "opportunity_score": 0,
+      "warnings": [],
+      "trigger_tags": [
+        "營收加速",
+        "海外順風"
+      ],
+      "trigger_summary": "營收加速 + 海外順風",
+      "decision_reason": "營收加速 + 海外順風；技術面中性；籌碼面中性；最新月營收年增 13.3%"
+    },
+    {
+      "stock_id": "6442",
+      "name": "光聖",
       "score": 30,
       "grade": "-",
       "label": "AVOID",
       "label_text": "避開",
-      "price": 24.1,
+      "price": 1875.0,
       "technical": "技術面中性",
       "chip": "投信近 3 日買超",
       "fundamental": "基本面中性",
       "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：原物料/低基期傳產(受惠)",
+      "opportunity": "題材分層：矽光子/CPO(受惠)/低軌衛星/SpaceX(投機)",
       "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（24.69）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 23.95",
-      "stop_price": 23.95,
-      "entry_limit_price": 24.82,
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（1909.00）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 1730.00",
+      "stop_price": 1730.0,
+      "entry_limit_price": 1931.25,
       "themes": [
-        "原物料/低基期傳產"
+        "矽光子/CPO",
+        "低軌衛星/SpaceX"
       ],
       "theme_tiers": [
-        "原物料/低基期傳產:受惠"
+        "矽光子/CPO:受惠",
+        "低軌衛星/SpaceX:投機"
       ],
       "overseas_adjustment": 3,
-      "opportunity_score": 4,
+      "opportunity_score": 6,
       "warnings": [],
       "trigger_tags": [
-        "題材關注",
+        "題材升溫",
         "投信買超",
         "海外順風"
       ],
-      "trigger_summary": "題材關注 + 投信買超 + 海外順風",
-      "decision_reason": "題材關注 + 投信買超 + 海外順風；技術面中性；投信近 3 日買超；基本面中性"
+      "trigger_summary": "題材升溫 + 投信買超 + 海外順風",
+      "decision_reason": "題材升溫 + 投信買超 + 海外順風；技術面中性；投信近 3 日買超；基本面中性"
     }
   ],
   "ai_council": {
@@ -4233,31 +4846,24 @@
     "reviews": [
       {
         "review_date": "2026-05-22",
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "2356",
+        "name": "英業達",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.72,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.95,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "營收年增 112% 且法人共振，技術面站上 MA20，優勢極強。；AI伺服器題材強勢，營收年增112%顯著加速，外資買超支撐，但需留意短期漲幅過大可能引發技術性回檔風險。",
+        "reason": "AI伺服器題材強共振且營收年增36.5%，技術面站上MA20且外資買超。",
         "model_reviews": [
           {
-            "stock_id": "3231",
+            "stock_id": "2356",
             "action": "可追",
             "confidence": 0.95,
-            "reason": "營收年增 112% 且法人共振，技術面站上 MA20，優勢極強。",
+            "reason": "AI伺服器題材強共振且營收年增36.5%，技術面站上MA20且外資買超。",
             "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "3231",
-            "action": "可追",
-            "confidence": 0.5,
-            "reason": "AI伺服器題材強勢，營收年增112%顯著加速，外資買超支撐，但需留意短期漲幅過大可能引發技術性回檔風險。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
           }
         ]
       },
@@ -4268,56 +4874,19 @@
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
-        "is_ai_pick": false,
-        "reason": "題材與法人共振且營收成長，風險條件可接受。；營收年增31.9%顯示成長動能持續，技術與法人面同步轉強，風險可控；惟需觀察營收成長是否可持續。",
-        "model_reviews": [
-          {
-            "stock_id": "3706",
-            "action": "可追",
-            "confidence": 0.9,
-            "reason": "題材與法人共振且營收成長，風險條件可接受。",
-            "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "3706",
-            "action": "可追",
-            "confidence": 0.5,
-            "reason": "營收年增31.9%顯示成長動能持續，技術與法人面同步轉強，風險可控；惟需觀察營收成長是否可持續。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
-          }
-        ]
-      },
-      {
-        "review_date": "2026-05-22",
-        "stock_id": "2395",
-        "name": "研華",
-        "score": 100,
-        "grade": "S+",
-        "consensus_action": "可追",
-        "confidence": 0.65,
-        "model_count": 2,
+        "confidence": 0.95,
+        "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "雖然基本面強勁，但短期波動明顯升高，建議等待回調。；營收與技術面同步轉強，但風險提示明確指出短期波動明顯升高，宜設停損並控制倉位。",
+        "reason": "AI伺服器題材強共振且營收年增31.9%，技術面站上MA20且外資買超。",
         "model_reviews": [
           {
-            "stock_id": "2395",
-            "action": "等拉回",
-            "confidence": 0.8,
-            "reason": "雖然基本面強勁，但短期波動明顯升高，建議等待回調。",
-            "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "2395",
+            "stock_id": "3706",
             "action": "可追",
-            "confidence": 0.5,
-            "reason": "營收與技術面同步轉強，但風險提示明確指出短期波動明顯升高，宜設停損並控制倉位。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
+            "confidence": 0.95,
+            "reason": "AI伺服器題材強共振且營收年增31.9%，技術面站上MA20且外資買超。",
+            "model": "google/gemma-4-31b-it:free"
           }
         ]
       },
@@ -4328,56 +4897,65 @@
         "score": 100,
         "grade": "S+",
         "consensus_action": "等拉回",
-        "confidence": 0.68,
-        "model_count": 2,
+        "confidence": 0.8,
+        "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "本益比高達 142.7x，估值過高風險顯著。；雖具先進封裝題材與營收成長優勢，但本益比達142.7倍明顯偏高，估值壓力限制上漲空間。",
+        "reason": "雖題材與技術面強勢，但本益比高達142.7x，估值風險較高。",
         "model_reviews": [
           {
             "stock_id": "3037",
-            "action": "避免",
-            "confidence": 0.85,
-            "reason": "本益比高達 142.7x，估值過高風險顯著。",
-            "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "3037",
             "action": "等拉回",
-            "confidence": 0.5,
-            "reason": "雖具先進封裝題材與營收成長優勢，但本益比達142.7倍明顯偏高，估值壓力限制上漲空間。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
+            "confidence": 0.8,
+            "reason": "雖題材與技術面強勢，但本益比高達142.7x，估值風險較高。",
+            "model": "google/gemma-4-31b-it:free"
           }
         ]
       },
       {
         "review_date": "2026-05-22",
-        "stock_id": "6770",
-        "name": "力積電",
+        "stock_id": "3491",
+        "name": "昇達科",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "營收年增 32.5% 且外資買超，技術面突破 MA20。；HBM記憶體題材受惠於AI需求，營收年增32.5%具說服力，技術與法人面同步強勁，風險條件可接受。",
+        "reason": "低軌衛星題材強勁且營收年增達84.0%，法人與技術面同步突破。",
         "model_reviews": [
           {
-            "stock_id": "6770",
+            "stock_id": "3491",
             "action": "可追",
-            "confidence": 0.9,
-            "reason": "營收年增 32.5% 且外資買超，技術面突破 MA20。",
+            "confidence": 0.98,
+            "reason": "低軌衛星題材強勁且營收年增達84.0%，法人與技術面同步突破。",
             "model": "google/gemma-4-31b-it:free"
-          },
+          }
+        ]
+      },
+      {
+        "review_date": "2026-05-22",
+        "stock_id": "6274",
+        "name": "台燿",
+        "score": 100,
+        "grade": "S+",
+        "consensus_action": "可追",
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
+        "is_ai_pick": false,
+        "reason": "低軌衛星題材強勁且營收年增高達95.6%，技術面站上MA20且外資買超。",
+        "model_reviews": [
           {
-            "stock_id": "6770",
+            "stock_id": "6274",
             "action": "可追",
-            "confidence": 0.5,
-            "reason": "HBM記憶體題材受惠於AI需求，營收年增32.5%具說服力，技術與法人面同步強勁，風險條件可接受。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
+            "confidence": 0.98,
+            "reason": "低軌衛星題材強勁且營收年增高達95.6%，技術面站上MA20且外資買超。",
+            "model": "google/gemma-4-31b-it:free"
           }
         ]
       }
@@ -4385,95 +4963,74 @@
     "picks": [
       {
         "review_date": "2026-05-22",
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "3491",
+        "name": "昇達科",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.72,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "營收年增 112% 且法人共振，技術面站上 MA20，優勢極強。；AI伺服器題材強勢，營收年增112%顯著加速，外資買超支撐，但需留意短期漲幅過大可能引發技術性回檔風險。",
+        "reason": "低軌衛星題材強勁且營收年增達84.0%，法人與技術面同步突破。",
         "model_reviews": [
           {
-            "stock_id": "3231",
+            "stock_id": "3491",
+            "action": "可追",
+            "confidence": 0.98,
+            "reason": "低軌衛星題材強勁且營收年增達84.0%，法人與技術面同步突破。",
+            "model": "google/gemma-4-31b-it:free"
+          }
+        ],
+        "is_ai_fallback_pick": true,
+        "strong_pick_required_votes": 5
+      },
+      {
+        "review_date": "2026-05-22",
+        "stock_id": "6274",
+        "name": "台燿",
+        "score": 100,
+        "grade": "S+",
+        "consensus_action": "可追",
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
+        "is_ai_pick": false,
+        "reason": "低軌衛星題材強勁且營收年增高達95.6%，技術面站上MA20且外資買超。",
+        "model_reviews": [
+          {
+            "stock_id": "6274",
+            "action": "可追",
+            "confidence": 0.98,
+            "reason": "低軌衛星題材強勁且營收年增高達95.6%，技術面站上MA20且外資買超。",
+            "model": "google/gemma-4-31b-it:free"
+          }
+        ],
+        "is_ai_fallback_pick": true,
+        "strong_pick_required_votes": 5
+      },
+      {
+        "review_date": "2026-05-22",
+        "stock_id": "2356",
+        "name": "英業達",
+        "score": 100,
+        "grade": "S+",
+        "consensus_action": "可追",
+        "confidence": 0.95,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
+        "is_ai_pick": false,
+        "reason": "AI伺服器題材強共振且營收年增36.5%，技術面站上MA20且外資買超。",
+        "model_reviews": [
+          {
+            "stock_id": "2356",
             "action": "可追",
             "confidence": 0.95,
-            "reason": "營收年增 112% 且法人共振，技術面站上 MA20，優勢極強。",
+            "reason": "AI伺服器題材強共振且營收年增36.5%，技術面站上MA20且外資買超。",
             "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "3231",
-            "action": "可追",
-            "confidence": 0.5,
-            "reason": "AI伺服器題材強勢，營收年增112%顯著加速，外資買超支撐，但需留意短期漲幅過大可能引發技術性回檔風險。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
-          }
-        ],
-        "is_ai_fallback_pick": true,
-        "strong_pick_required_votes": 5
-      },
-      {
-        "review_date": "2026-05-22",
-        "stock_id": "3706",
-        "name": "神達",
-        "score": 100,
-        "grade": "S+",
-        "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
-        "is_ai_pick": false,
-        "reason": "題材與法人共振且營收成長，風險條件可接受。；營收年增31.9%顯示成長動能持續，技術與法人面同步轉強，風險可控；惟需觀察營收成長是否可持續。",
-        "model_reviews": [
-          {
-            "stock_id": "3706",
-            "action": "可追",
-            "confidence": 0.9,
-            "reason": "題材與法人共振且營收成長，風險條件可接受。",
-            "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "3706",
-            "action": "可追",
-            "confidence": 0.5,
-            "reason": "營收年增31.9%顯示成長動能持續，技術與法人面同步轉強，風險可控；惟需觀察營收成長是否可持續。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
-          }
-        ],
-        "is_ai_fallback_pick": true,
-        "strong_pick_required_votes": 5
-      },
-      {
-        "review_date": "2026-05-22",
-        "stock_id": "6770",
-        "name": "力積電",
-        "score": 100,
-        "grade": "S+",
-        "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
-        "is_ai_pick": false,
-        "reason": "營收年增 32.5% 且外資買超，技術面突破 MA20。；HBM記憶體題材受惠於AI需求，營收年增32.5%具說服力，技術與法人面同步強勁，風險條件可接受。",
-        "model_reviews": [
-          {
-            "stock_id": "6770",
-            "action": "可追",
-            "confidence": 0.9,
-            "reason": "營收年增 32.5% 且外資買超，技術面突破 MA20。",
-            "model": "google/gemma-4-31b-it:free"
-          },
-          {
-            "stock_id": "6770",
-            "action": "可追",
-            "confidence": 0.5,
-            "reason": "HBM記憶體題材受惠於AI需求，營收年增32.5%具說服力，技術與法人面同步強勁，風險條件可接受。",
-            "model": "qwen/qwen3-next-80b-a3b-instruct:free"
           }
         ],
         "is_ai_fallback_pick": true,
@@ -4486,13 +5043,13 @@
       "successful_models": 3,
       "failed_models": [
         "google/gemma-4-26b-a4b-it:free",
-        "minimax/minimax-m2.5:free"
+        "qwen/qwen3-next-80b-a3b-instruct:free"
       ],
       "timed_out_models": [],
       "success_model_names": [
         "google/gemma-4-31b-it:free",
         "nvidia/nemotron-3-super-120b-a12b:free",
-        "qwen/qwen3-next-80b-a3b-instruct:free"
+        "minimax/minimax-m2.5:free"
       ],
       "available_ratio": 0.6,
       "health": {
@@ -4535,6 +5092,21 @@
       return tags.map(t => `<span class="${tagClass(t)}">${esc(t)}</span>`).join("");
     }
     function render() {
+      if (!document.querySelector("#quickFilter")) {
+        document.querySelector("#grade").insertAdjacentHTML("afterend", `<select id="quickFilter">
+          <option value="">All signals</option>
+          <option value="strong">S+/S only</option>
+          <option value="chase">Can chase/watch</option>
+          <option value="risk">Risk warning</option>
+          <option value="ai">AI consensus</option>
+          <option value="new">Today new</option>
+          <option value="top_theme">Top theme</option>
+        </select>`);
+        document.querySelector("#quickFilter").addEventListener("change", render);
+      }
+      if (!document.querySelector("#usPolicyRadar")) {
+        document.querySelector("#dataQuality").closest("section").insertAdjacentHTML("afterend", `<section><h2>US Policy Radar</h2><div id="usPolicyRadar"></div></section>`);
+      }
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
       document.querySelector("#subtitle").textContent = `${data.as_of}｜僅供研究追蹤，不是投資建議`;
@@ -4547,6 +5119,17 @@
         ["B級", data.summary.b_grade],
         ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
+      const decision = data.decision_summary || {};
+      const postureText = {
+        active_watch: "Active watch",
+        selective_watch: "Selective watch",
+        risk_control: "Risk control",
+      }[decision.posture] || "Selective watch";
+      document.querySelector("#decisionSummary").innerHTML = `
+        <div class="line"><b>${esc(postureText)}</b></div>
+        <div class="line">Watch ${esc(decision.watch_count ?? 0)} | Pullback ${esc(decision.pullback_count ?? 0)} | Risk ${esc(decision.risk_count ?? 0)}</div>
+        <div class="line">Strong grades ${esc(decision.strong_grade_count ?? 0)} | Data ${esc(decision.data_quality || "-")}</div>
+        <div class="line">Top theme: ${esc(decision.top_theme || "-")}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
@@ -4577,12 +5160,21 @@
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
         ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
       const quality = data.data_quality || {};
-      const qualityCls = quality.label === "高" ? "good" : quality.label === "中" ? "warn" : "bad";
+      const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       document.querySelector("#dataQuality").innerHTML = `
         <div class="line ${qualityCls}"><b>${esc(quality.label || "未知")}</b>｜${esc(quality.score ?? "—")}/100</div>
         <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
         ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
         ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(x.type)}｜${esc(x.dataset)}｜${esc(x.data_id)}｜${esc(x.reason || x.period || "-")}</div>`).join("") : ""}`;
+      const recovery = quality.recovery_status || {};
+      if (recovery.label && recovery.label !== "clean") {
+        document.querySelector("#dataQuality").insertAdjacentHTML("beforeend",
+          `<div class="line warn">Recovery: ${esc(recovery.label)} | retryable ${esc(recovery.retryable || 0)} | blocked ${esc(recovery.blocked || 0)}</div>`);
+      }
+      const usEvents = data.themes?.policy?.us_events || [];
+      document.querySelector("#usPolicyRadar").innerHTML = usEvents.length
+        ? usEvents.slice(0,4).map(e => `<div class="line"><b>${esc(e.event)}</b> | ${esc(e.sensitivity)} | ${esc(e.confidence)} | ${esc(e.direction)}<div class="small">${esc((e.themes || []).join(" / "))}</div><div class="small">${esc(e.headline)}</div></div>`).join("")
+        : `<div class="line">No high-sensitivity US policy signal in latest headlines.</div>`;
       function sparkBar(history) {
         const bars = "▁▂▃▄▅▆▇█";
         if (!history || !history.length) return "—";
@@ -4659,9 +5251,22 @@
       document.querySelector("#watchReviews").innerHTML = (data.watch_reviews || []).length
         ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
         : `<div class="line">尚無可追蹤觀察名單</div>`;
+      const quick = document.querySelector("#quickFilter")?.value || "";
+      const aiIds = new Set((data.action_lists?.ai_watch || []).map(x => String(x.stock_id)));
+      const riskIds = new Set((data.exit_risks || []).map(x => String(x.stock_id)));
+      const topTheme = data.decision_summary?.top_theme || "";
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
-        return (!q || blob.includes(q)) && (!g || r.grade === g);
+        const action = String(r.action || "");
+        const quickOk =
+          !quick ||
+          (quick === "strong" && ["S+", "S"].includes(r.grade)) ||
+          (quick === "chase" && action.includes("追")) ||
+          (quick === "risk" && riskIds.has(String(r.stock_id))) ||
+          (quick === "ai" && aiIds.has(String(r.stock_id))) ||
+          (quick === "new" && String(data.as_of || "") === String(r.signal_date || data.as_of || "")) ||
+          (quick === "top_theme" && (r.themes || []).includes(topTheme));
+        return quickOk && (!q || blob.includes(q)) && (!g || r.grade === g);
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>

@@ -172,7 +172,7 @@
   "as_of": "2026-05-22",
   "days": 30,
   "stats": {
-    "signals": 235,
+    "signals": 242,
     "completed": 78,
     "win_rate_5d": 30.76923076923077,
     "avg_return_5d": -2.9460895129961555,
@@ -201,12 +201,21 @@
     },
     {
       "label": "AI伺服器",
-      "signals": 29,
+      "signals": 26,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
+    },
+    {
+      "label": "低軌衛星/SpaceX",
+      "signals": 23,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "avg_return_10d": null,
+      "stop_hit_rate": 9.090909090909092
     },
     {
       "label": "被動元件",
@@ -225,15 +234,6 @@
       "avg_return_5d": 0.15916902951562384,
       "avg_return_10d": null,
       "stop_hit_rate": 27.27272727272727
-    },
-    {
-      "label": "低軌衛星/SpaceX",
-      "signals": 11,
-      "completed": 0,
-      "win_rate_5d": null,
-      "avg_return_5d": null,
-      "avg_return_10d": null,
-      "stop_hit_rate": 9.090909090909092
     },
     {
       "label": "機器人/自動化",
@@ -263,17 +263,8 @@
       "stop_hit_rate": 16.666666666666664
     },
     {
-      "label": "AI國防/軍工",
-      "signals": 4,
-      "completed": 0,
-      "win_rate_5d": null,
-      "avg_return_5d": null,
-      "avg_return_10d": null,
-      "stop_hit_rate": null
-    },
-    {
-      "label": "原物料/低基期傳產",
-      "signals": 2,
+      "label": "矽光子/CPO",
+      "signals": 3,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
@@ -322,7 +313,7 @@
   "action_stats": [
     {
       "label": "可追蹤突破",
-      "signals": 102,
+      "signals": 105,
       "completed": 38,
       "win_rate_5d": 36.84210526315789,
       "avg_return_5d": -2.8433042095825325,
@@ -331,7 +322,7 @@
     },
     {
       "label": "只觀察",
-      "signals": 90,
+      "signals": 92,
       "completed": 26,
       "win_rate_5d": 26.923076923076923,
       "avg_return_5d": -2.8439734198705815,
@@ -340,7 +331,7 @@
     },
     {
       "label": "等拉回",
-      "signals": 43,
+      "signals": 45,
       "completed": 14,
       "win_rate_5d": 21.428571428571427,
       "avg_return_5d": -3.4147223666377724,
@@ -711,19 +702,32 @@
     ]
   },
   "data_quality": {
-    "signals": 235,
+    "signals": 242,
     "completed_5d": 78,
-    "pending_5d": 157,
-    "completion_rate_5d": 33.191489361702125,
+    "pending_5d": 145,
+    "data_missing_5d": 19,
+    "completion_rate_5d": 32.231404958677686,
     "entry_trigger_known": 192,
     "entry_trigger_rate": 67.1875,
     "stop_known": 192,
     "stop_hit_rate": 25.520833333333332,
+    "status_counts": {
+      "completed_5d": 78,
+      "pending_5d": 145,
+      "data_missing": 19
+    },
     "pending_examples": [
       {
         "signal_date": "2026-05-22",
-        "stock_id": "6770",
-        "name": "力積電",
+        "stock_id": "6282",
+        "name": "康舒",
+        "grade": "S+",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-22",
+        "stock_id": "6274",
+        "name": "台燿",
         "grade": "S+",
         "action": "可追蹤突破"
       },
@@ -736,8 +740,8 @@
       },
       {
         "signal_date": "2026-05-22",
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "3491",
+        "name": "昇達科",
         "grade": "S+",
         "action": "可追蹤突破"
       },
@@ -750,15 +754,8 @@
       },
       {
         "signal_date": "2026-05-22",
-        "stock_id": "2395",
-        "name": "研華",
-        "grade": "S+",
-        "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-05-22",
-        "stock_id": "3006",
-        "name": "晶豪科",
+        "stock_id": "2356",
+        "name": "英業達",
         "grade": "S+",
         "action": "可追蹤突破"
       },
@@ -771,10 +768,68 @@
       },
       {
         "signal_date": "2026-05-22",
-        "stock_id": "2356",
-        "name": "英業達",
+        "stock_id": "3019",
+        "name": "亞光",
         "grade": "S+",
         "action": "可追蹤突破"
+      }
+    ],
+    "missing_examples": [
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "2327",
+        "name": "國巨",
+        "grade": "S+",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "3090",
+        "name": "日電貿",
+        "grade": "S+",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "3019",
+        "name": "亞光",
+        "grade": "S",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "8043",
+        "name": "蜜望實",
+        "grade": "A",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "6274",
+        "name": "台燿",
+        "grade": "A",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "2492",
+        "name": "華新科",
+        "grade": "A",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "2472",
+        "name": "立隆電",
+        "grade": "B",
+        "action": "只觀察"
+      },
+      {
+        "signal_date": "2026-05-15",
+        "stock_id": "6285",
+        "name": "啟碁",
+        "grade": "B",
+        "action": "只觀察"
       }
     ]
   },
@@ -790,7 +845,7 @@
     },
     {
       "label": "65-74",
-      "signals": 90,
+      "signals": 92,
       "completed": 26,
       "win_rate_5d": 26.923076923076923,
       "avg_return_5d": -2.8439734198705815,
@@ -799,7 +854,7 @@
     },
     {
       "label": "75-84",
-      "signals": 68,
+      "signals": 72,
       "completed": 26,
       "win_rate_5d": 23.076923076923077,
       "avg_return_5d": -3.666022377017293,
@@ -808,7 +863,7 @@
     },
     {
       "label": "85-94",
-      "signals": 39,
+      "signals": 40,
       "completed": 18,
       "win_rate_5d": 38.88888888888889,
       "avg_return_5d": -3.022454261312687,
@@ -853,7 +908,7 @@
     },
     {
       "grade": "S",
-      "signals": 22,
+      "signals": 23,
       "completed_3d": 3,
       "completed_5d": 1,
       "completed_10d": 0,
@@ -866,7 +921,7 @@
     },
     {
       "grade": "A",
-      "signals": 94,
+      "signals": 98,
       "completed_3d": 58,
       "completed_5d": 51,
       "completed_10d": 0,
@@ -879,7 +934,7 @@
     },
     {
       "grade": "B",
-      "signals": 90,
+      "signals": 92,
       "completed_3d": 46,
       "completed_5d": 26,
       "completed_10d": 0,
@@ -915,7 +970,7 @@
       {
         "group": "grade",
         "label": "S",
-        "signals": 22,
+        "signals": 23,
         "completed": 1,
         "win_rate_5d": 0.0,
         "avg_return_5d": 0.0,
@@ -933,7 +988,7 @@
       {
         "group": "action",
         "label": "可追蹤突破",
-        "signals": 102,
+        "signals": 105,
         "completed": 38,
         "win_rate_5d": 36.84210526315789,
         "avg_return_5d": -2.8433042095825325,
@@ -953,7 +1008,7 @@
       {
         "group": "action",
         "label": "等拉回",
-        "signals": 43,
+        "signals": 45,
         "completed": 14,
         "win_rate_5d": 21.428571428571427,
         "avg_return_5d": -3.4147223666377724,
@@ -962,7 +1017,7 @@
       {
         "group": "grade",
         "label": "A",
-        "signals": 94,
+        "signals": 98,
         "completed": 51,
         "win_rate_5d": 33.33333333333333,
         "avg_return_5d": -3.0559151587659814,
@@ -971,7 +1026,7 @@
       {
         "group": "grade",
         "label": "B",
-        "signals": 90,
+        "signals": 92,
         "completed": 26,
         "win_rate_5d": 26.923076923076923,
         "avg_return_5d": -2.8439734198705815,
@@ -980,7 +1035,7 @@
       {
         "group": "action",
         "label": "只觀察",
-        "signals": 90,
+        "signals": 92,
         "completed": 26,
         "win_rate_5d": 26.923076923076923,
         "avg_return_5d": -2.8439734198705815,
@@ -996,17 +1051,17 @@
     "items": [
       {
         "review_date": "2026-05-22",
-        "stock_id": "6770",
-        "name": "力積電",
+        "stock_id": "6274",
+        "name": "台燿",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "營收年增 32.5% 且外資買超，技術面突破 MA20。；HBM記憶體題材受惠於AI需求，營收年增32.5%具說服力，技術與法人面同步強勁，風險條件可接受。",
+        "reason": "低軌衛星題材強勁且營收年增高達95.6%，技術面站上MA20且外資買超。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -1019,12 +1074,12 @@
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.7,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.95,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "題材與法人共振且營收成長，風險條件可接受。；營收年增31.9%顯示成長動能持續，技術與法人面同步轉強，風險可控；惟需觀察營收成長是否可持續。",
+        "reason": "AI伺服器題材強共振且營收年增31.9%，技術面站上MA20且外資買超。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -1032,17 +1087,17 @@
       },
       {
         "review_date": "2026-05-22",
-        "stock_id": "3231",
-        "name": "緯創",
+        "stock_id": "3491",
+        "name": "昇達科",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.72,
-        "model_count": 2,
-        "agreement_count": 2,
-        "pick_agreement_count": 2,
+        "confidence": 0.98,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "營收年增 112% 且法人共振，技術面站上 MA20，優勢極強。；AI伺服器題材強勢，營收年增112%顯著加速，外資買超支撐，但需留意短期漲幅過大可能引發技術性回檔風險。",
+        "reason": "低軌衛星題材強勁且營收年增達84.0%，法人與技術面同步突破。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -1055,12 +1110,12 @@
         "score": 100,
         "grade": "S+",
         "consensus_action": "等拉回",
-        "confidence": 0.68,
-        "model_count": 2,
+        "confidence": 0.8,
+        "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "本益比高達 142.7x，估值過高風險顯著。；雖具先進封裝題材與營收成長優勢，但本益比達142.7倍明顯偏高，估值壓力限制上漲空間。",
+        "reason": "雖題材與技術面強勢，但本益比高達142.7x，估值風險較高。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -1068,17 +1123,17 @@
       },
       {
         "review_date": "2026-05-22",
-        "stock_id": "2395",
-        "name": "研華",
+        "stock_id": "2356",
+        "name": "英業達",
         "score": 100,
         "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.65,
-        "model_count": 2,
+        "confidence": 0.95,
+        "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": false,
-        "reason": "雖然基本面強勁，但短期波動明顯升高，建議等待回調。；營收與技術面同步轉強，但風險提示明確指出短期波動明顯升高，宜設停損並控制倉位。",
+        "reason": "AI伺服器題材強共振且營收年增36.5%，技術面站上MA20且外資買超。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -1219,11 +1274,11 @@
   "items": [
     {
       "signal_date": "2026-05-22",
-      "stock_id": "6770",
-      "name": "力積電",
+      "stock_id": "6282",
+      "name": "康舒",
       "grade": "S+",
       "total_score": 100,
-      "entry_price": 63.8,
+      "entry_price": 57.4,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1231,8 +1286,30 @@
       "stop_hit": null,
       "action": "可追蹤突破",
       "themes": [
-        "記憶體/HBM"
+        "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "6274",
+      "name": "台燿",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 1455.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1251,15 +1328,17 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "3231",
-      "name": "緯創",
+      "stock_id": "3491",
+      "name": "昇達科",
       "grade": "S+",
       "total_score": 100,
-      "entry_price": 144.5,
+      "entry_price": 1930.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1267,8 +1346,10 @@
       "stop_hit": null,
       "action": "可追蹤突破",
       "themes": [
-        "AI伺服器"
+        "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1287,15 +1368,17 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "2395",
-      "name": "研華",
+      "stock_id": "2356",
+      "name": "英業達",
       "grade": "S+",
       "total_score": 100,
-      "entry_price": 469.0,
+      "entry_price": 59.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1305,24 +1388,8 @@
       "themes": [
         "AI伺服器"
       ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "3006",
-      "name": "晶豪科",
-      "grade": "S+",
-      "total_score": 98,
-      "entry_price": 237.5,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "可追蹤突破",
-      "themes": [
-        "記憶體/HBM"
-      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1341,15 +1408,17 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "2356",
-      "name": "英業達",
+      "stock_id": "3019",
+      "name": "亞光",
       "grade": "S+",
       "total_score": 95,
-      "entry_price": 59.5,
+      "entry_price": 153.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1357,8 +1426,10 @@
       "stop_hit": null,
       "action": "可追蹤突破",
       "themes": [
-        "AI伺服器"
+        "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1377,24 +1448,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "2344",
-      "name": "華邦電",
-      "grade": "S",
-      "total_score": 94,
-      "entry_price": 125.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "可追蹤突破",
-      "themes": [
-        "記憶體/HBM"
-      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1413,33 +1468,17 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "1605",
-      "name": "華新",
+      "stock_id": "6770",
+      "name": "力積電",
       "grade": "S",
-      "total_score": 94,
-      "entry_price": 36.5,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "可追蹤突破",
-      "themes": [
-        "原物料/低基期傳產"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "2451",
-      "name": "創見",
-      "grade": "S",
-      "total_score": 93,
-      "entry_price": 316.5,
+      "total_score": 92,
+      "entry_price": 63.8,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1449,15 +1488,17 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "3305",
-      "name": "昇貿",
+      "stock_id": "3231",
+      "name": "緯創",
       "grade": "S",
-      "total_score": 91,
-      "entry_price": 146.0,
+      "total_score": 89,
+      "entry_price": 144.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1465,8 +1506,30 @@
       "stop_hit": null,
       "action": "可追蹤突破",
       "themes": [
-        "AI國防/軍工"
+        "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "4908",
+      "name": "前鼎",
+      "grade": "S",
+      "total_score": 88,
+      "entry_price": 267.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1485,30 +1548,116 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "2882",
-      "name": "國泰金",
+      "stock_id": "2383",
+      "name": "台光電",
       "grade": "S",
       "total_score": 87,
-      "entry_price": 79.7,
+      "entry_price": 5005.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
       "action": "可追蹤突破",
-      "themes": [],
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "2395",
+      "name": "研華",
+      "grade": "S",
+      "total_score": 86,
+      "entry_price": 469.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "2344",
+      "name": "華邦電",
+      "grade": "S",
+      "total_score": 86,
+      "entry_price": 125.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3105",
+      "name": "穩懋",
+      "grade": "S",
+      "total_score": 85,
+      "entry_price": 531.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3006",
+      "name": "晶豪科",
+      "grade": "A",
+      "total_score": 84,
+      "entry_price": 237.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
       "stock_id": "2376",
       "name": "技嘉",
-      "grade": "S",
-      "total_score": 87,
+      "grade": "A",
+      "total_score": 84,
       "entry_price": 322.5,
       "entry_triggered": null,
       "return_3d": null,
@@ -1519,6 +1668,28 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3081",
+      "name": "聯亞",
+      "grade": "A",
+      "total_score": 82,
+      "entry_price": 2710.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1526,7 +1697,7 @@
       "stock_id": "8046",
       "name": "南電",
       "grade": "A",
-      "total_score": 83,
+      "total_score": 81,
       "entry_price": 934.0,
       "entry_triggered": null,
       "return_3d": null,
@@ -1537,6 +1708,48 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "6285",
+      "name": "啟碁",
+      "grade": "A",
+      "total_score": 81,
+      "entry_price": 296.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "2451",
+      "name": "創見",
+      "grade": "A",
+      "total_score": 80,
+      "entry_price": 316.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1544,36 +1757,59 @@
       "stock_id": "3563",
       "name": "牧德",
       "grade": "A",
-      "total_score": 82,
+      "total_score": 79,
       "entry_price": 896.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
-      "action": "可追蹤突破",
+      "action": "等拉回",
       "themes": [
-        "先進封裝/CoWoS",
-        "AI國防/軍工"
+        "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "3443",
-      "name": "創意",
+      "stock_id": "2313",
+      "name": "華通",
       "grade": "A",
-      "total_score": 80,
-      "entry_price": 5140.0,
+      "total_score": 79,
+      "entry_price": 278.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
-      "action": "可追蹤突破",
+      "action": "等拉回",
       "themes": [
-        "AI伺服器"
+        "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "6271",
+      "name": "同欣電",
+      "grade": "A",
+      "total_score": 78,
+      "entry_price": 226.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1592,6 +1828,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1610,6 +1848,28 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3138",
+      "name": "耀登",
+      "grade": "A",
+      "total_score": 77,
+      "entry_price": 169.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1628,15 +1888,17 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "8255",
-      "name": "朋億",
+      "stock_id": "2367",
+      "name": "燿華",
       "grade": "A",
-      "total_score": 76,
-      "entry_price": 157.0,
+      "total_score": 77,
+      "entry_price": 66.8,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1644,8 +1906,10 @@
       "stop_hit": null,
       "action": "等拉回",
       "themes": [
-        "AI國防/軍工"
+        "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1664,114 +1928,28 @@
       "themes": [
         "AI伺服器"
       ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "2408",
-      "name": "南亞科",
-      "grade": "A",
-      "total_score": 76,
-      "entry_price": 310.5,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "記憶體/HBM"
-      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
       "stock_id": "2059",
       "name": "川湖",
-      "grade": "A",
-      "total_score": 76,
+      "grade": "B",
+      "total_score": 73,
       "entry_price": 5090.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "AI伺服器"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "6414",
-      "name": "樺漢",
-      "grade": "A",
-      "total_score": 75,
-      "entry_price": 350.5,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "AI國防/軍工"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "6669",
-      "name": "緯穎",
-      "grade": "B",
-      "total_score": 74,
-      "entry_price": 5525.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
       ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "2449",
-      "name": "京元電子",
-      "grade": "B",
-      "total_score": 74,
-      "entry_price": 296.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "status": "進行中"
-    },
-    {
-      "signal_date": "2026-05-22",
-      "stock_id": "3017",
-      "name": "奇鋐",
-      "grade": "B",
-      "total_score": 73,
-      "entry_price": 2545.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [
-        "AI伺服器"
-      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1790,33 +1968,35 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "1802",
-      "name": "台玻",
+      "stock_id": "2882",
+      "name": "國泰金",
       "grade": "B",
       "total_score": 69,
-      "entry_price": 70.5,
+      "entry_price": 79.7,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
       "action": "只觀察",
-      "themes": [
-        "原物料/低基期傳產"
-      ],
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "8210",
-      "name": "勤誠",
+      "stock_id": "2408",
+      "name": "南亞科",
       "grade": "B",
       "total_score": 68,
-      "entry_price": 1345.0,
+      "entry_price": 310.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1824,8 +2004,30 @@
       "stop_hit": null,
       "action": "只觀察",
       "themes": [
-        "AI伺服器"
+        "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "2355",
+      "name": "敬鵬",
+      "grade": "B",
+      "total_score": 67,
+      "entry_price": 65.2,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "低軌衛星/SpaceX"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1844,15 +2046,17 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
       "signal_date": "2026-05-22",
-      "stock_id": "3661",
-      "name": "世芯-KY",
+      "stock_id": "6669",
+      "name": "緯穎",
       "grade": "B",
-      "total_score": 65,
-      "entry_price": 4895.0,
+      "total_score": 66,
+      "entry_price": 5525.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -1862,6 +2066,68 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3583",
+      "name": "辛耘",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 875.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3450",
+      "name": "聯鈞",
+      "grade": "B",
+      "total_score": 65,
+      "entry_price": 459.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "矽光子/CPO"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-22",
+      "stock_id": "3443",
+      "name": "創意",
+      "grade": "B",
+      "total_score": 65,
+      "entry_price": 5140.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1880,6 +2146,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1898,6 +2166,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1916,6 +2186,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1934,6 +2206,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1952,6 +2226,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1970,6 +2246,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -1988,6 +2266,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2006,6 +2286,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2024,6 +2306,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2043,6 +2327,8 @@
         "AI電力/重電/電網",
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2061,6 +2347,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2079,6 +2367,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2097,6 +2387,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2115,6 +2407,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2133,6 +2427,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2151,6 +2447,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2169,6 +2467,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2187,6 +2487,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2205,6 +2507,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2223,6 +2527,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2241,6 +2547,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2259,6 +2567,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2277,6 +2587,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2295,6 +2607,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2313,6 +2627,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2332,6 +2648,8 @@
         "AI伺服器",
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2350,6 +2668,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2368,6 +2688,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2386,6 +2708,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2404,6 +2728,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2420,6 +2746,8 @@
       "stop_hit": false,
       "action": "只觀察",
       "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2438,6 +2766,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2456,6 +2786,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2474,6 +2806,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2492,6 +2826,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2510,6 +2846,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2528,6 +2866,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2546,6 +2886,8 @@
       "themes": [
         "AI伺服器"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2564,6 +2906,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2582,6 +2926,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2600,6 +2946,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2618,6 +2966,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2636,6 +2986,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2654,6 +3006,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2672,6 +3026,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2690,6 +3046,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2708,6 +3066,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2726,6 +3086,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2744,6 +3106,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2762,6 +3126,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2778,6 +3144,8 @@
       "stop_hit": false,
       "action": "只觀察",
       "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2796,6 +3164,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2814,6 +3184,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2832,6 +3204,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2850,6 +3224,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2868,6 +3244,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2886,6 +3264,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2904,6 +3284,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2922,6 +3304,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2940,6 +3324,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2958,6 +3344,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2976,6 +3364,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -2994,6 +3384,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3012,6 +3404,8 @@
       "themes": [
         "AI電力/重電/電網"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3030,6 +3424,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3048,6 +3444,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3066,6 +3464,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3084,6 +3484,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3102,6 +3504,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3120,6 +3524,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3138,6 +3544,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3156,6 +3564,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3174,6 +3584,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3192,6 +3604,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3210,6 +3624,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3228,6 +3644,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3246,6 +3664,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3264,6 +3684,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3280,6 +3702,8 @@
       "stop_hit": true,
       "action": "只觀察",
       "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3298,6 +3722,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3316,6 +3742,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3334,6 +3762,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3352,6 +3782,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3370,6 +3802,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3388,6 +3822,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3406,6 +3842,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3424,6 +3862,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3442,6 +3882,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3460,6 +3902,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3478,6 +3922,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3496,6 +3942,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3514,6 +3962,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3532,6 +3982,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3550,6 +4002,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3568,6 +4022,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3584,6 +4040,8 @@
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3602,6 +4060,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3620,6 +4080,8 @@
       "themes": [
         "機器人/自動化"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3638,6 +4100,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3656,6 +4120,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3672,6 +4138,8 @@
       "stop_hit": false,
       "action": "等拉回",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3688,6 +4156,8 @@
       "stop_hit": true,
       "action": "等拉回",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3706,6 +4176,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3724,6 +4196,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3742,6 +4216,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3760,6 +4236,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
       "status": "進行中"
     },
     {
@@ -3778,6 +4256,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3796,6 +4276,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3814,6 +4296,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3832,6 +4316,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3850,6 +4336,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3868,6 +4356,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3886,6 +4376,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3902,6 +4394,8 @@
       "stop_hit": true,
       "action": "等拉回",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3920,6 +4414,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3938,6 +4434,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3956,6 +4454,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -3974,6 +4474,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -3992,6 +4494,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4010,6 +4514,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4028,6 +4534,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4046,6 +4554,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4064,6 +4574,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4082,6 +4594,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4100,6 +4614,8 @@
       "themes": [
         "被動元件"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4118,6 +4634,8 @@
       "themes": [
         "低軌衛星/SpaceX"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4136,6 +4654,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4154,6 +4674,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4172,6 +4694,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4190,6 +4714,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4206,6 +4732,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4224,6 +4752,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4242,6 +4772,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4258,6 +4790,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4276,6 +4810,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4294,6 +4830,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4312,6 +4850,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4328,6 +4868,8 @@
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4346,6 +4888,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4364,6 +4908,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4382,6 +4928,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4400,6 +4948,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4418,6 +4968,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4436,6 +4988,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4454,6 +5008,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4472,6 +5028,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4490,6 +5048,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4508,6 +5068,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4526,6 +5088,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -4544,6 +5108,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4562,6 +5128,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4580,6 +5148,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4598,6 +5168,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4614,6 +5186,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4632,6 +5206,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4648,6 +5224,8 @@
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4666,6 +5244,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4684,6 +5264,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4702,6 +5284,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4720,6 +5304,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4738,6 +5324,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4756,6 +5344,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4774,6 +5364,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4792,6 +5384,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4810,6 +5404,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4828,6 +5424,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4846,6 +5444,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4864,6 +5464,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4882,6 +5484,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4898,6 +5502,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4916,6 +5522,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4932,6 +5540,8 @@
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4950,6 +5560,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4966,6 +5578,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -4984,6 +5598,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5002,6 +5618,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5020,6 +5638,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5038,6 +5658,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5056,6 +5678,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5074,6 +5698,8 @@
       "themes": [
         "光學鏡頭/視覺"
       ],
+      "status_code": "data_missing",
+      "status_label": "data_missing",
       "status": "進行中"
     },
     {
@@ -5092,6 +5718,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5110,6 +5738,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5128,6 +5758,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5146,6 +5778,8 @@
       "themes": [
         "金融降息/併購"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5164,6 +5798,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5182,6 +5818,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5200,6 +5838,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5218,6 +5858,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5234,6 +5876,8 @@
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5252,6 +5896,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5268,6 +5914,8 @@
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5286,6 +5934,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5304,6 +5954,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5322,6 +5974,8 @@
       "themes": [
         "記憶體/HBM"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5340,6 +5994,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5356,6 +6012,8 @@
       "stop_hit": true,
       "action": "只觀察",
       "themes": [],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5374,6 +6032,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5392,6 +6052,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     },
     {
@@ -5410,6 +6072,8 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
+      "status_code": "completed_5d",
+      "status_label": "completed",
       "status": "已完成"
     }
   ]
@@ -5497,6 +6161,7 @@
         ["訊號總數", quality.signals],
         ["5日完成", quality.completed_5d],
         ["5日待追蹤", quality.pending_5d],
+        ["5日資料缺口", quality.data_missing_5d],
         ["5日完成率", quality.completion_rate_5d == null ? "—" : `${Number(quality.completion_rate_5d).toFixed(1)}%`],
         ["進場觸發樣本", quality.entry_trigger_known],
         ["進場觸發率", quality.entry_trigger_rate == null ? "—" : `${Number(quality.entry_trigger_rate).toFixed(1)}%`],
@@ -5507,6 +6172,12 @@
         document.querySelector("#dataQuality").insertAdjacentHTML(
           "beforeend",
           `<tr><td data-label="項目">待追蹤範例</td><td data-label="數值">${quality.pending_examples.slice(0,4).map(x => `${esc(x.signal_date)} ${esc(x.stock_id)} ${esc(x.name)}`).join("<br>")}</td></tr>`
+        );
+      }
+      if ((quality.missing_examples || []).length) {
+        document.querySelector("#dataQuality").insertAdjacentHTML(
+          "beforeend",
+          `<tr><td data-label="項目">資料缺口範例</td><td data-label="數值">${quality.missing_examples.slice(0,4).map(x => `${esc(x.signal_date)} ${esc(x.stock_id)} ${esc(x.name)}`).join("<br>")}</td></tr>`
         );
       }
       const entry = data.entry_analysis || {};
