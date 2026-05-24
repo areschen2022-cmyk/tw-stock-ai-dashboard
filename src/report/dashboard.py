@@ -359,6 +359,7 @@ def build_dashboard_payload(
             "active": theme_signal.active_themes if theme_signal else [],
             "headlines": theme_signal.headlines[:8] if theme_signal else [],
             "scores": theme_signal.scores if theme_signal else {},
+            "matched_headlines": theme_signal.matched_headlines if theme_signal else {},
             "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
             "pool_counts": {
                 key: len(value.get("stocks", {}))
@@ -770,10 +771,21 @@ def _html() -> str:
       const themeTableHtml = themeTableBody
         ? `<table style="width:100%;border-collapse:collapse;margin:5px 0 4px">${themeHdr}<tbody>${themeTableBody}</tbody></table>`
         : "";
+      const matchedHeadlines = data.themes.matched_headlines || {};
+      const themeReasons = allThemeEntries
+        .map(([key]) => {
+          const hits = matchedHeadlines[key] || [];
+          if (!hits.length) return "";
+          return `<div class="line" style="font-size:12px"><b>${esc(data.themes.names[key] || key)}</b>：${esc(hits[0])}</div>`;
+        })
+        .filter(Boolean)
+        .slice(0, 4)
+        .join("");
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
         <div class="line">政策：${esc(data.themes.policy?.summary || "未偵測到明顯政策訊號")}</div>
         ${themeTableHtml}
+        ${themeReasons}
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
       const ai = data.ai_council || {};

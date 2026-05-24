@@ -36,7 +36,8 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
             ["defense_policy"],
             "未偵測到明顯題材",
             [],
-            {},
+            {"defense_policy": 3},
+            matched_headlines={"defense_policy": ["國防預算帶動軍工題材"]},
             source_count=2,
             failed_count=0,
             policy=PolicySignal(
@@ -67,6 +68,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
     assert payload["data_quality"]["recovery_status"]["retryable"] == 1
     assert payload["decision_summary"]["top_theme"] == "defense_policy"
+    assert payload["themes"]["matched_headlines"]["defense_policy"] == ["國防預算帶動軍工題材"]
     assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
 
 
