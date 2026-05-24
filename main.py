@@ -321,11 +321,13 @@ def main() -> int:
     store.update_forward_returns(as_of)
     ai_cfg = config.get("ai_council", {})
     ai_min_agree_count = int(ai_cfg.get("min_agree_count", 5))
+    ai_min_model_count = int(ai_cfg.get("min_model_count", ai_min_agree_count))
     ai_pick_action = str(ai_cfg.get("pick_action", "可追"))
     ai_fallback_count = int(ai_cfg.get("fallback_pick_count", 3))
     ai_picks, ai_using_fallback = select_ai_picks(
         ai_reviews,
         min_agree_count=ai_min_agree_count,
+        min_model_count=ai_min_model_count,
         pick_action=ai_pick_action,
         fallback_count=ai_fallback_count,
     )
@@ -336,6 +338,7 @@ def main() -> int:
         "using_fallback_picks": ai_using_fallback,
         "status": ai_status,
         "min_agree_count": ai_min_agree_count,
+        "min_model_count": ai_min_model_count,
         "fallback_pick_count": ai_fallback_count,
         "pick_action": ai_pick_action,
     }

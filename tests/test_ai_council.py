@@ -78,7 +78,7 @@ def test_ai_council_requires_five_buy_votes_for_pick() -> None:
     assert reviews[0]["is_ai_pick"] is True
 
 
-def test_ai_council_fallback_picks_when_strong_consensus_is_missing() -> None:
+def test_ai_council_does_not_pick_when_model_count_is_insufficient() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
     reviews = run_ai_council(
         rows,
@@ -87,12 +87,39 @@ def test_ai_council_fallback_picks_when_strong_consensus_is_missing() -> None:
         client=_FakeClient(),
     )
 
-    picks, using_fallback = select_ai_picks(reviews, min_agree_count=5, pick_action="可追", fallback_count=1)
+    picks, using_fallback = select_ai_picks(
+        reviews,
+        min_agree_count=4,
+        min_model_count=5,
+        pick_action="可追",
+        fallback_count=1,
+    )
 
     assert reviews[0]["is_ai_pick"] is False
-    assert using_fallback is True
-    assert picks[0]["stock_id"] == "2408"
-    assert picks[0]["is_ai_fallback_pick"] is True
+    assert using_fallback is False
+    assert picks == []
+
+
+def test_ai_council_allows_four_of_five_strong_pick() -> None:
+    rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "top_n": 1,
+                "min_model_count": 5,
+                "min_agree_count": 4,
+                "models": ["model-a", "model-a", "model-a", "model-a", "model-b"],
+            }
+        },
+        client=_FakeClient(),
+    )
+
+    assert reviews[0]["model_count"] == 5
+    assert reviews[0]["pick_agreement_count"] == 4
+    assert reviews[0]["is_ai_pick"] is True
 
 
 def test_ai_council_accepts_fenced_json_and_redacts_strategy_prices() -> None:

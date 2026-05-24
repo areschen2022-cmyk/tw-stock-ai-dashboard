@@ -33,6 +33,10 @@ The monitoring dashboard is generated in `dashboard/`. To publish it through Git
 
 Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispatch` for more reliable timing than GitHub's native schedule. The Worker also passes the intended Asia/Taipei trigger time so the dashboard can show schedule delay minutes. See `docs/external_scheduler.md`.
 
+## AI Council
+
+AI picks require enough model participation before they are shown as official picks. Current rule: at least 5 valid model reviews and at least 4 votes for `可追`. See `docs/ai_council_rules.md`.
+
 ## Backtest Quality Check
 
 Validate stored signal data and forward-return backtests:

@@ -41,6 +41,7 @@ def run_ai_council(
         return []
 
     min_agree_count = int(cfg.get("min_agree_count", 5))
+    min_model_count = int(cfg.get("min_model_count", min_agree_count))
     pick_action = str(cfg.get("pick_action", "可追"))
 
     candidates = [_candidate_payload(row) for row in rows[:top_n]]
@@ -106,6 +107,7 @@ def run_ai_council(
                 "timed_out_models": timed_out_models,
                 "success_model_names": successful_models,
                 "available_ratio": round(len(successful_models) / len(models), 2) if models else 0,
+                "min_model_count": min_model_count,
                 "health": health,
             }
         )
@@ -115,6 +117,7 @@ def run_ai_council(
         candidates,
         model_reviews,
         min_agree_count=min_agree_count,
+        min_model_count=min_model_count,
         pick_action=pick_action,
     )
 
@@ -218,6 +221,7 @@ def _consensus(
     model_reviews: list[dict[str, Any]],
     *,
     min_agree_count: int = 5,
+    min_model_count: int = 5,
     pick_action: str = "可追",
 ) -> list[dict[str, Any]]:
     by_stock: dict[str, list[dict[str, Any]]] = {str(row["stock_id"]): [] for row in candidates}
@@ -256,7 +260,11 @@ def _consensus(
                 "model_count": len(reviews),
                 "agreement_count": agreement_count,
                 "pick_agreement_count": pick_agreement_count,
-                "is_ai_pick": consensus_action == pick_action and pick_agreement_count >= min_agree_count,
+                "is_ai_pick": (
+                    consensus_action == pick_action
+                    and len(reviews) >= min_model_count
+                    and pick_agreement_count >= min_agree_count
+                ),
                 "reason": "；".join(reasons[:2])[:180],
                 "model_reviews": reviews,
             }
@@ -268,6 +276,7 @@ def select_ai_picks(
     reviews: list[dict[str, Any]],
     *,
     min_agree_count: int = 5,
+    min_model_count: int = 5,
     pick_action: str = "可追",
     fallback_count: int = 0,
 ) -> tuple[list[dict[str, Any]], bool]:
@@ -278,7 +287,9 @@ def select_ai_picks(
     fallback_candidates = [
         review
         for review in reviews
-        if review.get("consensus_action") == pick_action and int(review.get("pick_agreement_count") or 0) > 0
+        if review.get("consensus_action") == pick_action
+        and int(review.get("model_count") or 0) >= min_model_count
+        and int(review.get("pick_agreement_count") or 0) > 0
     ]
     fallback_candidates.sort(
         key=lambda review: (
@@ -294,6 +305,7 @@ def select_ai_picks(
         copied = dict(review)
         copied["is_ai_fallback_pick"] = True
         copied["strong_pick_required_votes"] = min_agree_count
+        copied["strong_pick_required_models"] = min_model_count
         fallback_picks.append(copied)
     return fallback_picks, bool(fallback_picks)
 

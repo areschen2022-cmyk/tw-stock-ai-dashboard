@@ -779,15 +779,17 @@ def _html() -> str:
       const ai = data.ai_council || {};
       const aiPicks = ai.picks || [];
       const aiStatus = ai.status || {};
+      const aiRequiredModels = ai.min_model_count || ai.min_agree_count || 5;
+      const aiRequiredVotes = ai.min_agree_count || 5;
       const aiAvailability = aiStatus.requested_models
         ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
         : "";
       const aiFallbackNote = ai.using_fallback_picks
-        ? `<div class="line warn">未達 ${esc(ai.min_agree_count || 5)} 票強共識，先顯示 AI 首選觀察</div>`
+        ? `<div class="line warn">未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，先顯示 AI 首選觀察</div>`
         : "";
       document.querySelector("#aiCouncil").innerHTML = aiPicks.length
-        ? aiFallbackNote + aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(ai.min_agree_count || 5)} 位AI同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
-        : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(ai.min_agree_count || 5)} 位AI同意的自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
+        ? aiFallbackNote + aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.model_count || 0)} 模型參與｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(aiRequiredVotes)} 票同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
+        : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(aiRequiredModels)} 模型參與且 ${esc(aiRequiredVotes)} 票同意的 AI 自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
       if (aiAvailability) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiAvailability);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
