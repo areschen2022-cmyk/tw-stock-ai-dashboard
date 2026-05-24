@@ -26,6 +26,18 @@ def test_data_retry_queue_enqueues_and_records_success(tmp_path) -> None:
     assert summary["items"][0]["status"] == "recovered"
 
 
+def test_data_retry_queue_does_not_enqueue_fallback_recovered_items(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "retry.sqlite3")
+
+    queued = store.enqueue_data_retry(
+        [{"type": "fallback", "dataset": "STOCK_DAY", "data_id": "2330", "period": "2026-05"}]
+    )
+    summary = store.retry_queue_summary()
+
+    assert queued == 0
+    assert summary["pending"] == 0
+
+
 def test_data_retry_queue_marks_failed_after_three_attempts(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "retry.sqlite3")
     store.enqueue_data_retry(

@@ -227,7 +227,7 @@ class SQLiteStore:
             )
 
     def enqueue_data_retry(self, details: list[dict]) -> int:
-        retryable_types = {"empty", "error", "fallback"}
+        retryable_types = {"empty", "error"}
         queued = 0
         now = datetime.now(TAIPEI).isoformat(timespec="seconds")
         with self._connect() as conn:

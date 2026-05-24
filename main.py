@@ -361,6 +361,14 @@ def main() -> int:
         )
     else:
         dashboard_payload["data_retry"] = store.retry_queue_summary()
+    enrich_dashboard_payload(
+        dashboard_payload,
+        source_status=source_status,
+        ai_picks=ai_picks,
+        ai_status=ai_status,
+        exit_risks=exit_risks,
+        retry_summary=dashboard_payload.get("data_retry", {}),
+    )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")

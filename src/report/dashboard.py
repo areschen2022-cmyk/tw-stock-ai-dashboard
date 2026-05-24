@@ -128,6 +128,7 @@ def _data_recovery_status(details: list[dict]) -> dict:
         return {"label": "clean", "retryable": 0, "blocked": 0, "items": []}
     retryable = []
     blocked = []
+    recovered = []
     for item in details:
         reason = str(item.get("reason") or "")
         row = {
@@ -137,12 +138,17 @@ def _data_recovery_status(details: list[dict]) -> dict:
             "type": item.get("type"),
             "next_step": "retry_range",
         }
-        if item.get("type") in {"empty", "error", "fallback"} and "quota" not in reason.lower():
+        if item.get("type") == "fallback":
+            row["next_step"] = "recovered_by_fallback"
+            recovered.append(row)
+        elif item.get("type") in {"empty", "error"} and "quota" not in reason.lower():
             retryable.append(row)
         else:
             row["next_step"] = "wait_or_manual_check"
             blocked.append(row)
-    if blocked and not retryable:
+    if not retryable and not blocked:
+        label = "clean"
+    elif blocked and not retryable:
         label = "manual_check"
     elif retryable:
         label = "retry_ready"
@@ -152,20 +158,32 @@ def _data_recovery_status(details: list[dict]) -> dict:
         "label": label,
         "retryable": len(retryable),
         "blocked": len(blocked),
-        "items": (retryable + blocked)[:6],
+        "recovered": len(recovered),
+        "items": (retryable + blocked + recovered)[:6],
     }
 
 
-def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict | None = None) -> dict:
+def _data_quality(
+    source_status: dict | None,
+    rows: list[dict],
+    ai_status: dict | None = None,
+    retry_summary: dict | None = None,
+) -> dict:
     status = source_status or {}
     api = int(status.get("api") or 0)
     cache = int(status.get("cache") or 0)
     quota = int(status.get("quota") or 0)
     error = int(status.get("error") or 0)
     empty = int(status.get("empty") or 0)
-    usable = api + cache
-    total_fetches = usable + quota + error + empty
-    source_score = 100 if total_fetches == 0 else round(max(0, min(100, usable / total_fetches * 100 - quota * 3 - error * 5)))
+    fallback = int(status.get("fallback") or 0)
+    retry_recovered = int((retry_summary or {}).get("recovered") or 0)
+    recovered = fallback + retry_recovered
+    effective_empty = max(0, empty - recovered)
+    recovered_after_empty = max(0, recovered - empty)
+    effective_error = max(0, error - recovered_after_empty)
+    usable = api + cache + recovered
+    total_fetches = usable + quota + effective_error + effective_empty
+    source_score = 100 if total_fetches == 0 else round(max(0, min(100, usable / total_fetches * 100 - quota * 3 - effective_error * 5)))
     scored_rows = [row for row in rows if row.get("price") is not None and row.get("score") is not None]
     coverage = round(len(scored_rows) / len(rows) * 100, 1) if rows else 0
     ai_health = (ai_status or {}).get("health") or {}
@@ -192,8 +210,10 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
     warnings = []
     if quota:
         warnings.append(f"資料源限流 {quota} 次")
-    if error:
-        warnings.append(f"資料源錯誤 {error} 次")
+    if effective_error:
+        warnings.append(f"資料源錯誤 {effective_error} 次")
+    if recovered:
+        warnings.append(f"已由備援/補抓補回 {recovered} 次")
     if coverage < 90 and rows:
         warnings.append(f"股票資料覆蓋率 {coverage}%")
     if ai_health and ai_health.get("label") in {"降級可用", "不穩定"}:
@@ -225,6 +245,9 @@ def _data_quality(source_status: dict | None, rows: list[dict], ai_status: dict 
         "score": score,
         "source_score": source_score,
         "coverage": coverage,
+        "recovered_fetches": recovered,
+        "effective_error": effective_error,
+        "effective_empty": effective_empty,
         "warnings": warnings,
         "event_summary": event_summary,
         "details": details,
@@ -419,6 +442,7 @@ def enrich_dashboard_payload(
     ai_picks: list[dict] | None = None,
     ai_status: dict | None = None,
     exit_risks: list[dict] | None = None,
+    retry_summary: dict | None = None,
 ) -> dict:
     rows = payload.get("rows", [])
     payload["action_lists"] = _action_lists(
@@ -430,6 +454,7 @@ def enrich_dashboard_payload(
         source_status if source_status is not None else payload.get("source_status", {}),
         rows,
         ai_status=ai_status,
+        retry_summary=retry_summary if retry_summary is not None else payload.get("data_retry", {}),
     )
     previous_top_theme = (payload.get("decision_summary") or {}).get("top_theme")
     payload["decision_summary"] = _decision_summary(

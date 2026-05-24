@@ -96,3 +96,43 @@ def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:
     assert payload["health"]["scheduled_cron"] == "30 20 * * 0-4"
     assert payload["health"]["scheduled_target_taipei"] == "2026-05-18T04:30:00+08:00"
     assert isinstance(payload["health"]["schedule_delay_minutes"], float)
+
+
+def test_data_quality_does_not_penalize_recovered_fallback() -> None:
+    score = StockScore(
+        stock_id="2330",
+        total_score=80,
+        label="BUY_WATCH",
+        price=100.0,
+        technical_score=20,
+        chip_score=20,
+        fundamental_score=20,
+        risk_score=20,
+        market_adjustment=0,
+    )
+    payload = build_dashboard_payload(
+        [score],
+        date(2026, 5, 18),
+        "健康",
+        None,
+        {"stock_names": {"2330": "台積電"}, "theme_pools": {}},
+        overseas=None,
+        theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {}, source_count=1, failed_count=0),
+        source_status={
+            "label": "正常",
+            "api": 0,
+            "cache": 0,
+            "fallback": 1,
+            "quota": 0,
+            "error": 0,
+            "empty": 1,
+            "events": [{"type": "fallback", "dataset": "STOCK_DAY", "data_id": "2330", "period": "2026-05"}],
+        },
+    )
+
+    quality = payload["data_quality"]
+    assert quality["label"] == "high"
+    assert quality["recovered_fetches"] == 1
+    assert quality["effective_empty"] == 0
+    assert quality["recovery_status"]["retryable"] == 0
+    assert quality["recovery_status"]["recovered"] == 1
