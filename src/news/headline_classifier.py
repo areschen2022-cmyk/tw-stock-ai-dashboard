@@ -10,6 +10,7 @@ NEGATIVE_KEYWORDS = ("天氣", "選舉", "疫情")
 class HeadlineThemeScore:
     scores: dict[str, int]
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
+    quality: dict[str, str] = field(default_factory=dict)
 
 
 def classify_headlines(
@@ -26,6 +27,7 @@ def classify_headlines(
     """
     scores: dict[str, int] = {theme: 0 for theme in keyword_map}
     matched: dict[str, list[str]] = {theme: [] for theme in keyword_map}
+    quality_points: dict[str, int] = {theme: 0 for theme in keyword_map}
     tracked_terms = _tracked_terms(stock_names or {})
 
     for headline in headlines:
@@ -36,9 +38,15 @@ def classify_headlines(
         for theme, keywords in keyword_map.items():
             if any(keyword.lower() in lower for keyword in keywords):
                 scores[theme] += 1 + relevance
+                quality_points[theme] = max(quality_points[theme], 2 if relevance else 1)
                 matched[theme].append(headline)
 
-    return HeadlineThemeScore(scores=scores, matched_headlines=matched)
+    quality = {
+        theme: _quality_label(scores[theme], quality_points[theme])
+        for theme in keyword_map
+        if scores[theme] > 0
+    }
+    return HeadlineThemeScore(scores=scores, matched_headlines=matched, quality=quality)
 
 
 def _is_negative_context(headline: str, negative_keywords: tuple[str, ...]) -> bool:
@@ -53,3 +61,11 @@ def _tracked_terms(stock_names: dict[str, str]) -> set[str]:
         if name:
             terms.add(str(name))
     return terms
+
+
+def _quality_label(score: int, quality_point: int) -> str:
+    if quality_point >= 2:
+        return "高：新聞含股票代號或公司名"
+    if score >= 2:
+        return "中：多則產業關鍵字命中"
+    return "低：僅單一產業關鍵字"

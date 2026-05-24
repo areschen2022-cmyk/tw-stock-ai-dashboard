@@ -36,6 +36,7 @@ class ThemeSignal:
     headlines: list[str]
     scores: dict[str, int]
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
+    quality: dict[str, str] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
     policy: PolicySignal | None = None
     source_count: int = 0
@@ -99,10 +100,10 @@ def _score_headlines(
     deduped: list[str],
     keyword_map: dict[str, list[str]],
     stock_names: dict[str, str] | None = None,
-) -> tuple[dict[str, int], dict[str, list[str]]]:
-    """Return (scores, matched_headlines) for all themes."""
+) -> tuple[dict[str, int], dict[str, list[str]], dict[str, str]]:
+    """Return (scores, matched_headlines, quality) for all themes."""
     result = classify_headlines(deduped, keyword_map, stock_names=stock_names)
-    return result.scores, result.matched_headlines
+    return result.scores, result.matched_headlines, result.quality
 
 
 def _build_momentum(raw: dict[str, dict]) -> dict[str, ThemeMomentum]:
@@ -225,7 +226,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
 
     # ── 2. Score themes ────────────────────────────────────────
     keyword_map = news_cfg.get("theme_keywords", {})
-    scores, matched = _score_headlines(
+    scores, matched, quality = _score_headlines(
         deduped_scoring,
         keyword_map,
         stock_names=config.get("stock_names", {}),
@@ -275,6 +276,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         headlines=deduped[:8],
         scores=scores,
         matched_headlines={t: v[:5] for t, v in matched.items() if v},
+        quality=quality,
         momentum=momentum,
         policy=policy_signal,
         source_count=source_count,

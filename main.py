@@ -379,13 +379,14 @@ def main() -> int:
         us_events = dashboard_payload.get("themes", {}).get("policy", {}).get("us_events", [])
 
         def _entry_line(row: dict) -> str:
-            action = row.get("action", "只觀察")
+            action = row.get("entry_decision") or row.get("action", "只觀察")
             limit = row.get("entry_limit_price")
             stop = row.get("stop_price")
             limit_str = f"上限 {limit:.2f}" if limit else ""
             stop_str = f"止損 {stop:.2f}" if stop else ""
             numbers = "｜".join(x for x in [limit_str, stop_str] if x)
-            return f"{action}" + (f"（{numbers}）" if numbers else "")
+            checks = "；".join((row.get("entry_checklist") or [])[:2])
+            return f"{action}" + (f"（{numbers}）" if numbers else "") + (f"\n  □ {checks}" if checks else "")
 
         def _fmt_perf_pct(value: object, signed: bool = False) -> str:
             if value is None:

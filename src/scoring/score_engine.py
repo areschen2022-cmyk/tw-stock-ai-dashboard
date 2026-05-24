@@ -30,6 +30,8 @@ class StockScore:
     themes: list[str] = field(default_factory=list)
     theme_tiers: list[str] = field(default_factory=list)
     action: str = "只觀察"
+    entry_decision: str = "量價不確認取消"
+    entry_checklist: list[str] = field(default_factory=list)
     entry_condition: str = ""
     stop_reference: str = ""
     stop_price: float | None = None
@@ -159,6 +161,8 @@ class ScoreEngine:
                 themes=themes or [],
                 theme_tiers=theme_tiers or [],
                 action="只觀察",
+                entry_decision="資料不足",
+                entry_checklist=["價格資料不足，今日不判斷進場"],
                 entry_condition="價格資料不足",
                 stop_reference="價格資料不足",
                 stop_price=None,
@@ -219,6 +223,8 @@ class ScoreEngine:
             themes=themes or [],
             theme_tiers=theme_tiers or [],
             action=plan["action"],
+            entry_decision=plan.get("entry_decision", plan["action"]),
+            entry_checklist=plan.get("entry_checklist", []),
             entry_condition=plan["entry"],
             stop_reference=plan["stop"],
             stop_price=plan.get("stop_price"),

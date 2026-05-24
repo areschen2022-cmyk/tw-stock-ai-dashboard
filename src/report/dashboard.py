@@ -77,6 +77,8 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "score": row.get("score"),
             "grade": row.get("grade"),
             "action": row.get("action"),
+            "entry_decision": row.get("entry_decision"),
+            "entry_checklist": row.get("entry_checklist", []),
             "reason": reason or row.get("trigger_summary") or row.get("decision_reason") or "",
             "entry_limit_price": row.get("entry_limit_price"),
             "stop_price": row.get("stop_price"),
@@ -333,6 +335,8 @@ def build_dashboard_payload(
                 "entry_limit_price": item.entry_limit_price,
                 "themes": item.themes,
                 "theme_tiers": item.theme_tiers,
+                "entry_decision": item.entry_decision,
+                "entry_checklist": item.entry_checklist,
                 "overseas_adjustment": item.overseas_adjustment,
                 "opportunity_score": item.opportunity_score,
                 "warnings": item.warnings,
@@ -360,6 +364,7 @@ def build_dashboard_payload(
             "headlines": theme_signal.headlines[:8] if theme_signal else [],
             "scores": theme_signal.scores if theme_signal else {},
             "matched_headlines": theme_signal.matched_headlines if theme_signal else {},
+            "quality": theme_signal.quality if theme_signal else {},
             "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
             "pool_counts": {
                 key: len(value.get("stocks", {}))
@@ -772,11 +777,13 @@ def _html() -> str:
         ? `<table style="width:100%;border-collapse:collapse;margin:5px 0 4px">${themeHdr}<tbody>${themeTableBody}</tbody></table>`
         : "";
       const matchedHeadlines = data.themes.matched_headlines || {};
+      const themeQuality = data.themes.quality || {};
       const themeReasons = allThemeEntries
         .map(([key]) => {
           const hits = matchedHeadlines[key] || [];
           if (!hits.length) return "";
-          return `<div class="line" style="font-size:12px"><b>${esc(data.themes.names[key] || key)}</b>：${esc(hits[0])}</div>`;
+          const quality = themeQuality[key] ? `｜${esc(themeQuality[key])}` : "";
+          return `<div class="line" style="font-size:12px"><b>${esc(data.themes.names[key] || key)}</b>${quality}：${esc(hits[0])}</div>`;
         })
         .filter(Boolean)
         .slice(0, 4)
@@ -847,10 +854,11 @@ def _html() -> str:
             <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
             <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
           </td>
-          <td data-label="操作"><b>${esc(r.action || "只觀察")}</b></td>
+          <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div></td>
           <td data-label="進場/停損">
             ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
             ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
+            ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}
             <div class="small">${esc(r.entry_condition || "資料不足，暫不設進場條件")}</div>
             <div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div>
           </td>

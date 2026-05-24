@@ -48,7 +48,7 @@ def test_build_exit_risks_flags_foreign_selling_and_price_break(tmp_path) -> Non
             "date": [as_of - timedelta(days=2), as_of - timedelta(days=1), as_of],
             "name": ["Foreign_Investor", "Foreign_Investor", "Foreign_Investor"],
             "buy": [100.0, 100.0, 100.0],
-            "sell": [300.0, 300.0, 300.0],
+            "sell": [300.0, 300.0, 500.0],
         }
     )
     margin = pd.DataFrame(
@@ -73,3 +73,4 @@ def test_build_exit_risks_flags_foreign_selling_and_price_break(tmp_path) -> Non
     assert any("跌破" in reason for reason in risks[0]["reasons"])
     assert any("融資增" in reason for reason in risks[0]["reasons"])
     assert any("法人賣" in reason for reason in risks[0]["reasons"])
+    assert any("爆量長黑" in reason or "成交量" in reason for reason in risks[0]["reasons"])

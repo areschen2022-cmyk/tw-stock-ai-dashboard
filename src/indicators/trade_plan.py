@@ -15,6 +15,8 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
     if prices.empty or len(prices) < 5:
         return {
             "action": "只觀察",
+            "entry_decision": "資料不足",
+            "entry_checklist": ["價格資料不足，今日不判斷進場"],
             "entry": "價格資料不足，暫不設進場條件",
             "stop": "價格資料不足",
             "stop_price": None,
@@ -74,6 +76,7 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
 
     if total_score >= 80 and not has_chase_risk:
         action = "可追蹤突破"
+        entry_decision = "開盤確認"
         if near_recent_high:
             setup = f"突破型：昨收已貼近20日高，開盤確認站穩昨高 {prev_high:.2f}"
         else:
@@ -85,9 +88,16 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
         stop = (
             f"跌破 {stop_ref:.2f}（MA5 {ma5:.2f} / 昨低 {prev_low:.2f} / 近3日低 {low3:.2f} 三者取低）止損出場"
         )
+        entry_checklist = [
+            f"站穩昨高 {prev_high:.2f}",
+            f"開盤不追超過 {gap_limit:.2f}（{gap_label}）",
+            f"前5分鐘量 >= {vol_str}",
+            f"未跌破停損 {stop_ref:.2f}",
+        ]
 
     elif total_score >= 75:
         action = "等拉回"
+        entry_decision = "等拉回"
         if near_ma20:
             pullback_note = f"目前已在 MA20（{ma20:.2f}）附近"
         else:
@@ -99,24 +109,39 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
         stop = (
             f"收盤跌破 MA20（{ma20:.2f}）不回則止損，最寬參考 {stop_ref:.2f}"
         )
+        entry_checklist = [
+            f"回測 MA20 {ma20:.2f} 或近3日低 {low3:.2f} 後守住",
+            f"反彈時前5分鐘量 >= {vol_str}",
+            f"不追超過 {gap_limit:.2f}（{gap_label}）",
+        ]
 
     elif total_score >= 65:
         action = "只觀察"
+        entry_decision = "量價不確認取消"
         entry = (
             f"觀察站穩 MA5（{ma5:.2f}）且開盤前5分鐘量 >= {vol_str}；"
             f"條件同時滿足再考慮，不追超過 {gap_limit:.2f}（{gap_label}）"
         )
         stop = f"跌破 {stop_ref:.2f} 不考慮進場"
+        entry_checklist = [
+            f"站穩 MA5 {ma5:.2f}",
+            f"前5分鐘量 >= {vol_str}",
+            f"未同時滿足就取消，不預設進場",
+        ]
 
     else:
         action = "避免追高"
+        entry_decision = "避免"
         entry = (
             f"訊號偏弱，不建議進場；等 MA20（{ma20:.2f}）企穩、量能回升後重新評估"
         )
         stop = f"觀察支撐 {stop_ref:.2f}"
+        entry_checklist = ["分數未達進場觀察門檻，不列入今日進場"]
 
     return {
         "action": action,
+        "entry_decision": entry_decision,
+        "entry_checklist": entry_checklist,
         "entry": entry,
         "stop": stop,
         "stop_price": round(float(stop_ref), 2),

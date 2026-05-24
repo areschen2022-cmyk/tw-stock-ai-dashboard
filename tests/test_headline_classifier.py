@@ -21,6 +21,8 @@ def test_headline_classifier_filters_negative_context_and_boosts_stock_relevance
     assert result.scores["cooling_power"] == 3
     assert result.scores["memory"] == 1
     assert result.matched_headlines["cooling_power"] == ["液冷散熱商機升溫，奇鋐 3017 受惠"]
+    assert result.quality["cooling_power"].startswith("高")
+    assert result.quality["memory"].startswith("低")
 
 
 def test_policy_signal_reports_theme_boosts_without_stock_scoring() -> None:
@@ -55,6 +57,7 @@ def test_passive_component_headline_matches_theme_keywords() -> None:
     )
 
     assert result.scores["passive_components"] == 3
+    assert result.quality["passive_components"].startswith("高")
 
 
 def test_satellite_headline_matches_spacex_theme_keywords() -> None:

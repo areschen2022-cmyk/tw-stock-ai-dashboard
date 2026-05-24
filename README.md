@@ -37,6 +37,8 @@ Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispat
 
 AI picks require enough model participation before they are shown as official picks. Current rule: at least 5 valid model reviews and at least 4 votes for `可追`. See `docs/ai_council_rules.md`.
 
+Stock grades describe signal strength, not automatic buy permission. The dashboard now separates strength from `entry_decision`, danger-list rules, and theme quality. See `docs/entry_risk_theme_rules.md`.
+
 ## Backtest Quality Check
 
 Validate stored signal data and forward-return backtests:

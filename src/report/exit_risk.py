@@ -61,6 +61,10 @@ def build_exit_risks(
         points += sell_points
         reasons.extend(sell_reasons)
 
+        distribution_points, distribution_reasons = _institutional_distribution_risk(institutional, prices)
+        points += distribution_points
+        reasons.extend(distribution_reasons)
+
         price_points, price_reasons = _price_break_risk(prices, price_drop_5d_pct)
         points += price_points
         reasons.extend(price_reasons)
@@ -149,6 +153,38 @@ def _institutional_sell_risk(institutional: pd.DataFrame) -> tuple[int, list[str
     return points, reasons
 
 
+def _institutional_distribution_risk(
+    institutional: pd.DataFrame,
+    prices: pd.DataFrame,
+) -> tuple[int, list[str]]:
+    if institutional.empty or prices.empty or "name" not in institutional.columns or "volume" not in prices.columns:
+        return 0, []
+
+    df = institutional.copy().sort_values("date")
+    df["net"] = df.get("buy", 0).astype(float) - df.get("sell", 0).astype(float)
+    last_date = df["date"].iloc[-1]
+    latest_inst = df[df["date"] == last_date]
+    sell_net = -float(
+        latest_inst[
+            latest_inst["name"].astype(str).str.contains("Foreign|Trust|外資|投信", case=False, na=False, regex=True)
+        ]["net"].sum()
+    )
+    if sell_net <= 0:
+        return 0, []
+
+    p = prices.sort_values("date")
+    latest_volume = float(p["volume"].astype(float).iloc[-1])
+    if latest_volume <= 0:
+        return 0, []
+
+    sell_ratio = sell_net / latest_volume
+    if sell_ratio >= 0.08:
+        return 2, [f"法人賣超占成交量 {sell_ratio * 100:.1f}%"]
+    if sell_ratio >= 0.03:
+        return 1, [f"法人賣壓偏高 {sell_ratio * 100:.1f}%"]
+    return 0, []
+
+
 def _daily_net(df: pd.DataFrame, pattern: str) -> pd.Series:
     rows = df[df["name"].astype(str).str.contains(pattern, case=False, na=False, regex=True)]
     if rows.empty:
@@ -195,6 +231,9 @@ def _price_break_risk(prices: pd.DataFrame, price_drop_5d_pct: float) -> tuple[i
         if vol_ma20 > 0 and volume.iloc[-1] > vol_ma20 * 1.5 and latest < close.iloc[-2]:
             points += 1
             reasons.append("放量下跌")
+        if vol_ma20 > 0 and volume.iloc[-1] > vol_ma20 * 1.8 and (latest / close.iloc[-2] - 1) <= -0.02:
+            points += 2
+            reasons.append("爆量長黑，疑似資金撤退")
 
     return points, reasons
 
