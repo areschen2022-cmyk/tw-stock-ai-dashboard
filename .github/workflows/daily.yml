@@ -8,9 +8,12 @@ on:
     # 04:30 / 05:00 Asia/Taipei, Monday-Friday: update GitHub Pages dashboard.
     - cron: "30 20 * * 0-4"
     - cron: "0 21 * * 0-4"
-    # 08:00 / 08:15 Asia/Taipei, Monday-Friday: send Telegram morning report.
-    - cron: "0 0 * * 1-5"
-    - cron: "15 0 * * 1-5"
+    # 07:20 / 07:35 / 07:50 / 08:05 Asia/Taipei, Monday-Friday: send Telegram morning report.
+    # Multiple backups are safe because delivery_log prevents duplicate morning reports.
+    - cron: "20 23 * * 0-4"
+    - cron: "35 23 * * 0-4"
+    - cron: "50 23 * * 0-4"
+    - cron: "5 0 * * 1-5"
   workflow_dispatch:
     inputs:
       task:
@@ -160,10 +163,12 @@ jobs:
           fi
 
   morning-telegram:
-    name: 08:00/08:15 send Telegram
+    name: 07:20/07:35/07:50/08:05 send Telegram
     if: >-
-      github.event.schedule == '0 0 * * 1-5' ||
-      github.event.schedule == '15 0 * * 1-5' ||
+      github.event.schedule == '20 23 * * 0-4' ||
+      github.event.schedule == '35 23 * * 0-4' ||
+      github.event.schedule == '50 23 * * 0-4' ||
+      github.event.schedule == '5 0 * * 1-5' ||
       (
         github.event_name == 'workflow_dispatch' &&
         (
@@ -203,8 +208,10 @@ jobs:
           target="${INPUT_SCHEDULED_AT_TAIPEI}"
           if [ -z "$target" ]; then
             case "${{ github.event.schedule }}" in
-              "0 0 * * 1-5") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T08:00:00+08:00" ;;
-              "15 0 * * 1-5") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T08:15:00+08:00" ;;
+              "20 23 * * 0-4") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T07:20:00+08:00" ;;
+              "35 23 * * 0-4") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T07:35:00+08:00" ;;
+              "50 23 * * 0-4") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T07:50:00+08:00" ;;
+              "5 0 * * 1-5") target="$(TZ=Asia/Taipei date +'%Y-%m-%d')T08:05:00+08:00" ;;
             esac
           fi
           {

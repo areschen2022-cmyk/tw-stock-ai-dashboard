@@ -6,8 +6,10 @@ const GITHUB_REF = "main";
 const CRON_TASKS = {
   "30 20 * * 0-4": "dashboard",
   "0 21 * * 0-4": "dashboard",
-  "0 0 * * 1-5": "telegram",
-  "15 0 * * 1-5": "telegram",
+  "20 23 * * 0-4": "telegram",
+  "35 23 * * 0-4": "telegram",
+  "50 23 * * 0-4": "telegram",
+  "5 0 * * 1-5": "telegram",
 };
 
 function toTaipeiIso(timestamp) {

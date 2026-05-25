@@ -11,8 +11,10 @@ All cron expressions are UTC.
 | --- | --- | --- |
 | 04:30 Mon-Fri | `30 20 * * 0-4` | dashboard |
 | 05:00 Mon-Fri | `0 21 * * 0-4` | dashboard backup |
-| 08:00 Mon-Fri | `0 0 * * 1-5` | Telegram |
-| 08:15 Mon-Fri | `15 0 * * 1-5` | Telegram backup |
+| 07:20 Mon-Fri | `20 23 * * 0-4` | Telegram |
+| 07:35 Mon-Fri | `35 23 * * 0-4` | Telegram backup |
+| 07:50 Mon-Fri | `50 23 * * 0-4` | Telegram backup |
+| 08:05 Mon-Fri | `5 0 * * 1-5` | Telegram backup |
 
 The Telegram backup is safe because `delivery_log` prevents duplicate morning reports.
 
@@ -55,9 +57,9 @@ The Worker sends:
   "inputs": {
     "task": "dashboard|telegram|all",
     "send_telegram": "true|false",
-    "scheduled_at_taipei": "2026-05-23T08:00:00+08:00",
+    "scheduled_at_taipei": "2026-05-23T07:20:00+08:00",
     "scheduler": "cloudflare-worker",
-    "scheduler_cron": "0 0 * * 1-5"
+    "scheduler_cron": "20 23 * * 0-4"
   }
 }
 ```
