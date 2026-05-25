@@ -24,7 +24,7 @@ from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import build_dashboard_payload, enrich_dashboard_payload, write_dashboard, write_performance, write_theme_history
 from src.report.exit_risk import build_exit_risks
-from src.report.monitoring import detect_alerts, format_watch_reviews
+from src.report.monitoring import detect_alerts
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -101,66 +101,6 @@ def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     if not active_theme_keys:
         return {}
     return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
-
-
-def _zh_posture(value: str) -> str:
-    return {
-        "active_watch": "積極觀察",
-        "selective_watch": "精選觀察",
-        "risk_control": "風險控管",
-    }.get(value, value)
-
-
-def _zh_policy_event(value: object) -> str:
-    return {
-        "Trump tariff / China tariff": "川普/中國關稅",
-        "AI chip export control": "AI晶片出口管制",
-        "House / Senate China bill": "美國國會對中法案",
-        "Defense bill / NDAA": "國防授權法案/NDAA",
-        "SpaceX / Starlink": "SpaceX/Starlink",
-        "Data center power": "資料中心電力",
-        "AI capex / hyperscaler": "AI資本支出/雲端大廠",
-    }.get(str(value or ""), str(value or ""))
-
-
-def _zh_policy_level(value: object) -> str:
-    return {
-        "high": "高敏感",
-        "medium": "中敏感",
-        "low": "低敏感",
-        "confirmed": "已確認",
-        "signal": "訊號",
-        "watch": "觀察",
-        "bullish": "利多",
-        "risk": "風險",
-        "mixed": "多空交錯",
-    }.get(str(value or ""), str(value or ""))
-
-
-def _zh_data_event(value: object) -> str:
-    return {
-        "fallback": "備援資料",
-        "empty": "空資料",
-        "error": "抓取失敗",
-        "quota": "限流",
-    }.get(str(value or ""), str(value or ""))
-
-
-def _zh_dataset(value: object) -> str:
-    return {
-        "STOCK_DAY": "個股月成交",
-        "stock_prices": "股價序列",
-        "STOCK_DAY_ALL": "全市場日成交",
-    }.get(str(value or ""), str(value or ""))
-
-
-def _zh_data_reason(value: object) -> str:
-    return {
-        "html": "TWSE 回傳網頁非資料",
-        "fetch_failed": "抓取失敗",
-        "twse_month_missing": "TWSE 月資料缺口",
-        "empty_after_retry": "補抓後仍無資料",
-    }.get(str(value or ""), str(value or ""))
 
 
 def main() -> int:
@@ -397,102 +337,27 @@ def main() -> int:
         s = dashboard_payload["summary"]
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
-        data_retry = dashboard_payload.get("data_retry", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
-        decision = dashboard_payload.get("decision_summary", {})
-        us_events = dashboard_payload.get("themes", {}).get("policy", {}).get("us_events", [])
 
-        def _entry_line(row: dict) -> str:
-            action = row.get("entry_decision") or row.get("action", "只觀察")
-            limit = row.get("entry_limit_price")
-            stop = row.get("stop_price")
-            limit_str = f"上限 {limit:.2f}" if limit else ""
-            stop_str = f"止損 {stop:.2f}" if stop else ""
-            numbers = "｜".join(x for x in [limit_str, stop_str] if x)
-            checks = "；".join((row.get("entry_checklist") or [])[:2])
-            return f"{action}" + (f"（{numbers}）" if numbers else "") + (f"\n  □ {checks}" if checks else "")
-
-        def _fmt_perf_pct(value: object, signed: bool = False) -> str:
-            if value is None:
-                return "—"
-            numeric = float(value)
-            sign = "+" if signed and numeric > 0 else ""
-            return f"{sign}{numeric:.1f}%"
-
-        def _list_text(rows: list[dict], empty: str, limit: int = 3) -> str:
+        def _compact_list(rows: list[dict], empty: str, limit: int = 3) -> str:
             return "\n".join(
-                f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row.get('score', row.get('risk_score', 0))}/100｜{row.get('grade', row.get('level', '-'))}\n"
-                f"  📌 {row.get('reason') or row.get('trigger_summary') or ''}\n"
-                f"  🎯 {_entry_line(row) if row.get('entry_limit_price') or row.get('stop_price') else row.get('action', '')}"
+                f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row.get('score', 0)}/100｜"
+                f"{row.get('grade', '-')}｜{row.get('entry_decision') or row.get('action', '只觀察')}"
                 for row in rows[:limit]
             ) or empty
 
-        must_watch_text = _list_text(action_lists.get("chase", []), "▸ 今日暫無高分可追清單")
-        ai_watch_text = _list_text(action_lists.get("ai_watch", []), "▸ AI 暫無首選觀察")
-        pullback_text = _list_text(action_lists.get("pullback", []), "▸ 今日暫無等拉回清單", limit=2)
-        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:3]) or "✅ 目前無重大異常"
-        review_lines = format_watch_reviews(watch_reviews)
-        review_text = "\n".join(f"▸ {item}" for item in review_lines) or "▸ 尚無可追蹤觀察"
+        must_watch_text = _compact_list(action_lists.get("chase", []), "▸ 今日暫無可追清單", limit=3)
+        ai_watch_text = _compact_list(action_lists.get("ai_watch", []), "▸ AI 暫無首選觀察", limit=3)
+        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:2]) or "✅ 無重大異常"
         exit_text = "\n".join(
-            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜危險分 {item.get('risk_score', 0)}｜{'、'.join(item['reasons'][:2])}"
-            for item in exit_risks[:3]
-        ) or "▸ 目前無紅黃警戒"
-        perf_stats = performance_payload.get("stats", {})
-        perf_quality = performance_payload.get("data_quality", {})
-        top_signal = (performance_payload.get("leaderboard", {}).get("top_5d") or [None])[0]
-        perf_text = (
-            f"近30日：{perf_stats.get('completed', 0)}/{perf_stats.get('signals', 0)} 已完成｜"
-            f"5日勝率 {_fmt_perf_pct(perf_stats.get('win_rate_5d'))}｜"
-            f"平均 {_fmt_perf_pct(perf_stats.get('avg_return_5d'), signed=True)}｜"
-            f"完成率 {_fmt_perf_pct(perf_quality.get('completion_rate_5d'))}"
-        )
-        if top_signal:
-            perf_text += (
-                f"\n▸ 最佳：<b>{top_signal['stock_id']} {top_signal['name']}</b>｜"
-                f"5日 {_fmt_perf_pct(top_signal.get('return_5d'), signed=True)}"
-            )
+            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:1])}"
+            for item in exit_risks[:2]
+        ) or "▸ 無紅黃警戒"
         health = dashboard_payload.get("health", {})
-        theme_names = dashboard_payload.get("themes", {}).get("names", {})
         schedule_delay = health.get("schedule_delay_minutes")
         schedule_text = "未記錄"
         if schedule_delay is not None:
             schedule_text = f"{float(schedule_delay):.1f} 分"
-        quality_text = (
-            f"{data_quality.get('label_text') or data_quality.get('label', '未知')}｜分數 {data_quality.get('score', '—')}/100｜"
-            f"覆蓋率 {data_quality.get('coverage', '—')}%｜AI {ai_health.get('label', '未啟用')}"
-        )
-        if data_quality.get("warnings"):
-            quality_text += "\n" + "\n".join(f"⚠️ {item}" for item in data_quality["warnings"][:3])
-        if data_quality.get("details"):
-            detail_lines = []
-            for item in data_quality["details"][:3]:
-                detail_lines.append(
-                    f"▸ {_zh_data_event(item.get('type'))}｜{_zh_dataset(item.get('dataset'))}｜{item.get('data_id')}｜{_zh_data_reason(item.get('reason') or item.get('period') or '-')}"
-                )
-            quality_text += "\n" + "\n".join(detail_lines)
-        recovery = data_quality.get("recovery_status", {})
-        if recovery and recovery.get("label") != "clean":
-            recovery_label = {
-                "retry_ready": "可自動補抓",
-                "manual_check": "需人工檢查",
-                "clean": "正常",
-            }.get(recovery.get("label"), recovery.get("label"))
-            quality_text += f"\n補抓狀態：{recovery_label}｜可補抓 {recovery.get('retryable', 0)}｜暫停 {recovery.get('blocked', 0)}"
-        if data_retry:
-            quality_text += (
-                f"\nRetry Queue：待補 {data_retry.get('pending', 0)}｜"
-                f"已補 {data_retry.get('recovered', 0)}｜失敗 {data_retry.get('failed', 0)}"
-            )
-        decision_text = (
-            f"{_zh_posture(decision.get('posture', 'selective_watch'))}｜"
-            f"觀察 {decision.get('watch_count', 0)}｜拉回 {decision.get('pullback_count', 0)}｜"
-            f"風險 {decision.get('risk_count', 0)}｜主題 {theme_names.get(decision.get('top_theme'), decision.get('top_theme') or '-')}"
-        )
-        us_policy_text = "\n".join(
-            f"- {item.get('event_zh') or _zh_policy_event(item.get('event'))}｜{_zh_policy_level(item.get('sensitivity'))}｜{_zh_policy_level(item.get('confidence'))}\n  {item.get('headline_zh') or item.get('headline')}"
-            for item in us_events[:3]
-        ) or "- 最新新聞未偵測到高敏感美國政策訊號"
-        quality_text += f"\n今日決策：{decision_text}\n美國政策雷達：\n{us_policy_text}"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
@@ -502,31 +367,19 @@ def main() -> int:
                 f"🧭 風向：{dashboard_payload['overseas']['label']}",
                 f"📰 題材：{dashboard_payload['themes']['summary']}",
                 f"📊 掃描 <b>{s['scanned']}</b> 檔｜S+ <b>{s['s_plus_grade']}</b>｜S <b>{s['s_grade']}</b>｜A <b>{s['a_grade']}</b>｜B <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
-                f"⏱ 排程：{health.get('scheduler', 'local')}｜{health.get('scheduled_task') or '-'}｜延遲 {schedule_text}",
+                f"⏱ 延遲：{schedule_text}｜資料品質：{data_quality.get('label_text') or data_quality.get('label', '未知')}｜AI：{ai_health.get('label', '未啟用')}",
                 "",
-                "🔥 <b>今日必看：</b>",
+                "🔥 <b>今日重點</b>",
                 must_watch_text,
                 "",
-                "🤖 <b>AI 首選觀察：</b>",
+                "🤖 <b>AI 共識</b>",
                 ai_watch_text,
                 "",
-                "⏳ <b>等拉回：</b>",
-                pullback_text,
-                "",
-                "🚨 <b>異常提醒：</b>",
+                "🚨 <b>提醒</b>",
                 alert_text,
                 "",
-                "🛡 <b>危險名單：</b>",
+                "🛡 <b>危險名單</b>",
                 exit_text,
-                "",
-                "👁 <b>觀察追蹤：</b>",
-                review_text,
-                "",
-                "📈 <b>訊號成效：</b>",
-                perf_text,
-                "",
-                "🧪 <b>資料品質：</b>",
-                quality_text,
                 "",
                 f"🔗 <a href=\"{dashboard_url}\">開啟監控頁</a>",
                 "⚠️ 僅供研究追蹤，不是投資建議。",
