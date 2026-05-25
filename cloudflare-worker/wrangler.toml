@@ -1,0 +1,12 @@
+name = "tw-stock-ai-scheduler"
+main = "worker.js"
+compatibility_date = "2026-05-22"
+
+[triggers]
+crons = [
+  "30 20 * * SUN-THU", # 04:30 Asia/Taipei Mon-Fri dashboard
+  "0 21 * * SUN-THU",  # 05:00 Asia/Taipei Mon-Fri dashboard backup
+  "20 23 * * SUN-THU", # 07:20 Asia/Taipei Mon-Fri Telegram
+  "35 23 * * SUN-THU", # 07:35 Asia/Taipei Mon-Fri Telegram backup
+  "5 0 * * MON-FRI",   # 08:05 Asia/Taipei Mon-Fri Telegram backup
+]
