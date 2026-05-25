@@ -82,6 +82,21 @@ def resolve_as_of(config: dict, cli_value: str | None) -> date:
     return default_as_of()
 
 
+def delivery_date_for_run(now: datetime | None = None) -> date:
+    """Return the calendar date this notification run is responsible for."""
+    target = os.getenv("SCHEDULED_TARGET_TAIPEI", "").strip()
+    if target:
+        try:
+            parsed = datetime.fromisoformat(target.replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=TAIPEI)
+            return parsed.astimezone(TAIPEI).date()
+        except ValueError:
+            logging.warning("Invalid SCHEDULED_TARGET_TAIPEI=%r; using current Taipei date.", target)
+    local_now = now.astimezone(TAIPEI) if now else datetime.now(TAIPEI)
+    return local_now.date()
+
+
 def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     if not active_theme_keys:
         return {}
@@ -177,8 +192,9 @@ def main() -> int:
     else:
         provider = FinMindClient()
     store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
-    if args.send_telegram and not dry_run and store.has_delivered_today("telegram", as_of, "morning_report"):
-        logging.info("Telegram morning report already delivered for %s; skipping.", as_of)
+    delivery_date = delivery_date_for_run()
+    if args.send_telegram and not dry_run and store.has_delivered_today("telegram", delivery_date, "morning_report"):
+        logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
         return 0
     engine = ScoreEngine(config)
 
@@ -516,15 +532,15 @@ def main() -> int:
                 "⚠️ 僅供研究追蹤，不是投資建議。",
             ]
         )
-    if not dry_run and store.has_delivered_today("telegram", as_of, "morning_report"):
-        logging.info("Telegram morning report already delivered for %s; skipping.", as_of)
+    if not dry_run and store.has_delivered_today("telegram", delivery_date, "morning_report"):
+        logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
         return 0
     notifier = TelegramNotifier.from_env(dry_run=dry_run)
     notifier.send(telegram_message)
     if not dry_run:
         store.record_delivery(
             "telegram",
-            as_of,
+            delivery_date,
             "morning_report",
             run_id=os.getenv("GITHUB_RUN_ID", ""),
         )
