@@ -555,6 +555,22 @@ def _html() -> str:
     .section-note { color:var(--muted); font-size:12px; margin-top:-4px; margin-bottom:8px; }
     .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
     .action-panel { border-left:4px solid var(--good); }
+    .decision-card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
+    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
+    .decision-card.chase { border-left:4px solid var(--good); }
+    .decision-card.pullback { border-left:4px solid var(--warn); }
+    .decision-card.avoid { border-left:4px solid var(--bad); }
+    .decision-card-head { display:flex; gap:8px; justify-content:space-between; align-items:flex-start; }
+    .decision-card-title { font-weight:800; line-height:1.25; }
+    .decision-badge { display:inline-flex; align-items:center; min-height:22px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .decision-badge.chase { color:#fff; background:var(--good); }
+    .decision-badge.pullback { color:#3b2f00; background:#f6d365; }
+    .decision-badge.avoid { color:#fff; background:var(--bad); }
+    .decision-prices { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:8px 0; }
+    .decision-price { border:1px solid #eef1f5; border-radius:6px; padding:6px; min-height:48px; }
+    .decision-price span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    .decision-price b { font-size:15px; }
+    .decision-reason { color:var(--muted); font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .risk-panel { border-left:4px solid var(--bad); }
     .wide-panel { grid-column:1 / -1; }
     details.panel h2 { font-size:14px; margin:12px 0 6px; }
@@ -607,12 +623,14 @@ def _html() -> str:
       .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .dashboard-layout { grid-template-columns:1fr; }
       .detail-grid { grid-template-columns:1fr 1fr; }
+      .decision-card-grid { grid-template-columns:1fr; }
     }
     @media (max-width: 900px) {
       header { position:static; }
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
       .dashboard-layout, .detail-grid, .status-grid { grid-template-columns:1fr; }
+      .decision-prices { grid-template-columns:1fr 1fr; }
       .toolbar { align-items:stretch; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
@@ -790,19 +808,40 @@ def _html() -> str:
         <div class="line">資料源：${esc(dataSourceLabel)}｜原始 ${esc(health.provider_label || "未知")}</div>
         <div class="line">新聞：${esc(newsLabel)}｜成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
         <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
-      function compactAction(row) {
-        const score = row.score != null ? `｜${esc(row.score)}/100` : "";
-        const grade = row.grade ? `｜${esc(row.grade)}` : row.level ? `｜${esc(row.level)}` : "";
+      function priceText(value) {
+        if (value === null || value === undefined || value === "") return "待確認";
+        const n = Number(value);
+        return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/, "") : String(value);
+      }
+      function decisionCard(row, mode) {
+        const badgeText = mode === "pullback" ? "等拉回" : mode === "avoid" ? "避開" : "可追";
         const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
-        return `<div class="line"><b>${stockLink}</b>${score}${grade}<div class="small">${esc(row.reason || row.action || "")}</div></div>`;
+        const checklist = (row.entry_checklist || []).slice(0, 2).join(" / ");
+        const reason = row.reason || checklist || row.action || "綜合訊號";
+        return `<article class="decision-card ${mode}">
+          <div class="decision-card-head">
+            <div>
+              <div class="decision-card-title">${stockLink}</div>
+              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}</div>
+            </div>
+            <span class="decision-badge ${mode}">${badgeText}</span>
+          </div>
+          <div class="decision-prices">
+            <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
+            <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+          </div>
+          <div class="decision-reason">${esc(reason)}</div>
+        </article>`;
       }
       const actionLists = data.action_lists || {};
+      const chaseCards = (actionLists.chase || []).slice(0, 4).map(row => decisionCard(row, "chase")).join("");
+      const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
       document.querySelector("#actionLists").innerHTML = `
         <div class="line">S+/S/A/B 是訊號強度，不等於直接買；今日是否進場以操作結論、開盤跳空與量能確認為準。</div>
         <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
-        ${(actionLists.chase || []).slice(0,3).map(compactAction).join("") || '<div class="line">今日暫無高分可追清單</div>'}
+        <div class="decision-card-grid">${chaseCards || '<div class="line">今日暫無高分可追清單</div>'}</div>
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
-        ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
+        <div class="decision-card-grid">${pullbackCards || '<div class="line">暫無等拉回清單</div>'}</div>`;
       function compactRetail(row) {
         const pct = row.holder_change_pct == null ? "—" : `${Number(row.holder_change_pct).toFixed(1)}%`;
         const px = row.price_change_pct == null ? "—" : `${Number(row.price_change_pct).toFixed(1)}%`;
