@@ -517,15 +517,15 @@ def _html() -> str:
     :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; }
     * { box-sizing: border-box; }
     body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
-    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:2; }
+    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:var(--muted); font-size:14px; }
-    main { padding:18px 24px 32px; max-width:1440px; margin:auto; }
+    main { padding:18px 24px 32px; max-width:1680px; margin:auto; }
     .metrics { display:grid; grid-template-columns: repeat(7, minmax(96px,1fr)); gap:8px; margin-bottom:14px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 11px; min-height:70px; }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
-    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(360px,.9fr); gap:12px; margin-bottom:16px; align-items:start; }
+    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr); gap:12px; margin-bottom:16px; align-items:start; }
     .main-stack, .side-stack { display:grid; gap:12px; }
     .detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; grid-column:1 / -1; }
     section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
@@ -548,7 +548,7 @@ def _html() -> str:
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-    .chart-wrap { height:180px; margin-top:8px; }
+    .chart-wrap { height:130px; margin-top:8px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
     .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
@@ -577,6 +577,11 @@ def _html() -> str:
     .tag-fund   { background:#fdf4ff; color:#7e22ce; border:1px solid #e9d5ff; }
     .tag-over   { background:#f0f9ff; color:#0c4a6e; border:1px solid #bae6fd; }
     .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
+    .theme-table-wrap { max-height:178px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin:6px 0; }
+    .theme-table-wrap table { border:0; border-radius:0; }
+    .theme-reason, .theme-headline { font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .mini-detail { margin-top:6px; }
+    .mini-detail summary { cursor:pointer; color:#0b4a8b; font-size:13px; font-weight:700; }
     @media (max-width: 1180px) {
       .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .dashboard-layout { grid-template-columns:1fr; }
@@ -616,7 +621,7 @@ def _html() -> str:
       <div class="main-stack">
         <section class="action-panel"><h2>今日操作結論</h2><div id="actionLists"></div></section>
         <section><h2>市場風向</h2><div id="market"></div></section>
-        <section><h2>新聞題材</h2><div id="themes"></div></section>
+        <section class="theme-panel"><h2>新聞題材</h2><div id="themes"></div></section>
       </div>
       <div class="side-stack">
         <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
@@ -852,7 +857,7 @@ def _html() -> str:
         `<th style="padding:2px 5px;font-weight:600">近7日▶</th>` +
         `</tr></thead>`;
       const themeTableHtml = themeTableBody
-        ? `<table style="width:100%;border-collapse:collapse;margin:5px 0 4px">${themeHdr}<tbody>${themeTableBody}</tbody></table>`
+        ? `<div class="theme-table-wrap"><table style="width:100%;border-collapse:collapse">${themeHdr}<tbody>${themeTableBody}</tbody></table></div>`
         : "";
       const matchedHeadlines = data.themes.matched_headlines || {};
       const themeQuality = data.themes.quality || {};
@@ -861,7 +866,7 @@ def _html() -> str:
           const hits = matchedHeadlines[key] || [];
           if (!hits.length) return "";
           const quality = themeQuality[key] ? `｜${esc(themeQuality[key])}` : "";
-          return `<div class="line" style="font-size:12px"><b>${esc(data.themes.names[key] || key)}</b>${quality}：${esc(hits[0])}</div>`;
+          return `<div class="line theme-reason"><b>${esc(data.themes.names[key] || key)}</b>${quality}：${esc(hits[0])}</div>`;
         })
         .filter(Boolean)
         .slice(0, 4)
@@ -869,10 +874,13 @@ def _html() -> str:
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
         <div class="line">政策：${esc(data.themes.policy?.summary || "未偵測到明顯政策訊號")}</div>
-        ${themeTableHtml}
-        ${themeReasons}
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
-        ${data.themes.headlines.slice(0,2).map(h => `<div class="line" style="font-size:12px">- ${esc(h)}</div>`).join("")}`;
+        ${themeTableHtml}
+        <details class="mini-detail">
+          <summary>新聞來源摘要</summary>
+          ${themeReasons}
+          ${data.themes.headlines.slice(0,2).map(h => `<div class="line theme-headline">- ${esc(h)}</div>`).join("")}
+        </details>`;
       const ai = data.ai_council || {};
       const aiPicks = ai.picks || [];
       const aiStatus = ai.status || {};
