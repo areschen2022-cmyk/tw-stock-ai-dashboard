@@ -309,7 +309,7 @@ def _build_health_status(
         "generated_date": generated_at.date().isoformat(),
         "data_date": as_of.isoformat(),
         "website_schedule": "04:30 / 05:00",
-        "telegram_schedule": "08:00 / 08:15",
+        "telegram_schedule": "07:20 / 07:35 / 08:05",
         "provider_label": provider_label,
         "news_sources": news_sources,
         "news_failed": news_failed,
@@ -726,7 +726,8 @@ def _html() -> str:
       function compactAction(row) {
         const score = row.score != null ? `｜${esc(row.score)}/100` : "";
         const grade = row.grade ? `｜${esc(row.grade)}` : row.level ? `｜${esc(row.level)}` : "";
-        return `<div class="line"><b>${esc(row.stock_id)} ${esc(row.name)}</b>${score}${grade}<div class="small">${esc(row.reason || row.action || "")}</div></div>`;
+        const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
+        return `<div class="line"><b>${stockLink}</b>${score}${grade}<div class="small">${esc(row.reason || row.action || "")}</div></div>`;
       }
       const actionLists = data.action_lists || {};
       document.querySelector("#actionLists").innerHTML = `
