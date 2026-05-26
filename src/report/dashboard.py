@@ -296,16 +296,35 @@ def _build_health_status(
     provider_label = str((source_status or {}).get("label", "未知"))
     news_sources = theme_signal.source_count if theme_signal else 0
     news_failed = theme_signal.failed_count if theme_signal else 0
+    schedule_meta = _scheduled_metadata(generated_at)
+    delay_minutes = schedule_meta.get("schedule_delay_minutes")
 
-    if provider_label in {"錯誤", "限流"} or news_sources == 0:
+    if delay_minutes is None:
+        schedule_label = "未記錄"
+    elif float(delay_minutes) <= 15:
+        schedule_label = "正常"
+    else:
+        schedule_label = "延遲"
+
+    if provider_label in {"錯誤", "無資料"} or news_sources == 0:
+        data_source_label = "錯誤"
+    elif provider_label in {"部分限流", "限流"} or news_failed > 0:
+        data_source_label = "部分限流"
+    else:
+        data_source_label = "正常"
+
+    if data_source_label == "錯誤":
         label = "異常"
-    elif provider_label == "部分限流" or news_failed > 0:
+    elif schedule_label == "延遲" or data_source_label == "部分限流":
         label = "部分延遲"
     else:
         label = "正常"
 
     return {
         "label": label,
+        "schedule_label": schedule_label,
+        "data_source_label": data_source_label,
+        "news_label": "正常" if news_failed == 0 and news_sources > 0 else "部分失敗",
         "generated_at": generated_at.isoformat(timespec="seconds"),
         "generated_date": generated_at.date().isoformat(),
         "data_date": as_of.isoformat(),
@@ -316,7 +335,7 @@ def _build_health_status(
         "news_failed": news_failed,
         "github_run_id": os.getenv("GITHUB_RUN_ID", ""),
         "github_event": os.getenv("GITHUB_EVENT_NAME", "local"),
-        **_scheduled_metadata(generated_at),
+        **schedule_meta,
     }
 
 
@@ -582,6 +601,8 @@ def _html() -> str:
     .theme-reason, .theme-headline { font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .mini-detail { margin-top:6px; }
     .mini-detail summary { cursor:pointer; color:#0b4a8b; font-size:13px; font-weight:700; }
+    .row-detail summary { cursor:pointer; color:#0b4a8b; font-size:12px; font-weight:700; }
+    .row-detail[open] { margin-top:4px; }
     @media (max-width: 1180px) {
       .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .dashboard-layout { grid-template-columns:1fr; }
@@ -758,12 +779,16 @@ def _html() -> str:
       const delay = health.schedule_delay_minutes;
       const delayText = delay === null || delay === undefined ? "未記錄" : `${Number(delay).toFixed(1)} 分`;
       const targetText = health.scheduled_target_taipei ? health.scheduled_target_taipei.replace("T", " ") : "未記錄";
+      const scheduleLabel = health.schedule_label || "未記錄";
+      const dataSourceLabel = health.data_source_label || health.provider_label || "未知";
+      const newsLabel = health.news_label || (health.news_failed ? "部分失敗" : "正常");
       document.querySelector("#health").innerHTML = `
         <div class="line ${healthCls}"><span class="${sourceClass(health.label === "正常" ? "正常" : health.label === "部分延遲" ? "部分限流" : "錯誤")}"></span>系統：${esc(health.label || "未知")}</div>
         <div class="line">本次產生：${esc((health.generated_at || "").replace("T", " "))}</div>
         <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "07:58")}｜Telegram ${esc(health.telegram_schedule || "08:18")}</div>
-        <div class="line">排程監控：${esc(health.scheduler || "local")}｜${esc(health.scheduled_task || "-")}｜預定 ${esc(targetText)}｜延遲 ${esc(delayText)}</div>
-        <div class="line">新聞來源：成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
+        <div class="line">排程：${esc(scheduleLabel)}｜${esc(health.scheduler || "local")}｜${esc(health.scheduled_task || "-")}｜預定 ${esc(targetText)}｜延遲 ${esc(delayText)}</div>
+        <div class="line">資料源：${esc(dataSourceLabel)}｜原始 ${esc(health.provider_label || "未知")}</div>
+        <div class="line">新聞：${esc(newsLabel)}｜成功 ${health.news_sources || 0}｜失敗 ${health.news_failed || 0}</div>
         <div class="line">執行環境：${esc(health.github_event || "local")}${health.github_run_id ? `｜Run ${esc(health.github_run_id)}` : ""}</div>`;
       function compactAction(row) {
         const score = row.score != null ? `｜${esc(row.score)}/100` : "";
@@ -934,19 +959,26 @@ def _html() -> str:
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
           <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>
           <td data-label="四面向">
-            <div class="small">技術：${esc(r.technical || "無明顯訊號")}</div>
-            <div class="small">籌碼：${esc(r.chip || "無明顯訊號")}</div>
-            <div class="small">基本：${esc(r.fundamental || "無明顯訊號")}</div>
-            <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
-            <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
+            <div class="small">${esc(r.trigger_summary || "綜合訊號")}</div>
+            <details class="row-detail">
+              <summary>展開四面向</summary>
+              <div class="small">技術：${esc(r.technical || "無明顯訊號")}</div>
+              <div class="small">籌碼：${esc(r.chip || "無明顯訊號")}</div>
+              <div class="small">基本：${esc(r.fundamental || "無明顯訊號")}</div>
+              <div class="small">風險：${esc(r.risk || "無明顯訊號")}</div>
+              <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
+            </details>
           </td>
           <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div></td>
           <td data-label="進場/停損">
             ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
             ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
-            ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}
-            <div class="small">${esc(r.entry_condition || "資料不足，暫不設進場條件")}</div>
-            <div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div>
+            <details class="row-detail">
+              <summary>進出場條件</summary>
+              ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}
+              <div class="small">${esc(r.entry_condition || "資料不足，暫不設進場條件")}</div>
+              <div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div>
+            </details>
           </td>
         </tr>`).join("");
     }
