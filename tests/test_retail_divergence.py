@@ -61,3 +61,15 @@ def test_save_and_load_retail_holder_signals(tmp_path) -> None:
     assert len(loaded) == 1
     assert loaded[0]["stock_id"] == "2408"
     assert loaded[0]["signal"] == SIGNAL_CLEAN
+
+
+def test_save_and_load_retail_holder_snapshot(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    first_week = date(2026, 5, 15)
+    second_week = date(2026, 5, 22)
+
+    store.save_retail_holder_snapshot({"2408": 1600}, first_week, {"2408": "南亞科"})
+    snapshot_date, counts = store.retail_holder_snapshot_before(second_week)
+
+    assert snapshot_date == first_week
+    assert counts == {"2408": 1600}

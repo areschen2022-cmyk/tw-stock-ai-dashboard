@@ -107,6 +107,11 @@ jobs:
             echo "SCHEDULED_TARGET_TAIPEI=$target"
           } >> "$GITHUB_ENV"
 
+      - name: Update retail divergence signals
+        env:
+          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
+        run: python retail_divergence_job.py || echo "Retail divergence update skipped"
+
       - name: Generate dashboard without Telegram
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}

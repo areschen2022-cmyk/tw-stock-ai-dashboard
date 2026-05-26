@@ -208,6 +208,18 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS retail_holder_snapshots (
+                    week_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    holder_count INTEGER NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (week_date, stock_id)
+                )
+                """
+            )
 
     def has_delivered_today(self, channel: str, delivery_date: date, message_type: str) -> bool:
         with self._connect() as conn:
@@ -271,6 +283,47 @@ class SQLiteStore:
                         str(item.get("reason") or ""),
                     ),
                 )
+
+    def save_retail_holder_snapshot(self, holder_counts: dict[str, int], week_date: date, stock_names: dict[str, str]) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM retail_holder_snapshots WHERE week_date = ?", (week_date.isoformat(),))
+            for stock_id, holder_count in holder_counts.items():
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO retail_holder_snapshots
+                        (week_date, stock_id, name, holder_count)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (
+                        week_date.isoformat(),
+                        str(stock_id),
+                        stock_names.get(str(stock_id), ""),
+                        int(holder_count),
+                    ),
+                )
+
+    def retail_holder_snapshot_before(self, week_date: date) -> tuple[date, dict[str, int]] | tuple[None, dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT MAX(week_date)
+                FROM retail_holder_snapshots
+                WHERE week_date < ?
+                """,
+                (week_date.isoformat(),),
+            ).fetchone()
+            if not row or not row[0]:
+                return None, {}
+            selected_date = date.fromisoformat(row[0])
+            rows = conn.execute(
+                """
+                SELECT stock_id, holder_count
+                FROM retail_holder_snapshots
+                WHERE week_date = ?
+                """,
+                (selected_date.isoformat(),),
+            ).fetchall()
+        return selected_date, {row[0]: int(row[1]) for row in rows}
 
     def latest_retail_holder_signals(self, week_date: date | None = None, limit: int = 30) -> list[dict]:
         with self._connect() as conn:
