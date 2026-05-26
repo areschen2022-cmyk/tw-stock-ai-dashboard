@@ -189,6 +189,25 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS retail_holder_signals (
+                    week_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    holder_count INTEGER,
+                    prev_holder_count INTEGER,
+                    holder_change INTEGER,
+                    holder_change_pct REAL,
+                    price_change_pct REAL,
+                    volume REAL,
+                    signal TEXT NOT NULL,
+                    reason TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (week_date, stock_id)
+                )
+                """
+            )
 
     def has_delivered_today(self, channel: str, delivery_date: date, message_type: str) -> bool:
         with self._connect() as conn:
@@ -225,6 +244,77 @@ class SQLiteStore:
                     run_id,
                 ),
             )
+
+    def save_retail_holder_signals(self, signals: list[dict], week_date: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM retail_holder_signals WHERE week_date = ?", (week_date.isoformat(),))
+            for item in signals:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO retail_holder_signals (
+                        week_date, stock_id, name, holder_count, prev_holder_count,
+                        holder_change, holder_change_pct, price_change_pct, volume,
+                        signal, reason
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        week_date.isoformat(),
+                        str(item.get("stock_id") or ""),
+                        str(item.get("name") or ""),
+                        item.get("holder_count"),
+                        item.get("prev_holder_count"),
+                        item.get("holder_change"),
+                        item.get("holder_change_pct"),
+                        item.get("price_change_pct"),
+                        item.get("volume"),
+                        str(item.get("signal") or "中性"),
+                        str(item.get("reason") or ""),
+                    ),
+                )
+
+    def latest_retail_holder_signals(self, week_date: date | None = None, limit: int = 30) -> list[dict]:
+        with self._connect() as conn:
+            selected_date = week_date.isoformat() if week_date else None
+            if selected_date is None:
+                row = conn.execute("SELECT MAX(week_date) FROM retail_holder_signals").fetchone()
+                selected_date = row[0] if row and row[0] else None
+            if selected_date is None:
+                return []
+            rows = conn.execute(
+                """
+                SELECT week_date, stock_id, name, holder_count, prev_holder_count,
+                       holder_change, holder_change_pct, price_change_pct, volume,
+                       signal, reason
+                FROM retail_holder_signals
+                WHERE week_date = ?
+                ORDER BY
+                    CASE signal
+                        WHEN '籌碼轉乾淨' THEN 0
+                        WHEN '散戶過熱' THEN 1
+                        ELSE 2
+                    END,
+                    ABS(COALESCE(holder_change_pct, 0)) DESC,
+                    COALESCE(volume, 0) DESC
+                LIMIT ?
+                """,
+                (selected_date, limit),
+            ).fetchall()
+        return [
+            {
+                "week_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "holder_count": row[3],
+                "prev_holder_count": row[4],
+                "holder_change": row[5],
+                "holder_change_pct": row[6],
+                "price_change_pct": row[7],
+                "volume": row[8],
+                "signal": row[9],
+                "reason": row[10],
+            }
+            for row in rows
+        ]
 
     def enqueue_data_retry(self, details: list[dict]) -> int:
         retryable_types = {"empty", "error"}

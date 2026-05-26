@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from src.indicators.overseas import OverseasSentiment
 from src.news.web_theme import ThemeSignal
+from src.report.retail_divergence import empty_retail_divergence
 from src.scoring.grade import grade_label
 from src.scoring.score_engine import StockScore
 
@@ -333,6 +334,7 @@ def build_dashboard_payload(
     exit_risks: list[dict] | None = None,
     ai_picks: list[dict] | None = None,
     ai_status: dict | None = None,
+    retail_divergence: dict | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
     rows = []
@@ -419,6 +421,7 @@ def build_dashboard_payload(
         "alerts": alerts or [],
         "watch_reviews": watch_reviews or [],
         "exit_risks": exit_risks or [],
+        "retail_divergence": retail_divergence or empty_retail_divergence(as_of),
         "action_lists": action_lists,
         "data_quality": data_quality,
         "decision_summary": _decision_summary(rows, action_lists, data_quality, health, theme_signal),
@@ -595,7 +598,8 @@ def _html() -> str:
       <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
-      <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
+      <section><h2>今日操作結論</h2><div id="actionLists"></div></section>
+      <section><h2>散戶背離</h2><div id="retailDivergence"></div></section>
       <section><h2>資料品質</h2><div id="dataQuality"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
       <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
@@ -605,10 +609,10 @@ def _html() -> str:
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
-      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
+      <select id="grade"><option value="">全部強度</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
     </div>
     <table>
-      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
+      <thead><tr><th>強度</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </main>
@@ -669,7 +673,7 @@ def _html() -> str:
       if (!document.querySelector("#quickFilter")) {
         document.querySelector("#grade").insertAdjacentHTML("afterend", `<select id="quickFilter">
           <option value="">全部訊號</option>
-          <option value="strong">S+/S 強勢</option>
+          <option value="strong">S+/S 強度</option>
           <option value="chase">可追蹤/觀察</option>
           <option value="risk">風險警示</option>
           <option value="ai">AI 共識</option>
@@ -687,10 +691,10 @@ def _html() -> str:
       document.querySelector("#metrics").innerHTML = [
         ["掃描", data.summary.scanned],
         ["有效", data.summary.valid],
-        ["S+級", data.summary.s_plus_grade || 0],
-        ["S級", data.summary.s_grade || 0],
-        ["A級", data.summary.a_grade],
-        ["B級", data.summary.b_grade],
+        ["S+強度", data.summary.s_plus_grade || 0],
+        ["S強度", data.summary.s_grade || 0],
+        ["A強度", data.summary.a_grade],
+        ["B強度", data.summary.b_grade],
         ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
@@ -703,7 +707,7 @@ def _html() -> str:
       document.querySelector("#decisionSummary").innerHTML = `
         <div class="line"><b>${esc(postureText)}</b></div>
         <div class="line">觀察 ${esc(decision.watch_count ?? 0)}｜拉回 ${esc(decision.pullback_count ?? 0)}｜風險 ${esc(decision.risk_count ?? 0)}</div>
-        <div class="line">強勢等級 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
+        <div class="line">強勢訊號 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
         <div class="line">主題焦點：${esc(decisionTopTheme)}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
@@ -731,10 +735,25 @@ def _html() -> str:
       }
       const actionLists = data.action_lists || {};
       document.querySelector("#actionLists").innerHTML = `
+        <div class="line">S+/S/A/B 是訊號強度，不等於直接買；今日是否進場以操作結論、開盤跳空與量能確認為準。</div>
         <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
         ${(actionLists.chase || []).slice(0,3).map(compactAction).join("") || '<div class="line">今日暫無高分可追清單</div>'}
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
         ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
+      function compactRetail(row) {
+        const pct = row.holder_change_pct == null ? "—" : `${Number(row.holder_change_pct).toFixed(1)}%`;
+        const px = row.price_change_pct == null ? "—" : `${Number(row.price_change_pct).toFixed(1)}%`;
+        const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
+        return `<div class="line"><b>${stockLink}</b>｜散戶 ${esc(pct)}｜股價 ${esc(px)}<div class="small">${esc(row.reason || row.signal || "")}</div></div>`;
+      }
+      const retail = data.retail_divergence || {};
+      const retailSummary = retail.summary || {};
+      document.querySelector("#retailDivergence").innerHTML = `
+        <div class="line">週資料觀察，不直接等於買賣訊號；用來輔助判斷籌碼是否轉乾淨或散戶過熱。</div>
+        <div class="line good"><b>籌碼轉乾淨</b>：${esc(retailSummary.clean ?? 0)} 檔</div>
+        ${(retail.clean || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積籌碼轉乾淨名單</div>'}
+        <div class="line warn"><b>散戶過熱</b>：${esc(retailSummary.overheated ?? 0)} 檔</div>
+        ${(retail.overheated || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積散戶過熱名單</div>'}`;
       const quality = data.data_quality || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       const retry = data.data_retry || {};
@@ -868,7 +887,7 @@ def _html() -> str:
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
-          <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
+          <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
@@ -1029,14 +1048,14 @@ def _performance_html() -> str:
       <section>
         <h2>5日強勢榜</h2>
         <table>
-          <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>題材</th></tr></thead>
+          <thead><tr><th>股票</th><th>訊號日</th><th>強度</th><th>5日報酬</th><th>題材</th></tr></thead>
           <tbody id="leaderTop"></tbody>
         </table>
       </section>
       <section>
         <h2>5日弱勢榜</h2>
         <table>
-          <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>停損</th></tr></thead>
+          <thead><tr><th>股票</th><th>訊號日</th><th>強度</th><th>5日報酬</th><th>停損</th></tr></thead>
           <tbody id="leaderBottom"></tbody>
         </table>
       </section>
@@ -1091,10 +1110,10 @@ def _performance_html() -> str:
       </table>
     </section>
     <section style="margin-bottom:16px;">
-      <h2>Signal Lab：級別驗證</h2>
-      <div class="note">離線驗證 S+/S/A/B 各級別在 3 日、5 日、10 日後的平均表現；樣本未滿 30 筆前僅供觀察。</div>
+      <h2>Signal Lab：強度驗證</h2>
+      <div class="note">離線驗證 S+/S/A/B 各強度在 3 日、5 日、10 日後的平均表現；強度不是買賣建議，樣本未滿 30 筆前僅供觀察。</div>
       <table>
-        <thead><tr><th>級別</th><th>訊號</th><th>3日勝率</th><th>3日平均</th><th>5日勝率</th><th>5日平均</th><th>10日勝率</th><th>10日平均</th></tr></thead>
+        <thead><tr><th>強度</th><th>訊號</th><th>3日勝率</th><th>3日平均</th><th>5日勝率</th><th>5日平均</th><th>10日勝率</th><th>10日平均</th></tr></thead>
         <tbody id="signalLab"></tbody>
       </table>
     </section>
@@ -1124,11 +1143,11 @@ def _performance_html() -> str:
     </section>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、日期、狀態..." />
-      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
+      <select id="grade"><option value="">全部強度</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
       <select id="status"><option value="">全部狀態</option><option>已完成</option><option>進行中</option></select>
     </div>
     <table>
-      <thead><tr><th>訊號日</th><th>股票</th><th>級別</th><th>分數</th><th>訊號價</th><th>進場觸發</th><th>3日漲跌</th><th>5日漲跌</th><th>停損觸及</th></tr></thead>
+      <thead><tr><th>訊號日</th><th>股票</th><th>強度</th><th>分數</th><th>訊號價</th><th>進場觸發</th><th>3日漲跌</th><th>5日漲跌</th><th>停損觸及</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </main>
@@ -1160,7 +1179,7 @@ def _performance_html() -> str:
         <tr>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
           <td data-label="訊號日">${esc(r.signal_date)}</td>
-          <td data-label="等級">${esc(r.grade)}</td>
+          <td data-label="強度">${esc(r.grade)}</td>
           <td data-label="5日報酬">${fmtPct(r.return_5d)}</td>
           <td data-label="${includeStop ? "停損" : "題材"}">${includeStop ? fmtBool(r.stop_hit) : esc((r.themes || []).slice(0, 2).join(" / ") || "—")}</td>
         </tr>`;
@@ -1250,7 +1269,7 @@ def _performance_html() -> str:
       `).join("");
       document.querySelector("#signalLab").innerHTML = (data.signal_lab || []).map(r => `
         <tr>
-          <td data-label="級別">${esc(r.grade)}</td>
+          <td data-label="強度">${esc(r.grade)}</td>
           <td data-label="訊號">${esc(r.signals)}</td>
           <td data-label="3日勝率">${fmtPct(r.win_rate_3d)}</td>
           <td data-label="3日平均">${fmtPct(r.avg_return_3d)}</td>
@@ -1295,7 +1314,7 @@ def _performance_html() -> str:
         <tr>
           <td data-label="訊號日">${esc(r.signal_date)}</td>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a><div class="small">${esc(r.status)}</div></td>
-          <td data-label="級別">${esc(r.grade)}</td>
+          <td data-label="強度">${esc(r.grade)}</td>
           <td data-label="分數">${esc(r.total_score)}/100</td>
           <td data-label="訊號價">${r.entry_price ?? "—"}</td>
           <td data-label="進場觸發">${fmtBool(r.entry_triggered)}</td>

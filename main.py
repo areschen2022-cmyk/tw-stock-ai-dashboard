@@ -25,6 +25,7 @@ from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import build_dashboard_payload, enrich_dashboard_payload, write_dashboard, write_performance, write_theme_history
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
+from src.report.retail_divergence import empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -240,6 +241,8 @@ def main() -> int:
         theme_signal,
         {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
     )
+    retail_rows = store.latest_retail_holder_signals()
+    retail_divergence = summarize_retail_divergence(retail_rows) if retail_rows else empty_retail_divergence(as_of)
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
     store.update_forward_returns(as_of)
 
@@ -264,6 +267,7 @@ def main() -> int:
         alerts,
         watch_reviews,
         exit_risks,
+        retail_divergence=retail_divergence,
     )
     ai_status = {}
     ai_reviews = run_ai_council(
