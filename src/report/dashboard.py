@@ -409,6 +409,15 @@ def build_dashboard_payload(
             "scores": theme_signal.scores if theme_signal else {},
             "matched_headlines": theme_signal.matched_headlines if theme_signal else {},
             "quality": theme_signal.quality if theme_signal else {},
+            "catalyst_confidence": {
+                key: {
+                    "grade": value.grade,
+                    "label": value.label,
+                    "reason": value.reason,
+                    "evidence_count": value.evidence_count,
+                }
+                for key, value in (theme_signal.catalyst_confidence or {}).items()
+            } if theme_signal else {},
             "names": {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
             "pool_counts": {
                 key: len(value.get("stocks", {}))
@@ -905,11 +914,14 @@ def _html() -> str:
         const trend = mom.trend || "-";
         const avg3d = mom.avg_3d != null ? Number(mom.avg_3d).toFixed(1) : "-";
         const spark = sparkBar(mom.history);
+        const catalyst = (data.themes.catalyst_confidence || {})[key] || {};
+        const catalystColor = catalyst.grade === "A" ? "var(--good)" : catalyst.grade === "B" ? "#175cd3" : catalyst.grade === "C" ? "var(--warn)" : "var(--muted)";
         return `<tr style="font-size:12px">` +
           `<td style="padding:3px 5px;color:#175cd3">${esc(data.themes.names[key] || key)}</td>` +
           `<td style="padding:3px 5px;text-align:center">${score}</td>` +
           `<td style="padding:3px 5px;text-align:center;color:var(--muted)">${avg3d}</td>` +
           `<td style="padding:3px 5px;${trendStyle(trend)}">${esc(trend)}</td>` +
+          `<td style="padding:3px 5px;text-align:center;color:${catalystColor};font-weight:800">${esc(catalyst.grade || "-")}</td>` +
           `<td style="padding:3px 5px;letter-spacing:1px;font-family:monospace;color:#475467">${spark}</td>` +
           `</tr>`;
       }).join("");
@@ -918,6 +930,7 @@ def _html() -> str:
         `<th style="padding:2px 5px;font-weight:600">今日</th>` +
         `<th style="padding:2px 5px;font-weight:600">3日均</th>` +
         `<th style="padding:2px 5px;font-weight:600">趨勢</th>` +
+        `<th style="padding:2px 5px;font-weight:600">可信</th>` +
         `<th style="padding:2px 5px;font-weight:600">近7日▶</th>` +
         `</tr></thead>`;
       const themeTableHtml = themeTableBody
@@ -925,12 +938,15 @@ def _html() -> str:
         : "";
       const matchedHeadlines = data.themes.matched_headlines || {};
       const themeQuality = data.themes.quality || {};
+      const catalystConfidence = data.themes.catalyst_confidence || {};
       const themeReasons = allThemeEntries
         .map(([key]) => {
           const hits = matchedHeadlines[key] || [];
           if (!hits.length) return "";
           const quality = themeQuality[key] ? `｜${esc(themeQuality[key])}` : "";
-          return `<div class="line theme-reason"><b>${esc(data.themes.names[key] || key)}</b>${quality}：${esc(hits[0])}</div>`;
+          const catalyst = catalystConfidence[key];
+          const catalystText = catalyst ? `｜可信度 ${esc(catalyst.grade)} ${esc(catalyst.label)}：${esc(catalyst.reason)}` : "";
+          return `<div class="line theme-reason"><b>${esc(data.themes.names[key] || key)}</b>${quality}${catalystText}：${esc(hits[0])}</div>`;
         })
         .filter(Boolean)
         .slice(0, 4)

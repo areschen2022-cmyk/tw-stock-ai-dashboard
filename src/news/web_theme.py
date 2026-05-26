@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 import requests
 
 from src.news.cnyes_api import fetch_cnyes_news
+from src.news.catalyst_confidence import CatalystConfidence, classify_theme_catalysts
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import PolicySignal, classify_policy_headlines
 
@@ -37,6 +38,7 @@ class ThemeSignal:
     scores: dict[str, int]
     matched_headlines: dict[str, list[str]] = field(default_factory=dict)
     quality: dict[str, str] = field(default_factory=dict)
+    catalyst_confidence: dict[str, CatalystConfidence] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
     policy: PolicySignal | None = None
     source_count: int = 0
@@ -242,6 +244,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
                     for headline in policy_signal.matched_headlines[theme]:
                         if headline not in matched[theme]:
                             matched[theme].append(headline)
+    catalyst_confidence = classify_theme_catalysts(matched)
 
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}
@@ -277,6 +280,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         scores=scores,
         matched_headlines={t: v[:5] for t, v in matched.items() if v},
         quality=quality,
+        catalyst_confidence=catalyst_confidence,
         momentum=momentum,
         policy=policy_signal,
         source_count=source_count,

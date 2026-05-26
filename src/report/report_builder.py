@@ -64,6 +64,16 @@ def build_report(
         overseas_line = f"海外：{overseas.label}｜{overseas.summary}"
 
     market_bias = overseas.label if overseas else "中性"
+    catalyst_notes: list[str] = []
+    if theme_signal and theme_signal.active_themes:
+        theme_pools = config.get("theme_pools", {})
+        for theme in theme_signal.active_themes[:3]:
+            catalyst = (theme_signal.catalyst_confidence or {}).get(theme)
+            if not catalyst:
+                continue
+            name = theme_pools.get(theme, {}).get("name", theme)
+            catalyst_notes.append(f"{name} {catalyst.grade}/{catalyst.label}")
+
     lines = [
         f"台股 AI 開盤前觀察｜{as_of.isoformat()} 08:20 模擬",
         "",
@@ -71,6 +81,7 @@ def build_report(
         f"台股大盤：{market_summary}",
         overseas_line,
         f"熱門題材：{theme_signal.summary if theme_signal else '未納入'}",
+        f"題材可信度：{'；'.join(catalyst_notes) if catalyst_notes else '未納入'}",
         f"掃描：{len(scores)} 檔｜進場觀察：{len(candidates)} 檔｜題材雷達：{len(opportunity_candidates)} 檔",
         "分數：滿分100；95以上=S+，85以上=S，75以上=A，65以上=B。",
     ]

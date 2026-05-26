@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from src.news.policy_signal import PolicySignal
+from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
 from src.report.dashboard import build_dashboard_payload
 from src.scoring.score_engine import StockScore
@@ -39,6 +40,9 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
             {"defense_policy": 3},
             matched_headlines={"defense_policy": ["國防預算帶動軍工題材"]},
             quality={"defense_policy": "高：新聞含股票代號或公司名"},
+            catalyst_confidence={
+                "defense_policy": CatalystConfidence("A", "已確認", "政策事件佐證", 1)
+            },
             source_count=2,
             failed_count=0,
             policy=PolicySignal(
@@ -71,6 +75,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["decision_summary"]["top_theme"] == "defense_policy"
     assert payload["themes"]["matched_headlines"]["defense_policy"] == ["國防預算帶動軍工題材"]
     assert payload["themes"]["quality"]["defense_policy"].startswith("高")
+    assert payload["themes"]["catalyst_confidence"]["defense_policy"]["grade"] == "A"
     assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
 
 

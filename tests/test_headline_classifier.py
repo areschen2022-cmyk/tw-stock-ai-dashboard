@@ -1,4 +1,5 @@
 from src.news.headline_classifier import classify_headlines
+from src.news.catalyst_confidence import classify_catalyst_confidence
 from src.news.policy_signal import classify_policy_headlines
 from src.news.web_theme import fetch_theme_signal
 from src.report.monitoring import detect_alerts
@@ -69,6 +70,26 @@ def test_satellite_headline_matches_spacex_theme_keywords() -> None:
 
     assert result.scores["low_orbit_satellite"] >= 3
     assert result.matched_headlines["low_orbit_satellite"]
+
+
+def test_spacex_rumor_is_marked_as_market_rumor() -> None:
+    confidence = classify_catalyst_confidence([
+        "SpaceX reportedly targets June 12 Nasdaq listing, sources say",
+        "SpaceX 傳 6/12 掛牌帶動低軌衛星供應鏈",
+    ])
+
+    assert confidence.grade == "C"
+    assert confidence.label == "市場傳聞"
+
+
+def test_confirmed_catalyst_is_marked_high_confidence() -> None:
+    confidence = classify_catalyst_confidence([
+        "光聖股東會表示 AI 資料中心需求帶動光通訊營收成長",
+        "公司公告 5 月營收年增創高",
+    ])
+
+    assert confidence.grade == "A"
+    assert confidence.label == "已確認"
 
 
 def test_cloudflare_challenge_is_not_treated_as_news(monkeypatch, tmp_path) -> None:
