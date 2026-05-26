@@ -520,13 +520,25 @@ def _html() -> str:
     header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:2; }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:var(--muted); font-size:14px; }
-    main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
-    .metrics { display:grid; grid-template-columns: repeat(7, minmax(110px,1fr)); gap:10px; margin-bottom:16px; }
-    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
-    .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
+    main { padding:18px 24px 32px; max-width:1440px; margin:auto; }
+    .metrics { display:grid; grid-template-columns: repeat(7, minmax(96px,1fr)); gap:8px; margin-bottom:14px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 11px; min-height:70px; }
+    .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
-    .bands { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; }
-    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(360px,.9fr); gap:12px; margin-bottom:16px; align-items:start; }
+    .main-stack, .side-stack { display:grid; gap:12px; }
+    .detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; grid-column:1 / -1; }
+    section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    details.panel summary { cursor:pointer; font-weight:700; font-size:16px; list-style:none; }
+    details.panel summary::-webkit-details-marker { display:none; }
+    details.panel summary::after { content:"＋"; float:right; color:var(--muted); }
+    details.panel[open] summary::after { content:"－"; }
+    .section-note { color:var(--muted); font-size:12px; margin-top:-4px; margin-bottom:8px; }
+    .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+    .action-panel { border-left:4px solid var(--good); }
+    .risk-panel { border-left:4px solid var(--bad); }
+    .wide-panel { grid-column:1 / -1; }
+    details.panel h2 { font-size:14px; margin:12px 0 6px; }
     h2 { font-size:16px; margin:0 0 10px; }
     .line { color:var(--muted); margin:5px 0; font-size:14px; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
@@ -565,10 +577,16 @@ def _html() -> str:
     .tag-fund   { background:#fdf4ff; color:#7e22ce; border:1px solid #e9d5ff; }
     .tag-over   { background:#f0f9ff; color:#0c4a6e; border:1px solid #bae6fd; }
     .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
+    @media (max-width: 1180px) {
+      .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .dashboard-layout { grid-template-columns:1fr; }
+      .detail-grid { grid-template-columns:1fr 1fr; }
+    }
     @media (max-width: 900px) {
       header { position:static; }
       main, header { padding-left:12px; padding-right:12px; }
-      .metrics, .bands { grid-template-columns:1fr; }
+      .metrics { grid-template-columns:1fr 1fr; }
+      .dashboard-layout, .detail-grid, .status-grid { grid-template-columns:1fr; }
       .toolbar { align-items:stretch; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
@@ -594,18 +612,33 @@ def _html() -> str:
       <a class="nav-tab" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
-    <div class="bands">
-      <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
-      <section><h2>市場風向</h2><div id="market"></div></section>
-      <section><h2>健康狀態</h2><div id="health"></div></section>
-      <section><h2>今日操作結論</h2><div id="actionLists"></div></section>
-      <section><h2>散戶背離</h2><div id="retailDivergence"></div></section>
-      <section><h2>資料品質</h2><div id="dataQuality"></div></section>
-      <section><h2>新聞題材</h2><div id="themes"></div></section>
-      <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
-      <section><h2>異常提醒</h2><div id="alerts"></div></section>
-      <section><h2>危險名單</h2><div id="exitRisks"></div></section>
-      <section><h2>觀察追蹤</h2><div id="watchReviews"></div></section>
+    <div class="dashboard-layout">
+      <div class="main-stack">
+        <section class="action-panel"><h2>今日操作結論</h2><div id="actionLists"></div></section>
+        <section><h2>市場風向</h2><div id="market"></div></section>
+        <section><h2>新聞題材</h2><div id="themes"></div></section>
+      </div>
+      <div class="side-stack">
+        <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
+        <section class="risk-panel"><h2>危險名單</h2><div id="exitRisks"></div></section>
+        <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
+      </div>
+      <div class="detail-grid">
+        <section><h2>異常提醒</h2><div id="alerts"></div></section>
+        <section><h2>散戶背離</h2><div id="retailDivergence"></div></section>
+        <section><h2>美國政策雷達</h2><div id="usPolicyRadar"></div></section>
+        <details class="panel wide-panel">
+          <summary>系統與資料狀態</summary>
+          <div class="status-grid">
+            <div><h2>健康狀態</h2><div id="health"></div></div>
+            <div><h2>資料品質</h2><div id="dataQuality"></div></div>
+          </div>
+        </details>
+        <details class="panel wide-panel">
+          <summary>觀察追蹤</summary>
+          <div id="watchReviews"></div>
+        </details>
+      </div>
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
