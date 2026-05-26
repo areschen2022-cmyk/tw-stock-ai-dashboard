@@ -1,0 +1,61 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "dashboard/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: deploy static dashboard
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Prepare Pages artifact
+        run: |
+          rm -rf site
+          mkdir -p site/dashboard
+          cp -R docs/. site/dashboard/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="zh-Hant">
+            <head>
+              <meta charset="utf-8">
+              <meta http-equiv="refresh" content="0; url=dashboard/">
+              <title>台股 AI 開盤前監控</title>
+            </head>
+            <body>
+              <a href="dashboard/">前往台股 AI 開盤前監控</a>
+            </body>
+          </html>
+          HTML
+          touch site/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
