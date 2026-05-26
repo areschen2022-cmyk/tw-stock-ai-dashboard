@@ -48,6 +48,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: tw-stock-ai-daily
@@ -70,6 +72,9 @@ jobs:
       )
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repo
@@ -128,6 +133,7 @@ jobs:
           if [ "$current_head" != "$remote_head" ]; then
             echo "Remote main moved from ${current_head} to ${remote_head}."
             echo "This workflow run is stale, so dashboard output will not be pushed."
+            echo "SKIP_PAGES_DEPLOY=true" >> "$GITHUB_ENV"
             exit 0
           fi
           mkdir -p docs
@@ -154,6 +160,38 @@ jobs:
             fi
             exit 1
           fi
+
+      - name: Prepare Pages artifact
+        if: env.SKIP_PAGES_DEPLOY != 'true'
+        run: |
+          rm -rf site
+          mkdir -p site/dashboard
+          cp -R docs/. site/dashboard/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="zh-Hant">
+            <head>
+              <meta charset="utf-8">
+              <meta http-equiv="refresh" content="0; url=dashboard/">
+              <title>台股 AI 開盤前監控</title>
+            </head>
+            <body>
+              <a href="dashboard/">前往台股 AI 開盤前監控</a>
+            </body>
+          </html>
+          HTML
+          touch site/.nojekyll
+
+      - name: Upload Pages artifact
+        if: env.SKIP_PAGES_DEPLOY != 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy GitHub Pages
+        if: env.SKIP_PAGES_DEPLOY != 'true'
+        id: deployment
+        uses: actions/deploy-pages@v5
 
       - name: Notify dashboard failure
         if: failure()
