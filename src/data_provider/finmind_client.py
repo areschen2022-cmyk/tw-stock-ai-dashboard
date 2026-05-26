@@ -206,6 +206,8 @@ class FinMindClient:
             "lite": "LITE",
             "mu": "MU",
             "nvda": "NVDA",
+            "rklb": "RKLB",
+            "asts": "ASTS",
         }
         bundle = {name: self.us_stock_price(symbol, start_date, end_date) for name, symbol in symbols.items()}
         bundle["us10y"] = self.government_bond_yield("United States 10-Year", start_date, end_date)
