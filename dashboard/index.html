@@ -89,7 +89,8 @@
       <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
       <section><h2>市場風向</h2><div id="market"></div></section>
       <section><h2>健康狀態</h2><div id="health"></div></section>
-      <section><h2>今日行動清單</h2><div id="actionLists"></div></section>
+      <section><h2>今日操作結論</h2><div id="actionLists"></div></section>
+      <section><h2>散戶背離</h2><div id="retailDivergence"></div></section>
       <section><h2>資料品質</h2><div id="dataQuality"></div></section>
       <section><h2>新聞題材</h2><div id="themes"></div></section>
       <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
@@ -99,10 +100,10 @@
     </div>
     <div class="toolbar">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
-      <select id="grade"><option value="">全部級別</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
+      <select id="grade"><option value="">全部強度</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
     </div>
     <table>
-      <thead><tr><th>級別</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
+      <thead><tr><th>強度</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </main>
@@ -188,16 +189,16 @@
       "ai_server": 42,
       "cooling_power": 26,
       "silicon_photonics": 17,
-      "advanced_packaging": 66,
+      "advanced_packaging": 67,
       "memory": 32,
       "robotics": 1,
       "power_grid": 17,
       "defense_ai": 29,
       "optoelectronics_panel": 18,
-      "optics_lens": 17,
+      "optics_lens": 16,
       "edge_ai_device": 0,
       "energy_grid": 14,
-      "financial_revaluation": 20,
+      "financial_revaluation": 22,
       "materials_recovery": 28,
       "passive_components": 14,
       "low_orbit_satellite": 31,
@@ -371,11 +372,11 @@
     },
     "momentum": {
       "advanced_packaging": {
-        "today": 66,
+        "today": 67,
         "avg_3d": 45.7,
         "trend": "升溫↑",
         "history": [
-          66,
+          67,
           43,
           39,
           55,
@@ -462,11 +463,11 @@
         ]
       },
       "financial_revaluation": {
-        "today": 20,
+        "today": 22,
         "avg_3d": 12.0,
         "trend": "急升🔥",
         "history": [
-          20,
+          22,
           4,
           12,
           20,
@@ -527,11 +528,11 @@
         ]
       },
       "optics_lens": {
-        "today": 17,
+        "today": 16,
         "avg_3d": 4.0,
         "trend": "急升🔥",
         "history": [
-          17,
+          16,
           10,
           2,
           0,
@@ -606,12 +607,12 @@
       }
     },
     "policy": {
-      "summary": "先進封裝/CoWoS:67、ai_server:66、materials_recovery:48、network_optical_communication:40",
+      "summary": "先進封裝/CoWoS:55、ai_server:54、network_optical_communication:40、materials_recovery:36",
       "theme_boosts": {
-        "advanced_packaging": 67,
-        "ai_server": 66,
-        "materials_recovery": 48,
+        "advanced_packaging": 55,
+        "ai_server": 54,
         "network_optical_communication": 40,
+        "materials_recovery": 36,
         "cooling_power": 32,
         "defense_ai": 30,
         "defense_policy": 30,
@@ -634,8 +635,8 @@
           "CNBC's The China Connection newsletter: Tariffs eased. Trust didn't. - CNBC",
           "Trump, Xi to weigh tariff cuts on $30b of imports in managed trade push - The Business Standard",
           "Tariff War Reshapes Global Trade As US-China Supply Chains Break Apart - WION",
-          "US signals no fresh semiconductor tariffs in near term - Communications Today",
-          "美台股市嗨翻天！統一00981A近一月狂吸44萬股東 稱霸ETF吸粉榜 美股道瓊再創新高、標普連八周收紅，伴隨 AMD 宣布投資台灣百億美元及 Computex 展前卡位熱潮，催化美台股市今 (25) 日多頭大噴發，台積電等權值股全線領漲， 統一投信 00981A 股東 受益人 0050"
+          "美台股市嗨翻天！統一00981A近一月狂吸44萬股東 稱霸ETF吸粉榜 美股道瓊再創新高、標普連八周收紅，伴隨 AMD 宣布投資台灣百億美元及 Computex 展前卡位熱潮，催化美台股市今 (25) 日多頭大噴發，台積電等權值股全線領漲， 統一投信 00981A 股東 受益人 0050",
+          "Huawei Plans New Smartphone Chips This Fall as Competition with Nvidia and Apple Intensifies - Earnings Deceleration Risk - Newser"
         ],
         "silicon_photonics": [
           "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN",
@@ -665,15 +666,14 @@
         "materials_recovery": [
           "CNBC's The China Connection newsletter: Tariffs eased. Trust didn't. - CNBC",
           "Trump, Xi to weigh tariff cuts on $30b of imports in managed trade push - The Business Standard",
-          "Tariff War Reshapes Global Trade As US-China Supply Chains Break Apart - WION",
-          "US signals no fresh semiconductor tariffs in near term - Communications Today"
+          "Tariff War Reshapes Global Trade As US-China Supply Chains Break Apart - WION"
         ],
         "ai_server": [
           "CNBC's The China Connection newsletter: Tariffs eased. Trust didn't. - CNBC",
           "Trump, Xi to weigh tariff cuts on $30b of imports in managed trade push - The Business Standard",
           "Tariff War Reshapes Global Trade As US-China Supply Chains Break Apart - WION",
-          "US signals no fresh semiconductor tariffs in near term - Communications Today",
-          "美台股市嗨翻天！統一00981A近一月狂吸44萬股東 稱霸ETF吸粉榜 美股道瓊再創新高、標普連八周收紅，伴隨 AMD 宣布投資台灣百億美元及 Computex 展前卡位熱潮，催化美台股市今 (25) 日多頭大噴發，台積電等權值股全線領漲， 統一投信 00981A 股東 受益人 0050"
+          "美台股市嗨翻天！統一00981A近一月狂吸44萬股東 稱霸ETF吸粉榜 美股道瓊再創新高、標普連八周收紅，伴隨 AMD 宣布投資台灣百億美元及 Computex 展前卡位熱潮，催化美台股市今 (25) 日多頭大噴發，台積電等權值股全線領漲， 統一投信 00981A 股東 受益人 0050",
+          "Huawei Plans New Smartphone Chips This Fall as Competition with Nvidia and Apple Intensifies - Earnings Deceleration Risk - Newser"
         ],
         "low_orbit_satellite": [
           "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN"
@@ -775,21 +775,6 @@
           "score": 12
         },
         {
-          "event": "Trump tariff / China tariff",
-          "event_zh": "川普/中國關稅",
-          "headline": "US signals no fresh semiconductor tariffs in near term - Communications Today",
-          "headline_zh": "川普/中國關稅出現訊號；對相關台股題材影響為偏風險。",
-          "themes": [
-            "materials_recovery",
-            "ai_server",
-            "advanced_packaging"
-          ],
-          "direction": "risk",
-          "sensitivity": "high",
-          "confidence": "signal",
-          "score": 12
-        },
-        {
           "event": "SpaceX / Starlink",
           "event_zh": "SpaceX/Starlink",
           "headline": "Ukraine has regained significant territory after blocking Starlink for Russian forces – US intelligence - MSN",
@@ -803,62 +788,39 @@
           "sensitivity": "medium",
           "confidence": "signal",
           "score": 10
+        },
+        {
+          "event": "AI capex / hyperscaler",
+          "event_zh": "AI資本支出/雲端大廠",
+          "headline": "美台股市嗨翻天！統一00981A近一月狂吸44萬股東 稱霸ETF吸粉榜 美股道瓊再創新高、標普連八周收紅，伴隨 AMD 宣布投資台灣百億美元及 Computex 展前卡位熱潮，催化美台股市今 (25) 日多頭大噴發，台積電等權值股全線領漲， 統一投信 00981A 股東 受益人 0050",
+          "headline_zh": "AI資本支出/雲端大廠出現訊號；對相關台股題材影響為偏利多。",
+          "themes": [
+            "ai_server",
+            "cooling_power",
+            "advanced_packaging",
+            "memory"
+          ],
+          "direction": "bullish",
+          "sensitivity": "medium",
+          "confidence": "signal",
+          "score": 9
         }
       ]
     }
   },
   "source_status": {
     "label": "正常",
-    "api": 316,
-    "cache": 7,
+    "api": 313,
+    "cache": 9,
     "quota": 0,
     "error": 0,
-    "empty": 369,
-    "fallback": 258,
+    "empty": 367,
+    "fallback": 255,
     "events": [
       {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "2355",
-        "reason": "twse_month_missing"
-      },
-      {
         "type": "empty",
         "dataset": "STOCK_DAY",
         "data_id": "6442",
-        "period": "2026-03",
-        "reason": "html"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "2367",
-        "period": "2026-04",
-        "reason": "html"
-      },
-      {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "2367",
-        "reason": "twse_month_missing"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "6442",
-        "period": "2026-04",
-        "reason": "html"
-      },
-      {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "6442",
-        "reason": "twse_month_missing"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "3019",
         "period": "2025-11",
         "reason": "html"
       },
@@ -867,6 +829,13 @@
         "dataset": "STOCK_DAY",
         "data_id": "6282",
         "period": "2025-11",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6442",
+        "period": "2025-12",
         "reason": "html"
       },
       {
@@ -886,14 +855,14 @@
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "3019",
+        "data_id": "6442",
         "period": "2026-01",
         "reason": "html"
       },
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "6282",
+        "data_id": "3019",
         "period": "2026-01",
         "reason": "html"
       },
@@ -907,7 +876,28 @@
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
+        "data_id": "6442",
+        "period": "2026-02",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6282",
+        "period": "2026-01",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
         "data_id": "3019",
+        "period": "2026-03",
+        "reason": "html"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6442",
         "period": "2026-03",
         "reason": "html"
       },
@@ -916,13 +906,6 @@
         "dataset": "STOCK_DAY",
         "data_id": "6282",
         "period": "2026-02",
-        "reason": "html"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "6282",
-        "period": "2026-03",
         "reason": "html"
       },
       {
@@ -937,6 +920,26 @@
         "dataset": "stock_prices",
         "data_id": "3019",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6442",
+        "period": "2026-04",
+        "reason": "html"
+      },
+      {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "6442",
+        "reason": "twse_month_missing"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6282",
+        "period": "2026-03",
+        "reason": "html"
       },
       {
         "type": "empty",
@@ -954,7 +957,7 @@
     ],
     "fallback_status": {
       "label": "正常",
-      "api": 269,
+      "api": 266,
       "cache": 0,
       "quota": 0,
       "error": 0,
@@ -964,7 +967,7 @@
   },
   "health": {
     "label": "部分延遲",
-    "generated_at": "2026-05-26T08:34:56+08:00",
+    "generated_at": "2026-05-26T08:57:48+08:00",
     "generated_date": "2026-05-26",
     "data_date": "2026-05-25",
     "website_schedule": "04:30 / 05:00",
@@ -972,7 +975,7 @@
     "provider_label": "正常",
     "news_sources": 11,
     "news_failed": 1,
-    "github_run_id": "26425525181",
+    "github_run_id": "26426154294",
     "github_event": "push",
     "scheduler": "push",
     "scheduled_task": "dashboard",
@@ -1191,8 +1194,8 @@
       "signal_score": 83,
       "entry_price": 308.0,
       "current_price": 316.5,
-      "current_score": 58,
-      "current_label": "WAIT",
+      "current_score": 65,
+      "current_label": "BUY_WATCH",
       "change_pct": 2.75974025974026,
       "action": "等拉回",
       "themes": [
@@ -1341,7 +1344,7 @@
       "signal_score": 74,
       "entry_price": 2030.0,
       "current_price": 2290.0,
-      "current_score": 80,
+      "current_score": 82,
       "current_label": "BUY_WATCH",
       "change_pct": 12.807881773399016,
       "action": "只觀察",
@@ -1713,7 +1716,7 @@
       "signal_score": 69,
       "entry_price": 95.8,
       "current_price": 97.7,
-      "current_score": 74,
+      "current_score": 80,
       "current_label": "BUY_WATCH",
       "change_pct": 1.9832985386221353,
       "action": "只觀察",
@@ -1758,7 +1761,7 @@
       "signal_score": 66,
       "entry_price": 1915.0,
       "current_price": 2290.0,
-      "current_score": 80,
+      "current_score": 82,
       "current_label": "BUY_WATCH",
       "change_pct": 19.5822454308094,
       "action": "只觀察",
@@ -1927,6 +1930,17 @@
       "action": "準備減碼或停利，跌破停損不硬凹"
     }
   ],
+  "retail_divergence": {
+    "week_date": "2026-05-25",
+    "summary": {
+      "clean": 0,
+      "overheated": 0,
+      "total": 0
+    },
+    "clean": [],
+    "overheated": [],
+    "note": "尚未累積集保戶週資料；上線後每週用來觀察籌碼是否轉乾淨或散戶過熱。"
+  },
   "action_lists": {
     "chase": [
       {
@@ -2123,27 +2137,41 @@
   "data_quality": {
     "label": "high",
     "label_text": "高",
-    "score": 88,
+    "score": 86,
     "source_score": 90,
     "coverage": 100.0,
-    "recovered_fetches": 299,
+    "recovered_fetches": 297,
     "effective_error": 0,
     "effective_empty": 70,
     "warnings": [
-      "已由備援/補抓補回 299 次",
+      "已由備援/補抓補回 297 次",
       "AI 模型不穩定"
     ],
     "event_summary": {
-      "empty": 8,
-      "fallback": 2
+      "empty": 7,
+      "fallback": 3
     },
     "details": [
       {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "3019",
+        "period": "",
+        "reason": "twse_month_missing"
+      },
+      {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "6282",
-        "period": "2026-02",
+        "data_id": "6442",
+        "period": "2026-04",
         "reason": "html"
+      },
+      {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "6442",
+        "period": "",
+        "reason": "twse_month_missing"
       },
       {
         "type": "empty",
@@ -2151,20 +2179,6 @@
         "data_id": "6282",
         "period": "2026-03",
         "reason": "html"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "3019",
-        "period": "2026-04",
-        "reason": "html"
-      },
-      {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "3019",
-        "period": "",
-        "reason": "twse_month_missing"
       },
       {
         "type": "empty",
@@ -2183,14 +2197,14 @@
     ],
     "recovery_status": {
       "label": "retry_ready",
-      "retryable": 4,
+      "retryable": 3,
       "blocked": 0,
-      "recovered": 2,
+      "recovered": 3,
       "items": [
         {
           "dataset": "STOCK_DAY",
-          "data_id": "6282",
-          "period": "2026-02",
+          "data_id": "6442",
+          "period": "2026-04",
           "type": "empty",
           "next_step": "retry_range"
         },
@@ -2198,13 +2212,6 @@
           "dataset": "STOCK_DAY",
           "data_id": "6282",
           "period": "2026-03",
-          "type": "empty",
-          "next_step": "retry_range"
-        },
-        {
-          "dataset": "STOCK_DAY",
-          "data_id": "3019",
-          "period": "2026-04",
           "type": "empty",
           "next_step": "retry_range"
         },
@@ -2218,6 +2225,13 @@
         {
           "dataset": "stock_prices",
           "data_id": "3019",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "6442",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
@@ -2253,7 +2267,7 @@
     "valid": 65,
     "s_plus_grade": 11,
     "s_grade": 9,
-    "a_grade": 8,
+    "a_grade": 9,
     "b_grade": 8,
     "data_insufficient": 0
   },
@@ -3231,6 +3245,49 @@
       "decision_reason": "題材強共振 + 法人共振 + 技術突破；收盤價站上 MA20；外資近 3 日買超；基本面中性"
     },
     {
+      "stock_id": "2308",
+      "name": "台達電",
+      "score": 82,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 2290.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收年增 43.9%",
+      "risk": "本益比偏高 84.4x（>80x 扣分）",
+      "opportunity": "突破近 20 日高點",
+      "action": "可追蹤突破",
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 2300.00，跳空不追超過 2335.80（+2%）；開盤前5分鐘量 >= 628 張（日均量5%）",
+      "stop_reference": "跌破 2035.00（MA5 2153.00 / 昨低 2185.00 / 近3日低 2035.00 三者取低）止損出場",
+      "stop_price": 2035.0,
+      "entry_limit_price": 2335.8,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:受惠"
+      ],
+      "entry_decision": "開盤確認",
+      "entry_checklist": [
+        "站穩昨高 2300.00",
+        "開盤不追超過 2335.80（+2%）",
+        "前5分鐘量 >= 628 張",
+        "未跌破停損 2035.00"
+      ],
+      "overseas_adjustment": 2,
+      "opportunity_score": 12,
+      "warnings": [],
+      "trigger_tags": [
+        "題材強共振",
+        "外資買超",
+        "技術突破",
+        "營收加速"
+      ],
+      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速",
+      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 43.9%"
+    },
+    {
       "stock_id": "3105",
       "name": "穩懋",
       "score": 82,
@@ -3273,47 +3330,41 @@
       "decision_reason": "題材關注 + 法人共振 + 營收加速；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 48.9%"
     },
     {
-      "stock_id": "2308",
-      "name": "台達電",
+      "stock_id": "2881",
+      "name": "富邦金",
       "score": 80,
       "grade": "A",
       "label": "BUY_WATCH",
       "label_text": "買進觀察",
-      "price": 2290.0,
+      "price": 97.7,
       "technical": "收盤價站上 MA20",
       "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收年增 43.9%",
-      "risk": "本益比偏高 84.4x（>80x 扣分）",
-      "opportunity": "突破近 20 日高點",
+      "fundamental": "最新月營收月增 303.0%",
+      "risk": "短期波動明顯升高",
+      "opportunity": "成交量放大 2.1 倍",
       "action": "可追蹤突破",
-      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 2300.00，跳空不追超過 2335.80（+2%）；開盤前5分鐘量 >= 606 張（日均量5%）",
-      "stop_reference": "跌破 1990.00（MA5 2049.00 / 昨低 2185.00 / 近3日低 1990.00 三者取低）止損出場",
-      "stop_price": 1990.0,
-      "entry_limit_price": 2335.8,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:受惠"
-      ],
+      "entry_condition": "突破型：昨收已貼近20日高，開盤確認站穩昨高 97.70，跳空不追超過 99.65（+2%）；開盤前5分鐘量 >= 1143 張（日均量5%）",
+      "stop_reference": "跌破 89.10（MA5 91.10 / 昨低 94.70 / 近3日低 89.10 三者取低）止損出場",
+      "stop_price": 89.1,
+      "entry_limit_price": 99.65,
+      "themes": [],
+      "theme_tiers": [],
       "entry_decision": "開盤確認",
       "entry_checklist": [
-        "站穩昨高 2300.00",
-        "開盤不追超過 2335.80（+2%）",
-        "前5分鐘量 >= 606 張",
-        "未跌破停損 1990.00"
+        "站穩昨高 97.70",
+        "開盤不追超過 99.65（+2%）",
+        "前5分鐘量 >= 1143 張",
+        "未跌破停損 89.10"
       ],
-      "overseas_adjustment": 2,
-      "opportunity_score": 12,
+      "overseas_adjustment": 0,
+      "opportunity_score": 18,
       "warnings": [],
       "trigger_tags": [
-        "題材強共振",
         "外資買超",
-        "技術突破",
-        "營收加速"
+        "技術突破"
       ],
-      "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速",
-      "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 43.9%"
+      "trigger_summary": "外資買超 + 技術突破",
+      "decision_reason": "外資買超 + 技術突破；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 303.0%"
     },
     {
       "stock_id": "2367",
@@ -3440,42 +3491,6 @@
       ],
       "trigger_summary": "題材強共振 + 外資買超 + 技術突破 + 營收加速",
       "decision_reason": "題材強共振 + 外資買超 + 技術突破 + 營收加速；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 15.6%"
-    },
-    {
-      "stock_id": "2881",
-      "name": "富邦金",
-      "score": 74,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 97.7,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收月增 303.0%",
-      "risk": "風險條件可接受",
-      "opportunity": "突破近 20 日高點",
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（96.38）且開盤前5分鐘量 >= 1795 張；條件同時滿足再考慮，不追超過 100.14（+2.5%）",
-      "stop_reference": "跌破 94.30 不考慮進場",
-      "stop_price": 94.3,
-      "entry_limit_price": 100.14,
-      "themes": [],
-      "theme_tiers": [],
-      "entry_decision": "量價不確認取消",
-      "entry_checklist": [
-        "站穩 MA5 96.38",
-        "前5分鐘量 >= 1795 張",
-        "未同時滿足就取消，不預設進場"
-      ],
-      "overseas_adjustment": 0,
-      "opportunity_score": 8,
-      "warnings": [],
-      "trigger_tags": [
-        "外資買超",
-        "技術突破"
-      ],
-      "trigger_summary": "外資買超 + 技術突破",
-      "decision_reason": "外資買超 + 技術突破；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 303.0%"
     },
     {
       "stock_id": "2449",
@@ -3679,6 +3694,48 @@
       ],
       "trigger_summary": "題材強共振 + 投信買超 + 技術突破 + 營收加速",
       "decision_reason": "題材強共振 + 投信買超 + 技術突破 + 營收加速；收盤價站上 MA20；投信近 3 日買超；最新月營收年增 34.6%"
+    },
+    {
+      "stock_id": "2382",
+      "name": "廣達",
+      "score": 65,
+      "grade": "B",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 316.5,
+      "technical": "MA5 高於 MA20，短線趨勢偏多",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 120.7%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "題材分層：AI伺服器(核心)",
+      "action": "只觀察",
+      "entry_condition": "觀察站穩 MA5（319.50）且開盤前5分鐘量 >= 1226 張；條件同時滿足再考慮，不追超過 326.00（+3%）",
+      "stop_reference": "跌破 312.00 不考慮進場",
+      "stop_price": 312.0,
+      "entry_limit_price": 326.0,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:核心"
+      ],
+      "entry_decision": "量價不確認取消",
+      "entry_checklist": [
+        "站穩 MA5 319.50",
+        "前5分鐘量 >= 1226 張",
+        "未同時滿足就取消，不預設進場"
+      ],
+      "overseas_adjustment": 2,
+      "opportunity_score": 6,
+      "warnings": [],
+      "trigger_tags": [
+        "題材升溫",
+        "投信買超",
+        "技術偏多",
+        "營收加速"
+      ],
+      "trigger_summary": "題材升溫 + 投信買超 + 技術偏多 + 營收加速",
+      "decision_reason": "題材升溫 + 投信買超 + 技術偏多 + 營收加速；MA5 高於 MA20，短線趨勢偏多；投信近 3 日買超；最新月營收年增 120.7%"
     },
     {
       "stock_id": "2408",
@@ -4150,45 +4207,6 @@
       ],
       "trigger_summary": "題材關注 + 外資買超 + 營收加速",
       "decision_reason": "題材關注 + 外資買超 + 營收加速；收盤價站上 MA20；外資近 3 日買超；最新月營收年增 27.8%"
-    },
-    {
-      "stock_id": "2382",
-      "name": "廣達",
-      "score": 58,
-      "grade": "C",
-      "label": "WAIT",
-      "label_text": "等待",
-      "price": 316.5,
-      "technical": "成交量明顯放大",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 120.7%",
-      "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "題材分層：AI伺服器(核心)",
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（321.80）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 295.00",
-      "stop_price": 295.0,
-      "entry_limit_price": 326.0,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:核心"
-      ],
-      "entry_decision": "避免",
-      "entry_checklist": [
-        "分數未達進場觀察門檻，不列入今日進場"
-      ],
-      "overseas_adjustment": 2,
-      "opportunity_score": 6,
-      "warnings": [],
-      "trigger_tags": [
-        "題材升溫",
-        "投信買超",
-        "營收加速"
-      ],
-      "trigger_summary": "題材升溫 + 投信買超 + 營收加速",
-      "decision_reason": "題材升溫 + 投信買超 + 營收加速；成交量明顯放大；投信近 3 日買超；最新月營收年增 120.7%"
     },
     {
       "stock_id": "8210",
@@ -4872,27 +4890,27 @@
     "using_fallback_picks": false,
     "status": {
       "requested_models": 5,
-      "successful_models": 2,
+      "successful_models": 1,
       "failed_models": [
         "google/gemma-4-31b-it:free",
         "google/gemma-4-26b-a4b-it:free",
+        "minimax/minimax-m2.5:free",
         "qwen/qwen3-next-80b-a3b-instruct:free"
       ],
       "timed_out_models": [],
       "success_model_names": [
-        "nvidia/nemotron-3-super-120b-a12b:free",
-        "minimax/minimax-m2.5:free"
+        "nvidia/nemotron-3-super-120b-a12b:free"
       ],
-      "available_ratio": 0.4,
+      "available_ratio": 0.2,
       "min_model_count": 5,
       "health": {
         "label": "不穩定",
-        "score": 40,
+        "score": 20,
         "requested": 5,
-        "success": 2,
-        "failed": 3,
+        "success": 1,
+        "failed": 4,
         "timed_out": 0,
-        "available_ratio": 0.4,
+        "available_ratio": 0.2,
         "timeout_ratio": 0.0
       }
     },
@@ -4903,12 +4921,24 @@
   },
   "data_retry": {
     "status_counts": {
-      "recovered": 41
+      "recovered": 42
     },
     "pending": 0,
     "failed": 0,
-    "recovered": 41,
+    "recovered": 42,
     "items": [
+      {
+        "dataset": "STOCK_DAY",
+        "data_id": "6442",
+        "period": "2026-04",
+        "reason": "html",
+        "status": "recovered",
+        "attempts": 1,
+        "first_seen_at": "2026-05-26T09:00:02+08:00",
+        "last_attempt_at": "2026-05-26T09:00:03+08:00",
+        "last_error": "",
+        "recovered_at": "2026-05-26T09:00:03+08:00"
+      },
       {
         "dataset": "STOCK_DAY",
         "data_id": "6282",
@@ -4992,21 +5022,23 @@
         "last_attempt_at": "2026-05-25T09:49:07+08:00",
         "last_error": "",
         "recovered_at": "2026-05-25T09:49:07+08:00"
-      },
-      {
-        "dataset": "STOCK_DAY",
-        "data_id": "3596",
-        "period": "2025-12",
-        "reason": "html",
-        "status": "recovered",
-        "attempts": 1,
-        "first_seen_at": "2026-05-25T09:42:04+08:00",
-        "last_attempt_at": "2026-05-25T09:42:05+08:00",
-        "last_error": "",
-        "recovered_at": "2026-05-25T09:42:05+08:00"
       }
     ],
-    "attempted": []
+    "attempted": [
+      {
+        "dataset": "STOCK_DAY",
+        "data_id": "6442",
+        "period": "2026-04",
+        "reason": "html",
+        "status": "pending",
+        "attempts": 0,
+        "first_seen_at": "2026-05-26T09:00:02+08:00",
+        "last_attempt_at": null,
+        "last_error": "",
+        "recovered_at": null,
+        "ok": true
+      }
+    ]
   }
 };
     let data = null;
@@ -5060,7 +5092,7 @@
       if (!document.querySelector("#quickFilter")) {
         document.querySelector("#grade").insertAdjacentHTML("afterend", `<select id="quickFilter">
           <option value="">全部訊號</option>
-          <option value="strong">S+/S 強勢</option>
+          <option value="strong">S+/S 強度</option>
           <option value="chase">可追蹤/觀察</option>
           <option value="risk">風險警示</option>
           <option value="ai">AI 共識</option>
@@ -5078,10 +5110,10 @@
       document.querySelector("#metrics").innerHTML = [
         ["掃描", data.summary.scanned],
         ["有效", data.summary.valid],
-        ["S+級", data.summary.s_plus_grade || 0],
-        ["S級", data.summary.s_grade || 0],
-        ["A級", data.summary.a_grade],
-        ["B級", data.summary.b_grade],
+        ["S+強度", data.summary.s_plus_grade || 0],
+        ["S強度", data.summary.s_grade || 0],
+        ["A強度", data.summary.a_grade],
+        ["B強度", data.summary.b_grade],
         ["資料不足", data.summary.data_insufficient]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
@@ -5094,7 +5126,7 @@
       document.querySelector("#decisionSummary").innerHTML = `
         <div class="line"><b>${esc(postureText)}</b></div>
         <div class="line">觀察 ${esc(decision.watch_count ?? 0)}｜拉回 ${esc(decision.pullback_count ?? 0)}｜風險 ${esc(decision.risk_count ?? 0)}</div>
-        <div class="line">強勢等級 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
+        <div class="line">強勢訊號 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
         <div class="line">主題焦點：${esc(decisionTopTheme)}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
@@ -5122,10 +5154,25 @@
       }
       const actionLists = data.action_lists || {};
       document.querySelector("#actionLists").innerHTML = `
+        <div class="line">S+/S/A/B 是訊號強度，不等於直接買；今日是否進場以操作結論、開盤跳空與量能確認為準。</div>
         <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
         ${(actionLists.chase || []).slice(0,3).map(compactAction).join("") || '<div class="line">今日暫無高分可追清單</div>'}
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
         ${(actionLists.pullback || []).slice(0,2).map(compactAction).join("") || '<div class="line">暫無等拉回清單</div>'}`;
+      function compactRetail(row) {
+        const pct = row.holder_change_pct == null ? "—" : `${Number(row.holder_change_pct).toFixed(1)}%`;
+        const px = row.price_change_pct == null ? "—" : `${Number(row.price_change_pct).toFixed(1)}%`;
+        const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
+        return `<div class="line"><b>${stockLink}</b>｜散戶 ${esc(pct)}｜股價 ${esc(px)}<div class="small">${esc(row.reason || row.signal || "")}</div></div>`;
+      }
+      const retail = data.retail_divergence || {};
+      const retailSummary = retail.summary || {};
+      document.querySelector("#retailDivergence").innerHTML = `
+        <div class="line">週資料觀察，不直接等於買賣訊號；用來輔助判斷籌碼是否轉乾淨或散戶過熱。</div>
+        <div class="line good"><b>籌碼轉乾淨</b>：${esc(retailSummary.clean ?? 0)} 檔</div>
+        ${(retail.clean || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積籌碼轉乾淨名單</div>'}
+        <div class="line warn"><b>散戶過熱</b>：${esc(retailSummary.overheated ?? 0)} 檔</div>
+        ${(retail.overheated || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積散戶過熱名單</div>'}`;
       const quality = data.data_quality || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       const retry = data.data_retry || {};
@@ -5259,7 +5306,7 @@
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
-          <td data-label="級別"><span class="${cls(r.grade)}">${r.grade}</span></td>
+          <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
