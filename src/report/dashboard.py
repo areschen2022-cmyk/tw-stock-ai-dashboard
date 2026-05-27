@@ -387,6 +387,9 @@ def build_dashboard_payload(
                 "trigger_tags": item.trigger_tags,
                 "trigger_summary": item.trigger_summary,
                 "decision_reason": _decision_reason(item),
+                "retail_signal": item.retail_signal,
+                "selection_quality_adjustment": item.selection_quality_adjustment,
+                "selection_quality_notes": item.selection_quality_notes,
             }
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
@@ -811,8 +814,14 @@ def _html() -> str:
       const scheduleLabel = health.schedule_label || "未記錄";
       const dataSourceLabel = health.data_source_label || health.provider_label || "未知";
       const newsLabel = health.news_label || (health.news_failed ? "部分失敗" : "正常");
+      const delivery = health.telegram_delivery || data.delivery_status || {};
+      const deliveryText = delivery.delivered
+        ? `已推播 ${esc(String(delivery.sent_at || "").replace("T", " "))}${delivery.run_id ? `｜Run ${esc(delivery.run_id)}` : ""}`
+        : `尚未推播｜早報日期 ${esc(delivery.delivery_date || health.report_date || reportDate)}`;
+      const deliveryCls = delivery.delivered ? "good" : "warn";
       document.querySelector("#health").innerHTML = `
         <div class="line ${healthCls}"><span class="${sourceClass(health.label === "正常" ? "正常" : health.label === "部分延遲" ? "部分限流" : "錯誤")}"></span>系統：${esc(health.label || "未知")}</div>
+        <div class="line ${deliveryCls}">Telegram：${deliveryText}</div>
         <div class="line">本次產生：${esc((health.generated_at || "").replace("T", " "))}</div>
         <div class="line">資料日期：${esc(health.data_date || data.as_of)}｜網站 ${esc(health.website_schedule || "07:58")}｜Telegram ${esc(health.telegram_schedule || "08:18")}</div>
         <div class="line">排程：${esc(scheduleLabel)}｜${esc(health.scheduler || "local")}｜${esc(health.scheduled_task || "-")}｜預定 ${esc(targetText)}｜延遲 ${esc(delayText)}</div>
@@ -828,7 +837,8 @@ def _html() -> str:
         const badgeText = mode === "pullback" ? "等拉回" : mode === "avoid" ? "避開" : "可追";
         const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
         const checklist = (row.entry_checklist || []).slice(0, 2).join(" / ");
-        const reason = row.reason || checklist || row.action || "綜合訊號";
+        const qualityNotes = (row.selection_quality_notes || []).slice(0, 1).join(" / ");
+        const reason = qualityNotes || row.reason || checklist || row.action || "綜合訊號";
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>

@@ -274,8 +274,16 @@ jobs:
 
       - name: Commit Telegram delivery log
         run: |
+          mkdir -p docs
+          cp -f dashboard/index.html docs/index.html
+          cp -f dashboard/dashboard_data.json docs/dashboard_data.json
+          cp -f dashboard/performance.html docs/performance.html
+          cp -f dashboard/performance_data.json docs/performance_data.json
+          cp -f dashboard/theme_history.json docs/theme_history.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dashboard/
+          git add docs/
           git add data/tw_stock_ai.sqlite3 || true
           if git diff --cached --quiet; then
             echo "No delivery log changes"
@@ -292,6 +300,34 @@ jobs:
           done
           echo "Failed to persist Telegram delivery log after retries."
           exit 1
+
+      - name: Prepare Telegram Pages artifact
+        run: |
+          rm -rf site
+          mkdir -p site/dashboard
+          cp -R docs/. site/dashboard/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="zh-Hant">
+            <head>
+              <meta charset="utf-8">
+              <meta http-equiv="refresh" content="0; url=dashboard/">
+              <title>台股 AI 開盤前監控</title>
+            </head>
+            <body>
+              <a href="dashboard/">前往台股 AI 開盤前監控</a>
+            </body>
+          </html>
+          HTML
+          touch site/.nojekyll
+
+      - name: Upload Telegram Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy Telegram status to GitHub Pages
+        uses: actions/deploy-pages@v5
 
       - name: Notify Telegram failure
         if: failure()

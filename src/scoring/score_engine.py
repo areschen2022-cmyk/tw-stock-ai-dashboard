@@ -40,6 +40,9 @@ class StockScore:
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     trigger_tags: list[str] = field(default_factory=list)
+    retail_signal: dict[str, Any] = field(default_factory=dict)
+    selection_quality_adjustment: int = 0
+    selection_quality_notes: list[str] = field(default_factory=list)
 
     @property
     def trigger_summary(self) -> str:

@@ -234,6 +234,35 @@ class SQLiteStore:
             ).fetchone()
         return row is not None
 
+    def delivery_status(self, channel: str, delivery_date: date, message_type: str) -> dict:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT sent_at, run_id
+                FROM delivery_log
+                WHERE channel = ? AND delivery_date = ? AND message_type = ?
+                LIMIT 1
+                """,
+                (channel, delivery_date.isoformat(), message_type),
+            ).fetchone()
+        if not row:
+            return {
+                "channel": channel,
+                "delivery_date": delivery_date.isoformat(),
+                "message_type": message_type,
+                "delivered": False,
+                "sent_at": "",
+                "run_id": "",
+            }
+        return {
+            "channel": channel,
+            "delivery_date": delivery_date.isoformat(),
+            "message_type": message_type,
+            "delivered": True,
+            "sent_at": row[0] or "",
+            "run_id": row[1] or "",
+        }
+
     def record_delivery(
         self,
         channel: str,

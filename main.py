@@ -25,7 +25,7 @@ from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import build_dashboard_payload, enrich_dashboard_payload, write_dashboard, write_performance, write_theme_history
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
-from src.report.retail_divergence import empty_retail_divergence, summarize_retail_divergence
+from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -33,6 +33,14 @@ from src.storage.sqlite_store import SQLiteStore
 
 ROOT = Path(__file__).resolve().parent
 TAIPEI = ZoneInfo("Asia/Taipei")
+
+
+def attach_delivery_status(payload: dict, store: SQLiteStore, delivery_date: date) -> dict:
+    status = store.delivery_status("telegram", delivery_date, "morning_report")
+    payload["delivery_status"] = status
+    payload.setdefault("health", {})["report_date"] = delivery_date.isoformat()
+    payload.setdefault("health", {})["telegram_delivery"] = status
+    return status
 
 
 def parse_args() -> argparse.Namespace:
@@ -104,6 +112,82 @@ def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
 
 
+def _score_label(total: int, config: dict) -> str:
+    thresholds = config.get("thresholds", {})
+    if total >= int(thresholds.get("buy_watch", 65)):
+        return "BUY_WATCH"
+    if total >= int(thresholds.get("wait_min", 50)):
+        return "WAIT"
+    return "AVOID"
+
+
+def apply_selection_quality_adjustments(
+    score,
+    *,
+    retail_signal: dict | None,
+    theme_details: list[dict],
+    config: dict,
+) -> None:
+    adjustment = 0
+    notes: list[str] = []
+
+    if retail_signal:
+        signal = retail_signal.get("signal")
+        if signal == SIGNAL_CLEAN:
+            adjustment += 5
+            notes.append("散戶人數下降且股價未弱，籌碼較乾淨")
+            score.trigger_tags.append("散戶轉乾淨")
+        elif signal == SIGNAL_OVERHEATED:
+            adjustment -= 8
+            notes.append("散戶人數增加但股價不漲，疑似有人倒貨")
+            score.trigger_tags.append("散戶過熱")
+            score.warnings.append("散戶背離轉弱")
+
+    space_roles = [
+        item for item in theme_details
+        if item.get("theme_key") == "low_orbit_satellite"
+        and item.get("tier") in {"core", "beneficiary"}
+    ]
+    if space_roles:
+        if score.fundamental_score >= 10:
+            adjustment += 3
+            notes.append("SpaceX 題材具核心供應鏈角色，且營收成長有佐證")
+            score.trigger_tags.append("SpaceX營收佐證")
+        elif score.fundamental_score <= 0:
+            notes.append("SpaceX 題材有供應鏈角色，但營收佐證不足")
+
+    if not notes:
+        return
+
+    score.reasons.setdefault("quality", []).extend(notes)
+    score.total_score = max(0, min(100, int(score.total_score) + adjustment))
+    score.label = _score_label(score.total_score, config)
+    score.retail_signal = retail_signal or {}
+    score.selection_quality_adjustment = adjustment
+    score.selection_quality_notes = notes
+
+
+def merge_retail_exit_risks(exit_risks: list[dict], retail_rows: list[dict], stock_names: dict[str, str]) -> list[dict]:
+    existing = {str(item.get("stock_id")) for item in exit_risks}
+    merged = list(exit_risks)
+    for row in retail_rows:
+        stock_id = str(row.get("stock_id") or "")
+        if not stock_id or stock_id in existing or row.get("signal") != SIGNAL_OVERHEATED:
+            continue
+        merged.append(
+            {
+                "stock_id": stock_id,
+                "name": stock_names.get(stock_id) or row.get("name") or "",
+                "level": "紅色警戒",
+                "risk_score": 12,
+                "reasons": ["散戶人數增加但股價不漲", "籌碼過熱疑似倒貨"],
+                "action": "準備減碼或暫停追高；跌破停損不硬凹",
+            }
+        )
+        existing.add(stock_id)
+    return merged
+
+
 def main() -> int:
     load_dotenv(ROOT / ".env")
     (ROOT / "logs").mkdir(exist_ok=True)
@@ -138,6 +222,8 @@ def main() -> int:
         logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
         return 0
     engine = ScoreEngine(config)
+    retail_rows = store.latest_retail_holder_signals(limit=200)
+    retail_map = {str(row.get("stock_id")): row for row in retail_rows}
 
     market_prices = provider.stock_prices(config["market"]["index_id"], start_date, as_of)
     market_adjustment, market_summary, market_warning = engine.market_adjustment(market_prices)
@@ -218,6 +304,12 @@ def main() -> int:
                 for item in stock_theme_details.get(stock_id, [])
             ],
         )
+        apply_selection_quality_adjustments(
+            score,
+            retail_signal=retail_map.get(stock_id),
+            theme_details=stock_theme_details.get(stock_id, []),
+            config=config,
+        )
         results.append(score)
         store.save_daily_score(score, as_of)
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
@@ -241,8 +333,8 @@ def main() -> int:
         theme_signal,
         {key: value.get("name", key) for key, value in config.get("theme_pools", {}).items()},
     )
-    retail_rows = store.latest_retail_holder_signals()
     retail_divergence = summarize_retail_divergence(retail_rows) if retail_rows else empty_retail_divergence(as_of)
+    exit_risks = merge_retail_exit_risks(exit_risks, retail_rows, config.get("stock_names", {}))
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
     store.update_forward_returns(as_of)
 
@@ -269,6 +361,7 @@ def main() -> int:
         exit_risks,
         retail_divergence=retail_divergence,
     )
+    attach_delivery_status(dashboard_payload, store, delivery_date)
     ai_status = {}
     ai_reviews = run_ai_council(
         [row for row in dashboard_payload["rows"] if row["grade"] in {"S+", "S", "A"}],
@@ -402,6 +495,8 @@ def main() -> int:
             "morning_report",
             run_id=os.getenv("GITHUB_RUN_ID", ""),
         )
+        attach_delivery_status(dashboard_payload, store, delivery_date)
+        write_dashboard(dashboard_payload, ROOT / "dashboard")
     logging.info("Processed %s stocks for %s", len(results), as_of)
     return 0
 
