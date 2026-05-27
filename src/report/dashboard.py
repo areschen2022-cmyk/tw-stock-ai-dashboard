@@ -773,7 +773,9 @@ def _html() -> str:
       }
       const q = document.querySelector("#search").value.trim().toLowerCase();
       const g = document.querySelector("#grade").value;
-      document.querySelector("#subtitle").textContent = `${data.as_of}｜僅供研究追蹤，不是投資建議`;
+      const reportDate = data.generated_date || (data.health && data.health.generated_date) || data.as_of;
+      const dataDate = data.data_date || data.as_of;
+      document.querySelector("#subtitle").textContent = `早報日期 ${reportDate}｜資料日 ${dataDate}｜僅供研究追蹤，不是投資建議`;
       document.querySelector("#metrics").innerHTML = [
         ["掃描", data.summary.scanned],
         ["有效", data.summary.valid],

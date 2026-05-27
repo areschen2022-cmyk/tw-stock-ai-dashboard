@@ -366,7 +366,8 @@ def main() -> int:
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         telegram_message = "\n".join(
             [
-                f"🇹🇼 <b>台股 AI 早報</b>｜{as_of.isoformat()}",
+                f"🇹🇼 <b>台股 AI 早報</b>｜{delivery_date.isoformat()}",
+                f"資料日：{as_of.isoformat()}",
                 "",
                 f"🧭 風向：{dashboard_payload['overseas']['label']}",
                 f"📰 題材：{dashboard_payload['themes']['summary']}",
