@@ -16,7 +16,7 @@ Current production settings:
 ```yaml
 ai_council:
   min_model_count: 5
-  min_agree_count: 4
+  min_agree_count: 5
   fallback_pick_count: 0
   pick_action: "可追"
 ```
@@ -24,7 +24,7 @@ ai_council:
 This means:
 
 - 5 models must participate.
-- 4 or more must agree on `可追`.
+- 5 models must agree on `可追`.
 - If only 1-3 models respond, the result is shown as review evidence only and
   will not become an AI pick.
 

@@ -4,8 +4,10 @@ from datetime import date
 
 from src.report.retail_divergence import (
     SIGNAL_CLEAN,
+    SIGNAL_CLEAN_WATCH,
     SIGNAL_NEUTRAL,
     SIGNAL_OVERHEATED,
+    SIGNAL_OVERHEATED_WATCH,
     classify_retail_divergence,
     enrich_retail_records,
     summarize_retail_divergence,
@@ -16,6 +18,8 @@ from src.storage.sqlite_store import SQLiteStore
 def test_classify_retail_divergence() -> None:
     assert classify_retail_divergence(holder_change_pct=-4.2, price_change_pct=0.5, volume=1800)[0] == SIGNAL_CLEAN
     assert classify_retail_divergence(holder_change_pct=4.1, price_change_pct=0.2, volume=2500)[0] == SIGNAL_OVERHEATED
+    assert classify_retail_divergence(holder_change_pct=-1.8, price_change_pct=0.5, volume=1800)[0] == SIGNAL_CLEAN_WATCH
+    assert classify_retail_divergence(holder_change_pct=1.8, price_change_pct=0.5, volume=1800)[0] == SIGNAL_OVERHEATED_WATCH
     assert classify_retail_divergence(holder_change_pct=-4.1, price_change_pct=0.5, volume=200)[0] == SIGNAL_NEUTRAL
     assert classify_retail_divergence(holder_change_pct=1.0, price_change_pct=3.0, volume=2000)[0] == SIGNAL_NEUTRAL
 
@@ -26,6 +30,7 @@ def test_summarize_retail_divergence_orders_buckets() -> None:
             {"stock_id": "1111", "name": "乾淨一", "holder_change_pct": -3.2, "price_change_pct": 0.0, "volume": 1200},
             {"stock_id": "2222", "name": "過熱一", "holder_change_pct": 5.0, "price_change_pct": 0.2, "volume": 2000},
             {"stock_id": "3333", "name": "乾淨二", "holder_change_pct": -6.0, "price_change_pct": -0.5, "volume": 1800},
+            {"stock_id": "4444", "name": "觀察一", "holder_change_pct": -1.7, "price_change_pct": 0.0, "volume": 1600},
         ]
     )
 
@@ -33,8 +38,10 @@ def test_summarize_retail_divergence_orders_buckets() -> None:
 
     assert summary["summary"]["clean"] == 2
     assert summary["summary"]["overheated"] == 1
+    assert summary["summary"]["watch_clean"] == 1
     assert summary["clean"][0]["stock_id"] == "3333"
     assert summary["overheated"][0]["stock_id"] == "2222"
+    assert summary["watch_clean"][0]["stock_id"] == "4444"
 
 
 def test_save_and_load_retail_holder_signals(tmp_path) -> None:

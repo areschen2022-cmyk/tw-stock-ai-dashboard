@@ -373,7 +373,9 @@ class SQLiteStore:
                     CASE signal
                         WHEN '籌碼轉乾淨' THEN 0
                         WHEN '散戶過熱' THEN 1
-                        ELSE 2
+                        WHEN '觀察-籌碼轉乾淨' THEN 2
+                        WHEN '觀察-散戶過熱' THEN 3
+                        ELSE 4
                     END,
                     ABS(COALESCE(holder_change_pct, 0)) DESC,
                     COALESCE(volume, 0) DESC

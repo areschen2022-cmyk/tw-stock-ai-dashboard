@@ -875,8 +875,12 @@ def _html() -> str:
         <div class="line">週資料觀察，不直接等於買賣訊號；用來輔助判斷籌碼是否轉乾淨或散戶過熱。</div>
         <div class="line good"><b>籌碼轉乾淨</b>：${esc(retailSummary.clean ?? 0)} 檔</div>
         ${(retail.clean || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積籌碼轉乾淨名單</div>'}
+        <div class="line good"><b>觀察轉乾淨</b>：${esc(retailSummary.watch_clean ?? 0)} 檔</div>
+        ${(retail.watch_clean || []).slice(0,2).map(compactRetail).join("") || '<div class="line">尚未累積觀察轉乾淨名單</div>'}
         <div class="line warn"><b>散戶過熱</b>：${esc(retailSummary.overheated ?? 0)} 檔</div>
-        ${(retail.overheated || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積散戶過熱名單</div>'}`;
+        ${(retail.overheated || []).slice(0,3).map(compactRetail).join("") || '<div class="line">尚未累積散戶過熱名單</div>'}
+        <div class="line warn"><b>觀察過熱</b>：${esc(retailSummary.watch_overheated ?? 0)} 檔</div>
+        ${(retail.watch_overheated || []).slice(0,2).map(compactRetail).join("") || '<div class="line">尚未累積觀察過熱名單</div>'}`;
       const quality = data.data_quality || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       const retry = data.data_retry || {};
@@ -981,6 +985,13 @@ def _html() -> str:
       const aiAvailability = aiStatus.requested_models
         ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
         : "";
+      const aiFailureDetail = [...(aiStatus.failed_models || []), ...(aiStatus.timed_out_models || [])]
+        .slice(0, 4)
+        .map(name => String(name).split("/").pop())
+        .join("、");
+      const aiHealthLine = aiStatus.health
+        ? `<div class="line ${aiStatus.health.score >= 80 ? "good" : aiStatus.health.score >= 50 ? "warn" : "bad"}">模型健康度：${esc(aiStatus.health.label || "-")}｜${esc(aiStatus.health.score ?? 0)}/100${aiFailureDetail ? `｜異常：${esc(aiFailureDetail)}` : ""}</div>`
+        : "";
       const aiFallbackNote = ai.using_fallback_picks
         ? `<div class="line warn">未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，先顯示 AI 首選觀察</div>`
         : "";
@@ -988,6 +999,7 @@ def _html() -> str:
         ? aiFallbackNote + aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.model_count || 0)} 模型參與｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(aiRequiredVotes)} 票同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
         : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(aiRequiredModels)} 模型參與且 ${esc(aiRequiredVotes)} 票同意的 AI 自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
       if (aiAvailability) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiAvailability);
+      if (aiHealthLine) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiHealthLine);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")

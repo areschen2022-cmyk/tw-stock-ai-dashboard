@@ -11,7 +11,15 @@ from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.tdcc_client import TdccClient, load_tdcc_csv, retail_holder_counts
 from src.data_provider.twse_client import TwseClient
-from src.report.retail_divergence import RetailDivergenceThresholds, enrich_retail_records
+from src.report.retail_divergence import (
+    SIGNAL_CLEAN,
+    SIGNAL_CLEAN_WATCH,
+    SIGNAL_NEUTRAL,
+    SIGNAL_OVERHEATED,
+    SIGNAL_OVERHEATED_WATCH,
+    RetailDivergenceThresholds,
+    enrich_retail_records,
+)
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -129,8 +137,14 @@ def build_retail_signals(
         enriched,
         thresholds=RetailDivergenceThresholds(holder_change_pct=3.0, price_flat_pct=1.0, min_volume=1000.0),
     )
-    signals = [item for item in classified if item["signal"] != "中性"]
-    signals.sort(key=lambda item: (item["signal"] != "籌碼轉乾淨", -abs(float(item.get("holder_change_pct") or 0))))
+    signals = [item for item in classified if item["signal"] != SIGNAL_NEUTRAL]
+    priority = {
+        SIGNAL_CLEAN: 0,
+        SIGNAL_OVERHEATED: 1,
+        SIGNAL_CLEAN_WATCH: 2,
+        SIGNAL_OVERHEATED_WATCH: 3,
+    }
+    signals.sort(key=lambda item: (priority.get(item["signal"], 9), -abs(float(item.get("holder_change_pct") or 0))))
     return signals, week_date
 
 
