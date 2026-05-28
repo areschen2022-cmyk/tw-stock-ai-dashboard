@@ -79,3 +79,8 @@ def test_real_theme_database_includes_satellite_and_passive_components() -> None
     assert merged["theme_pools"]["defense_policy"]["name"] == "防禦與政策"
     assert merged["theme_pools"]["defense_policy"]["stocks"]["2634"] == "漢翔"
     assert "政策受惠" in merged["web_news"]["theme_keywords"]["defense_policy"]
+
+    assert merged["theme_pools"]["quartz_frequency_control"]["name"] == "石英元件/頻率控制"
+    assert merged["theme_pools"]["quartz_frequency_control"]["stocks"]["3042"] == "晶技"
+    assert merged["theme_pools"]["quartz_frequency_control"]["stocks"]["8289"] == "泰藝"
+    assert "低抖動" in merged["web_news"]["theme_keywords"]["quartz_frequency_control"]
