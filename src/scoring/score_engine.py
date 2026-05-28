@@ -7,6 +7,7 @@ from typing import Any
 import pandas as pd
 
 from src.indicators.chip import chip_score
+from src.indicators.candlestick import candlestick_patterns
 from src.indicators.fundamental import fundamental_score
 from src.indicators.market import market_adjustment as calc_market_adjustment
 from src.indicators.risk import risk_score
@@ -40,6 +41,8 @@ class StockScore:
     reasons: dict[str, list[str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
     trigger_tags: list[str] = field(default_factory=list)
+    pattern_tags: list[str] = field(default_factory=list)
+    pattern_risk_tags: list[str] = field(default_factory=list)
     retail_signal: dict[str, Any] = field(default_factory=dict)
     selection_quality_adjustment: int = 0
     selection_quality_notes: list[str] = field(default_factory=list)
@@ -175,6 +178,7 @@ class ScoreEngine:
             )
 
         t_score, t_reasons = technical_score(prices)
+        pattern_tags, pattern_risk_tags = candlestick_patterns(prices)
         c_score, c_reasons = chip_score(
             bundle.get("institutional", pd.DataFrame()),
             bundle.get("margin", pd.DataFrame()),
@@ -211,6 +215,8 @@ class ScoreEngine:
             opportunity_adj=opportunity_adj,
             themes=themes or [],
         )
+        tags.extend(pattern_tags)
+        tags.extend(pattern_risk_tags)
         return StockScore(
             stock_id=stock_id,
             total_score=total,
@@ -241,4 +247,6 @@ class ScoreEngine:
                 "opportunity": opportunity_reasons or [],
             },
             trigger_tags=tags,
+            pattern_tags=pattern_tags,
+            pattern_risk_tags=pattern_risk_tags,
         )

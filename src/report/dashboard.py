@@ -84,6 +84,8 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "entry_limit_price": row.get("entry_limit_price"),
             "stop_price": row.get("stop_price"),
             "themes": row.get("themes", []),
+            "pattern_tags": row.get("pattern_tags", []),
+            "pattern_risk_tags": row.get("pattern_risk_tags", []),
         }
 
     chase = [
@@ -385,6 +387,8 @@ def build_dashboard_payload(
                 "opportunity_score": item.opportunity_score,
                 "warnings": item.warnings,
                 "trigger_tags": item.trigger_tags,
+                "pattern_tags": item.pattern_tags,
+                "pattern_risk_tags": item.pattern_risk_tags,
                 "trigger_summary": item.trigger_summary,
                 "decision_reason": _decision_reason(item),
                 "retail_signal": item.retail_signal,
@@ -623,6 +627,8 @@ def _html() -> str:
     .tag-tech   { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
     .tag-fund   { background:#fdf4ff; color:#7e22ce; border:1px solid #e9d5ff; }
     .tag-over   { background:#f0f9ff; color:#0c4a6e; border:1px solid #bae6fd; }
+    .tag-pattern{ background:#ecfdf3; color:#067647; border:1px solid #abefc6; }
+    .tag-risk   { background:#fff1f3; color:#c01048; border:1px solid #fecdd6; }
     .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
     .theme-table-wrap { max-height:178px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin:6px 0; }
     .theme-table-wrap table { border:0; border-radius:0; }
@@ -747,6 +753,9 @@ def _html() -> str:
       "突破": "tag-tech",  "趨勢": "tag-tech",  "技術": "tag-tech",
       "營收": "tag-fund",
       "美股": "tag-over",  "海外": "tag-over",
+      "放量長紅": "tag-pattern", "陽包陰": "tag-pattern", "錘子線": "tag-pattern",
+      "突破整理": "tag-pattern",
+      "放量不漲": "tag-risk", "高位": "tag-risk", "陰包陽": "tag-risk",
     };
     function tagClass(tag) {
       for (const [kw, cls] of Object.entries(TAG_CLASS)) {
@@ -768,6 +777,8 @@ def _html() -> str:
           <option value="ai">AI 共識</option>
           <option value="new">今日新增</option>
           <option value="top_theme">主題焦點</option>
+          <option value="pattern_bull">K線偏多</option>
+          <option value="pattern_risk">K線風險</option>
         </select>`);
         document.querySelector("#quickFilter").addEventListener("change", render);
       }
@@ -1027,7 +1038,9 @@ def _html() -> str:
           (quick === "risk" && riskIds.has(String(r.stock_id))) ||
           (quick === "ai" && aiIds.has(String(r.stock_id))) ||
           (quick === "new" && String(data.as_of || "") === String(r.signal_date || data.as_of || "")) ||
-          (quick === "top_theme" && (r.themes || []).includes(topTheme));
+          (quick === "top_theme" && (r.themes || []).includes(topTheme)) ||
+          (quick === "pattern_bull" && (r.pattern_tags || []).length) ||
+          (quick === "pattern_risk" && (r.pattern_risk_tags || []).length);
         return quickOk && (!q || blob.includes(q)) && (!g || r.grade === g);
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
