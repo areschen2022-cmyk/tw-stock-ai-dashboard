@@ -331,7 +331,7 @@ def _build_health_status(
         "generated_date": generated_at.date().isoformat(),
         "data_date": as_of.isoformat(),
         "website_schedule": "04:30 / 05:00",
-        "telegram_schedule": "07:20 / 07:35 / 08:05",
+        "telegram_schedule": "07:20 / 07:35 / 07:50 / 08:05",
         "provider_label": provider_label,
         "news_sources": news_sources,
         "news_failed": news_failed,
