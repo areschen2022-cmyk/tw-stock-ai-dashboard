@@ -255,7 +255,13 @@ def _build_perf_context(summary: dict, min_completed: int = 20) -> str:
 def _messages(as_of: date, candidates: list[dict], perf_context: str = "") -> list[dict[str, str]]:
     user_payload: dict[str, Any] = {
         "as_of": as_of.isoformat(),
-        "task": "逐檔給出 action: 可追/等拉回/只觀察/避免，並用一句話說明主要風險或優勢。",
+        "task": (
+            "請對 candidates 每一檔逐檔給出 action: 可追/等拉回/只觀察/避免。"
+            "每個候選股都必須回傳一筆 review，不可省略。"
+            "stock_id 必須完全照抄 candidates 的 stock_id。"
+            "只輸出 JSON 物件，格式必須為 {\"reviews\": [...]}，"
+            "每筆用一句話說明主要風險或優勢。"
+        ),
         "schema": {
             "reviews": [
                 {
@@ -275,7 +281,7 @@ def _messages(as_of: date, candidates: list[dict], perf_context: str = "") -> li
             "role": "system",
             "content": (
                 "你是台股交易訊號複核員。只能根據使用者提供的結構化資料判斷，"
-                "不可自行編造新聞或價格。輸出必須是 JSON。"
+                "不可自行編造新聞或價格。輸出必須是 JSON，不要加 Markdown code fence。"
             ),
         },
         {
@@ -295,7 +301,14 @@ def _parse_model_review(model: str, content: str) -> dict[str, Any]:
     except json.JSONDecodeError as exc:
         log.warning("AI council JSON parse failed for %s: %s | content: %.200s", model, exc, content)
         return {"model": model, "reviews": []}
-    rows = payload.get("reviews") if isinstance(payload, dict) else []
+    if isinstance(payload, dict):
+        rows = payload.get("reviews") or payload.get("results") or payload.get("items") or []
+    elif isinstance(payload, list):
+        rows = payload
+    else:
+        rows = []
+    if not rows:
+        log.warning("AI council returned no reviews for %s | content: %.200s", model, content)
     parsed = []
     for row in rows or []:
         action = str(row.get("action") or "只觀察").strip()

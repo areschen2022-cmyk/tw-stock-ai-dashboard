@@ -51,6 +51,32 @@ class _DeepSeekLikeClient:
         )
 
 
+class _ListJsonClient:
+    provider = "deepseek"
+    enabled = True
+
+    def chat_json(self, model, messages, max_tokens=900):
+        return json.dumps(
+            [{"stock_id": "2408", "action": "可追", "confidence": 0.7, "reason": "root list"}],
+            ensure_ascii=False,
+        )
+
+
+class _ResultsKeyJsonClient:
+    provider = "deepseek"
+    enabled = True
+
+    def chat_json(self, model, messages, max_tokens=900):
+        return json.dumps(
+            {
+                "results": [
+                    {"stock_id": "2408", "action": "等拉回", "confidence": 0.65, "reason": "alternate key"}
+                ]
+            },
+            ensure_ascii=False,
+        )
+
+
 def test_ai_council_builds_consensus() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "測試"}]
     status = {}
@@ -117,6 +143,52 @@ def test_ai_council_allows_deepseek_single_model_pick() -> None:
     assert reviews[0]["is_ai_pick"] is True
     assert status["provider"] == "deepseek"
     assert status["successful_models"] == 1
+
+
+def test_ai_council_accepts_root_list_json() -> None:
+    rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
+
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "provider": "deepseek",
+                "top_n": 1,
+                "min_model_count": 1,
+                "min_agree_count": 1,
+                "models": ["deepseek-chat"],
+            }
+        },
+        client=_ListJsonClient(),
+    )
+
+    assert reviews[0]["consensus_action"] == "可追"
+    assert reviews[0]["model_count"] == 1
+
+
+def test_ai_council_accepts_results_key_json() -> None:
+    rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
+
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "provider": "deepseek",
+                "top_n": 1,
+                "min_model_count": 1,
+                "min_agree_count": 1,
+                "models": ["deepseek-chat"],
+            }
+        },
+        client=_ResultsKeyJsonClient(),
+    )
+
+    assert reviews[0]["consensus_action"] == "等拉回"
+    assert reviews[0]["model_count"] == 1
 
 
 def test_ai_council_reports_disabled_deepseek_without_key(monkeypatch) -> None:
