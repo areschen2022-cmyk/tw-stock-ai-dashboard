@@ -1173,6 +1173,14 @@ def _performance_html() -> str:
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .analysis-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
     section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .quality-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:10px; }
+    .quality-card { border:1px solid var(--line); border-radius:8px; padding:10px; min-height:94px; background:#fbfcfe; }
+    .quality-card b { display:block; font-size:15px; margin-bottom:4px; }
+    .quality-card .value { font-size:18px; font-weight:800; margin:2px 0; }
+    .advice-list { display:grid; gap:8px; margin-top:10px; }
+    .advice-item { border-left:4px solid #9a6700; background:#fffaf0; padding:9px 10px; border-radius:6px; font-size:13px; }
+    .advice-item.good { border-left-color:var(--good); background:#f0f9f5; }
+    .advice-item.bad { border-left-color:var(--bad); background:#fff5f5; }
     h2 { font-size:16px; margin:0 0 8px; }
     .note { color:var(--muted); font-size:12px; margin:0 0 10px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
@@ -1188,6 +1196,7 @@ def _performance_html() -> str:
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
       .analysis-grid { grid-template-columns:1fr; }
+      .quality-grid { grid-template-columns:1fr; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
       thead { display:none; }
@@ -1209,6 +1218,12 @@ def _performance_html() -> str:
       <a class="nav-tab active" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
+    <section style="margin-bottom:16px;">
+      <h2>選股品質總覽</h2>
+      <div class="note" id="qualityNote">載入中...</div>
+      <div class="quality-grid" id="selectionQuality"></div>
+      <div class="advice-list" id="calibrationAdvice"></div>
+    </section>
     <div class="analysis-grid">
       <section>
         <h2>5日強勢榜</h2>
@@ -1328,9 +1343,32 @@ def _performance_html() -> str:
     function metric(label, value, suffix="") {
       return `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
     }
+    function segmentText(row, suffix="") {
+      if (!row || !row.label) return "樣本不足";
+      const parts = [
+        `${esc(row.label)}${suffix}`,
+        `${esc(row.completed ?? 0)}筆`,
+        `勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}`,
+        `平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}`
+      ];
+      return parts.join("｜");
+    }
+    function qualityCard(title, row, suffix="") {
+      return `<div class="quality-card">
+        <b>${esc(title)}</b>
+        <div class="value">${row?.label ? esc(row.label) + suffix : "樣本不足"}</div>
+        <div class="small">${segmentText(row, suffix)}</div>
+      </div>`;
+    }
+    function adviceClass(priority) {
+      if (priority === "加權觀察") return "good";
+      if (priority === "降權觀察" || priority === "風險檢查") return "bad";
+      return "";
+    }
     function render() {
       const stats = data.stats || {};
       const quality = data.data_quality || {};
+      const selection = data.selection_quality || {};
       document.querySelector("#subtitle").textContent = `${data.as_of}｜近 ${data.days} 天｜僅供研究追蹤`;
       document.querySelector("#metrics").innerHTML = [
         metric("訊號總數", stats.signals),
@@ -1340,6 +1378,20 @@ def _performance_html() -> str:
         `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
+      document.querySelector("#qualityNote").textContent = `${selection.sample_label || "樣本不足"}｜${selection.sample_note || "先持續累積樣本，不自動改權重。"}`;
+      document.querySelector("#selectionQuality").innerHTML = [
+        qualityCard("最有效強度", selection.best_grade),
+        qualityCard("需檢討強度", selection.weak_grade),
+        qualityCard("最有效題材", selection.best_theme),
+        qualityCard("需檢討題材", selection.weak_theme),
+        qualityCard("最佳分數區間", selection.best_score_band),
+        qualityCard("需檢討分數區間", selection.weak_score_band),
+        qualityCard("最佳操作建議", selection.best_action),
+        `<div class="quality-card"><b>AI 複核樣本</b><div class="value">${esc(selection.ai?.sample_label || "樣本不足")}</div><div class="small">完成 ${esc(selection.ai?.completed ?? 0)} 筆｜勝率 ${selection.ai?.win_rate_5d == null ? "—" : Number(selection.ai.win_rate_5d).toFixed(1) + "%"}｜平均 ${selection.ai?.avg_return_5d == null ? "—" : (selection.ai.avg_return_5d >= 0 ? "+" : "") + Number(selection.ai.avg_return_5d).toFixed(1) + "%"}</div></div>`,
+      ].join("");
+      document.querySelector("#calibrationAdvice").innerHTML = (data.calibration_advice || []).length
+        ? data.calibration_advice.map(row => `<div class="advice-item ${adviceClass(row.priority)}"><b>${esc(row.priority)}｜${esc(row.group)}：${esc(row.label)}</b><div>${esc(row.reason)}</div><div class="small">完成 ${esc(row.completed)} 筆｜5日勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}｜5日平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}</div></div>`).join("")
+        : `<div class="advice-item">目前樣本不足或無明顯需要調權的區塊，先持續記錄。</div>`;
       const leaderRow = (r, includeStop=false) => `
         <tr>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>

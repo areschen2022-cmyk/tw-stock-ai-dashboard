@@ -113,6 +113,33 @@ def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     assert summary["data_quality"]["status_counts"]["data_missing"] == 0
     assert summary["backtest_insights"]["sample"] == 1
     assert summary["backtest_insights"]["best_segments"]
+    assert summary["selection_quality"]["best_theme"]["label"] in {"記憶體/HBM", "AI伺服器"}
+    assert summary["selection_quality"]["sample_label"] == "樣本不足"
+
+
+def test_performance_summary_builds_calibration_advice(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    names = {f"24{i:02d}": f"Stock {i}" for i in range(10)}
+
+    signals = []
+    for index in range(5):
+        signal = _score(f"24{index:02d}", 88, price=100.0)
+        signal.themes = ["強題材"]
+        signal.stop_price = 95.0
+        signal.entry_limit_price = 103.0
+        signals.append(signal)
+        store.save_daily_score(signal, day0)
+        for offset, price in enumerate([101.0, 102.0, 103.0, 104.0, 110.0], start=1):
+            store.save_daily_score(_score(signal.stock_id, 88, price=price), day0 + timedelta(days=offset))
+
+    store.save_watch_candidates(signals, day0, names)
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+
+    assert summary["selection_quality"]["completed_5d"] == 5
+    assert summary["selection_quality"]["best_theme"]["label"] == "強題材"
+    assert any(row["priority"] == "加權觀察" and row["label"] == "強題材" for row in summary["calibration_advice"])
 
 
 def test_performance_summary_entry_analysis(tmp_path) -> None:

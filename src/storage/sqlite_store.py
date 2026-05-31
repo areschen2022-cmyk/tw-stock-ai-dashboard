@@ -816,6 +816,11 @@ class SQLiteStore:
         completed = [item for item in items if item["return_5d"] is not None]
         a_completed = [item for item in completed if item["grade"] == "A"]
         stop_known = [item for item in items if item["stop_hit"] is not None]
+        theme_stats = _theme_stats(items)
+        action_stats = _action_stats(items)
+        score_bands = _score_band_stats(items)
+        ai_council = self.ai_council_summary(as_of, days=days)
+        backtest_insights = _backtest_insights(items)
         return {
             "as_of": as_of.isoformat(),
             "days": days,
@@ -828,16 +833,28 @@ class SQLiteStore:
                 "stop_hit_rate": _rate([item["stop_hit"] for item in stop_known]),
                 "a_win_rate_5d": _rate([item["return_5d"] > 0 for item in a_completed]),
             },
-            "theme_stats": _theme_stats(items),
-            "top_themes": _top_buckets(_theme_stats(items), min_completed=1, limit=5),
-            "action_stats": _action_stats(items),
+            "theme_stats": theme_stats,
+            "top_themes": _top_buckets(theme_stats, min_completed=1, limit=5),
+            "action_stats": action_stats,
             "leaderboard": _leaderboard(items, limit=8),
             "data_quality": _performance_data_quality(items),
-            "score_bands": _score_band_stats(items),
+            "score_bands": score_bands,
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
-            "backtest_insights": _backtest_insights(items),
-            "ai_council": self.ai_council_summary(as_of, days=days),
+            "backtest_insights": backtest_insights,
+            "ai_council": ai_council,
+            "selection_quality": _selection_quality_overview(
+                items,
+                theme_stats=theme_stats,
+                action_stats=action_stats,
+                score_bands=score_bands,
+                ai_council=ai_council,
+            ),
+            "calibration_advice": _calibration_advice(
+                grade_return_summary(items),
+                action_stats,
+                theme_stats,
+            ),
             "items": items,
         }
 
@@ -1355,6 +1372,171 @@ def _backtest_notes(completed: list[dict], candidates: list[dict], weak: list[di
         worst = weak[0]
         notes.append(f"需檢討區塊：{worst['group']} {worst['label']}，5日平均 {worst['avg_return_5d']}%")
     return notes
+
+
+def _segment_summary(row: dict | None, label_key: str = "label") -> dict | None:
+    if not row:
+        return None
+    return {
+        "label": row.get(label_key),
+        "signals": row.get("signals"),
+        "completed": row.get("completed") or row.get("completed_5d") or 0,
+        "win_rate_5d": row.get("win_rate_5d"),
+        "avg_return_5d": row.get("avg_return_5d"),
+        "avg_return_10d": row.get("avg_return_10d"),
+        "stop_hit_rate": row.get("stop_hit_rate"),
+    }
+
+
+def _best_segment(rows: list[dict], label_key: str = "label", min_completed: int = 1) -> dict | None:
+    eligible = [row for row in rows if int(row.get("completed") or row.get("completed_5d") or 0) >= min_completed]
+    if not eligible:
+        return None
+    best = max(
+        eligible,
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else -999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else -999),
+            int(row.get("completed") or row.get("completed_5d") or 0),
+        ),
+    )
+    return _segment_summary(best, label_key=label_key)
+
+
+def _weak_segment(rows: list[dict], label_key: str = "label", min_completed: int = 1) -> dict | None:
+    eligible = [row for row in rows if int(row.get("completed") or row.get("completed_5d") or 0) >= min_completed]
+    if not eligible:
+        return None
+    weak = min(
+        eligible,
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else 999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else 999),
+        ),
+    )
+    return _segment_summary(weak, label_key=label_key)
+
+
+def _sample_label(completed: int) -> str:
+    if completed >= 60:
+        return "可校準"
+    if completed >= 30:
+        return "可初判"
+    if completed >= 10:
+        return "觀察中"
+    return "樣本不足"
+
+
+def _sample_note(completed: int) -> str:
+    if completed >= 60:
+        return "樣本已足夠做門檻與權重校準，但仍建議人工確認。"
+    if completed >= 30:
+        return "樣本可做初步方向判斷，暫不建議全自動改權重。"
+    if completed >= 10:
+        return "樣本開始有參考價值，適合找出明顯強弱區塊。"
+    return "樣本仍少，先持續記錄，不用急著調整選股規則。"
+
+
+def _selection_quality_overview(
+    items: list[dict],
+    *,
+    theme_stats: list[dict],
+    action_stats: list[dict],
+    score_bands: list[dict],
+    ai_council: dict,
+) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    ai_stats = (ai_council or {}).get("stats", {})
+    return {
+        "sample_label": _sample_label(len(completed)),
+        "sample_note": _sample_note(len(completed)),
+        "completed_5d": len(completed),
+        "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+        "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+        "best_grade": _best_segment(grade_return_summary(items), label_key="grade"),
+        "weak_grade": _weak_segment(grade_return_summary(items), label_key="grade"),
+        "best_score_band": _best_segment(score_bands),
+        "weak_score_band": _weak_segment(score_bands),
+        "best_theme": _best_segment(theme_stats),
+        "weak_theme": _weak_segment(theme_stats),
+        "best_action": _best_segment(action_stats),
+        "weak_action": _weak_segment(action_stats),
+        "ai": {
+            "signals": ai_stats.get("signals", 0),
+            "completed": ai_stats.get("completed", 0),
+            "win_rate_5d": ai_stats.get("win_rate_5d"),
+            "avg_return_5d": ai_stats.get("avg_return_5d"),
+            "sample_label": _sample_label(int(ai_stats.get("completed") or 0)),
+        },
+    }
+
+
+def _calibration_row(group: str, row: dict, label_key: str = "label") -> dict | None:
+    completed = int(row.get("completed") or row.get("completed_5d") or 0)
+    avg_return = row.get("avg_return_5d")
+    win_rate = row.get("win_rate_5d")
+    stop_rate = row.get("stop_hit_rate")
+    if completed < 5:
+        return None
+    label = row.get(label_key)
+    if avg_return is not None and win_rate is not None and float(avg_return) >= 2 and float(win_rate) >= 55:
+        return {
+            "priority": "加權觀察",
+            "group": group,
+            "label": label,
+            "completed": completed,
+            "win_rate_5d": win_rate,
+            "avg_return_5d": avg_return,
+            "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。",
+        }
+    if avg_return is not None and win_rate is not None and float(avg_return) <= -1 and float(win_rate) <= 45:
+        return {
+            "priority": "降權觀察",
+            "group": group,
+            "label": label,
+            "completed": completed,
+            "win_rate_5d": win_rate,
+            "avg_return_5d": avg_return,
+            "reason": "5日平均報酬偏弱且勝率不足，後續應檢查是否過度加分。",
+        }
+    if stop_rate is not None and float(stop_rate) >= 50:
+        return {
+            "priority": "風險檢查",
+            "group": group,
+            "label": label,
+            "completed": completed,
+            "win_rate_5d": win_rate,
+            "avg_return_5d": avg_return,
+            "reason": "停損觸及率偏高，代表進場位置或題材延續性需要重新檢查。",
+        }
+    return None
+
+
+def _calibration_advice(
+    grade_rows: list[dict],
+    action_rows: list[dict],
+    theme_rows: list[dict],
+    limit: int = 8,
+) -> list[dict]:
+    advice: list[dict] = []
+    for group, rows, label_key in [
+        ("強度", grade_rows, "grade"),
+        ("操作", action_rows, "label"),
+        ("題材", theme_rows, "label"),
+    ]:
+        for row in rows:
+            item = _calibration_row(group, row, label_key=label_key)
+            if item:
+                advice.append(item)
+    order = {"降權觀察": 0, "風險檢查": 1, "加權觀察": 2}
+    advice.sort(
+        key=lambda row: (
+            order.get(str(row.get("priority")), 9),
+            -int(row.get("completed") or 0),
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else 0),
+        )
+    )
+    return advice[:limit]
 
 
 def _score_band_stats(items: list[dict]) -> list[dict]:
