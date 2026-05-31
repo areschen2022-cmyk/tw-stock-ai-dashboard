@@ -15,6 +15,8 @@
 驗證步驟：
 - `python -m pytest`
 - `gh run list --repo areschen2022-cmyk/tw-stock-ai-dashboard --limit 8`
+- 確認 GitHub Actions secrets 含 `DEEPSEEK_API_KEY`
+- 檢查 dashboard JSON 的 `ai_council.status.provider == "deepseek"`，且 DeepSeek 啟用後 `health.label == "穩定"`
 - 檢查 `delivery_log` 是否有當日 `telegram / morning_report`
 - 檢查 `dashboard/dashboard_data.json` 與 `docs/dashboard_data.json` 是否含最新 `delivery_status`
 
@@ -38,7 +40,7 @@
 規則：
 - S+/S/A/B 只代表訊號強度，不代表一定可以買。
 - 真正操作以「今日操作結論」為主，並需符合開盤不過度跳空、量能延續、停損可控。
-- AI 自選股維持嚴格共識：至少 5 個模型成功、5 票同意，才列為正式 AI 自選股。
+- AI 自選股以 DeepSeek 複核為主；AI 只審查既有候選股，不從新聞直接創造買進標的。
 
 **Stock Selection Quality Review:**
 1. Technical Analysis → 檢查突破、拉回、量價與停損位置。
