@@ -36,6 +36,21 @@ class _FencedJsonClient:
 ```"""
 
 
+class _DeepSeekLikeClient:
+    provider = "deepseek"
+    enabled = True
+
+    def chat_json(self, model, messages, max_tokens=900):
+        return json.dumps(
+            {
+                "reviews": [
+                    {"stock_id": "2408", "action": "可追", "confidence": 0.75, "reason": "paid model review"}
+                ]
+            },
+            ensure_ascii=False,
+        )
+
+
 def test_ai_council_builds_consensus() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "測試"}]
     status = {}
@@ -76,6 +91,59 @@ def test_ai_council_requires_five_buy_votes_for_pick() -> None:
     assert reviews[0]["consensus_action"] == "可追"
     assert reviews[0]["pick_agreement_count"] == 5
     assert reviews[0]["is_ai_pick"] is True
+
+
+def test_ai_council_allows_deepseek_single_model_pick() -> None:
+    rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
+    status = {}
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "provider": "deepseek",
+                "top_n": 1,
+                "min_model_count": 1,
+                "min_agree_count": 1,
+                "models": ["deepseek-chat"],
+            }
+        },
+        client=_DeepSeekLikeClient(),
+        status_out=status,
+    )
+
+    assert reviews[0]["consensus_action"] == "可追"
+    assert reviews[0]["is_ai_pick"] is True
+    assert status["provider"] == "deepseek"
+    assert status["successful_models"] == 1
+
+
+def test_ai_council_reports_disabled_deepseek_without_key(monkeypatch) -> None:
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
+    status = {}
+
+    reviews = run_ai_council(
+        rows,
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "provider": "deepseek",
+                "top_n": 1,
+                "min_model_count": 1,
+                "min_agree_count": 1,
+                "models": ["deepseek-chat"],
+            }
+        },
+        status_out=status,
+    )
+
+    assert reviews == []
+    assert status["provider"] == "deepseek"
+    assert status["health"]["label"] == "未啟用"
 
 
 def test_ai_council_does_not_pick_when_model_count_is_insufficient() -> None:

@@ -246,21 +246,19 @@ exit_risk:
 
 ai_council:
   enabled: true
+  provider: "deepseek"
+  fallback_provider: "openrouter"
   top_n: 5
-  min_model_count: 5
-  min_agree_count: 5
+  min_model_count: 1
+  min_agree_count: 1
   fallback_pick_count: 0
   pick_action: "可追"
   timeout: 45
-  total_timeout: 260
+  total_timeout: 60
   max_workers: 1
   max_tokens: 900
   models:
-    - "google/gemma-4-31b-it:free"
-    - "google/gemma-4-26b-a4b-it:free"
-    - "nvidia/nemotron-3-super-120b-a12b:free"
-    - "minimax/minimax-m2.5:free"
-    - "qwen/qwen3-next-80b-a3b-instruct:free"
+    - "deepseek-chat"
 
 web_news:
   enabled: true

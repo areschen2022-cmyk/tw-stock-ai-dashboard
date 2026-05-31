@@ -7,8 +7,9 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 from datetime import date
 from math import ceil
-from typing import Any
+from typing import Any, Protocol
 
+from src.ai.deepseek_client import DeepSeekClient
 from src.ai.openrouter_client import OpenRouterClient
 
 
@@ -18,11 +19,18 @@ ACTION_RANK = {"可追": 3, "等拉回": 2, "只觀察": 1, "避免": 0}
 log = logging.getLogger(__name__)
 
 
+class ChatJsonClient(Protocol):
+    provider: str
+    enabled: bool
+
+    def chat_json(self, model: str, messages: list[dict[str, str]], max_tokens: int = 900) -> str: ...
+
+
 def run_ai_council(
     rows: list[dict],
     as_of: date,
     config: dict,
-    client: OpenRouterClient | None = None,
+    client: ChatJsonClient | None = None,
     store=None,
     status_out: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
@@ -30,13 +38,16 @@ def run_ai_council(
     if not cfg.get("enabled", False):
         return []
 
-    client = client or OpenRouterClient(timeout=int(cfg.get("timeout", 45)))
+    models = list(cfg.get("models", []))
+    client = client or _build_client(cfg)
+    provider = _provider_name(cfg, client)
     if not client.enabled:
-        log.info("AI council skipped: OPENROUTER_API_KEY is not set")
+        if status_out is not None:
+            _write_disabled_status(status_out, provider, models, cfg)
+        log.info("AI council skipped: %s API key is not set", provider)
         return []
 
     top_n = int(cfg.get("top_n", 5))
-    models = list(cfg.get("models", []))
     if not models:
         return []
 
@@ -101,6 +112,7 @@ def run_ai_council(
         )
         status_out.update(
             {
+                "provider": provider,
                 "requested_models": len(models),
                 "successful_models": len(successful_models),
                 "failed_models": failed_models,
@@ -119,6 +131,55 @@ def run_ai_council(
         min_agree_count=min_agree_count,
         min_model_count=min_model_count,
         pick_action=pick_action,
+    )
+
+
+def _provider_name(cfg: dict, client: ChatJsonClient | None = None) -> str:
+    if client is not None:
+        return str(getattr(client, "provider", client.__class__.__name__))
+    return str(cfg.get("provider", "openrouter")).lower()
+
+
+def _build_client(cfg: dict) -> ChatJsonClient:
+    timeout = int(cfg.get("timeout", 45))
+    provider = str(cfg.get("provider", "openrouter")).lower()
+    if provider == "deepseek":
+        deepseek = DeepSeekClient(timeout=timeout)
+        if deepseek.enabled:
+            return deepseek
+        fallback_provider = str(cfg.get("fallback_provider", "")).lower()
+        if fallback_provider == "openrouter":
+            fallback = OpenRouterClient(timeout=timeout)
+            if fallback.enabled:
+                return fallback
+        return deepseek
+    return OpenRouterClient(timeout=timeout)
+
+
+def _write_disabled_status(status_out: dict[str, Any], provider: str, models: list[str], cfg: dict) -> None:
+    min_agree_count = int(cfg.get("min_agree_count", 1))
+    min_model_count = int(cfg.get("min_model_count", min_agree_count))
+    status_out.update(
+        {
+            "provider": provider,
+            "requested_models": len(models),
+            "successful_models": 0,
+            "failed_models": [],
+            "timed_out_models": [],
+            "success_model_names": [],
+            "available_ratio": 0,
+            "min_model_count": min_model_count,
+            "health": {
+                "label": "未啟用",
+                "score": 0,
+                "requested": len(models),
+                "success": 0,
+                "failed": 0,
+                "timed_out": 0,
+                "available_ratio": 0,
+                "timeout_ratio": 0,
+            },
+        }
     )
 
 
