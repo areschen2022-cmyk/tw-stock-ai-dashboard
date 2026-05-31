@@ -24,6 +24,14 @@
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .analysis-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
     section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .quality-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:10px; }
+    .quality-card { border:1px solid var(--line); border-radius:8px; padding:10px; min-height:94px; background:#fbfcfe; }
+    .quality-card b { display:block; font-size:15px; margin-bottom:4px; }
+    .quality-card .value { font-size:18px; font-weight:800; margin:2px 0; }
+    .advice-list { display:grid; gap:8px; margin-top:10px; }
+    .advice-item { border-left:4px solid #9a6700; background:#fffaf0; padding:9px 10px; border-radius:6px; font-size:13px; }
+    .advice-item.good { border-left-color:var(--good); background:#f0f9f5; }
+    .advice-item.bad { border-left-color:var(--bad); background:#fff5f5; }
     h2 { font-size:16px; margin:0 0 8px; }
     .note { color:var(--muted); font-size:12px; margin:0 0 10px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
@@ -39,6 +47,7 @@
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
       .analysis-grid { grid-template-columns:1fr; }
+      .quality-grid { grid-template-columns:1fr; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
       thead { display:none; }
@@ -60,6 +69,12 @@
       <a class="nav-tab active" href="performance.html">訊號成效</a>
     </nav>
     <div class="metrics" id="metrics"></div>
+    <section style="margin-bottom:16px;">
+      <h2>選股品質總覽</h2>
+      <div class="note" id="qualityNote">載入中...</div>
+      <div class="quality-grid" id="selectionQuality"></div>
+      <div class="advice-list" id="calibrationAdvice"></div>
+    </section>
     <div class="analysis-grid">
       <section>
         <h2>5日強勢榜</h2>
@@ -169,42 +184,42 @@
   </main>
   <script>
     window.__PERFORMANCE_DATA__ = {
-  "as_of": "2026-05-28",
+  "as_of": "2026-05-29",
   "days": 30,
   "stats": {
-    "signals": 315,
-    "completed": 121,
-    "win_rate_5d": 50.413223140495866,
-    "avg_return_5d": 2.7359599663572354,
+    "signals": 343,
+    "completed": 136,
+    "win_rate_5d": 54.41176470588235,
+    "avg_return_5d": 3.3530302428833494,
     "avg_return_10d": null,
-    "stop_hit_rate": 22.22222222222222,
-    "a_win_rate_5d": 38.333333333333336
+    "stop_hit_rate": 21.333333333333336,
+    "a_win_rate_5d": 44.776119402985074
   },
   "theme_stats": [
     {
       "label": "先進封裝/CoWoS",
-      "signals": 82,
-      "completed": 52,
-      "win_rate_5d": 40.38461538461539,
-      "avg_return_5d": -0.10664858243101588,
+      "signals": 88,
+      "completed": 57,
+      "win_rate_5d": 43.859649122807014,
+      "avg_return_5d": 0.6152911579060077,
       "avg_return_10d": null,
-      "stop_hit_rate": 29.72972972972973
+      "stop_hit_rate": 28.04878048780488
     },
     {
       "label": "AI伺服器",
-      "signals": 49,
-      "completed": 3,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 10.701099666616907,
+      "signals": 64,
+      "completed": 12,
+      "win_rate_5d": 91.66666666666666,
+      "avg_return_5d": 8.94100035318673,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.94871794871795
+      "stop_hit_rate": 14.285714285714285
     },
     {
       "label": "記憶體/HBM",
       "signals": 49,
       "completed": 28,
       "win_rate_5d": 53.57142857142857,
-      "avg_return_5d": 4.443231974367744,
+      "avg_return_5d": 4.4432319743677455,
       "avg_return_10d": null,
       "stop_hit_rate": 32.55813953488372
     },
@@ -215,7 +230,7 @@
       "win_rate_5d": 100.0,
       "avg_return_5d": 17.812259389114775,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.391304347826086
+      "stop_hit_rate": 16.666666666666664
     },
     {
       "label": "被動元件",
@@ -256,11 +271,20 @@
     {
       "label": "AI電力/重電/電網",
       "signals": 9,
-      "completed": 3,
+      "completed": 4,
       "win_rate_5d": 100.0,
-      "avg_return_5d": 21.26082319749646,
+      "avg_return_5d": 18.234349792488544,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
+    },
+    {
+      "label": "網通光通訊",
+      "signals": 9,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "avg_return_10d": null,
+      "stop_hit_rate": 14.285714285714285
     },
     {
       "label": "AI國防/軍工",
@@ -272,31 +296,22 @@
       "stop_hit_rate": 14.285714285714285
     },
     {
-      "label": "網通光通訊",
-      "signals": 7,
+      "label": "原物料/低基期傳產",
+      "signals": 4,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
-    },
-    {
-      "label": "原物料/低基期傳產",
-      "signals": 1,
-      "completed": 0,
-      "win_rate_5d": null,
-      "avg_return_5d": null,
-      "avg_return_10d": null,
-      "stop_hit_rate": null
     }
   ],
   "top_themes": [
     {
       "label": "AI電力/重電/電網",
       "signals": 9,
-      "completed": 3,
+      "completed": 4,
       "win_rate_5d": 100.0,
-      "avg_return_5d": 21.26082319749646,
+      "avg_return_5d": 18.234349792488544,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
     },
@@ -307,7 +322,7 @@
       "win_rate_5d": 100.0,
       "avg_return_5d": 17.812259389114775,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.391304347826086
+      "stop_hit_rate": 16.666666666666664
     },
     {
       "label": "光學鏡頭/視覺",
@@ -320,12 +335,12 @@
     },
     {
       "label": "AI伺服器",
-      "signals": 49,
-      "completed": 3,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 10.701099666616907,
+      "signals": 64,
+      "completed": 12,
+      "win_rate_5d": 91.66666666666666,
+      "avg_return_5d": 8.94100035318673,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.94871794871795
+      "stop_hit_rate": 14.285714285714285
     },
     {
       "label": "機器人/自動化",
@@ -340,30 +355,30 @@
   "action_stats": [
     {
       "label": "可追蹤突破",
-      "signals": 153,
-      "completed": 51,
-      "win_rate_5d": 50.98039215686274,
-      "avg_return_5d": 2.254613196741705,
+      "signals": 169,
+      "completed": 57,
+      "win_rate_5d": 54.385964912280706,
+      "avg_return_5d": 3.363310124154929,
       "avg_return_10d": null,
-      "stop_hit_rate": 14.17910447761194
+      "stop_hit_rate": 13.286713286713287
     },
     {
       "label": "只觀察",
-      "signals": 113,
-      "completed": 49,
-      "win_rate_5d": 57.14285714285714,
-      "avg_return_5d": 4.183295286799642,
+      "signals": 119,
+      "completed": 54,
+      "win_rate_5d": 59.25925925925925,
+      "avg_return_5d": 4.001054322347626,
       "avg_return_10d": null,
-      "stop_hit_rate": 29.292929292929294
+      "stop_hit_rate": 26.36363636363636
     },
     {
       "label": "等拉回",
-      "signals": 48,
-      "completed": 21,
-      "win_rate_5d": 33.33333333333333,
-      "avg_return_5d": 0.5278292305817158,
+      "signals": 54,
+      "completed": 25,
+      "win_rate_5d": 44.0,
+      "avg_return_5d": 1.9298601019413106,
       "avg_return_10d": null,
-      "stop_hit_rate": 30.434782608695656
+      "stop_hit_rate": 34.04255319148936
     },
     {
       "label": "避免追高",
@@ -438,6 +453,21 @@
         "stop_hit": false
       },
       {
+        "signal_date": "2026-05-21",
+        "stock_id": "3189",
+        "name": "景碩",
+        "grade": "S+",
+        "total_score": 100,
+        "action": "可追蹤突破",
+        "themes": [
+          "先進封裝/CoWoS"
+        ],
+        "return_3d": 26.714801444043324,
+        "return_5d": 31.5884476534296,
+        "return_10d": null,
+        "stop_hit": false
+      },
+      {
         "signal_date": "2026-05-12",
         "stock_id": "3008",
         "name": "大立光",
@@ -449,6 +479,21 @@
         ],
         "return_3d": 23.25581395348837,
         "return_5d": 31.12701252236136,
+        "return_10d": null,
+        "stop_hit": false
+      },
+      {
+        "signal_date": "2026-05-21",
+        "stock_id": "2356",
+        "name": "英業達",
+        "grade": "S+",
+        "total_score": 96,
+        "action": "可追蹤突破",
+        "themes": [
+          "AI伺服器"
+        ],
+        "return_3d": 14.602587800369681,
+        "return_5d": 29.75970425138632,
         "return_10d": null,
         "stop_hit": false
       },
@@ -466,36 +511,6 @@
         "return_5d": 28.361344537815125,
         "return_10d": null,
         "stop_hit": false
-      },
-      {
-        "signal_date": "2026-05-21",
-        "stock_id": "3711",
-        "name": "日月光投控",
-        "grade": "S+",
-        "total_score": 100,
-        "action": "可追蹤突破",
-        "themes": [
-          "先進封裝/CoWoS"
-        ],
-        "return_3d": 19.80392156862745,
-        "return_5d": 25.882352941176475,
-        "return_10d": null,
-        "stop_hit": false
-      },
-      {
-        "signal_date": "2026-05-15",
-        "stock_id": "6274",
-        "name": "台燿",
-        "grade": "A",
-        "total_score": 80,
-        "action": "可追蹤突破",
-        "themes": [
-          "低軌衛星/SpaceX"
-        ],
-        "return_3d": 22.60536398467433,
-        "return_5d": 24.904214559386972,
-        "return_10d": null,
-        "stop_hit": true
       }
     ],
     "bottom_5d": [
@@ -599,17 +614,17 @@
         "stop_hit": true
       },
       {
-        "signal_date": "2026-05-14",
-        "stock_id": "6510",
-        "name": "精測",
-        "grade": "A",
-        "total_score": 78,
-        "action": "等拉回",
+        "signal_date": "2026-05-21",
+        "stock_id": "3563",
+        "name": "牧德",
+        "grade": "S+",
+        "total_score": 100,
+        "action": "可追蹤突破",
         "themes": [
           "先進封裝/CoWoS"
         ],
-        "return_3d": -1.456953642384106,
-        "return_5d": -11.258278145695364,
+        "return_3d": -9.753483386923902,
+        "return_5d": -11.468381564844588,
         "return_10d": null,
         "stop_hit": true
       }
@@ -731,111 +746,90 @@
           "先進封裝/CoWoS"
         ],
         "return_3d": 26.714801444043324,
-        "return_5d": null,
+        "return_5d": 31.5884476534296,
         "return_10d": null,
         "stop_hit": false
       }
     ]
   },
   "data_quality": {
-    "signals": 315,
-    "completed_5d": 121,
-    "pending_5d": 116,
-    "data_missing_5d": 78,
-    "completion_rate_5d": 38.41269841269842,
-    "entry_trigger_known": 279,
-    "entry_trigger_rate": 68.45878136200717,
-    "stop_known": 279,
-    "stop_hit_rate": 22.22222222222222,
+    "signals": 343,
+    "completed_5d": 136,
+    "pending_5d": 144,
+    "data_missing_5d": 63,
+    "completion_rate_5d": 39.650145772594755,
+    "entry_trigger_known": 300,
+    "entry_trigger_rate": 65.66666666666666,
+    "stop_known": 300,
+    "stop_hit_rate": 21.333333333333336,
     "status_counts": {
-      "completed_5d": 121,
-      "pending_5d": 116,
-      "data_missing": 78
+      "completed_5d": 136,
+      "pending_5d": 144,
+      "data_missing": 63
     },
     "pending_examples": [
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "6770",
-        "name": "力積電",
+        "signal_date": "2026-05-29",
+        "stock_id": "5274",
+        "name": "信驊",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "6239",
-        "name": "力成",
+        "signal_date": "2026-05-29",
+        "stock_id": "3706",
+        "name": "神達",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "3131",
-        "name": "弘塑",
+        "signal_date": "2026-05-29",
+        "stock_id": "3231",
+        "name": "緯創",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
+        "signal_date": "2026-05-29",
         "stock_id": "2376",
         "name": "技嘉",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "3491",
-        "name": "昇達科",
+        "signal_date": "2026-05-29",
+        "stock_id": "2330",
+        "name": "台積電",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
+        "signal_date": "2026-05-29",
         "stock_id": "2317",
         "name": "鴻海",
         "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "6274",
-        "name": "台燿",
-        "grade": "S",
+        "signal_date": "2026-05-29",
+        "stock_id": "1303",
+        "name": "南亞",
+        "grade": "S+",
         "action": "可追蹤突破"
       },
       {
-        "signal_date": "2026-05-28",
-        "stock_id": "2356",
-        "name": "英業達",
-        "grade": "S",
+        "signal_date": "2026-05-29",
+        "stock_id": "3189",
+        "name": "景碩",
+        "grade": "S+",
         "action": "可追蹤突破"
       }
     ],
     "missing_examples": [
       {
         "signal_date": "2026-05-21",
-        "stock_id": "3563",
-        "name": "牧德",
-        "grade": "S+",
-        "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-05-21",
-        "stock_id": "3189",
-        "name": "景碩",
-        "grade": "S+",
-        "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-05-21",
         "stock_id": "6239",
         "name": "力成",
-        "grade": "S+",
-        "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-05-21",
-        "stock_id": "2356",
-        "name": "英業達",
         "grade": "S+",
         "action": "可追蹤突破"
       },
@@ -866,6 +860,27 @@
         "name": "台燿",
         "grade": "S",
         "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-21",
+        "stock_id": "1504",
+        "name": "東元",
+        "grade": "A",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-05-21",
+        "stock_id": "3264",
+        "name": "欣銓",
+        "grade": "A",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-05-21",
+        "stock_id": "1514",
+        "name": "亞力",
+        "grade": "A",
+        "action": "等拉回"
       }
     ]
   },
@@ -881,126 +896,126 @@
     },
     {
       "label": "65-74",
-      "signals": 114,
-      "completed": 49,
-      "win_rate_5d": 57.14285714285714,
-      "avg_return_5d": 4.183295286799642,
+      "signals": 120,
+      "completed": 54,
+      "win_rate_5d": 59.25925925925925,
+      "avg_return_5d": 4.001054322347626,
       "avg_return_10d": null,
-      "stop_hit_rate": 29.292929292929294
+      "stop_hit_rate": 26.36363636363636
     },
     {
       "label": "75-84",
-      "signals": 84,
-      "completed": 34,
-      "win_rate_5d": 32.35294117647059,
-      "avg_return_5d": -0.3388776549387591,
+      "signals": 91,
+      "completed": 41,
+      "win_rate_5d": 43.90243902439025,
+      "avg_return_5d": 1.280094686376381,
       "avg_return_10d": null,
-      "stop_hit_rate": 22.5
+      "stop_hit_rate": 24.691358024691358
     },
     {
       "label": "85-94",
-      "signals": 65,
+      "signals": 72,
       "completed": 21,
       "win_rate_5d": 47.61904761904761,
-      "avg_return_5d": -1.2933235403778207,
+      "avg_return_5d": -1.293323540377821,
       "avg_return_10d": null,
-      "stop_hit_rate": 18.51851851851852
+      "stop_hit_rate": 16.666666666666664
     },
     {
       "label": "95-100",
-      "signals": 52,
-      "completed": 17,
-      "win_rate_5d": 70.58823529411765,
-      "avg_return_5d": 9.691254205405588,
+      "signals": 60,
+      "completed": 20,
+      "win_rate_5d": 70.0,
+      "avg_return_5d": 10.731554591593317,
       "avg_return_10d": null,
-      "stop_hit_rate": 10.869565217391305
+      "stop_hit_rate": 10.204081632653061
     }
   ],
   "entry_analysis": {
     "triggered": {
-      "count": 97,
-      "win_rate_5d": 42.2680412371134,
-      "avg_return_5d": 0.9701589387004673
+      "count": 101,
+      "win_rate_5d": 42.57425742574257,
+      "avg_return_5d": 0.7856036354797162
     },
     "not_triggered": {
-      "count": 24,
-      "win_rate_5d": 83.33333333333334,
-      "avg_return_5d": 9.872739119803335
+      "count": 35,
+      "win_rate_5d": 88.57142857142857,
+      "avg_return_5d": 10.761889881390976
     }
   },
   "signal_lab": [
     {
       "grade": "S+",
-      "signals": 43,
-      "completed_3d": 25,
-      "completed_5d": 8,
+      "signals": 51,
+      "completed_3d": 27,
+      "completed_5d": 11,
       "completed_10d": 0,
-      "win_rate_3d": 68.0,
-      "win_rate_5d": 87.5,
+      "win_rate_3d": 70.37037037037037,
+      "win_rate_5d": 81.81818181818183,
       "win_rate_10d": null,
-      "avg_return_3d": 8.719987025605935,
-      "avg_return_5d": 18.4874724928164,
+      "avg_return_3d": 8.678669130870544,
+      "avg_return_5d": 17.979959116591143,
       "avg_return_10d": null
     },
     {
       "grade": "S",
-      "signals": 48,
-      "completed_3d": 10,
+      "signals": 55,
+      "completed_3d": 18,
       "completed_5d": 4,
       "completed_10d": 0,
-      "win_rate_3d": 90.0,
+      "win_rate_3d": 77.77777777777779,
       "win_rate_5d": 75.0,
       "win_rate_10d": null,
-      "avg_return_3d": 6.940411556660436,
-      "avg_return_5d": 6.811095588923531,
+      "avg_return_3d": 3.940555589139386,
+      "avg_return_5d": 6.81109558892353,
       "avg_return_10d": null
     },
     {
       "grade": "A",
-      "signals": 110,
-      "completed_3d": 81,
-      "completed_5d": 60,
+      "signals": 117,
+      "completed_3d": 89,
+      "completed_5d": 67,
       "completed_10d": 0,
-      "win_rate_3d": 49.382716049382715,
-      "win_rate_5d": 38.333333333333336,
+      "win_rate_3d": 48.31460674157304,
+      "win_rate_5d": 44.776119402985074,
       "win_rate_10d": null,
-      "avg_return_3d": 2.1882569581738163,
-      "avg_return_5d": -0.8179079237030397,
+      "avg_return_3d": 1.9689750386757896,
+      "avg_return_5d": 0.22285443264428448,
       "avg_return_10d": null
     },
     {
       "grade": "B",
-      "signals": 114,
-      "completed_3d": 80,
-      "completed_5d": 49,
+      "signals": 120,
+      "completed_3d": 86,
+      "completed_5d": 54,
       "completed_10d": 0,
-      "win_rate_3d": 60.0,
-      "win_rate_5d": 57.14285714285714,
+      "win_rate_3d": 60.46511627906976,
+      "win_rate_5d": 59.25925925925925,
       "win_rate_10d": null,
-      "avg_return_3d": 4.4730797876479444,
-      "avg_return_5d": 4.183295286799642,
+      "avg_return_3d": 4.366225553744272,
+      "avg_return_5d": 4.001054322347626,
       "avg_return_10d": null
     }
   ],
   "backtest_insights": {
-    "sample": 121,
+    "sample": 136,
     "best_segments": [
       {
         "group": "theme",
         "label": "AI電力/重電/電網",
         "signals": 9,
-        "completed": 3,
+        "completed": 4,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 21.26082319749646,
+        "avg_return_5d": 18.234349792488544,
         "stop_hit_rate": 0.0
       },
       {
         "group": "grade",
         "label": "S+",
-        "signals": 43,
-        "completed": 8,
-        "win_rate_5d": 87.5,
-        "avg_return_5d": 18.4874724928164,
+        "signals": 51,
+        "completed": 11,
+        "win_rate_5d": 81.81818181818183,
+        "avg_return_5d": 17.979959116591143,
         "stop_hit_rate": null
       },
       {
@@ -1010,7 +1025,7 @@
         "completed": 4,
         "win_rate_5d": 100.0,
         "avg_return_5d": 17.812259389114775,
-        "stop_hit_rate": 17.391304347826086
+        "stop_hit_rate": 16.666666666666664
       },
       {
         "group": "theme",
@@ -1024,36 +1039,16 @@
       {
         "group": "theme",
         "label": "AI伺服器",
-        "signals": 49,
-        "completed": 3,
-        "win_rate_5d": 100.0,
-        "avg_return_5d": 10.701099666616907,
-        "stop_hit_rate": 17.94871794871795
+        "signals": 64,
+        "completed": 12,
+        "win_rate_5d": 91.66666666666666,
+        "avg_return_5d": 8.94100035318673,
+        "stop_hit_rate": 14.285714285714285
       }
     ],
-    "weak_segments": [
-      {
-        "group": "grade",
-        "label": "A",
-        "signals": 110,
-        "completed": 60,
-        "win_rate_5d": 38.333333333333336,
-        "avg_return_5d": -0.8179079237030397,
-        "stop_hit_rate": null
-      },
-      {
-        "group": "theme",
-        "label": "先進封裝/CoWoS",
-        "signals": 82,
-        "completed": 52,
-        "win_rate_5d": 40.38461538461539,
-        "avg_return_5d": -0.10664858243101588,
-        "stop_hit_rate": 29.72972972972973
-      }
-    ],
+    "weak_segments": [],
     "notes": [
-      "目前最佳區塊：theme AI電力/重電/電網，5日平均 21.26082319749646%",
-      "需檢討區塊：grade A，5日平均 -0.8179079237030397%"
+      "目前最佳區塊：theme AI電力/重電/電網，5日平均 18.234349792488544%"
     ]
   },
   "ai_council": {
@@ -1180,9 +1175,9 @@
         "is_ai_pick": false,
         "reason": "技術突破與外資買超支撐，但營收月增幅度較弱，需觀察持續性。",
         "return_3d": -9.753483386923902,
-        "return_5d": null,
+        "return_5d": -11.468381564844588,
         "return_10d": null,
-        "status": "進行中"
+        "status": "已完成"
       },
       {
         "review_date": "2026-05-21",
@@ -1198,9 +1193,9 @@
         "is_ai_pick": false,
         "reason": "營收成長強勁，但本益比高達156倍，估值過高，建議等待回檔。",
         "return_3d": 26.714801444043324,
-        "return_5d": null,
+        "return_5d": 31.5884476534296,
         "return_10d": null,
-        "status": "進行中"
+        "status": "已完成"
       },
       {
         "review_date": "2026-05-21",
@@ -1234,26 +1229,26 @@
         "is_ai_pick": false,
         "reason": "AI伺服器題材明確，營收大增36.5%，法人與技術面同步發力。",
         "return_3d": 14.602587800369681,
-        "return_5d": null,
+        "return_5d": 29.75970425138632,
         "return_10d": null,
-        "status": "進行中"
+        "status": "已完成"
       }
     ],
     "by_action": [
       {
         "action": "可追",
         "signals": 9,
-        "completed": 1,
-        "win_rate_5d": 100.0,
-        "avg_return_5d": 25.882352941176475,
+        "completed": 3,
+        "win_rate_5d": 66.66666666666666,
+        "avg_return_5d": 14.724558542572737,
         "avg_return_10d": null
       },
       {
         "action": "等拉回",
         "signals": 1,
-        "completed": 0,
-        "win_rate_5d": null,
-        "avg_return_5d": null,
+        "completed": 1,
+        "win_rate_5d": 100.0,
+        "avg_return_5d": 31.5884476534296,
         "avg_return_10d": null
       },
       {
@@ -1275,12 +1270,710 @@
     ],
     "stats": {
       "signals": 10,
-      "completed": 1,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 25.882352941176475
+      "completed": 4,
+      "win_rate_5d": 75.0,
+      "avg_return_5d": 18.940530820286952
     }
   },
+  "selection_quality": {
+    "sample_label": "可校準",
+    "sample_note": "樣本已足夠做門檻與權重校準，但仍建議人工確認。",
+    "completed_5d": 136,
+    "win_rate_5d": 54.41176470588235,
+    "avg_return_5d": 3.3530302428833494,
+    "best_grade": {
+      "label": "S+",
+      "signals": 51,
+      "completed": 11,
+      "win_rate_5d": 81.81818181818183,
+      "avg_return_5d": 17.979959116591143,
+      "avg_return_10d": null,
+      "stop_hit_rate": null
+    },
+    "weak_grade": {
+      "label": "A",
+      "signals": 117,
+      "completed": 67,
+      "win_rate_5d": 44.776119402985074,
+      "avg_return_5d": 0.22285443264428448,
+      "avg_return_10d": null,
+      "stop_hit_rate": null
+    },
+    "best_score_band": {
+      "label": "95-100",
+      "signals": 60,
+      "completed": 20,
+      "win_rate_5d": 70.0,
+      "avg_return_5d": 10.731554591593317,
+      "avg_return_10d": null,
+      "stop_hit_rate": 10.204081632653061
+    },
+    "weak_score_band": {
+      "label": "85-94",
+      "signals": 72,
+      "completed": 21,
+      "win_rate_5d": 47.61904761904761,
+      "avg_return_5d": -1.293323540377821,
+      "avg_return_10d": null,
+      "stop_hit_rate": 16.666666666666664
+    },
+    "best_theme": {
+      "label": "AI電力/重電/電網",
+      "signals": 9,
+      "completed": 4,
+      "win_rate_5d": 100.0,
+      "avg_return_5d": 18.234349792488544,
+      "avg_return_10d": null,
+      "stop_hit_rate": 0.0
+    },
+    "weak_theme": {
+      "label": "先進封裝/CoWoS",
+      "signals": 88,
+      "completed": 57,
+      "win_rate_5d": 43.859649122807014,
+      "avg_return_5d": 0.6152911579060077,
+      "avg_return_10d": null,
+      "stop_hit_rate": 28.04878048780488
+    },
+    "best_action": {
+      "label": "只觀察",
+      "signals": 119,
+      "completed": 54,
+      "win_rate_5d": 59.25925925925925,
+      "avg_return_5d": 4.001054322347626,
+      "avg_return_10d": null,
+      "stop_hit_rate": 26.36363636363636
+    },
+    "weak_action": {
+      "label": "等拉回",
+      "signals": 54,
+      "completed": 25,
+      "win_rate_5d": 44.0,
+      "avg_return_5d": 1.9298601019413106,
+      "avg_return_10d": null,
+      "stop_hit_rate": 34.04255319148936
+    },
+    "ai": {
+      "signals": 10,
+      "completed": 4,
+      "win_rate_5d": 75.0,
+      "avg_return_5d": 18.940530820286952,
+      "sample_label": "樣本不足"
+    }
+  },
+  "calibration_advice": [
+    {
+      "priority": "加權觀察",
+      "group": "強度",
+      "label": "B",
+      "completed": 54,
+      "win_rate_5d": 59.25925925925925,
+      "avg_return_5d": 4.001054322347626,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "操作",
+      "label": "只觀察",
+      "completed": 54,
+      "win_rate_5d": 59.25925925925925,
+      "avg_return_5d": 4.001054322347626,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "題材",
+      "label": "AI伺服器",
+      "completed": 12,
+      "win_rate_5d": 91.66666666666666,
+      "avg_return_5d": 8.94100035318673,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "強度",
+      "label": "S+",
+      "completed": 11,
+      "win_rate_5d": 81.81818181818183,
+      "avg_return_5d": 17.979959116591143,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "題材",
+      "label": "金融降息/併購",
+      "completed": 7,
+      "win_rate_5d": 71.42857142857143,
+      "avg_return_5d": 5.382628279579924,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "題材",
+      "label": "光學鏡頭/視覺",
+      "completed": 6,
+      "win_rate_5d": 100.0,
+      "avg_return_5d": 14.80003382455603,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    }
+  ],
   "items": [
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "5274",
+      "name": "信驊",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 18950.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3706",
+      "name": "神達",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 88.8,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3231",
+      "name": "緯創",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 158.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2376",
+      "name": "技嘉",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 370.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2330",
+      "name": "台積電",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 2355.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2317",
+      "name": "鴻海",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 289.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "1303",
+      "name": "南亞",
+      "grade": "S+",
+      "total_score": 100,
+      "entry_price": 98.1,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3189",
+      "name": "景碩",
+      "grade": "S+",
+      "total_score": 96,
+      "entry_price": 729.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3264",
+      "name": "欣銓",
+      "grade": "S",
+      "total_score": 94,
+      "entry_price": 243.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2308",
+      "name": "台達電",
+      "grade": "S",
+      "total_score": 94,
+      "entry_price": 2445.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2449",
+      "name": "京元電子",
+      "grade": "S",
+      "total_score": 90,
+      "entry_price": 328.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "6285",
+      "name": "啟碁",
+      "grade": "S",
+      "total_score": 88,
+      "entry_price": 319.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "網通光通訊"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3017",
+      "name": "奇鋐",
+      "grade": "S",
+      "total_score": 87,
+      "entry_price": 2665.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2356",
+      "name": "英業達",
+      "grade": "S",
+      "total_score": 87,
+      "entry_price": 70.2,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2382",
+      "name": "廣達",
+      "grade": "S",
+      "total_score": 86,
+      "entry_price": 339.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3443",
+      "name": "創意",
+      "grade": "A",
+      "total_score": 84,
+      "entry_price": 4670.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "1605",
+      "name": "華新",
+      "grade": "A",
+      "total_score": 82,
+      "entry_price": 38.75,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2395",
+      "name": "研華",
+      "grade": "A",
+      "total_score": 79,
+      "entry_price": 495.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3013",
+      "name": "晟銘電",
+      "grade": "A",
+      "total_score": 78,
+      "entry_price": 122.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "6669",
+      "name": "緯穎",
+      "grade": "A",
+      "total_score": 77,
+      "entry_price": 5445.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3324",
+      "name": "雙鴻",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 1065.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2059",
+      "name": "川湖",
+      "grade": "A",
+      "total_score": 76,
+      "entry_price": 5065.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2881",
+      "name": "富邦金",
+      "grade": "B",
+      "total_score": 73,
+      "entry_price": 110.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2882",
+      "name": "國泰金",
+      "grade": "B",
+      "total_score": 72,
+      "entry_price": 85.7,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "2345",
+      "name": "智邦",
+      "grade": "B",
+      "total_score": 72,
+      "entry_price": 2430.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "網通光通訊"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3711",
+      "name": "日月光投控",
+      "grade": "B",
+      "total_score": 68,
+      "entry_price": 611.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "1301",
+      "name": "台塑",
+      "grade": "B",
+      "total_score": 68,
+      "entry_price": 47.45,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "stock_id": "3037",
+      "name": "欣興",
+      "grade": "B",
+      "total_score": 65,
+      "entry_price": 1055.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中"
+    },
     {
       "signal_date": "2026-05-28",
       "stock_id": "6770",
@@ -1328,11 +2021,11 @@
       "grade": "S+",
       "total_score": 100,
       "entry_price": 3635.0,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
@@ -1348,11 +2041,11 @@
       "grade": "S+",
       "total_score": 100,
       "entry_price": 337.5,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
@@ -1388,11 +2081,11 @@
       "grade": "S+",
       "total_score": 97,
       "entry_price": 263.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
@@ -1428,11 +2121,11 @@
       "grade": "S",
       "total_score": 93,
       "entry_price": 63.9,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
@@ -1448,11 +2141,11 @@
       "grade": "S",
       "total_score": 92,
       "entry_price": 235.5,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
@@ -1468,11 +2161,11 @@
       "grade": "S",
       "total_score": 91,
       "entry_price": 2390.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
@@ -1508,11 +2201,11 @@
       "grade": "S",
       "total_score": 88,
       "entry_price": 1025.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
@@ -1528,11 +2221,11 @@
       "grade": "S",
       "total_score": 87,
       "entry_price": 304.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "低軌衛星/SpaceX"
@@ -1588,11 +2281,11 @@
       "grade": "S",
       "total_score": 85,
       "entry_price": 144.5,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "AI伺服器"
@@ -1668,11 +2361,11 @@
       "grade": "A",
       "total_score": 84,
       "entry_price": 320.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
@@ -1709,11 +2402,11 @@
       "grade": "B",
       "total_score": 73,
       "entry_price": 2295.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "先進封裝/CoWoS"
@@ -1769,11 +2462,11 @@
       "grade": "B",
       "total_score": 71,
       "entry_price": 308.5,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
@@ -1809,11 +2502,11 @@
       "grade": "B",
       "total_score": 71,
       "entry_price": 4700.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
@@ -1829,11 +2522,11 @@
       "grade": "B",
       "total_score": 69,
       "entry_price": 84.8,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [],
       "status_code": "pending_5d",
@@ -1847,11 +2540,11 @@
       "grade": "B",
       "total_score": 68,
       "entry_price": 1240.0,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "先進封裝/CoWoS"
@@ -1887,11 +2580,11 @@
       "grade": "B",
       "total_score": 67,
       "entry_price": 627.0,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "先進封裝/CoWoS"
@@ -1907,11 +2600,11 @@
       "grade": "B",
       "total_score": 66,
       "entry_price": 4590.0,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
@@ -1927,11 +2620,11 @@
       "grade": "B",
       "total_score": 65,
       "entry_price": 4950.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
@@ -1947,11 +2640,11 @@
       "grade": "B",
       "total_score": 65,
       "entry_price": 681.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "先進封裝/CoWoS"
@@ -1967,11 +2660,11 @@
       "grade": "B",
       "total_score": 65,
       "entry_price": 490.5,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
@@ -2167,11 +2860,11 @@
       "grade": "B",
       "total_score": 66,
       "entry_price": 37.5,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "原物料/低基期傳產"
@@ -2188,7 +2881,7 @@
       "total_score": 100,
       "entry_price": 696.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 4.741379310344827,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2228,7 +2921,7 @@
       "total_score": 97,
       "entry_price": 259.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 11.583011583011583,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2288,7 +2981,7 @@
       "total_score": 94,
       "entry_price": 1085.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -2.7649769585253456,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2328,7 +3021,7 @@
       "total_score": 93,
       "entry_price": 2270.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 3.7444933920704844,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2348,7 +3041,7 @@
       "total_score": 92,
       "entry_price": 336.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 10.119047619047619,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2408,7 +3101,7 @@
       "total_score": 91,
       "entry_price": 2350.0,
       "entry_triggered": false,
-      "return_3d": null,
+      "return_3d": 4.042553191489362,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2468,7 +3161,7 @@
       "total_score": 89,
       "entry_price": 2265.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -18.543046357615893,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2488,7 +3181,7 @@
       "total_score": 88,
       "entry_price": 87.4,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 1.6018306636155506,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": true,
@@ -2508,7 +3201,7 @@
       "total_score": 88,
       "entry_price": 103.5,
       "entry_triggered": false,
-      "return_3d": null,
+      "return_3d": 6.280193236714976,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2526,7 +3219,7 @@
       "total_score": 87,
       "entry_price": 338.5,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -2.954209748892171,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2587,7 +3280,7 @@
       "total_score": 84,
       "entry_price": 890.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -7.191011235955057,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": true,
@@ -2608,7 +3301,7 @@
       "total_score": 83,
       "entry_price": 124.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -1.6129032258064515,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2668,7 +3361,7 @@
       "total_score": 82,
       "entry_price": 146.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 8.561643835616438,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2688,7 +3381,7 @@
       "total_score": 82,
       "entry_price": 83.1,
       "entry_triggered": false,
-      "return_3d": null,
+      "return_3d": 3.128760529482562,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2726,7 +3419,7 @@
       "total_score": 81,
       "entry_price": 510.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -2.941176470588235,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2746,7 +3439,7 @@
       "total_score": 79,
       "entry_price": 304.5,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 4.761904761904762,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2766,7 +3459,7 @@
       "total_score": 79,
       "entry_price": 2725.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -2.2018348623853212,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2826,10 +3519,10 @@
       "total_score": 76,
       "entry_price": 908.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -4.5154185022026425,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": false,
+      "stop_hit": true,
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
@@ -2846,7 +3539,7 @@
       "total_score": 74,
       "entry_price": 611.0,
       "entry_triggered": false,
-      "return_3d": null,
+      "return_3d": 0.0,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2866,7 +3559,7 @@
       "total_score": 69,
       "entry_price": 62.6,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 12.140575079872207,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -2886,7 +3579,7 @@
       "total_score": 68,
       "entry_price": 5285.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -11.636707663197729,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": true,
@@ -2906,7 +3599,7 @@
       "total_score": 68,
       "entry_price": 316.5,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 7.109004739336493,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": true,
@@ -2926,7 +3619,7 @@
       "total_score": 67,
       "entry_price": 5280.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 3.125,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": true,
@@ -3327,7 +4020,7 @@
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": false,
+      "stop_hit": true,
       "action": "等拉回",
       "themes": [
         "網通光通訊"
@@ -3462,7 +4155,7 @@
       "total_score": 73,
       "entry_price": 17725.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 6.911142454160791,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -3623,16 +4316,16 @@
       "entry_price": 933.0,
       "entry_triggered": true,
       "return_3d": -9.753483386923902,
-      "return_5d": null,
+      "return_5d": -11.468381564844588,
       "return_10d": null,
       "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3643,16 +4336,16 @@
       "entry_price": 554.0,
       "entry_triggered": false,
       "return_3d": 26.714801444043324,
-      "return_5d": null,
+      "return_5d": 31.5884476534296,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3683,16 +4376,16 @@
       "entry_price": 54.1,
       "entry_triggered": false,
       "return_3d": 14.602587800369681,
-      "return_5d": null,
+      "return_5d": 29.75970425138632,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3824,16 +4517,16 @@
       "entry_price": 463.5,
       "entry_triggered": false,
       "return_3d": 9.816612729234087,
-      "return_5d": null,
+      "return_5d": 6.796116504854369,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3844,16 +4537,16 @@
       "entry_price": 4895.0,
       "entry_triggered": true,
       "return_3d": 0.5107252298263534,
-      "return_5d": null,
+      "return_5d": 3.472931562819203,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3884,16 +4577,16 @@
       "entry_price": 905.0,
       "entry_triggered": false,
       "return_3d": 19.337016574585636,
-      "return_5d": null,
+      "return_5d": 16.574585635359114,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3924,16 +4617,16 @@
       "entry_price": 861.0,
       "entry_triggered": false,
       "return_3d": 1.7421602787456445,
-      "return_5d": null,
+      "return_5d": 0.6968641114982579,
       "return_10d": null,
       "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -3984,16 +4677,16 @@
       "entry_price": 140.0,
       "entry_triggered": false,
       "return_3d": 3.571428571428571,
-      "return_5d": null,
+      "return_5d": 13.214285714285715,
       "return_10d": null,
       "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4044,16 +4737,16 @@
       "entry_price": 83.5,
       "entry_triggered": false,
       "return_3d": 0.8383233532934166,
-      "return_5d": null,
+      "return_5d": 6.347305389221554,
       "return_10d": null,
       "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4084,16 +4777,16 @@
       "entry_price": 316.5,
       "entry_triggered": false,
       "return_3d": 5.055292259083728,
-      "return_5d": null,
+      "return_5d": 16.903633491311215,
       "return_10d": null,
       "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4165,16 +4858,16 @@
       "entry_price": 35.5,
       "entry_triggered": false,
       "return_3d": 4.647887323943658,
-      "return_5d": null,
+      "return_5d": 9.15492957746479,
       "return_10d": null,
       "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI電力/重電/電網"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4263,16 +4956,16 @@
       "entry_price": 4905.0,
       "entry_triggered": true,
       "return_3d": -8.256880733944955,
-      "return_5d": null,
+      "return_5d": -9.98980632008155,
       "return_10d": null,
       "stop_hit": true,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4283,16 +4976,16 @@
       "entry_price": 5345.0,
       "entry_triggered": false,
       "return_3d": -5.051449953227316,
-      "return_5d": null,
+      "return_5d": 1.8709073900841908,
       "return_10d": null,
       "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-21",
@@ -4343,16 +5036,16 @@
       "entry_price": 2495.0,
       "entry_triggered": false,
       "return_3d": 8.216432865731463,
-      "return_5d": null,
+      "return_5d": 6.813627254509018,
       "return_10d": null,
       "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "AI伺服器"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-20",
@@ -4661,16 +5354,16 @@
       "entry_price": 1085.0,
       "entry_triggered": true,
       "return_3d": 6.451612903225806,
-      "return_5d": null,
+      "return_5d": 3.225806451612903,
       "return_10d": null,
       "stop_hit": false,
       "action": "只觀察",
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中"
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成"
     },
     {
       "signal_date": "2026-05-20",
@@ -7552,9 +8245,32 @@
     function metric(label, value, suffix="") {
       return `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
     }
+    function segmentText(row, suffix="") {
+      if (!row || !row.label) return "樣本不足";
+      const parts = [
+        `${esc(row.label)}${suffix}`,
+        `${esc(row.completed ?? 0)}筆`,
+        `勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}`,
+        `平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}`
+      ];
+      return parts.join("｜");
+    }
+    function qualityCard(title, row, suffix="") {
+      return `<div class="quality-card">
+        <b>${esc(title)}</b>
+        <div class="value">${row?.label ? esc(row.label) + suffix : "樣本不足"}</div>
+        <div class="small">${segmentText(row, suffix)}</div>
+      </div>`;
+    }
+    function adviceClass(priority) {
+      if (priority === "加權觀察") return "good";
+      if (priority === "降權觀察" || priority === "風險檢查") return "bad";
+      return "";
+    }
     function render() {
       const stats = data.stats || {};
       const quality = data.data_quality || {};
+      const selection = data.selection_quality || {};
       document.querySelector("#subtitle").textContent = `${data.as_of}｜近 ${data.days} 天｜僅供研究追蹤`;
       document.querySelector("#metrics").innerHTML = [
         metric("訊號總數", stats.signals),
@@ -7564,6 +8280,20 @@
         `<div class="metric" title="訊號發出後 5 日內，股價觸及或跌破預設止損價的比率。越低代表止損設定越合理、訊號品質越佳。"><b>${stats.stop_hit_rate?.toFixed(1) ?? "—"}${stats.stop_hit_rate != null ? "%" : ""}</b><span>停損觸及率</span><div style="color:var(--muted);font-size:11px;margin-top:2px;">↓ 越低越好</div></div>`,
         metric("A級5日勝率", stats.a_win_rate_5d?.toFixed(1), "%"),
       ].join("");
+      document.querySelector("#qualityNote").textContent = `${selection.sample_label || "樣本不足"}｜${selection.sample_note || "先持續累積樣本，不自動改權重。"}`;
+      document.querySelector("#selectionQuality").innerHTML = [
+        qualityCard("最有效強度", selection.best_grade),
+        qualityCard("需檢討強度", selection.weak_grade),
+        qualityCard("最有效題材", selection.best_theme),
+        qualityCard("需檢討題材", selection.weak_theme),
+        qualityCard("最佳分數區間", selection.best_score_band),
+        qualityCard("需檢討分數區間", selection.weak_score_band),
+        qualityCard("最佳操作建議", selection.best_action),
+        `<div class="quality-card"><b>AI 複核樣本</b><div class="value">${esc(selection.ai?.sample_label || "樣本不足")}</div><div class="small">完成 ${esc(selection.ai?.completed ?? 0)} 筆｜勝率 ${selection.ai?.win_rate_5d == null ? "—" : Number(selection.ai.win_rate_5d).toFixed(1) + "%"}｜平均 ${selection.ai?.avg_return_5d == null ? "—" : (selection.ai.avg_return_5d >= 0 ? "+" : "") + Number(selection.ai.avg_return_5d).toFixed(1) + "%"}</div></div>`,
+      ].join("");
+      document.querySelector("#calibrationAdvice").innerHTML = (data.calibration_advice || []).length
+        ? data.calibration_advice.map(row => `<div class="advice-item ${adviceClass(row.priority)}"><b>${esc(row.priority)}｜${esc(row.group)}：${esc(row.label)}</b><div>${esc(row.reason)}</div><div class="small">完成 ${esc(row.completed)} 筆｜5日勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}｜5日平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}</div></div>`).join("")
+        : `<div class="advice-item">目前樣本不足或無明顯需要調權的區塊，先持續記錄。</div>`;
       const leaderRow = (r, includeStop=false) => `
         <tr>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
