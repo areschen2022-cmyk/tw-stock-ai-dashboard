@@ -146,6 +146,32 @@ def test_ai_council_reports_disabled_deepseek_without_key(monkeypatch) -> None:
     assert status["health"]["label"] == "未啟用"
 
 
+def test_ai_council_skips_api_when_no_candidates() -> None:
+    status = {}
+
+    reviews = run_ai_council(
+        [],
+        date(2026, 5, 19),
+        {
+            "ai_council": {
+                "enabled": True,
+                "provider": "deepseek",
+                "top_n": 1,
+                "min_model_count": 1,
+                "min_agree_count": 1,
+                "models": ["deepseek-chat"],
+            }
+        },
+        client=_DeepSeekLikeClient(),
+        status_out=status,
+    )
+
+    assert reviews == []
+    assert status["provider"] == "deepseek"
+    assert status["health"]["label"] == "無候選"
+    assert status["successful_models"] == 0
+
+
 def test_ai_council_does_not_pick_when_model_count_is_insufficient() -> None:
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
     reviews = run_ai_council(

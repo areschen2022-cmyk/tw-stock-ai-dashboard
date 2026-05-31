@@ -38,7 +38,14 @@ def run_ai_council(
     if not cfg.get("enabled", False):
         return []
 
+    top_n = int(cfg.get("top_n", 5))
     models = list(cfg.get("models", []))
+    if not models:
+        return []
+    min_agree_count = int(cfg.get("min_agree_count", 5))
+    min_model_count = int(cfg.get("min_model_count", min_agree_count))
+    pick_action = str(cfg.get("pick_action", "可追"))
+    candidates = [_candidate_payload(row) for row in rows[:top_n]]
     configured_provider = str(cfg.get("provider", "openrouter")).lower()
     client = client or _build_client(cfg)
     provider = _provider_name(cfg, client)
@@ -46,21 +53,17 @@ def run_ai_council(
         fallback_models = list(cfg.get("fallback_models", []))
         if fallback_models:
             models = fallback_models
+    if not candidates:
+        if status_out is not None:
+            _write_no_candidates_status(status_out, provider, models, cfg)
+        log.info("AI council skipped: no eligible candidates")
+        return []
     if not client.enabled:
         if status_out is not None:
             _write_disabled_status(status_out, provider, models, cfg)
         log.info("AI council skipped: %s API key is not set", provider)
         return []
 
-    top_n = int(cfg.get("top_n", 5))
-    if not models:
-        return []
-
-    min_agree_count = int(cfg.get("min_agree_count", 5))
-    min_model_count = int(cfg.get("min_model_count", min_agree_count))
-    pick_action = str(cfg.get("pick_action", "可追"))
-
-    candidates = [_candidate_payload(row) for row in rows[:top_n]]
     perf_context = ""
     if store is not None:
         try:
@@ -178,6 +181,33 @@ def _write_disabled_status(status_out: dict[str, Any], provider: str, models: li
             "health": {
                 "label": "未啟用",
                 "score": 0,
+                "requested": len(models),
+                "success": 0,
+                "failed": 0,
+                "timed_out": 0,
+                "available_ratio": 0,
+                "timeout_ratio": 0,
+            },
+        }
+    )
+
+
+def _write_no_candidates_status(status_out: dict[str, Any], provider: str, models: list[str], cfg: dict) -> None:
+    min_agree_count = int(cfg.get("min_agree_count", 1))
+    min_model_count = int(cfg.get("min_model_count", min_agree_count))
+    status_out.update(
+        {
+            "provider": provider,
+            "requested_models": len(models),
+            "successful_models": 0,
+            "failed_models": [],
+            "timed_out_models": [],
+            "success_model_names": [],
+            "available_ratio": 0,
+            "min_model_count": min_model_count,
+            "health": {
+                "label": "無候選",
+                "score": 100,
                 "requested": len(models),
                 "success": 0,
                 "failed": 0,
