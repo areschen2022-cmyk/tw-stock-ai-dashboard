@@ -10,7 +10,6 @@ Production now uses the official DeepSeek API as the primary review model:
 ```yaml
 ai_council:
   provider: "deepseek"
-  fallback_provider: "openrouter"
   models:
     - "deepseek-chat"
   min_model_count: 1
@@ -21,9 +20,9 @@ ai_council:
 
 GitHub Actions must have `DEEPSEEK_API_KEY` in Repository Secrets. The local
 `.env` can also define `DEEPSEEK_API_KEY` for manual testing. If DeepSeek is not
-configured, the system may fall back to OpenRouter when `OPENROUTER_API_KEY` is
-available; otherwise AI review is skipped and the dashboard keeps the rule-based
-stock list.
+configured, AI review is skipped and the dashboard keeps the rule-based stock
+list. OpenRouter fallback is supported only when `fallback_provider` and
+`fallback_models` are explicitly configured together.
 
 ## Strong AI Pick Rule
 
@@ -39,8 +38,8 @@ This means:
   vote `可追`.
 - The AI layer still cannot create picks from raw news; it can only review
   candidates already selected by the local scoring engine.
-- If the paid API is unavailable, AI review is skipped or downgraded to the
-  configured fallback provider.
+- If the paid API is unavailable, AI review is skipped unless an explicit
+  fallback model list is configured.
 
 ## Why free-model consensus was replaced
 

@@ -39,8 +39,13 @@ def run_ai_council(
         return []
 
     models = list(cfg.get("models", []))
+    configured_provider = str(cfg.get("provider", "openrouter")).lower()
     client = client or _build_client(cfg)
     provider = _provider_name(cfg, client)
+    if provider != configured_provider:
+        fallback_models = list(cfg.get("fallback_models", []))
+        if fallback_models:
+            models = fallback_models
     if not client.enabled:
         if status_out is not None:
             _write_disabled_status(status_out, provider, models, cfg)
@@ -147,8 +152,9 @@ def _build_client(cfg: dict) -> ChatJsonClient:
         deepseek = DeepSeekClient(timeout=timeout)
         if deepseek.enabled:
             return deepseek
+        fallback_models = list(cfg.get("fallback_models", []))
         fallback_provider = str(cfg.get("fallback_provider", "")).lower()
-        if fallback_provider == "openrouter":
+        if fallback_provider == "openrouter" and fallback_models:
             fallback = OpenRouterClient(timeout=timeout)
             if fallback.enabled:
                 return fallback

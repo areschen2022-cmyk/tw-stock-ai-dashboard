@@ -121,7 +121,7 @@ def test_ai_council_allows_deepseek_single_model_pick() -> None:
 
 def test_ai_council_reports_disabled_deepseek_without_key(monkeypatch) -> None:
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
-    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "legacy-openrouter-key")
     rows = [{"stock_id": "2408", "name": "南亞科", "score": 90, "grade": "S", "decision_reason": "突破"}]
     status = {}
 
