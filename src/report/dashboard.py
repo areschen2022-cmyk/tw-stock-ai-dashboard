@@ -132,8 +132,14 @@ def _data_recovery_status(details: list[dict]) -> dict:
     retryable = []
     blocked = []
     recovered = []
+    recovered_ids = {
+        str(item.get("data_id") or "")
+        for item in details
+        if item.get("type") == "fallback" and item.get("data_id")
+    }
     for item in details:
         reason = str(item.get("reason") or "")
+        data_id = str(item.get("data_id") or "")
         row = {
             "dataset": item.get("dataset"),
             "data_id": item.get("data_id"),
@@ -142,6 +148,9 @@ def _data_recovery_status(details: list[dict]) -> dict:
             "next_step": "retry_range",
         }
         if item.get("type") == "fallback":
+            row["next_step"] = "recovered_by_fallback"
+            recovered.append(row)
+        elif data_id and data_id in recovered_ids:
             row["next_step"] = "recovered_by_fallback"
             recovered.append(row)
         elif item.get("type") in {"empty", "error"} and "quota" not in reason.lower():
