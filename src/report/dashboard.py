@@ -66,12 +66,26 @@ def _decision_reason(item: StockScore) -> str:
     return "；".join(parts)
 
 
+def _ai_review_label(review: dict | None) -> str:
+    if not review:
+        return "未複核"
+    action = str(review.get("consensus_action") or "")
+    if action == "可追":
+        return "AI 同意"
+    if action == "等拉回":
+        return "AI 保留"
+    if action in {"避免", "只觀察"}:
+        return "AI 不建議" if action == "避免" else "AI 保留"
+    return "AI 無共識"
+
+
 def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_risks: list[dict] | None = None) -> dict:
-    ai_ids = {str(item.get("stock_id")) for item in ai_picks or []}
+    ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
     exit_ids = {str(item.get("stock_id")) for item in exit_risks or []}
     ranked = sorted(rows, key=lambda row: (int(row.get("score") or 0), str(row.get("stock_id") or "")), reverse=True)
 
     def _compact(row: dict, reason: str = "") -> dict:
+        ai_review = row.get("ai_review") or ai_reviews.get(str(row.get("stock_id")))
         return {
             "stock_id": row.get("stock_id"),
             "name": row.get("name"),
@@ -86,6 +100,8 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "themes": row.get("themes", []),
             "pattern_tags": row.get("pattern_tags", []),
             "pattern_risk_tags": row.get("pattern_risk_tags", []),
+            "ai_review": ai_review,
+            "ai_label": _ai_review_label(ai_review),
         }
 
     chase = [
@@ -106,7 +122,6 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
         for row in rows
         if "避免" in str(row.get("action") or "") or str(row.get("stock_id")) in exit_ids
     )
-    ai_watch = [_compact(row, "AI 首選觀察") for row in ranked if str(row.get("stock_id")) in ai_ids][:5]
     risk = [
         {
             "stock_id": item.get("stock_id"),
@@ -121,14 +136,16 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
     return {
         "chase": chase,
         "pullback": pullback,
-        "ai_watch": ai_watch,
         "risk": risk,
         "summary": {
             "chase": len(chase),
             "pullback": len(pullback),
             "observe": observe_count,
             "avoid": avoid_count,
-            "ai_watch": len(ai_watch),
+            "ai_agree": sum(1 for row in rows if _ai_review_label(row.get("ai_review")) == "AI 同意"),
+            "ai_hold": sum(1 for row in rows if _ai_review_label(row.get("ai_review")) == "AI 保留"),
+            "ai_avoid": sum(1 for row in rows if _ai_review_label(row.get("ai_review")) == "AI 不建議"),
+            "ai_reviewed": sum(1 for row in rows if row.get("ai_review")),
             "risk": len(risk),
             "strong": sum(1 for row in rows if row.get("grade") in {"S+", "S"}),
         },
@@ -364,8 +381,10 @@ def build_dashboard_payload(
     retail_divergence: dict | None = None,
 ) -> dict:
     stock_names = config.get("stock_names", {})
+    ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
     rows = []
     for item in sorted(scores, key=lambda score: score.total_score, reverse=True):
+        ai_review = ai_reviews.get(item.stock_id)
         rows.append(
             {
                 "stock_id": item.stock_id,
@@ -400,6 +419,8 @@ def build_dashboard_payload(
                 "retail_signal": item.retail_signal,
                 "selection_quality_adjustment": item.selection_quality_adjustment,
                 "selection_quality_notes": item.selection_quality_notes,
+                "ai_review": ai_review,
+                "ai_label": _ai_review_label(ai_review),
             }
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
@@ -489,6 +510,11 @@ def enrich_dashboard_payload(
     retry_summary: dict | None = None,
 ) -> dict:
     rows = payload.get("rows", [])
+    ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
+    for row in rows:
+        review = ai_reviews.get(str(row.get("stock_id")))
+        row["ai_review"] = review
+        row["ai_label"] = _ai_review_label(review)
     payload["action_lists"] = _action_lists(
         rows,
         ai_picks=ai_picks,
@@ -763,7 +789,6 @@ def _html() -> str:
       <div class="side-stack">
         <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
         <section class="risk-panel"><h2>危險名單</h2><div id="exitRisks"></div></section>
-        <section><h2>AI 自選股</h2><div id="aiCouncil"></div></section>
       </div>
       <div class="detail-grid">
         <section><h2>異常提醒</h2><div id="alerts"></div></section>
@@ -922,7 +947,7 @@ def _html() -> str:
           <div class="decision-pill warn"><b>${esc(actionSummary.pullback ?? 0)}</b><span>等拉回</span></div>
           <div class="decision-pill bad"><b>${esc(actionSummary.risk ?? 0)}</b><span>風險</span></div>
           <div class="decision-pill"><b>${esc(actionSummary.observe ?? 0)}</b><span>只觀察</span></div>
-          <div class="decision-pill"><b>${esc(actionSummary.ai_watch ?? 0)}</b><span>AI 共識</span></div>
+          <div class="decision-pill"><b>${esc(actionSummary.ai_agree ?? 0)}</b><span>AI 同意</span></div>
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
         <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>`;
@@ -965,11 +990,16 @@ def _html() -> str:
         const checklist = (row.entry_checklist || []).slice(0, 2).join(" / ");
         const qualityNotes = (row.selection_quality_notes || []).slice(0, 1).join(" / ");
         const reason = qualityNotes || row.reason || checklist || row.action || "綜合訊號";
+        const aiReview = row.ai_review || {};
+        const aiLabel = row.ai_label || "未複核";
+        const aiText = aiReview.stock_id
+          ? `｜${esc(aiLabel)} ${esc(aiReview.pick_agreement_count || aiReview.agreement_count || 0)}/${esc(aiReview.model_count || 0)}`
+          : "｜AI 未複核";
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
               <div class="decision-card-title">${stockLink}</div>
-              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}</div>
+              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}${aiText}</div>
             </div>
             <span class="decision-badge ${mode}">${badgeText}</span>
           </div>
@@ -1103,7 +1133,6 @@ def _html() -> str:
           ${data.themes.headlines.slice(0,2).map(h => `<div class="line theme-headline">- ${esc(h)}</div>`).join("")}
         </details>`;
       const ai = data.ai_council || {};
-      const aiPicks = ai.picks || [];
       const aiStatus = ai.status || {};
       const aiRequiredModels = ai.min_model_count || ai.min_agree_count || 5;
       const aiRequiredVotes = ai.min_agree_count || 5;
@@ -1117,14 +1146,15 @@ def _html() -> str:
       const aiHealthLine = aiStatus.health
         ? `<div class="line ${aiStatus.health.score >= 80 ? "good" : aiStatus.health.score >= 50 ? "warn" : "bad"}">模型健康度：${esc(aiStatus.health.label || "-")}｜${esc(aiStatus.health.score ?? 0)}/100${aiFailureDetail ? `｜異常：${esc(aiFailureDetail)}` : ""}</div>`
         : "";
-      const aiFallbackNote = ai.using_fallback_picks
-        ? `<div class="line warn">未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，先顯示 AI 首選觀察</div>`
-        : "";
-      document.querySelector("#aiCouncil").innerHTML = aiPicks.length
-        ? aiFallbackNote + aiPicks.slice(0,5).map(r => `<div class="line"><b>${esc(r.stock_id)} ${esc(r.name)}</b>｜${esc(r.consensus_action)}｜${esc(r.model_count || 0)} 模型參與｜${esc(r.pick_agreement_count || r.agreement_count || 0)}/${esc(aiRequiredVotes)} 票同意<div class="small">${esc(r.reason || "")}</div></div>`).join("")
-        : `<div class="line">${ai.enabled ? `今日沒有達到 ${esc(aiRequiredModels)} 模型參與且 ${esc(aiRequiredVotes)} 票同意的 AI 自選股` : "未啟用，待設定 OPENROUTER_API_KEY 後啟用"}</div>`;
-      if (aiAvailability) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiAvailability);
-      if (aiHealthLine) document.querySelector("#aiCouncil").insertAdjacentHTML("afterbegin", aiHealthLine);
+      const aiReviewNote = ai.enabled
+        ? `AI 複核：同意 ${esc(actionSummary.ai_agree ?? 0)}｜保留 ${esc(actionSummary.ai_hold ?? 0)}｜不建議 ${esc(actionSummary.ai_avoid ?? 0)}｜已複核 ${esc(actionSummary.ai_reviewed ?? 0)}`
+        : "AI 複核未啟用";
+      document.querySelector("#decisionSummary").insertAdjacentHTML("beforeend", `
+        <div class="line">${aiReviewNote}</div>
+        ${aiHealthLine || ""}
+        ${aiAvailability || ""}
+        ${ai.using_fallback_picks ? `<div class="line warn">AI 未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，僅作複核參考</div>` : ""}
+      `);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
         ? data.alerts.map(a => `<div class="line bad">- ${esc(a)}</div>`).join("")
@@ -1139,7 +1169,6 @@ def _html() -> str:
         ? data.watch_reviews.slice(0,4).map(w => `<div class="line">${esc(w.stock_id)} ${esc(w.name)}：${w.change_pct >= 0 ? "+" : ""}${Number(w.change_pct).toFixed(1)}%｜現分 ${w.current_score}/100</div>`).join("")
         : `<div class="line">尚無可追蹤觀察名單</div>`;
       const quick = document.querySelector("#quickFilter")?.value || "";
-      const aiIds = new Set((data.action_lists?.ai_watch || []).map(x => String(x.stock_id)));
       const riskIds = new Set((data.exit_risks || []).map(x => String(x.stock_id)));
       const retailCleanIds = new Set([
         ...(data.retail_divergence?.clean || []),
@@ -1161,7 +1190,7 @@ def _html() -> str:
           (quick === "risk" && riskIds.has(String(r.stock_id))) ||
           (quick === "retail_clean" && retailCleanIds.has(String(r.stock_id))) ||
           (quick === "retail_hot" && retailHotIds.has(String(r.stock_id))) ||
-          (quick === "ai" && aiIds.has(String(r.stock_id))) ||
+          (quick === "ai" && r.ai_label === "AI 同意") ||
           (quick === "new" && String(data.as_of || "") === String(r.signal_date || data.as_of || "")) ||
           (quick === "top_theme" && (r.themes || []).includes(topTheme)) ||
           (quick === "pattern_bull" && (r.pattern_tags || []).length) ||
@@ -1171,7 +1200,7 @@ def _html() -> str:
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr>
           <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
-          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}</div></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "AI 未複核")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
           <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>

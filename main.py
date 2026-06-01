@@ -462,12 +462,19 @@ def main() -> int:
         def _compact_list(rows: list[dict], empty: str, limit: int = 3) -> str:
             return "\n".join(
                 f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row.get('score', 0)}/100｜"
-                f"{row.get('grade', '-')}｜{row.get('entry_decision') or row.get('action', '只觀察')}"
+                f"{row.get('grade', '-')}｜{row.get('entry_decision') or row.get('action', '只觀察')}｜"
+                f"{row.get('ai_label', 'AI 未複核')}"
                 for row in rows[:limit]
             ) or empty
 
         must_watch_text = _compact_list(action_lists.get("chase", []), "▸ 今日暫無可追清單", limit=3)
-        ai_watch_text = _compact_list(action_lists.get("ai_watch", []), "▸ AI 暫無首選觀察", limit=3)
+        ai_summary = action_lists.get("summary", {})
+        ai_review_text = (
+            f"AI 複核：同意 {ai_summary.get('ai_agree', 0)}｜"
+            f"保留 {ai_summary.get('ai_hold', 0)}｜"
+            f"不建議 {ai_summary.get('ai_avoid', 0)}｜"
+            f"已複核 {ai_summary.get('ai_reviewed', 0)}"
+        )
         alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:2]) or "✅ 無重大異常"
         exit_text = "\n".join(
             f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:1])}"
@@ -492,9 +499,7 @@ def main() -> int:
                 "",
                 "🔥 <b>今日重點</b>",
                 must_watch_text,
-                "",
-                "🤖 <b>AI 共識</b>",
-                ai_watch_text,
+                f"🤖 {ai_review_text}",
                 "",
                 "🚨 <b>提醒</b>",
                 alert_text,
