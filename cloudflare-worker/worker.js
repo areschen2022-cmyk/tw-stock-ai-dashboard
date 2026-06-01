@@ -82,11 +82,12 @@ async function handleRequest(request, env) {
   }
 
   if (url.pathname === "/dispatch") {
-    if (env.DISPATCH_SECRET) {
-      const secret = request.headers.get("x-dispatch-secret") || url.searchParams.get("secret");
-      if (secret !== env.DISPATCH_SECRET) {
-        return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
-      }
+    if (!env.DISPATCH_SECRET) {
+      return Response.json({ ok: false, error: "DISPATCH_SECRET is not configured" }, { status: 500 });
+    }
+    const secret = request.headers.get("x-dispatch-secret") || url.searchParams.get("secret");
+    if (secret !== env.DISPATCH_SECRET) {
+      return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
     }
 
     const task = url.searchParams.get("task");

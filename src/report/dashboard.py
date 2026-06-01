@@ -201,18 +201,6 @@ def _data_quality(
     ai_health = (ai_status or {}).get("health") or {}
     score = round(source_score * 0.65 + coverage * 0.25 + float(ai_health.get("score", 0)) * 0.10)
     if score >= 85:
-        label = "高"
-    elif score >= 65:
-        label = "中"
-    else:
-        label = "偏低"
-    if score >= 85:
-        label = "高"
-    elif score >= 65:
-        label = "中"
-    else:
-        label = "偏低"
-    if score >= 85:
         label = "high"
     elif score >= 65:
         label = "medium"

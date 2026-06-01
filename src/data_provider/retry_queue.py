@@ -55,11 +55,51 @@ def _retry_range(period: str, as_of: date, lookback_start: date) -> tuple[date, 
 def _purge_retry_cache(provider: Any, dataset: str, data_id: str, period: str) -> None:
     cache_path_fn = getattr(provider, "_cache_path", None)
     if not callable(cache_path_fn) or not period:
+        fallback = getattr(provider, "fallback", None)
+        if fallback is not None:
+            _purge_retry_cache(fallback, dataset, data_id, period)
         return
-    path = cache_path_fn("STOCK_DAY" if dataset == "stock_prices" else dataset, data_id, period)
-    if not isinstance(path, Path) or not path.exists():
-        return
-    try:
-        path.unlink()
-    except OSError:
-        pass
+
+    datasets = [dataset]
+    if dataset in {"stock_prices", "STOCK_DAY"}:
+        datasets.extend(["STOCK_DAY", "TaiwanStockPrice"])
+    datasets = list(dict.fromkeys(datasets))
+
+    candidate_paths: list[Path] = []
+    month_parts: tuple[int, int] | None = None
+    if len(period) == 7 and period[4] == "-":
+        try:
+            year, month = (int(part) for part in period.split("-", 1))
+            month_parts = (year, month)
+        except ValueError:
+            month_parts = None
+
+    for dataset_name in datasets:
+        for args in [(dataset_name, data_id, period)]:
+            try:
+                path = cache_path_fn(*args)
+            except TypeError:
+                continue
+            if isinstance(path, Path):
+                candidate_paths.append(path)
+        if month_parts is not None:
+            year, month = month_parts
+            for current in (False, True):
+                try:
+                    path = cache_path_fn(dataset_name, data_id, year, month, current)
+                except TypeError:
+                    continue
+                if isinstance(path, Path):
+                    candidate_paths.append(path)
+
+    for path in dict.fromkeys(candidate_paths):
+        if not path.exists():
+            continue
+        try:
+            path.unlink()
+        except OSError:
+            pass
+
+    fallback = getattr(provider, "fallback", None)
+    if fallback is not None:
+        _purge_retry_cache(fallback, dataset, data_id, period)

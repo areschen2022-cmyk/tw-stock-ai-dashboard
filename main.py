@@ -280,10 +280,14 @@ def main() -> int:
         }
         for future in as_completed(futures):
             stock_id = futures[future]
-            bundles[stock_id] = future.result()
+            try:
+                bundles[stock_id] = future.result()
+            except Exception as exc:  # pragma: no cover - defensive runtime guard
+                logging.exception("Failed to fetch stock bundle for %s: %s", stock_id, exc)
+                bundles[stock_id] = {}
 
     for stock_id in all_stock_ids:
-        bundle = bundles[stock_id]
+        bundle = bundles.get(stock_id, {})
         overseas_adj = 0
         if overseas:
             overseas_adj = overseas.adjustment
