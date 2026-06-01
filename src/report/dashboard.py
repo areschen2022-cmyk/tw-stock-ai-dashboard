@@ -100,6 +100,12 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
         for row in ranked
         if row.get("grade") in {"S+", "S", "A", "B"} and "等拉回" in str(row.get("action") or "")
     ][:5]
+    observe_count = sum(1 for row in rows if "只觀察" in str(row.get("action") or ""))
+    avoid_count = sum(
+        1
+        for row in rows
+        if "避免" in str(row.get("action") or "") or str(row.get("stock_id")) in exit_ids
+    )
     ai_watch = [_compact(row, "AI 首選觀察") for row in ranked if str(row.get("stock_id")) in ai_ids][:5]
     risk = [
         {
@@ -120,8 +126,11 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
         "summary": {
             "chase": len(chase),
             "pullback": len(pullback),
+            "observe": observe_count,
+            "avoid": avoid_count,
             "ai_watch": len(ai_watch),
             "risk": len(risk),
+            "strong": sum(1 for row in rows if row.get("grade") in {"S+", "S"}),
         },
     }
 
@@ -612,7 +621,7 @@ def _html() -> str:
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:var(--muted); font-size:14px; }
     main { padding:18px 24px 32px; max-width:1680px; margin:auto; }
-    .metrics { display:grid; grid-template-columns: repeat(7, minmax(96px,1fr)); gap:8px; margin-bottom:14px; }
+    .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:14px; }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 11px; min-height:70px; }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
@@ -627,6 +636,18 @@ def _html() -> str:
     .section-note { color:var(--muted); font-size:12px; margin-top:-4px; margin-bottom:8px; }
     .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
     .action-panel { border-left:4px solid var(--good); }
+    .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
+    .decision-pill { border:1px solid var(--line); border-radius:8px; padding:8px 9px; background:#fbfcfe; min-height:58px; }
+    .decision-pill b { display:block; font-size:18px; line-height:1.2; }
+    .decision-pill span { color:var(--muted); font-size:12px; }
+    .decision-pill.good { border-left:4px solid var(--good); }
+    .decision-pill.warn { border-left:4px solid var(--warn); }
+    .decision-pill.bad { border-left:4px solid var(--bad); }
+    .temperature-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fbfcfe; margin-bottom:10px; }
+    .temperature-card.good { border-left:4px solid var(--good); }
+    .temperature-card.warn { border-left:4px solid var(--warn); }
+    .temperature-card.bad { border-left:4px solid var(--bad); }
+    .temperature-card b { display:block; font-size:20px; margin-bottom:4px; }
     .decision-card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
     .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
     .decision-card.chase { border-left:4px solid var(--good); }
@@ -698,12 +719,14 @@ def _html() -> str:
       .dashboard-layout { grid-template-columns:1fr; }
       .detail-grid { grid-template-columns:1fr 1fr; }
       .decision-card-grid { grid-template-columns:1fr; }
+      .decision-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
     }
     @media (max-width: 900px) {
       header { position:static; }
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
       .dashboard-layout, .detail-grid, .status-grid { grid-template-columns:1fr; }
+      .decision-strip { grid-template-columns:1fr 1fr; }
       .decision-prices { grid-template-columns:1fr 1fr; }
       .toolbar { align-items:stretch; }
       input, select { width:100%; min-width:0; }
@@ -830,7 +853,10 @@ def _html() -> str:
           <option value="">全部訊號</option>
           <option value="strong">S+/S 強度</option>
           <option value="chase">可追蹤/觀察</option>
+          <option value="pullback">等拉回</option>
           <option value="risk">風險警示</option>
+          <option value="retail_clean">散戶轉乾淨</option>
+          <option value="retail_hot">散戶過熱</option>
           <option value="ai">AI 共識</option>
           <option value="new">今日新增</option>
           <option value="top_theme">主題焦點</option>
@@ -847,27 +873,59 @@ def _html() -> str:
       const reportDate = data.generated_date || (data.health && data.health.generated_date) || data.as_of;
       const dataDate = data.data_date || data.as_of;
       document.querySelector("#subtitle").textContent = `早報日期 ${reportDate}｜資料日 ${dataDate}｜僅供研究追蹤，不是投資建議`;
+      const actionLists = data.action_lists || {};
+      const actionSummary = actionLists.summary || {};
       document.querySelector("#metrics").innerHTML = [
-        ["掃描", data.summary.scanned],
-        ["有效", data.summary.valid],
-        ["S+強度", data.summary.s_plus_grade || 0],
-        ["S強度", data.summary.s_grade || 0],
-        ["A強度", data.summary.a_grade],
-        ["B強度", data.summary.b_grade],
-        ["資料不足", data.summary.data_insufficient]
+        ["有效標的", data.summary.valid],
+        ["S+/S 強度", actionSummary.strong ?? ((data.summary.s_plus_grade || 0) + (data.summary.s_grade || 0))],
+        ["可追", actionSummary.chase ?? 0],
+        ["等拉回", actionSummary.pullback ?? 0],
+        ["風險", actionSummary.risk ?? 0]
       ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
+      function marketTemperature() {
+        const retail = data.retail_divergence || {};
+        const retailSummary = retail.summary || {};
+        const risks = Number(actionSummary.risk || 0);
+        const chase = Number(actionSummary.chase || 0);
+        const strong = Number(actionSummary.strong || 0);
+        const hotRetail = Number(retailSummary.overheated || 0) + Number(retailSummary.watch_overheated || 0);
+        const cleanRetail = Number(retailSummary.clean || 0) + Number(retailSummary.watch_clean || 0);
+        let heat = 0;
+        const reasons = [];
+        if (strong >= 12) { heat += 1; reasons.push(`強勢訊號 ${strong} 檔`); }
+        if (chase >= 5) { heat += 1; reasons.push(`可追 ${chase} 檔`); }
+        if (risks >= 5) { heat += 2; reasons.push(`風險名單 ${risks} 檔`); }
+        if (hotRetail > cleanRetail && hotRetail > 0) { heat += 1; reasons.push(`散戶過熱 ${hotRetail} 檔`); }
+        if (data.market?.warning) { heat += 1; reasons.push(data.market.warning); }
+        if (String(data.overseas?.label || "").includes("偏空")) { heat += 1; reasons.push("海外偏空"); }
+        if (cleanRetail > hotRetail && cleanRetail > 0) { heat -= 1; reasons.push(`籌碼轉乾淨 ${cleanRetail} 檔`); }
+        if (heat >= 4) return { label: "過熱控風險", cls: "bad", note: reasons.slice(0, 3).join("｜") || "風險訊號偏多" };
+        if (heat >= 2) return { label: "偏熱精選", cls: "warn", note: reasons.slice(0, 3).join("｜") || "訊號偏熱" };
+        if (heat <= -1) return { label: "偏冷觀察", cls: "warn", note: reasons.slice(0, 3).join("｜") || "等待轉強" };
+        return { label: "正常篩選", cls: "good", note: reasons.slice(0, 3).join("｜") || "無明顯過熱訊號" };
+      }
       const postureText = {
         active_watch: "積極觀察",
         selective_watch: "精選觀察",
         risk_control: "風險控管",
       }[decision.posture] || "精選觀察";
       const decisionTopTheme = themeName(decision.top_theme);
+      const temp = marketTemperature();
       document.querySelector("#decisionSummary").innerHTML = `
-        <div class="line"><b>${esc(postureText)}</b></div>
-        <div class="line">觀察 ${esc(decision.watch_count ?? 0)}｜拉回 ${esc(decision.pullback_count ?? 0)}｜風險 ${esc(decision.risk_count ?? 0)}</div>
-        <div class="line">強勢訊號 ${esc(decision.strong_grade_count ?? 0)}｜資料品質 ${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</div>
-        <div class="line">主題焦點：${esc(decisionTopTheme)}</div>`;
+        <div class="temperature-card ${temp.cls}">
+          <b>${esc(temp.label)}</b>
+          <div class="small">${esc(temp.note)}</div>
+        </div>
+        <div class="decision-strip">
+          <div class="decision-pill good"><b>${esc(actionSummary.chase ?? 0)}</b><span>可追</span></div>
+          <div class="decision-pill warn"><b>${esc(actionSummary.pullback ?? 0)}</b><span>等拉回</span></div>
+          <div class="decision-pill bad"><b>${esc(actionSummary.risk ?? 0)}</b><span>風險</span></div>
+          <div class="decision-pill"><b>${esc(actionSummary.observe ?? 0)}</b><span>只觀察</span></div>
+          <div class="decision-pill"><b>${esc(actionSummary.ai_watch ?? 0)}</b><span>AI 共識</span></div>
+          <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
+        </div>
+        <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
@@ -922,7 +980,6 @@ def _html() -> str:
           <div class="decision-reason">${esc(reason)}</div>
         </article>`;
       }
-      const actionLists = data.action_lists || {};
       const chaseCards = (actionLists.chase || []).slice(0, 4).map(row => decisionCard(row, "chase")).join("");
       const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
       document.querySelector("#actionLists").innerHTML = `
@@ -1084,6 +1141,14 @@ def _html() -> str:
       const quick = document.querySelector("#quickFilter")?.value || "";
       const aiIds = new Set((data.action_lists?.ai_watch || []).map(x => String(x.stock_id)));
       const riskIds = new Set((data.exit_risks || []).map(x => String(x.stock_id)));
+      const retailCleanIds = new Set([
+        ...(data.retail_divergence?.clean || []),
+        ...(data.retail_divergence?.watch_clean || []),
+      ].map(x => String(x.stock_id)));
+      const retailHotIds = new Set([
+        ...(data.retail_divergence?.overheated || []),
+        ...(data.retail_divergence?.watch_overheated || []),
+      ].map(x => String(x.stock_id)));
       const topTheme = data.decision_summary?.top_theme || "";
       const rows = data.rows.filter(r => {
         const blob = JSON.stringify(r).toLowerCase();
@@ -1092,7 +1157,10 @@ def _html() -> str:
           !quick ||
           (quick === "strong" && ["S+", "S"].includes(r.grade)) ||
           (quick === "chase" && action.includes("追")) ||
+          (quick === "pullback" && action.includes("等拉回")) ||
           (quick === "risk" && riskIds.has(String(r.stock_id))) ||
+          (quick === "retail_clean" && retailCleanIds.has(String(r.stock_id))) ||
+          (quick === "retail_hot" && retailHotIds.has(String(r.stock_id))) ||
           (quick === "ai" && aiIds.has(String(r.stock_id))) ||
           (quick === "new" && String(data.as_of || "") === String(r.signal_date || data.as_of || "")) ||
           (quick === "top_theme" && (r.themes || []).includes(topTheme)) ||
