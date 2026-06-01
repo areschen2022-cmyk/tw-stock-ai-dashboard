@@ -152,6 +152,53 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
     }
 
 
+def _annotate_action_context(rows: list[dict], action_lists: dict, exit_risks: list[dict] | None = None) -> None:
+    chase_ids = {str(item.get("stock_id")) for item in action_lists.get("chase", [])}
+    pullback_ids = {str(item.get("stock_id")) for item in action_lists.get("pullback", [])}
+    risk_ids = {str(item.get("stock_id")) for item in exit_risks or []}
+
+    for row in rows:
+        stock_id = str(row.get("stock_id") or "")
+        grade = str(row.get("grade") or "")
+        action = str(row.get("action") or "")
+        entry_decision = str(row.get("entry_decision") or "")
+        ai_label = str(row.get("ai_label") or "未複核")
+
+        if stock_id in chase_ids:
+            context = "已列入今日可追"
+            reason = "符合強度與操作條件"
+        elif stock_id in pullback_ids:
+            context = "已列入等拉回"
+            reason = "強度夠，但進場條件偏向等待回測"
+        elif stock_id in risk_ids:
+            context = "未列入今日操作"
+            reason = "危險名單，先避開"
+        elif grade not in {"S+", "S", "A", "B"}:
+            context = "未列入今日操作"
+            reason = "強度未達操作觀察門檻"
+        elif "等拉回" in action or "等拉回" in entry_decision:
+            context = "未列入今日操作"
+            reason = "等拉回，未進前5檔"
+        elif "可追" in action:
+            context = "未列入今日操作"
+            reason = "可追候選，但未進前5檔"
+        elif "避免" in action or "避免" in entry_decision:
+            context = "未列入今日操作"
+            reason = "操作結論偏保守"
+        elif "量價不確認" in entry_decision:
+            context = "未列入今日操作"
+            reason = "量價條件尚未確認"
+        else:
+            context = "未列入今日操作"
+            reason = "只追蹤，不作為今日進場候選"
+
+        if ai_label in {"AI 不建議", "未複核", "AI 無共識"} and context.startswith("未列入"):
+            reason = f"{reason}；{ai_label}"
+
+        row["action_context"] = context
+        row["action_context_reason"] = reason
+
+
 def _data_recovery_status(details: list[dict]) -> dict:
     if not details:
         return {"label": "clean", "retryable": 0, "blocked": 0, "items": []}
@@ -425,6 +472,7 @@ def build_dashboard_payload(
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
     action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
+    _annotate_action_context(rows, action_lists, exit_risks=exit_risks)
     data_quality = _data_quality(source_status, rows, ai_status=ai_status)
     health = _build_health_status(as_of, source_status, theme_signal)
     return {
@@ -518,6 +566,11 @@ def enrich_dashboard_payload(
     payload["action_lists"] = _action_lists(
         rows,
         ai_picks=ai_picks,
+        exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
+    )
+    _annotate_action_context(
+        rows,
+        payload.get("action_lists", {}),
         exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
     )
     payload["data_quality"] = _data_quality(
@@ -1215,7 +1268,7 @@ def _html() -> str:
               <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
             </details>
           </td>
-          <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div></td>
+          <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div><div class="small"><b>今日：</b>${esc(r.action_context || "未列入今日操作")}</div><div class="small">${esc(r.action_context_reason || "")}</div></td>
           <td data-label="進場/停損">
             ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
             ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
