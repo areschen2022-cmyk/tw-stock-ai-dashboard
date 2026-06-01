@@ -550,6 +550,65 @@ def write_theme_history(payload: dict[str, list[dict]], output_dir: Path) -> Non
     (output_dir / "theme_history.json").write_text(json_text, encoding="utf-8")
 
 
+def build_weekly_overview_payload(
+    as_of: date,
+    dashboard_payload: dict,
+    performance_payload: dict,
+    theme_history: dict[str, list[dict]],
+    institutional_summary: dict,
+) -> dict:
+    themes = dashboard_payload.get("themes", {})
+    theme_names = themes.get("names", {})
+    theme_scores = themes.get("scores", {})
+    theme_momentum = themes.get("momentum", {})
+    theme_rows = []
+    for key, history in theme_history.items():
+        recent = list(history or [])[:7]
+        score_sum = sum(int(item.get("score") or 0) for item in recent)
+        if score_sum <= 0 and int(theme_scores.get(key) or 0) <= 0:
+            continue
+        theme_rows.append(
+            {
+                "key": key,
+                "name": theme_names.get(key, key),
+                "today": int(theme_scores.get(key) or 0),
+                "week_score": score_sum,
+                "avg_3d": (theme_momentum.get(key) or {}).get("avg_3d"),
+                "trend": (theme_momentum.get(key) or {}).get("trend"),
+                "history": recent,
+            }
+        )
+    theme_rows.sort(key=lambda item: (item["week_score"], item["today"]), reverse=True)
+    return {
+        "as_of": as_of.isoformat(),
+        "generated_at": datetime.now(TAIPEI).isoformat(timespec="seconds"),
+        "market": dashboard_payload.get("market", {}),
+        "overseas": dashboard_payload.get("overseas", {}),
+        "retail_divergence": dashboard_payload.get("retail_divergence", {}),
+        "institutional": institutional_summary,
+        "themes": theme_rows[:12],
+        "performance": {
+            "stats": performance_payload.get("stats", {}),
+            "top_themes": performance_payload.get("top_themes", []),
+            "score_bands": performance_payload.get("score_bands", []),
+            "selection_quality": performance_payload.get("selection_quality", {}),
+        },
+    }
+
+
+def write_weekly_overview(payload: dict, output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    json_text = json.dumps(payload, ensure_ascii=False, indent=2)
+    (output_dir / "weekly_data.json").write_text(json_text, encoding="utf-8")
+    safe_json = json_text.replace("</script>", r"<\/script>")
+    inline_script = f"window.__WEEKLY_DATA__ = {safe_json};"
+    html = _weekly_html().replace(
+        "/* __INLINE_WEEKLY_SENTINEL__ */",
+        inline_script,
+    )
+    (output_dir / "weekly.html").write_text(html, encoding="utf-8")
+
+
 def _html() -> str:
     return r"""<!doctype html>
 <html lang="zh-Hant">
@@ -681,6 +740,7 @@ def _html() -> str:
     <nav class="nav-tabs" aria-label="頁面切換">
       <a class="nav-tab active" href="index.html">今日監控</a>
       <a class="nav-tab" href="performance.html">訊號成效</a>
+      <a class="nav-tab" href="weekly.html">每週總覽</a>
     </nav>
     <div class="metrics" id="metrics"></div>
     <div class="dashboard-layout">
@@ -1155,6 +1215,170 @@ def _html() -> str:
 </html>"""
 
 
+def _weekly_html() -> str:
+    return r"""<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>台股 AI 每週總覽</title>
+  <style>
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; --blue:#0b4a8b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    main { max-width:1280px; margin:auto; padding:18px 24px 36px; }
+    h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
+    h2 { margin:0 0 10px; font-size:16px; }
+    .sub, .line, .small { color:var(--muted); }
+    .sub { font-size:14px; }
+    .line { margin:6px 0; font-size:14px; line-height:1.55; }
+    .small { font-size:12px; margin-top:3px; line-height:1.45; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--blue); text-decoration:none; font-weight:700; }
+    .nav-tab.active { background:var(--blue); color:white; border-color:var(--blue); }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+    .metric, section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .metric b { display:block; font-size:22px; margin-bottom:4px; }
+    .content-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.72fr); gap:12px; align-items:start; }
+    .stack { display:grid; gap:12px; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th { background:#eef1f5; color:#475467; font-size:12px; }
+    a.stock-link { color:var(--blue); text-decoration:none; font-weight:700; }
+    a.stock-link:hover { text-decoration:underline; }
+    .good { color:var(--good); }
+    .warn { color:var(--warn); }
+    .bad { color:var(--bad); }
+    .spark { font-family:monospace; letter-spacing:1px; color:#475467; white-space:nowrap; }
+    @media (max-width: 980px) {
+      main, header { padding-left:12px; padding-right:12px; }
+      .summary-grid { grid-template-columns:1fr 1fr; }
+      .content-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width: 720px) {
+      .summary-grid { grid-template-columns:1fr; }
+      table, thead, tbody, tr, td { display:block; width:100%; }
+      thead { display:none; }
+      table { border:0; background:transparent; }
+      tr { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:10px; padding:10px; }
+      td { border:0; padding:5px 0; }
+      td::before { content:attr(data-label); display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>台股 AI 每週總覽</h1>
+    <div class="sub" id="subtitle">載入中...</div>
+  </header>
+  <main>
+    <nav class="nav-tabs" aria-label="頁面切換">
+      <a class="nav-tab" href="index.html">今日監控</a>
+      <a class="nav-tab" href="performance.html">訊號成效</a>
+      <a class="nav-tab active" href="weekly.html">每週總覽</a>
+    </nav>
+    <div class="summary-grid" id="metrics"></div>
+    <div class="content-grid">
+      <div class="stack">
+        <section><h2>本週題材熱度</h2><div id="themes"></div></section>
+        <section><h2>散戶 / 大戶籌碼</h2><div id="retail"></div></section>
+      </div>
+      <div class="stack">
+        <section><h2>法人週流向</h2><div id="institutional"></div></section>
+        <section><h2>訊號品質摘要</h2><div id="performance"></div></section>
+        <section><h2>市場環境</h2><div id="market"></div></section>
+      </div>
+    </div>
+  </main>
+  <script>
+    /* __INLINE_WEEKLY_SENTINEL__ */
+    let data = null;
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+    const pct = value => value === null || value === undefined ? "-" : `${Number(value).toFixed(1)}%`;
+    const shares = value => value === null || value === undefined ? "-" : `${Math.round(Number(value) / 1000).toLocaleString()} 張`;
+    const stockLink = row => `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name || "")}</a>`;
+    function spark(history) {
+      const bars = "▁▂▃▄▅▆▇█";
+      const values = (history || []).map(x => Number(x.score || 0)).reverse();
+      const max = Math.max(...values, 1);
+      return values.map(v => v <= 0 ? "·" : bars[Math.min(7, Math.round(v / max * 7))]).join("");
+    }
+    function renderRetailRows(rows) {
+      return (rows || []).slice(0, 6).map(row => `
+        <tr>
+          <td data-label="股票">${stockLink(row)}</td>
+          <td data-label="人數變化">${esc(row.holder_change ?? "-")} 人<br><span class="small">${pct(row.holder_change_pct)}</span></td>
+          <td data-label="股價變化">${pct(row.price_change_pct)}</td>
+          <td data-label="原因">${esc(row.reason || row.signal || "")}</td>
+        </tr>`).join("");
+    }
+    function renderFlowRows(rows) {
+      return (rows || []).slice(0, 8).map(row => `
+        <tr>
+          <td data-label="股票">${stockLink(row)}</td>
+          <td data-label="週淨買賣">${shares(row.net_shares)}</td>
+        </tr>`).join("");
+    }
+    function render() {
+      const retail = data.retail_divergence || {};
+      const retailSummary = retail.summary || {};
+      const perfStats = data.performance?.stats || {};
+      document.querySelector("#subtitle").textContent = `${data.as_of || "-"}｜每週資料用來看方向，不等於買賣建議`;
+      document.querySelector("#metrics").innerHTML = `
+        <div class="metric"><b>${esc((data.themes || []).length)}</b><span>本週熱門題材</span></div>
+        <div class="metric"><b>${esc(retailSummary.clean ?? 0)}</b><span>籌碼轉乾淨</span></div>
+        <div class="metric"><b>${esc(retailSummary.overheated ?? 0)}</b><span>散戶過熱</span></div>
+        <div class="metric"><b>${esc(perfStats.win_rate_5d ?? "-")}%</b><span>近30日 5日勝率</span></div>`;
+      document.querySelector("#themes").innerHTML = `
+        <table><thead><tr><th>題材</th><th>今日</th><th>週熱度</th><th>趨勢</th><th>近7日</th></tr></thead>
+        <tbody>${(data.themes || []).slice(0, 10).map(row => `
+          <tr>
+            <td data-label="題材"><b>${esc(row.name)}</b></td>
+            <td data-label="今日">${esc(row.today)}</td>
+            <td data-label="週熱度">${esc(row.week_score)}</td>
+            <td data-label="趨勢">${esc(row.trend || "-")}</td>
+            <td data-label="近7日"><span class="spark">${spark(row.history)}</span></td>
+          </tr>`).join("")}</tbody></table>`;
+      document.querySelector("#retail").innerHTML = `
+        <div class="line">週資料觀察散戶是否集中或退場，需搭配價格與成交量確認。</div>
+        <h2 class="good">籌碼轉乾淨</h2>
+        <table><thead><tr><th>股票</th><th>人數變化</th><th>股價變化</th><th>原因</th></tr></thead><tbody>${renderRetailRows(retail.clean) || "<tr><td>暫無資料</td></tr>"}</tbody></table>
+        <h2 class="warn">散戶過熱</h2>
+        <table><thead><tr><th>股票</th><th>人數變化</th><th>股價變化</th><th>原因</th></tr></thead><tbody>${renderRetailRows(retail.overheated) || "<tr><td>暫無資料</td></tr>"}</tbody></table>`;
+      const flow = data.institutional || {};
+      document.querySelector("#institutional").innerHTML = `
+        <div class="line">區間：${esc(flow.since || "-")} 至 ${esc(flow.as_of || "-")}</div>
+        <h2 class="good">法人週買超</h2>
+        <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_buy) || "<tr><td>暫無資料</td></tr>"}</tbody></table>
+        <h2 class="bad">法人週賣超</h2>
+        <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_sell) || "<tr><td>暫無資料</td></tr>"}</tbody></table>`;
+      const selection = data.performance?.selection_quality || {};
+      document.querySelector("#performance").innerHTML = `
+        <div class="line">訊號數：${esc(perfStats.signals ?? 0)}｜完成：${esc(perfStats.completed ?? 0)}</div>
+        <div class="line">5日平均：${pct(perfStats.avg_return_5d)}｜10日平均：${pct(perfStats.avg_return_10d)}</div>
+        <div class="line">最佳題材：${esc(selection.best_theme?.label || "-")}</div>
+        <div class="line">樣本說明：${esc(selection.sample_label || "樣本仍在累積")}</div>`;
+      document.querySelector("#market").innerHTML = `
+        <div class="line"><b>台股</b>：${esc(data.market?.summary || "-")}</div>
+        <div class="line"><b>海外</b>：${esc(data.overseas?.label || "-")}｜${esc(data.overseas?.summary || "-")}</div>
+        <div class="line warn">每週總覽是方向盤，不是進場按鈕；進出場仍以今日監控的進場價、停損價、風險名單為主。</div>`;
+    }
+    if (window.__WEEKLY_DATA__ && window.__WEEKLY_DATA__ !== null) {
+      data = window.__WEEKLY_DATA__;
+      render();
+    } else {
+      fetch("weekly_data.json").then(r => r.json()).then(json => { data = json; render(); })
+        .catch(() => { document.querySelector("#subtitle").textContent = "weekly_data.json 載入失敗"; });
+    }
+  </script>
+</body>
+</html>
+"""
+
+
 def _performance_html() -> str:
     return r"""<!doctype html>
 <html lang="zh-Hant">
@@ -1225,6 +1449,7 @@ def _performance_html() -> str:
     <nav class="nav-tabs" aria-label="頁面切換">
       <a class="nav-tab" href="index.html">今日監控</a>
       <a class="nav-tab active" href="performance.html">訊號成效</a>
+      <a class="nav-tab" href="weekly.html">每週總覽</a>
     </nav>
     <div class="metrics" id="metrics"></div>
     <section style="margin-bottom:16px;">

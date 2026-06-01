@@ -5,7 +5,7 @@ from datetime import date
 from src.news.policy_signal import PolicySignal
 from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
-from src.report.dashboard import build_dashboard_payload
+from src.report.dashboard import build_dashboard_payload, build_weekly_overview_payload
 from src.scoring.score_engine import StockScore
 
 
@@ -183,3 +183,34 @@ def test_data_quality_hides_empty_events_recovered_by_stock_fallback() -> None:
     assert quality["effective_empty"] == 0
     assert quality["recovery_status"]["retryable"] == 0
     assert quality["recovery_status"]["recovered"] == 2
+
+
+def test_weekly_overview_payload_summarizes_existing_sections() -> None:
+    dashboard_payload = {
+        "market": {"summary": "market ok"},
+        "overseas": {"label": "neutral", "summary": "overseas ok"},
+        "retail_divergence": {"summary": {"clean": 1, "overheated": 2}},
+        "themes": {
+            "names": {"memory": "memory"},
+            "scores": {"memory": 5},
+            "momentum": {"memory": {"avg_3d": 2.5, "trend": "up"}},
+        },
+    }
+    performance_payload = {
+        "stats": {"signals": 3, "completed": 1, "win_rate_5d": 100},
+        "top_themes": [],
+        "score_bands": [],
+        "selection_quality": {"sample_label": "small sample"},
+    }
+    payload = build_weekly_overview_payload(
+        date(2026, 5, 29),
+        dashboard_payload,
+        performance_payload,
+        {"memory": [{"date": "2026-05-29", "score": 5}, {"date": "2026-05-28", "score": 3}]},
+        {"top_buy": [], "top_sell": []},
+    )
+
+    assert payload["as_of"] == "2026-05-29"
+    assert payload["themes"][0]["name"] == "memory"
+    assert payload["themes"][0]["week_score"] == 8
+    assert payload["retail_divergence"]["summary"]["clean"] == 1

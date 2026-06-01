@@ -22,7 +22,15 @@ from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
-from src.report.dashboard import build_dashboard_payload, enrich_dashboard_payload, write_dashboard, write_performance, write_theme_history
+from src.report.dashboard import (
+    build_dashboard_payload,
+    build_weekly_overview_payload,
+    enrich_dashboard_payload,
+    write_dashboard,
+    write_performance,
+    write_theme_history,
+    write_weekly_overview,
+)
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
@@ -425,8 +433,19 @@ def main() -> int:
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")
+    theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
     write_theme_history(
-        store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30),
+        theme_history_payload,
+        ROOT / "dashboard",
+    )
+    write_weekly_overview(
+        build_weekly_overview_payload(
+            as_of,
+            dashboard_payload,
+            performance_payload,
+            theme_history_payload,
+            store.weekly_institutional_summary(as_of, config.get("stock_names", {}), days=7),
+        ),
         ROOT / "dashboard",
     )
     telegram_message = report

@@ -83,6 +83,35 @@ def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     assert summary["items"][0]["stop_hit"] is False
 
 
+def test_weekly_institutional_summary_groups_recent_flow(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    as_of = date(2026, 5, 29)
+    with store._connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO institutional_flow
+                (trade_date, stock_id, investor, buy_shares, sell_shares, net_shares)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (as_of.isoformat(), "2408", "Foreign", 10000, 1000, 9000),
+        )
+        conn.execute(
+            """
+            INSERT INTO institutional_flow
+                (trade_date, stock_id, investor, buy_shares, sell_shares, net_shares)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            ((as_of - timedelta(days=1)).isoformat(), "2330", "Foreign", 1000, 6000, -5000),
+        )
+
+    summary = store.weekly_institutional_summary(as_of, {"2408": "Stock A", "2330": "Stock B"}, days=7)
+
+    assert summary["top_buy"][0]["stock_id"] == "2408"
+    assert summary["top_buy"][0]["net_shares"] == 9000
+    assert summary["top_sell"][0]["stock_id"] == "2330"
+    assert summary["foreign_top_sell"][0]["stock_id"] == "2330"
+
+
 def test_performance_summary_groups_by_theme_and_score_band(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)

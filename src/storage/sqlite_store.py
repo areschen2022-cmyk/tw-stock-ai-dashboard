@@ -1114,6 +1114,61 @@ class SQLiteStore:
     def all_theme_history(self, theme_keys: list[str], days: int = 30) -> dict[str, list[dict]]:
         return {theme_key: self.theme_history(theme_key, days=days) for theme_key in theme_keys}
 
+    def weekly_institutional_summary(
+        self,
+        as_of: date,
+        stock_names: dict[str, str],
+        days: int = 7,
+        limit: int = 10,
+    ) -> dict:
+        """Aggregate recent institutional flows for the weekly overview page."""
+        since = (as_of - timedelta(days=days)).isoformat()
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT stock_id, SUM(net_shares) AS net
+                FROM institutional_flow
+                WHERE trade_date >= ? AND trade_date <= ?
+                GROUP BY stock_id
+                HAVING net IS NOT NULL
+                ORDER BY net DESC
+                """,
+                (since, as_of.isoformat()),
+            ).fetchall()
+            foreign_rows = conn.execute(
+                """
+                SELECT stock_id, SUM(net_shares) AS net
+                FROM institutional_flow
+                WHERE trade_date >= ? AND trade_date <= ?
+                  AND (investor LIKE '%Foreign%' OR investor LIKE '%外資%')
+                GROUP BY stock_id
+                HAVING net IS NOT NULL
+                ORDER BY net DESC
+                """,
+                (since, as_of.isoformat()),
+            ).fetchall()
+
+        def _items(source_rows: list[tuple], reverse: bool = False) -> list[dict]:
+            selected = sorted(source_rows, key=lambda row: float(row[1] or 0), reverse=not reverse)[:limit]
+            return [
+                {
+                    "stock_id": str(row[0]),
+                    "name": stock_names.get(str(row[0]), ""),
+                    "net_shares": float(row[1] or 0),
+                }
+                for row in selected
+            ]
+
+        return {
+            "since": since,
+            "as_of": as_of.isoformat(),
+            "days": days,
+            "top_buy": _items(rows),
+            "top_sell": _items(rows, reverse=True),
+            "foreign_top_buy": _items(foreign_rows),
+            "foreign_top_sell": _items(foreign_rows, reverse=True),
+        }
+
     def latest_capital_flow(self, trade_date: date) -> list[dict]:
         with self._connect() as conn:
             rows = conn.execute(
