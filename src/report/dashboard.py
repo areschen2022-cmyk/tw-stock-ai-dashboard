@@ -79,6 +79,36 @@ def _ai_review_label(review: dict | None) -> str:
     return "AI 無共識"
 
 
+def _ai_review_reason(review: dict | None) -> str:
+    if not review:
+        return ""
+    return str(review.get("reason") or "").strip()
+
+
+def _retail_signal_lookup(retail_divergence: dict | None) -> dict[str, dict]:
+    data = retail_divergence or {}
+    lookup: dict[str, dict] = {}
+    for key in ("clean", "watch_clean", "overheated", "watch_overheated"):
+        for item in data.get(key, []) or []:
+            stock_id = str(item.get("stock_id") or "")
+            if stock_id and stock_id not in lookup:
+                lookup[stock_id] = item
+    return lookup
+
+
+def _retail_context(row: dict, retail_lookup: dict[str, dict]) -> tuple[str, str]:
+    item = retail_lookup.get(str(row.get("stock_id") or ""))
+    if not item:
+        return "散戶：無明顯背離", ""
+    signal = str(item.get("signal") or "")
+    reason = str(item.get("reason") or "")
+    if "籌碼轉乾淨" in signal:
+        return "散戶：籌碼轉乾淨", reason
+    if "散戶過熱" in signal:
+        return "散戶：過熱警示", reason
+    return f"散戶：{signal or '觀察'}", reason
+
+
 def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_risks: list[dict] | None = None) -> dict:
     ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
     exit_ids = {str(item.get("stock_id")) for item in exit_risks or []}
@@ -102,6 +132,14 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "pattern_risk_tags": row.get("pattern_risk_tags", []),
             "ai_review": ai_review,
             "ai_label": _ai_review_label(ai_review),
+            "ai_reason": row.get("ai_reason") or _ai_review_reason(ai_review),
+            "decision_light": row.get("decision_light"),
+            "decision_light_label": row.get("decision_light_label"),
+            "decision_light_reason": row.get("decision_light_reason"),
+            "retail_context": row.get("retail_context"),
+            "retail_context_reason": row.get("retail_context_reason"),
+            "action_context": row.get("action_context"),
+            "action_context_reason": row.get("action_context_reason"),
         }
 
     chase = [
@@ -152,10 +190,16 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
     }
 
 
-def _annotate_action_context(rows: list[dict], action_lists: dict, exit_risks: list[dict] | None = None) -> None:
+def _annotate_action_context(
+    rows: list[dict],
+    action_lists: dict,
+    exit_risks: list[dict] | None = None,
+    retail_divergence: dict | None = None,
+) -> None:
     chase_ids = {str(item.get("stock_id")) for item in action_lists.get("chase", [])}
     pullback_ids = {str(item.get("stock_id")) for item in action_lists.get("pullback", [])}
     risk_ids = {str(item.get("stock_id")) for item in exit_risks or []}
+    retail_lookup = _retail_signal_lookup(retail_divergence)
 
     for row in rows:
         stock_id = str(row.get("stock_id") or "")
@@ -163,6 +207,8 @@ def _annotate_action_context(rows: list[dict], action_lists: dict, exit_risks: l
         action = str(row.get("action") or "")
         entry_decision = str(row.get("entry_decision") or "")
         ai_label = str(row.get("ai_label") or "未複核")
+        retail_label, retail_reason = _retail_context(row, retail_lookup)
+        pattern_risks = row.get("pattern_risk_tags") or []
 
         if stock_id in chase_ids:
             context = "已列入今日可追"
@@ -197,6 +243,46 @@ def _annotate_action_context(rows: list[dict], action_lists: dict, exit_risks: l
 
         row["action_context"] = context
         row["action_context_reason"] = reason
+        row["retail_context"] = retail_label
+        row["retail_context_reason"] = retail_reason
+        row["ai_reason"] = _ai_review_reason(row.get("ai_review"))
+
+        if stock_id in risk_ids or "避免" in action or "避免" in entry_decision:
+            light = "red"
+            light_label = "紅燈控風險"
+            light_reason = "危險名單或操作結論偏保守"
+        elif "散戶過熱" in retail_label:
+            light = "red"
+            light_label = "紅燈控風險"
+            light_reason = retail_reason or "散戶過熱，先降低追價意願"
+        elif pattern_risks:
+            light = "yellow"
+            light_label = "黃燈等確認"
+            light_reason = f"K線風險：{'、'.join(pattern_risks[:2])}"
+        elif stock_id in chase_ids and ai_label == "AI 同意":
+            light = "green"
+            light_label = "綠燈可盯"
+            light_reason = "列入可追且 AI 同意，仍需開盤價量確認"
+        elif stock_id in chase_ids:
+            light = "yellow"
+            light_label = "黃燈等確認"
+            light_reason = f"列入可追，但 {ai_label}"
+        elif stock_id in pullback_ids:
+            light = "yellow"
+            light_label = "黃燈等拉回"
+            light_reason = "強度足夠，但進場位置要等回測"
+        elif "籌碼轉乾淨" in retail_label and grade in {"S+", "S", "A", "B"}:
+            light = "yellow"
+            light_label = "黃燈觀察"
+            light_reason = retail_reason or "籌碼轉乾淨，但尚未列入今日操作"
+        else:
+            light = "gray"
+            light_label = "灰燈追蹤"
+            light_reason = "尚未形成今日操作條件"
+
+        row["decision_light"] = light
+        row["decision_light_label"] = light_label
+        row["decision_light_reason"] = light_reason
 
 
 def _data_recovery_status(details: list[dict]) -> dict:
@@ -472,7 +558,8 @@ def build_dashboard_payload(
         )
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
     action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
-    _annotate_action_context(rows, action_lists, exit_risks=exit_risks)
+    _annotate_action_context(rows, action_lists, exit_risks=exit_risks, retail_divergence=retail_divergence)
+    action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
     data_quality = _data_quality(source_status, rows, ai_status=ai_status)
     health = _build_health_status(as_of, source_status, theme_signal)
     return {
@@ -571,6 +658,12 @@ def enrich_dashboard_payload(
     _annotate_action_context(
         rows,
         payload.get("action_lists", {}),
+        exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
+        retail_divergence=payload.get("retail_divergence", {}),
+    )
+    payload["action_lists"] = _action_lists(
+        rows,
+        ai_picks=ai_picks,
         exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
     )
     payload["data_quality"] = _data_quality(
@@ -734,6 +827,15 @@ def _html() -> str:
     .decision-card.avoid { border-left:4px solid var(--bad); }
     .decision-card-head { display:flex; gap:8px; justify-content:space-between; align-items:flex-start; }
     .decision-card-title { font-weight:800; line-height:1.25; }
+    .decision-light { display:inline-flex; align-items:center; gap:4px; margin-top:3px; font-size:12px; font-weight:800; }
+    .decision-dot { width:9px; height:9px; border-radius:999px; display:inline-block; background:#94a3b8; }
+    .decision-light.green .decision-dot { background:var(--good); }
+    .decision-light.yellow .decision-dot { background:var(--warn); }
+    .decision-light.red .decision-dot { background:var(--bad); }
+    .decision-light.gray .decision-dot { background:#94a3b8; }
+    .decision-note-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+    .decision-note { background:#f8fafc; border:1px solid #eef1f5; border-radius:6px; padding:6px; font-size:12px; line-height:1.35; color:var(--muted); }
+    .decision-note b { color:var(--ink); }
     .decision-badge { display:inline-flex; align-items:center; min-height:22px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
     .decision-badge.chase { color:#fff; background:var(--good); }
     .decision-badge.pullback { color:#3b2f00; background:#f6d365; }
@@ -1048,11 +1150,18 @@ def _html() -> str:
         const aiText = aiReview.stock_id
           ? `｜${esc(aiLabel)} ${esc(aiReview.pick_agreement_count || aiReview.agreement_count || 0)}/${esc(aiReview.model_count || 0)}`
           : "｜AI 未複核";
+        const light = row.decision_light || "gray";
+        const lightLabel = row.decision_light_label || "灰燈追蹤";
+        const lightReason = row.decision_light_reason || row.action_context_reason || "";
+        const aiReason = row.ai_reason || "";
+        const retailText = row.retail_context || "散戶：無明顯背離";
+        const retailReason = row.retail_context_reason || "";
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
               <div class="decision-card-title">${stockLink}</div>
               <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}${aiText}</div>
+              <div class="decision-light ${esc(light)}"><span class="decision-dot"></span>${esc(lightLabel)}<span class="small">｜${esc(lightReason)}</span></div>
             </div>
             <span class="decision-badge ${mode}">${badgeText}</span>
           </div>
@@ -1061,6 +1170,10 @@ def _html() -> str:
             <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
           </div>
           <div class="decision-reason">${esc(reason)}</div>
+          <div class="decision-note-grid">
+            <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
+            <div class="decision-note"><b>散戶</b><br>${esc(retailText)}${retailReason ? `｜${esc(retailReason)}` : ""}</div>
+          </div>
         </article>`;
       }
       const chaseCards = (actionLists.chase || []).slice(0, 4).map(row => decisionCard(row, "chase")).join("");
@@ -1091,18 +1204,28 @@ def _html() -> str:
         ${(retail.watch_overheated || []).slice(0,2).map(compactRetail).join("") || '<div class="line">尚未累積觀察過熱名單</div>'}`;
       const quality = data.data_quality || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
+      const qualityHuman = quality.label === "high" ? "可用" : quality.label === "medium" ? "注意" : "偏低";
+      const qualityNote = quality.label === "high"
+        ? "主要資料已可用；若有補回紀錄，代表備援已處理。"
+        : quality.label === "medium"
+          ? "部分資料需留意；看個股前先確認進場條件。"
+          : "資料品質偏低；今日訊號只適合觀察。";
       const retry = data.data_retry || {};
       const retryCounts = retry.status_counts || {};
       const retryLines = (retry.items || []).slice(0,3).map(x =>
         `<div class="line small">${esc(zh(RETRY_STATUS_TEXT, x.status))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(x.period || "-")}｜${esc(x.attempts || 0)} 次${x.last_error ? `｜${esc(x.last_error)}` : ""}</div>`
       ).join("");
       document.querySelector("#dataQuality").innerHTML = `
-        <div class="line ${qualityCls}"><b>${esc(quality.label_text || zh(QUALITY_TEXT, quality.label, "未知"))}</b>｜${esc(quality.score ?? "—")}/100</div>
-        <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
-        ${(quality.warnings || []).length ? quality.warnings.slice(0,3).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
-        ${(quality.details || []).length ? '<div class="line"><b>明細</b></div>' + quality.details.slice(0,4).map(x => `<div class="line small">${esc(zh(EVENT_TYPE_TEXT, x.type))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(zh(REASON_TEXT, x.reason || x.period || "-"))}</div>`).join("") : ""}
-        <div class="line"><b>補抓佇列</b>：待補 ${esc(retry.pending || retryCounts.pending || 0)}｜已補 ${esc(retry.recovered || retryCounts.recovered || 0)}｜失敗 ${esc(retry.failed || retryCounts.failed || 0)}</div>
-        ${retryLines}`;
+        <div class="line ${qualityCls}"><b>${esc(qualityHuman)}</b>｜${esc(quality.score ?? "—")}/100</div>
+        <div class="line">${esc(qualityNote)}</div>
+        ${(quality.warnings || []).length ? quality.warnings.slice(0,2).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
+        <details class="mini-detail">
+          <summary>資料細節</summary>
+          <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
+          ${(quality.details || []).length ? quality.details.slice(0,4).map(x => `<div class="line small">${esc(zh(EVENT_TYPE_TEXT, x.type))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(zh(REASON_TEXT, x.reason || x.period || "-"))}</div>`).join("") : '<div class="line small">目前無細節警示</div>'}
+          <div class="line"><b>補抓佇列</b>：待補 ${esc(retry.pending || retryCounts.pending || 0)}｜已補 ${esc(retry.recovered || retryCounts.recovered || 0)}｜失敗 ${esc(retry.failed || retryCounts.failed || 0)}</div>
+          ${retryLines || '<div class="line small">目前無待補抓資料</div>'}
+        </details>`;
       const recovery = quality.recovery_status || {};
       if (recovery.label && recovery.label !== "clean") {
         document.querySelector("#dataQuality").insertAdjacentHTML("beforeend",
@@ -1268,7 +1391,7 @@ def _html() -> str:
               <div class="small">入選：${esc(r.decision_reason || r.trigger_summary || "綜合訊號")}</div>
             </details>
           </td>
-          <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div><div class="small"><b>今日：</b>${esc(r.action_context || "未列入今日操作")}</div><div class="small">${esc(r.action_context_reason || "")}</div></td>
+          <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div><div class="decision-light ${esc(r.decision_light || "gray")}"><span class="decision-dot"></span>${esc(r.decision_light_label || "灰燈追蹤")}</div><div class="small"><b>今日：</b>${esc(r.action_context || "未列入今日操作")}</div><div class="small">${esc(r.action_context_reason || "")}</div><div class="small">${esc(r.retail_context || "散戶：無明顯背離")}</div></td>
           <td data-label="進場/停損">
             ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
             ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
