@@ -113,9 +113,11 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Update retail divergence signals
+        timeout-minutes: 3
+        continue-on-error: true
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
-        run: python retail_divergence_job.py || echo "Retail divergence update skipped"
+        run: python retail_divergence_job.py --max-stocks 40 || echo "Retail divergence update skipped"
 
       - name: Generate dashboard without Telegram
         env:
