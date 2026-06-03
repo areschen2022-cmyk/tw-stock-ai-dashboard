@@ -91,6 +91,39 @@ class SQLiteStore:
                     conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
             conn.execute(
                 """
+                CREATE TABLE IF NOT EXISTS potential_radar_signals (
+                    signal_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    grade TEXT,
+                    total_score INTEGER,
+                    action TEXT NOT NULL DEFAULT '',
+                    reason TEXT NOT NULL DEFAULT '',
+                    tags_json TEXT NOT NULL DEFAULT '[]',
+                    themes_json TEXT NOT NULL DEFAULT '[]',
+                    entry_price REAL,
+                    return_3d REAL,
+                    return_5d REAL,
+                    return_10d REAL,
+                    outcome_category TEXT,
+                    outcome_label TEXT,
+                    outcome_reason TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (signal_date, stock_id)
+                )
+                """
+            )
+            radar_columns = {row[1] for row in conn.execute("PRAGMA table_info(potential_radar_signals)").fetchall()}
+            for column, definition in [
+                ("return_10d", "REAL"),
+                ("outcome_category", "TEXT"),
+                ("outcome_label", "TEXT"),
+                ("outcome_reason", "TEXT"),
+            ]:
+                if column not in radar_columns:
+                    conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS capital_flow_signals (
                     trade_date TEXT NOT NULL,
                     stock_id TEXT NOT NULL,
@@ -596,6 +629,96 @@ class SQLiteStore:
                     ),
                 )
 
+    def save_potential_radar(self, candidates: list[dict], as_of: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM potential_radar_signals WHERE signal_date = ?", (as_of.isoformat(),))
+            for item in candidates:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO potential_radar_signals (
+                        signal_date, stock_id, name, grade, total_score, action,
+                        reason, tags_json, themes_json, entry_price
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        str(item.get("signal_date") or as_of.isoformat()),
+                        str(item.get("stock_id") or ""),
+                        str(item.get("name") or ""),
+                        item.get("grade"),
+                        item.get("total_score"),
+                        str(item.get("action") or ""),
+                        str(item.get("reason") or ""),
+                        json.dumps(item.get("tags") or [], ensure_ascii=False),
+                        json.dumps(item.get("themes") or [], ensure_ascii=False),
+                        item.get("entry_price"),
+                    ),
+                )
+
+    def update_potential_forward_returns(self, as_of: date) -> None:
+        with self._connect() as conn:
+            signals = conn.execute(
+                """
+                SELECT signal_date, stock_id, entry_price
+                FROM potential_radar_signals
+                WHERE signal_date < ?
+                  AND (return_5d IS NULL OR return_10d IS NULL)
+                """,
+                (as_of.isoformat(),),
+            ).fetchall()
+            for signal_date, stock_id, entry_price in signals:
+                base_entry = entry_price
+                if base_entry is None:
+                    base = conn.execute(
+                        """
+                        SELECT price FROM daily_scores
+                        WHERE as_of_date = ? AND stock_id = ? AND price IS NOT NULL
+                        """,
+                        (signal_date, stock_id),
+                    ).fetchone()
+                    if not base:
+                        continue
+                    base_entry = float(base[0])
+                future_rows = conn.execute(
+                    """
+                    SELECT as_of_date, price
+                    FROM daily_scores
+                    WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
+                    ORDER BY as_of_date
+                    """,
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=21)).isoformat()),
+                ).fetchall()
+                if not future_rows:
+                    continue
+                prices = [float(row[1]) for row in future_rows]
+                return_3d = _pct_return(prices[2] if len(prices) >= 3 else None, base_entry)
+                return_5d = _pct_return(prices[4] if len(prices) >= 5 else None, base_entry)
+                return_10d = _pct_return(prices[9] if len(prices) >= 10 else None, base_entry)
+                outcome = _potential_outcome(return_5d, return_10d)
+                conn.execute(
+                    """
+                    UPDATE potential_radar_signals
+                    SET entry_price = COALESCE(entry_price, ?),
+                        return_3d = COALESCE(?, return_3d),
+                        return_5d = COALESCE(?, return_5d),
+                        return_10d = COALESCE(?, return_10d),
+                        outcome_category = ?,
+                        outcome_label = ?,
+                        outcome_reason = ?
+                    WHERE signal_date = ? AND stock_id = ?
+                    """,
+                    (
+                        base_entry,
+                        return_3d,
+                        return_5d,
+                        return_10d,
+                        outcome["category"],
+                        outcome["label"],
+                        outcome["reason"],
+                        signal_date,
+                        stock_id,
+                    ),
+                )
+
     def update_forward_returns(self, as_of: date) -> None:
         with self._connect() as conn:
             signals = conn.execute(
@@ -848,6 +971,7 @@ class SQLiteStore:
             "signal_lab": grade_return_summary(items),
             "postmortem": _postmortem_summary(items),
             "learning_center": _learning_center_summary(items),
+            "potential_radar": self.potential_radar_summary(as_of, days=days),
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
             "selection_quality": _selection_quality_overview(
@@ -862,6 +986,82 @@ class SQLiteStore:
                 action_stats,
                 theme_stats,
             ),
+            "items": items,
+        }
+
+    def potential_radar_summary(self, as_of: date, days: int = 30) -> dict:
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT signal_date, stock_id, name, grade, total_score, action,
+                       reason, tags_json, themes_json, entry_price,
+                       return_3d, return_5d, return_10d,
+                       outcome_category, outcome_label, outcome_reason
+                FROM potential_radar_signals
+                WHERE signal_date >= ?
+                ORDER BY signal_date DESC, total_score DESC
+                """,
+                (since.isoformat(),),
+            ).fetchall()
+        items = []
+        for row in rows:
+            outcome = _potential_outcome(row[11], row[12])
+            category = row[13] or outcome["category"]
+            label = row[14] or outcome["label"]
+            reason = row[15] or outcome["reason"]
+            items.append(
+                {
+                    "signal_date": row[0],
+                    "stock_id": row[1],
+                    "name": row[2],
+                    "grade": row[3],
+                    "total_score": row[4],
+                    "action": row[5],
+                    "reason": row[6],
+                    "tags": json.loads(row[7] or "[]"),
+                    "themes": json.loads(row[8] or "[]"),
+                    "entry_price": row[9],
+                    "return_3d": row[10],
+                    "return_5d": row[11],
+                    "return_10d": row[12],
+                    "outcome_category": category,
+                    "outcome_label": label,
+                    "outcome_reason": reason,
+                }
+            )
+        completed = [item for item in items if item["return_5d"] is not None]
+        success = [
+            item for item in completed
+            if item["outcome_category"] in {"potential_big_winner", "potential_success"}
+        ]
+        failure = [item for item in completed if item["outcome_category"] == "potential_false_positive"]
+        pending = [item for item in items if item["return_5d"] is None]
+        counts = {}
+        for item in items:
+            counts[item["outcome_category"]] = counts.get(item["outcome_category"], 0) + 1
+        return {
+            "stats": {
+                "signals": len(items),
+                "completed": len(completed),
+                "pending": len(pending),
+                "win_rate_5d": _rate([item["return_5d"] > 0 for item in completed]),
+                "avg_return_5d": _avg([item["return_5d"] for item in completed]),
+                "avg_return_10d": _avg([item["return_10d"] for item in items if item["return_10d"] is not None]),
+                "big_winner_count": counts.get("potential_big_winner", 0),
+                "false_positive_count": counts.get("potential_false_positive", 0),
+            },
+            "counts": [{"category": key, "count": value} for key, value in sorted(counts.items())],
+            "success_cases": sorted(
+                success,
+                key=lambda item: (
+                    float(item["return_10d"] if item["return_10d"] is not None else item["return_5d"] or 0),
+                    float(item["return_5d"] or 0),
+                ),
+                reverse=True,
+            )[:8],
+            "failure_cases": sorted(failure, key=lambda item: float(item["return_5d"] or 0))[:8],
+            "pending_candidates": pending[:8],
             "items": items,
         }
 
@@ -1511,11 +1711,38 @@ def _potential_candidate(item: dict) -> dict:
         "total_score": item.get("total_score"),
         "action": item.get("action"),
         "themes": item.get("themes", []),
+        "entry_price": item.get("entry_price"),
         "return_3d": item.get("return_3d"),
         "return_5d": item.get("return_5d"),
         "entry_triggered": item.get("entry_triggered"),
         "tags": tags[:6],
         "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。",
+    }
+
+
+def _potential_outcome(return_5d: float | None, return_10d: float | None) -> dict:
+    if return_5d is None:
+        return {
+            "category": "potential_pending",
+            "label": "觀察中",
+            "reason": "尚未累積 5 日結果，先保留追蹤。",
+        }
+    if float(return_5d) >= 5 or (return_10d is not None and float(return_10d) >= 10):
+        return {
+            "category": "potential_big_winner",
+            "label": "提前命中",
+            "reason": "潛力雷達提前抓到後續強勢股。",
+        }
+    if float(return_5d) > 0:
+        return {
+            "category": "potential_success",
+            "label": "方向正確",
+            "reason": "5 日後為正報酬，早期觀察有效。",
+        }
+    return {
+        "category": "potential_false_positive",
+        "label": "假訊號",
+        "reason": "5 日後未轉強，需回查題材或量價條件。",
     }
 
 

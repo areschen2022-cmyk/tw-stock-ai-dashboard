@@ -148,6 +148,38 @@ def test_learning_center_lists_potential_candidates(tmp_path) -> None:
     assert "分數已成形" in potentials[0]["tags"]
 
 
+def test_potential_radar_records_and_validates_candidates(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    winner = _score("2408", 88, price=100.0)
+    loser = _score("2344", 86, price=100.0)
+    store.save_daily_score(winner, day0)
+    store.save_daily_score(loser, day0)
+    store.save_watch_candidates([winner, loser], day0, {"2408": "Winner", "2344": "Loser"})
+
+    initial = store.performance_summary(day0 + timedelta(days=1))
+    store.save_potential_radar(initial["learning_center"]["potential_candidates"], day0)
+
+    winner_prices = [101.0, 102.0, 103.0, 104.0, 108.0]
+    loser_prices = [99.0, 98.0, 97.0, 96.0, 94.0]
+    for index, price in enumerate(winner_prices, start=1):
+        store.save_daily_score(_score("2408", 88, price=price), day0 + timedelta(days=index))
+    for index, price in enumerate(loser_prices, start=1):
+        store.save_daily_score(_score("2344", 86, price=price), day0 + timedelta(days=index))
+
+    store.update_potential_forward_returns(day0 + timedelta(days=5))
+    summary = store.potential_radar_summary(day0 + timedelta(days=5))
+    by_stock = {item["stock_id"]: item for item in summary["items"]}
+
+    assert summary["stats"]["completed"] == 2
+    assert summary["stats"]["big_winner_count"] == 1
+    assert summary["stats"]["false_positive_count"] == 1
+    assert by_stock["2408"]["outcome_category"] == "potential_big_winner"
+    assert by_stock["2344"]["outcome_category"] == "potential_false_positive"
+    assert summary["success_cases"][0]["stock_id"] == "2408"
+    assert summary["failure_cases"][0]["stock_id"] == "2344"
+
+
 def test_weekly_institutional_summary_groups_recent_flow(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     as_of = date(2026, 5, 29)

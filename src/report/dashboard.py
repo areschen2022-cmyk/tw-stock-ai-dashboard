@@ -1788,6 +1788,27 @@ def _performance_html() -> str:
           <tbody id="potentialCandidates"></tbody>
         </table>
       </section>
+      <section style="margin-top:12px;">
+        <h2>潛力雷達成效</h2>
+        <div class="note">每天保留潛力觀察名單，回頭驗證 3/5/10 日表現，區分提前命中、方向正確、假訊號與觀察中。</div>
+        <div class="metrics" id="potentialRadarMetrics"></div>
+        <div class="analysis-grid">
+          <section>
+            <h2>雷達命中</h2>
+            <table>
+              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
+              <tbody id="potentialRadarSuccess"></tbody>
+            </table>
+          </section>
+          <section>
+            <h2>雷達失敗</h2>
+            <table>
+              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
+              <tbody id="potentialRadarFailure"></tbody>
+            </table>
+          </section>
+        </div>
+      </section>
       <div class="note" id="learningNotes"></div>
     </section>
     <div class="analysis-grid">
@@ -2013,6 +2034,32 @@ def _performance_html() -> str:
       document.querySelector("#potentialCandidates").innerHTML = (learning.potential_candidates || []).length
         ? learning.potential_candidates.map(potentialRow).join("")
         : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
+      const radar = data.potential_radar || {};
+      const radarStats = radar.stats || {};
+      const radarRow = row => {
+        const tags = (row.tags || []).slice(0, 4).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
+        return `<tr>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.grade)}｜${esc(row.total_score)}/100</div></td>
+          <td data-label="日期">${esc(row.signal_date)}</td>
+          <td data-label="結果">${esc(row.outcome_label || "觀察中")}</td>
+          <td data-label="5日">${fmtPct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${fmtPct(row.return_10d)}</div>` : ""}</td>
+          <td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div class="lesson-tags">${tags}</div></td>
+        </tr>`;
+      };
+      document.querySelector("#potentialRadarMetrics").innerHTML = [
+        metric("雷達記錄", radarStats.signals ?? 0),
+        metric("已驗證", radarStats.completed ?? 0),
+        metric("觀察中", radarStats.pending ?? 0),
+        metric("5日勝率", radarStats.win_rate_5d?.toFixed(1), "%"),
+        metric("5日平均", radarStats.avg_return_5d?.toFixed(1), "%"),
+        metric("提前命中", radarStats.big_winner_count ?? 0),
+      ].join("");
+      document.querySelector("#potentialRadarSuccess").innerHTML = (radar.success_cases || []).length
+        ? radar.success_cases.map(radarRow).join("")
+        : `<tr><td data-label="雷達命中" colspan="5">尚無已驗證命中樣本</td></tr>`;
+      document.querySelector("#potentialRadarFailure").innerHTML = (radar.failure_cases || []).length
+        ? radar.failure_cases.map(radarRow).join("")
+        : `<tr><td data-label="雷達失敗" colspan="5">尚無已驗證失敗樣本</td></tr>`;
       document.querySelector("#learningNotes").innerHTML = (learning.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `

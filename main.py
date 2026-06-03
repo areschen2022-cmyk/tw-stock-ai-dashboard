@@ -436,6 +436,12 @@ def main() -> int:
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     performance_payload = store.performance_summary(as_of, days=30)
+    store.save_potential_radar(
+        (performance_payload.get("learning_center") or {}).get("potential_candidates", []),
+        as_of,
+    )
+    store.update_potential_forward_returns(as_of)
+    performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")
     theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
     write_theme_history(
