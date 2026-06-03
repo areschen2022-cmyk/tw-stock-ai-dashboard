@@ -28,6 +28,10 @@ _COMMON_STOP_TERMS = {
     "布局",
     "商機",
     "新聞",
+    "COMPUTEX",
+    "Factset",
+    "FactSet",
+    "EPS",
     "盤中",
     "開盤",
     "收盤",
@@ -49,7 +53,7 @@ _DEFAULT_SEEDS = (
 )
 
 _TERM_RE = re.compile(
-    r"([A-Za-z0-9+\-]{2,18}|[\u4e00-\u9fffA-Za-z0-9+\-]{2,18}"
+    r"([\u4e00-\u9fffA-Za-z0-9+\-]{2,18}"
     r"(?:元件|材料|設備|模組|封裝|通訊|衛星|電源|散熱|記憶體|機器人|玻纖|載板|電網|重電|軍工|儲能|"
     r"光通訊|矽光子|液冷|石英|碳化矽|電池|電纜|線材|鏡頭|面板|機殼|連接器|資料中心))"
 )
@@ -181,7 +185,8 @@ def _stock_hits(headline: str, stock_names: dict[str, str]) -> list[str]:
     hits: list[str] = []
     for code in _STOCK_CODE_RE.findall(headline):
         name = stock_names.get(code)
-        hits.append(f"{code} {name}" if name else code)
+        if name:
+            hits.append(f"{code} {name}")
     for code, name in stock_names.items():
         if name and name in headline:
             label = f"{code} {name}"
