@@ -97,6 +97,7 @@ class SQLiteStore:
                     name TEXT NOT NULL DEFAULT '',
                     grade TEXT,
                     total_score INTEGER,
+                    potential_score INTEGER NOT NULL DEFAULT 0,
                     action TEXT NOT NULL DEFAULT '',
                     reason TEXT NOT NULL DEFAULT '',
                     tags_json TEXT NOT NULL DEFAULT '[]',
@@ -115,6 +116,7 @@ class SQLiteStore:
             )
             radar_columns = {row[1] for row in conn.execute("PRAGMA table_info(potential_radar_signals)").fetchall()}
             for column, definition in [
+                ("potential_score", "INTEGER NOT NULL DEFAULT 0"),
                 ("return_10d", "REAL"),
                 ("outcome_category", "TEXT"),
                 ("outcome_label", "TEXT"),
@@ -636,9 +638,9 @@ class SQLiteStore:
                 conn.execute(
                     """
                     INSERT OR REPLACE INTO potential_radar_signals (
-                        signal_date, stock_id, name, grade, total_score, action,
+                        signal_date, stock_id, name, grade, total_score, potential_score, action,
                         reason, tags_json, themes_json, entry_price
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -646,6 +648,7 @@ class SQLiteStore:
                         str(item.get("name") or ""),
                         item.get("grade"),
                         item.get("total_score"),
+                        item.get("potential_score") or 0,
                         str(item.get("action") or ""),
                         str(item.get("reason") or ""),
                         json.dumps(item.get("tags") or [], ensure_ascii=False),
@@ -995,7 +998,7 @@ class SQLiteStore:
             rows = conn.execute(
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, action,
-                       reason, tags_json, themes_json, entry_price,
+                       potential_score, reason, tags_json, themes_json, entry_price,
                        return_3d, return_5d, return_10d,
                        outcome_category, outcome_label, outcome_reason
                 FROM potential_radar_signals
@@ -1006,10 +1009,10 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            outcome = _potential_outcome(row[11], row[12])
-            category = row[13] or outcome["category"]
-            label = row[14] or outcome["label"]
-            reason = row[15] or outcome["reason"]
+            outcome = _potential_outcome(row[12], row[13])
+            category = row[14] or outcome["category"]
+            label = row[15] or outcome["label"]
+            reason = row[16] or outcome["reason"]
             items.append(
                 {
                     "signal_date": row[0],
@@ -1018,13 +1021,14 @@ class SQLiteStore:
                     "grade": row[3],
                     "total_score": row[4],
                     "action": row[5],
-                    "reason": row[6],
-                    "tags": json.loads(row[7] or "[]"),
-                    "themes": json.loads(row[8] or "[]"),
-                    "entry_price": row[9],
-                    "return_3d": row[10],
-                    "return_5d": row[11],
-                    "return_10d": row[12],
+                    "potential_score": row[6],
+                    "reason": row[7],
+                    "tags": json.loads(row[8] or "[]"),
+                    "themes": json.loads(row[9] or "[]"),
+                    "entry_price": row[10],
+                    "return_3d": row[11],
+                    "return_5d": row[12],
+                    "return_10d": row[13],
                     "outcome_category": category,
                     "outcome_label": label,
                     "outcome_reason": reason,

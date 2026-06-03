@@ -2039,7 +2039,7 @@ def _performance_html() -> str:
       const radarRow = row => {
         const tags = (row.tags || []).slice(0, 4).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
         return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.grade)}｜${esc(row.total_score)}/100</div></td>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.grade)}｜${esc(row.total_score)}/100｜潛力 ${esc(row.potential_score ?? "-")}</div></td>
           <td data-label="日期">${esc(row.signal_date)}</td>
           <td data-label="結果">${esc(row.outcome_label || "觀察中")}</td>
           <td data-label="5日">${fmtPct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${fmtPct(row.return_10d)}</div>` : ""}</td>

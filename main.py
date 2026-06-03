@@ -33,6 +33,7 @@ from src.report.dashboard import (
 )
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
+from src.report.potential_radar import build_potential_radar_candidates
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
 from src.scoring.score_engine import ScoreEngine
@@ -435,9 +436,8 @@ def main() -> int:
         retry_summary=dashboard_payload.get("data_retry", {}),
     )
     write_dashboard(dashboard_payload, ROOT / "dashboard")
-    performance_payload = store.performance_summary(as_of, days=30)
     store.save_potential_radar(
-        (performance_payload.get("learning_center") or {}).get("potential_candidates", []),
+        build_potential_radar_candidates(dashboard_payload.get("rows", []), as_of),
         as_of,
     )
     store.update_potential_forward_returns(as_of)
