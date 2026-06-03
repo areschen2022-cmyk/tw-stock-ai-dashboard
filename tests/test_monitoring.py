@@ -126,6 +126,26 @@ def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path
     assert summary["postmortem"]["success_cases"][0]["stock_id"] == "2408"
     assert summary["postmortem"]["failure_cases"][0]["stock_id"] == "2344"
     assert summary["postmortem"]["missed_cases"][0]["stock_id"] == "2317"
+    assert summary["learning_center"]["success_factors"]
+    assert summary["learning_center"]["failure_factors"]
+    assert any(row["label"] == "高分失敗" for row in summary["learning_center"]["failure_factors"])
+
+
+def test_learning_center_lists_potential_candidates(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    candidate = _score("2408", 88, price=100.0)
+    candidate.entry_limit_price = 99.0
+    candidate.stop_price = 95.0
+    store.save_daily_score(candidate, day0)
+    store.save_watch_candidates([candidate], day0, {"2408": "Potential"})
+
+    summary = store.performance_summary(day0 + timedelta(days=1))
+    potentials = summary["learning_center"]["potential_candidates"]
+
+    assert potentials
+    assert potentials[0]["stock_id"] == "2408"
+    assert "分數已成形" in potentials[0]["tags"]
 
 
 def test_weekly_institutional_summary_groups_recent_flow(tmp_path) -> None:

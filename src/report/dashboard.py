@@ -1761,6 +1761,35 @@ def _performance_html() -> str:
       </div>
       <div class="note" id="postmortemNotes"></div>
     </section>
+    <section style="margin-bottom:16px;">
+      <h2>選股學習中心</h2>
+      <div class="note">把成功與失敗拆成可重複檢查的條件，另外列出尚未大漲、但條件正在累積的潛力觀察。</div>
+      <div class="analysis-grid">
+        <section>
+          <h2>成功因素</h2>
+          <table>
+            <thead><tr><th>因素</th><th>樣本</th><th>5日勝率</th><th>5日平均</th><th>解讀</th></tr></thead>
+            <tbody id="successFactors"></tbody>
+          </table>
+        </section>
+        <section>
+          <h2>失敗因素</h2>
+          <table>
+            <thead><tr><th>因素</th><th>樣本</th><th>5日勝率</th><th>5日平均</th><th>解讀</th></tr></thead>
+            <tbody id="failureFactors"></tbody>
+          </table>
+        </section>
+      </div>
+      <section style="margin-top:12px;">
+        <h2>潛力觀察</h2>
+        <div class="note">這裡不是買進清單，而是「尚未飆、但條件開始聚集」的觀察名單。</div>
+        <table>
+          <thead><tr><th>股票</th><th>訊號日</th><th>強度</th><th>3日表現</th><th>觀察理由</th></tr></thead>
+          <tbody id="potentialCandidates"></tbody>
+        </table>
+      </section>
+      <div class="note" id="learningNotes"></div>
+    </section>
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
@@ -1957,6 +1986,34 @@ def _performance_html() -> str:
         ? postmortem.failure_cases.slice(0, 6).map(postmortemRow).join("")
         : `<tr><td data-label="失敗樣本" colspan="5">尚無已完成失敗樣本</td></tr>`;
       document.querySelector("#postmortemNotes").innerHTML = (postmortem.notes || []).map(note => `- ${esc(note)}`).join("<br>");
+      const learning = data.learning_center || {};
+      const factorRow = row => `<tr>
+        <td data-label="因素">${esc(row.label)}</td>
+        <td data-label="樣本">${esc(row.completed ?? row.count ?? 0)}</td>
+        <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
+        <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
+        <td data-label="解讀">${esc(row.reason)}</td>
+      </tr>`;
+      const potentialRow = row => {
+        const tags = (row.tags || []).slice(0, 5).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
+        return `<tr>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a></td>
+          <td data-label="訊號日">${esc(row.signal_date)}</td>
+          <td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td>
+          <td data-label="3日表現">${fmtPct(row.return_3d)}</td>
+          <td data-label="觀察理由">${esc(row.reason)}<div class="lesson-tags">${tags}</div></td>
+        </tr>`;
+      };
+      document.querySelector("#successFactors").innerHTML = (learning.success_factors || []).length
+        ? learning.success_factors.map(factorRow).join("")
+        : `<tr><td data-label="成功因素" colspan="5">尚無足夠成功因素樣本</td></tr>`;
+      document.querySelector("#failureFactors").innerHTML = (learning.failure_factors || []).length
+        ? learning.failure_factors.map(factorRow).join("")
+        : `<tr><td data-label="失敗因素" colspan="5">尚無足夠失敗因素樣本</td></tr>`;
+      document.querySelector("#potentialCandidates").innerHTML = (learning.potential_candidates || []).length
+        ? learning.potential_candidates.map(potentialRow).join("")
+        : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
+      document.querySelector("#learningNotes").innerHTML = (learning.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `
           <tr>

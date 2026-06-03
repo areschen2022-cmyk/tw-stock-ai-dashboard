@@ -847,6 +847,7 @@ class SQLiteStore:
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
             "postmortem": _postmortem_summary(items),
+            "learning_center": _learning_center_summary(items),
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
             "selection_quality": _selection_quality_overview(
@@ -1461,6 +1462,109 @@ def _postmortem_summary(items: list[dict], limit: int = 8) -> dict:
         "failure_cases": _rank(failure, False),
         "missed_cases": _rank(missed, True),
         "notes": notes,
+    }
+
+
+def _factor_row(label: str, items: list[dict], reason: str) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    return {
+        "label": label,
+        "count": len(items),
+        "completed": len(completed),
+        "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+        "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+        "avg_return_10d": _avg([item.get("return_10d") for item in completed if item.get("return_10d") is not None]),
+        "reason": reason,
+    }
+
+
+def _top_factor_rows(factors: list[dict], *, reverse: bool, limit: int = 6) -> list[dict]:
+    usable = [row for row in factors if int(row.get("count") or 0) > 0]
+    usable.sort(
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else (-999 if reverse else 999)),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else (-999 if reverse else 999)),
+            int(row.get("completed") or 0),
+        ),
+        reverse=reverse,
+    )
+    return usable[:limit]
+
+
+def _potential_candidate(item: dict) -> dict:
+    tags = []
+    if int(item.get("total_score") or 0) >= 85:
+        tags.append("分數已成形")
+    if item.get("grade") in {"S", "A"}:
+        tags.append("強度中高")
+    if item.get("entry_triggered") is False:
+        tags.append("尚未追價")
+    if item.get("return_3d") is not None and float(item.get("return_3d") or 0) <= 3:
+        tags.append("尚未大漲")
+    for theme in (item.get("themes") or [])[:2]:
+        tags.append(f"題材:{theme}")
+    return {
+        "signal_date": item.get("signal_date"),
+        "stock_id": item.get("stock_id"),
+        "name": item.get("name"),
+        "grade": item.get("grade"),
+        "total_score": item.get("total_score"),
+        "action": item.get("action"),
+        "themes": item.get("themes", []),
+        "return_3d": item.get("return_3d"),
+        "return_5d": item.get("return_5d"),
+        "entry_triggered": item.get("entry_triggered"),
+        "tags": tags[:6],
+        "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。",
+    }
+
+
+def _learning_center_summary(items: list[dict]) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    success = [item for item in completed if item.get("outcome_category") in {"big_winner", "true_positive"}]
+    failure = [item for item in completed if item.get("outcome_category") in {"false_positive", "stop_loss"}]
+    missed = [item for item in completed if item.get("outcome_category") == "missed_opportunity"]
+    pending = [item for item in items if item.get("outcome_category") == "pending"]
+
+    success_factors = [
+        _factor_row("高分成功", [item for item in success if int(item.get("total_score") or 0) >= 95], "95 分以上且方向正確，代表高分條件有發揮。"),
+        _factor_row("進場觸發後上漲", [item for item in success if item.get("entry_triggered") is True], "進場條件觸發後仍上漲，代表確認條件有效。"),
+        _factor_row("題材共振成功", [item for item in success if len(item.get("themes") or []) >= 2], "同時有多個題材標籤，且後續報酬為正。"),
+        _factor_row("S/S+ 成功", [item for item in success if item.get("grade") in {"S+", "S"}], "高強度級別成功，適合觀察是否可提高優先權。"),
+    ]
+    failure_factors = [
+        _factor_row("高分失敗", [item for item in failure if int(item.get("total_score") or 0) >= 95], "高分仍失敗，優先檢查是否追高或題材退潮。"),
+        _factor_row("跌破停損", [item for item in completed if item.get("outcome_category") == "stop_loss"], "訊號後觸及停損，代表風險條件需要更保守。"),
+        _factor_row("進場觸發後下跌", [item for item in failure if item.get("entry_triggered") is True], "進場條件觸發但後續轉弱，代表確認條件可能不足。"),
+        _factor_row("題材共振失敗", [item for item in failure if len(item.get("themes") or []) >= 2], "題材很多但沒有轉成報酬，代表不能只靠題材熱度。"),
+        _factor_row("錯過機會", missed, "股價後續上漲但未觸發進場，代表進場條件可能太嚴格。"),
+    ]
+
+    potential_source = [
+        item for item in pending
+        if int(item.get("total_score") or 0) >= 75
+        and item.get("grade") in {"S", "A", "B"}
+        and (item.get("return_3d") is None or float(item.get("return_3d") or 0) <= 3)
+    ]
+    potential_source.sort(
+        key=lambda item: (
+            1 if item.get("entry_triggered") is False else 0,
+            int(item.get("total_score") or 0),
+            len(item.get("themes") or []),
+        ),
+        reverse=True,
+    )
+
+    return {
+        "sample": len(completed),
+        "success_factors": _top_factor_rows(success_factors, reverse=True),
+        "failure_factors": _top_factor_rows(failure_factors, reverse=False),
+        "potential_candidates": [_potential_candidate(item) for item in potential_source[:8]],
+        "notes": [
+            "潛力觀察只找條件正在成形、但尚未大漲或尚未完成驗證的股票。",
+            "失敗因素若反覆出現，下一步才適合調整分數權重。",
+            "錯過機會太多時，代表進場門檻可能過嚴，不代表應該直接追價。",
+        ],
     }
 
 
