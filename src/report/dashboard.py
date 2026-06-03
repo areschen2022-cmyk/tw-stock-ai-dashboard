@@ -793,15 +793,17 @@ def _html() -> str:
     header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:var(--muted); font-size:14px; }
-    main { padding:18px 24px 32px; max-width:1680px; margin:auto; }
-    .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:14px; }
-    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 11px; min-height:70px; }
+    main { padding:16px 24px 32px; max-width:1480px; margin:auto; }
+    .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:12px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 11px; min-height:64px; }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
-    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr); gap:12px; margin-bottom:16px; align-items:start; }
+    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,420px); gap:12px; margin-bottom:16px; align-items:start; }
     .main-stack, .side-stack { display:grid; gap:12px; }
+    .side-stack { position:sticky; top:10px; }
+    .market-theme-grid { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:12px; }
     .detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; grid-column:1 / -1; }
-    section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
     details.panel summary { cursor:pointer; font-weight:700; font-size:16px; list-style:none; }
     details.panel summary::-webkit-details-marker { display:none; }
     details.panel summary::after { content:"＋"; float:right; color:var(--muted); }
@@ -809,8 +811,8 @@ def _html() -> str:
     .section-note { color:var(--muted); font-size:12px; margin-top:-4px; margin-bottom:8px; }
     .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
     .action-panel { border-left:4px solid var(--good); }
-    .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
-    .decision-pill { border:1px solid var(--line); border-radius:8px; padding:8px 9px; background:#fbfcfe; min-height:58px; }
+    .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
+    .decision-pill { border:1px solid var(--line); border-radius:8px; padding:7px 8px; background:#fbfcfe; min-height:54px; }
     .decision-pill b { display:block; font-size:18px; line-height:1.2; }
     .decision-pill span { color:var(--muted); font-size:12px; }
     .decision-pill.good { border-left:4px solid var(--good); }
@@ -822,7 +824,7 @@ def _html() -> str:
     .temperature-card.bad { border-left:4px solid var(--bad); }
     .temperature-card b { display:block; font-size:20px; margin-bottom:4px; }
     .decision-card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
-    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
+    .decision-card { border:1px solid var(--line); border-radius:8px; padding:9px; background:#fff; }
     .decision-card.chase { border-left:4px solid var(--good); }
     .decision-card.pullback { border-left:4px solid var(--warn); }
     .decision-card.avoid { border-left:4px solid var(--bad); }
@@ -834,14 +836,14 @@ def _html() -> str:
     .decision-light.yellow .decision-dot { background:var(--warn); }
     .decision-light.red .decision-dot { background:var(--bad); }
     .decision-light.gray .decision-dot { background:#94a3b8; }
-    .decision-note-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+    .decision-note-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px; }
     .decision-note { background:#f8fafc; border:1px solid #eef1f5; border-radius:6px; padding:6px; font-size:12px; line-height:1.35; color:var(--muted); }
     .decision-note b { color:var(--ink); }
     .decision-badge { display:inline-flex; align-items:center; min-height:22px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
     .decision-badge.chase { color:#fff; background:var(--good); }
     .decision-badge.pullback { color:#3b2f00; background:#f6d365; }
     .decision-badge.avoid { color:#fff; background:var(--bad); }
-    .decision-prices { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:8px 0; }
+    .decision-prices { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:7px 0; }
     .decision-price { border:1px solid #eef1f5; border-radius:6px; padding:6px; min-height:48px; }
     .decision-price span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
     .decision-price b { font-size:15px; }
@@ -849,16 +851,16 @@ def _html() -> str:
     .risk-panel { border-left:4px solid var(--bad); }
     .wide-panel { grid-column:1 / -1; }
     details.panel h2 { font-size:14px; margin:12px 0 6px; }
-    h2 { font-size:16px; margin:0 0 10px; }
-    .line { color:var(--muted); margin:5px 0; font-size:14px; }
-    .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+    h2 { font-size:15px; margin:0 0 8px; }
+    .line { color:var(--muted); margin:4px 0; font-size:13px; line-height:1.45; }
+    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; }
     .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
     .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
     .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-    .chart-wrap { height:130px; margin-top:8px; }
+    .chart-wrap { height:96px; margin-top:6px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
     .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
@@ -889,7 +891,7 @@ def _html() -> str:
     .tag-pattern{ background:#ecfdf3; color:#067647; border:1px solid #abefc6; }
     .tag-risk   { background:#fff1f3; color:#c01048; border:1px solid #fecdd6; }
     .tag-default{ background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
-    .theme-table-wrap { max-height:178px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin:6px 0; }
+    .theme-table-wrap { max-height:128px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin:6px 0; }
     .theme-table-wrap table { border:0; border-radius:0; }
     .theme-reason, .theme-headline { font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .discovery-list { display:grid; gap:5px; margin-top:6px; }
@@ -903,6 +905,8 @@ def _html() -> str:
     @media (max-width: 1180px) {
       .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .dashboard-layout { grid-template-columns:1fr; }
+      .side-stack { position:static; }
+      .market-theme-grid { grid-template-columns:1fr; }
       .detail-grid { grid-template-columns:1fr 1fr; }
       .decision-card-grid { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -943,17 +947,25 @@ def _html() -> str:
     <div class="dashboard-layout">
       <div class="main-stack">
         <section class="action-panel"><h2>今日操作結論</h2><div id="actionLists"></div></section>
-        <section><h2>市場風向</h2><div id="market"></div></section>
-        <section class="theme-panel"><h2>新聞題材</h2><div id="themes"></div></section>
+        <div class="market-theme-grid">
+          <section><h2>市場風向</h2><div id="market"></div></section>
+          <section class="theme-panel"><h2>新聞題材</h2><div id="themes"></div></section>
+        </div>
       </div>
       <div class="side-stack">
         <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
         <section class="risk-panel"><h2>危險名單</h2><div id="exitRisks"></div></section>
+        <section><h2>異常提醒</h2><div id="alerts"></div></section>
       </div>
       <div class="detail-grid">
-        <section><h2>異常提醒</h2><div id="alerts"></div></section>
-        <section><h2>散戶背離</h2><div id="retailDivergence"></div></section>
-        <section><h2>美國政策雷達</h2><div id="usPolicyRadar"></div></section>
+        <details class="panel">
+          <summary>散戶背離</summary>
+          <div id="retailDivergence"></div>
+        </details>
+        <details class="panel">
+          <summary>美國政策雷達</summary>
+          <div id="usPolicyRadar"></div>
+        </details>
         <details class="panel wide-panel">
           <summary>系統與資料狀態</summary>
           <div class="status-grid">
