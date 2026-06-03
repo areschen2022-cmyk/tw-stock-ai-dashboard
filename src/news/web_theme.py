@@ -5,11 +5,13 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from datetime import date
 
 import requests
 
 from src.news.cnyes_api import fetch_cnyes_news
 from src.news.catalyst_confidence import CatalystConfidence, classify_theme_catalysts
+from src.news.deepseek_theme_reviewer import ThemeReview, apply_theme_review_adjustments, review_theme_headlines
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import PolicySignal, classify_policy_headlines
 
@@ -40,6 +42,7 @@ class ThemeSignal:
     quality: dict[str, str] = field(default_factory=dict)
     catalyst_confidence: dict[str, CatalystConfidence] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
+    ai_reviews: dict[str, ThemeReview] = field(default_factory=dict)
     policy: PolicySignal | None = None
     source_count: int = 0
     failed_count: int = 0
@@ -155,6 +158,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
     news_cfg = config.get("web_news", {})
     if not news_cfg.get("enabled", False):
         return ThemeSignal([], "新聞題材未啟用", [], {})
+    target_date = as_of if as_of is not None else date.today()
 
     # ── 1. Collect headlines ───────────────────────────────────
     headlines: list[str] = []
@@ -245,15 +249,25 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
                         if headline not in matched[theme]:
                             matched[theme].append(headline)
     catalyst_confidence = classify_theme_catalysts(matched)
+    theme_pools = config.get("theme_pools", {})
+    ai_review_result = review_theme_headlines(
+        matched,
+        scores,
+        {key: value.get("name", key) for key, value in theme_pools.items()},
+        target_date,
+        news_cfg,
+    )
+    if ai_review_result.reviews:
+        scores = apply_theme_review_adjustments(scores, ai_review_result)
+        for theme, review in ai_review_result.reviews.items():
+            quality[theme] = f"AI {review.confidence}：{review.reason or '題材複核'}"
 
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}
     if store is not None:
         try:
-            from datetime import date as _date
-            target = as_of if as_of is not None else _date.today()
-            store.save_theme_signal_scores(scores, matched, target)
-            raw_momentum = store.theme_momentum(target)
+            store.save_theme_signal_scores(scores, matched, target_date)
+            raw_momentum = store.theme_momentum(target_date)
             momentum = _build_momentum(raw_momentum)
         except Exception as exc:
             log.warning("fetch_theme_signal: store persistence failed — %s", exc)
@@ -264,7 +278,6 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
     max_themes = int(config.get("opportunity", {}).get("max_active_themes", 5))
     active = active[:max_themes]
 
-    theme_pools = config.get("theme_pools", {})
     active_names: list[str] = []
     for theme in active:
         name = theme_pools.get(theme, {}).get("name", theme)
@@ -282,6 +295,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         quality=quality,
         catalyst_confidence=catalyst_confidence,
         momentum=momentum,
+        ai_reviews=ai_review_result.reviews,
         policy=policy_signal,
         source_count=source_count,
         failed_count=failed_count,

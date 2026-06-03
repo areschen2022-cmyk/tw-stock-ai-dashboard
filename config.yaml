@@ -261,6 +261,14 @@ ai_council:
 
 web_news:
   enabled: true
+  deepseek_theme_review:
+    enabled: true
+    model: "deepseek-chat"
+    min_theme_score: 8
+    max_themes: 3
+    max_headlines_per_theme: 3
+    max_tokens: 500
+    timeout: 30
   cnyes_api:
     enabled: true
     days_back: 1

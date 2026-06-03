@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from src.report.potential_radar import build_potential_radar_candidates
+from src.scoring.score_engine import StockScore
+from src.storage.sqlite_store import SQLiteStore
 
 
 def test_potential_radar_prefers_early_confluence() -> None:
@@ -60,3 +62,70 @@ def test_potential_radar_prefers_early_confluence() -> None:
     assert "散戶減少/籌碼轉乾淨" in candidates[0]["tags"]
     assert "K線轉強:陽包陰" in candidates[0]["tags"]
     assert candidates[0]["reason"].startswith("潛力分")
+
+
+def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 6, 1)
+
+    for stock_id in ["2408", "2344"]:
+        store.save_daily_score(
+            StockScore(stock_id, 80, "BUY_WATCH", 100.0, 0, 0, 0, 0, 0),
+            day0,
+        )
+
+    store.save_potential_radar(
+        [
+            {
+                "signal_date": day0.isoformat(),
+                "stock_id": "2408",
+                "name": "南亞科",
+                "grade": "A",
+                "total_score": 82,
+                "potential_score": 9,
+                "action": "等拉回",
+                "reason": "潛力分 9",
+                "tags": ["散戶減少/籌碼轉乾淨", "K線轉強:陽包陰", "題材升溫:記憶體/HBM"],
+                "themes": ["記憶體/HBM"],
+                "entry_price": 100.0,
+            },
+            {
+                "signal_date": day0.isoformat(),
+                "stock_id": "2344",
+                "name": "華邦電",
+                "grade": "B",
+                "total_score": 70,
+                "potential_score": 5,
+                "action": "只觀察",
+                "reason": "潛力分 5",
+                "tags": ["題材升溫:記憶體/HBM"],
+                "themes": ["記憶體/HBM"],
+                "entry_price": 100.0,
+            },
+        ],
+        day0,
+    )
+
+    for index, price in enumerate([101, 102, 103, 104, 108], start=1):
+        store.save_daily_score(
+            StockScore("2408", 80, "BUY_WATCH", price, 0, 0, 0, 0, 0),
+            day0 + timedelta(days=index),
+        )
+    for index, price in enumerate([99, 98, 97, 96, 94], start=1):
+        store.save_daily_score(
+            StockScore("2344", 70, "WAIT", price, 0, 0, 0, 0, 0),
+            day0 + timedelta(days=index),
+        )
+
+    store.update_potential_forward_returns(day0 + timedelta(days=5))
+    summary = store.potential_radar_summary(day0 + timedelta(days=5))
+    factors = {row["label"]: row for row in summary["factor_stats"]}
+
+    assert factors["散戶減少/籌碼轉乾淨"]["completed"] == 1
+    assert factors["散戶減少/籌碼轉乾淨"]["win_rate_5d"] == 100
+    assert factors["題材升溫"]["completed"] == 2
+    assert factors["題材升溫"]["success_count"] == 1
+    assert factors["題材升溫"]["failure_count"] == 1
+    assert summary["strong_factors"]
+    assert summary["weak_factors"]
+    assert summary["factor_notes"]

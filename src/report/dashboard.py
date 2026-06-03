@@ -1808,6 +1808,15 @@ def _performance_html() -> str:
             </table>
           </section>
         </div>
+        <section style="margin-top:12px;">
+          <h2>潛力因素歸因</h2>
+          <div class="note">拆解潛力雷達的成功與失敗來源，例如散戶轉乾淨、K線轉強、題材升溫是否真的有效。</div>
+          <table>
+            <thead><tr><th>因素</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>成功/失敗</th></tr></thead>
+            <tbody id="potentialFactorStats"></tbody>
+          </table>
+          <div class="note" id="potentialFactorNotes"></div>
+        </section>
       </section>
       <div class="note" id="learningNotes"></div>
     </section>
@@ -2060,6 +2069,19 @@ def _performance_html() -> str:
       document.querySelector("#potentialRadarFailure").innerHTML = (radar.failure_cases || []).length
         ? radar.failure_cases.map(radarRow).join("")
         : `<tr><td data-label="雷達失敗" colspan="5">尚無已驗證失敗樣本</td></tr>`;
+      document.querySelector("#potentialFactorStats").innerHTML = (radar.factor_stats || []).length
+        ? radar.factor_stats.map(row => `
+          <tr>
+            <td data-label="因素">${esc(row.label)}</td>
+            <td data-label="訊號">${esc(row.signals)}</td>
+            <td data-label="完成">${esc(row.completed)}</td>
+            <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
+            <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
+            <td data-label="成功/失敗">${esc(row.success_count ?? 0)} / ${esc(row.failure_count ?? 0)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td data-label="潛力因素" colspan="6">因素樣本仍在累積中</td></tr>`;
+      document.querySelector("#potentialFactorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#learningNotes").innerHTML = (learning.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `

@@ -1044,6 +1044,7 @@ class SQLiteStore:
         counts = {}
         for item in items:
             counts[item["outcome_category"]] = counts.get(item["outcome_category"], 0) + 1
+        factor_stats = _potential_factor_stats(items)
         return {
             "stats": {
                 "signals": len(items),
@@ -1066,6 +1067,10 @@ class SQLiteStore:
             )[:8],
             "failure_cases": sorted(failure, key=lambda item: float(item["return_5d"] or 0))[:8],
             "pending_candidates": pending[:8],
+            "factor_stats": factor_stats,
+            "strong_factors": _rank_potential_factors(factor_stats, reverse=True),
+            "weak_factors": _rank_potential_factors(factor_stats, reverse=False),
+            "factor_notes": _potential_factor_notes(factor_stats),
             "items": items,
         }
 
@@ -1693,6 +1698,95 @@ def _top_factor_rows(factors: list[dict], *, reverse: bool, limit: int = 6) -> l
         reverse=reverse,
     )
     return usable[:limit]
+
+
+def _potential_factor_stats(items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        for tag in item.get("tags") or []:
+            factor = _potential_factor_label(str(tag))
+            if not factor:
+                continue
+            buckets.setdefault(factor, []).append(item)
+
+    rows = []
+    for label, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        success = [
+            item for item in completed
+            if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
+        ]
+        failure = [item for item in completed if item.get("outcome_category") == "potential_false_positive"]
+        rows.append(
+            {
+                "label": label,
+                "signals": len(bucket),
+                "completed": len(completed),
+                "pending": len([item for item in bucket if item.get("return_5d") is None]),
+                "success_count": len(success),
+                "failure_count": len(failure),
+                "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "avg_return_10d": _avg([item.get("return_10d") for item in completed if item.get("return_10d") is not None]),
+            }
+        )
+    rows.sort(key=lambda row: (int(row["completed"]), int(row["signals"]), str(row["label"])), reverse=True)
+    return rows
+
+
+def _potential_factor_label(tag: str) -> str:
+    if "籌碼轉乾淨" in tag or "散戶減少" in tag:
+        return "散戶減少/籌碼轉乾淨"
+    if "觀察轉乾淨" in tag:
+        return "觀察轉乾淨"
+    if "散戶過熱" in tag:
+        return "散戶過熱"
+    if tag.startswith("K線轉強"):
+        return "K線轉強"
+    if tag.startswith("K線風險"):
+        return "K線風險"
+    if tag.startswith("題材升溫"):
+        return "題材升溫"
+    if "分數已成形" in tag:
+        return "分數已成形"
+    if "非過熱強度" in tag:
+        return "非過熱強度"
+    if "強勢但等拉回" in tag:
+        return "強勢但等拉回"
+    if "尚在低檔觀察" in tag:
+        return "尚在低檔觀察"
+    if "避開" in tag:
+        return "避開訊號"
+    return tag[:24] if tag else ""
+
+
+def _rank_potential_factors(factors: list[dict], *, reverse: bool, limit: int = 6) -> list[dict]:
+    eligible = [row for row in factors if int(row.get("completed") or 0) > 0]
+    eligible.sort(
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else (-999 if reverse else 999)),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else (-999 if reverse else 999)),
+            int(row.get("completed") or 0),
+        ),
+        reverse=reverse,
+    )
+    return eligible[:limit]
+
+
+def _potential_factor_notes(factors: list[dict]) -> list[str]:
+    completed = [row for row in factors if int(row.get("completed") or 0) > 0]
+    if not completed:
+        return ["潛力雷達因素仍在累積樣本，等 5 日結果完成後才會顯示有效與失效條件。"]
+    best = _rank_potential_factors(factors, reverse=True, limit=1)
+    weak = _rank_potential_factors(factors, reverse=False, limit=1)
+    notes = []
+    if best:
+        row = best[0]
+        notes.append(f"目前較有效因素：{row['label']}，5日平均 {row['avg_return_5d']}%，勝率 {row['win_rate_5d']}%。")
+    if weak:
+        row = weak[0]
+        notes.append(f"目前需小心因素：{row['label']}，5日平均 {row['avg_return_5d']}%，勝率 {row['win_rate_5d']}%。")
+    return notes
 
 
 def _potential_candidate(item: dict) -> dict:
