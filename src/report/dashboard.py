@@ -1683,6 +1683,10 @@ def _performance_html() -> str:
     a:hover { text-decoration:underline; }
     .pos { color:var(--good); font-weight:700; }
     .neg { color:var(--bad); font-weight:700; }
+    .lesson-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+    .lesson-tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:700; background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
+    .lesson-tag.good { background:#f0f9f5; color:var(--good); border-color:#abefc6; }
+    .lesson-tag.bad { background:#fff5f5; color:var(--bad); border-color:#fecdd6; }
     @media (max-width:1100px) {
       .metrics { grid-template-columns:repeat(3,1fr); }
     }
@@ -1735,6 +1739,28 @@ def _performance_html() -> str:
         </table>
       </section>
     </div>
+    <section style="margin-bottom:16px;">
+      <h2>成功 / 失敗檢討</h2>
+      <div class="note">每一筆推薦都會回頭用 5 日與 10 日表現驗證，成功、失敗、錯過機會都會留下原因。</div>
+      <div class="metrics" id="postmortemMetrics"></div>
+      <div class="analysis-grid">
+        <section>
+          <h2>成功樣本</h2>
+          <table>
+            <thead><tr><th>股票</th><th>訊號日</th><th>結果</th><th>5日報酬</th><th>原因</th></tr></thead>
+            <tbody id="postmortemSuccess"></tbody>
+          </table>
+        </section>
+        <section>
+          <h2>失敗樣本</h2>
+          <table>
+            <thead><tr><th>股票</th><th>訊號日</th><th>結果</th><th>5日報酬</th><th>原因</th></tr></thead>
+            <tbody id="postmortemFailure"></tbody>
+          </table>
+        </section>
+      </div>
+      <div class="note" id="postmortemNotes"></div>
+    </section>
     <div class="analysis-grid">
       <section>
         <h2>題材成效</h2>
@@ -1901,6 +1927,36 @@ def _performance_html() -> str:
       document.querySelector("#leaderBottom").innerHTML = (data.leaderboard?.bottom_5d || []).length
         ? data.leaderboard.bottom_5d.slice(0, 5).map(r => leaderRow(r, true)).join("")
         : `<tr><td data-label="5日弱勢榜" colspan="5">尚無完成追蹤訊號</td></tr>`;
+      const postmortem = data.postmortem || {};
+      const countBy = key => (postmortem.counts || []).find(row => row.category === key)?.count ?? 0;
+      const postmortemRow = r => {
+        const tags = (r.lesson_tags || []).slice(0, 4).map(tag => {
+          const cls = String(tag).includes("失敗") || String(tag).includes("跌破") ? "bad" : String(tag).includes("成功") || String(tag).includes("飆股") ? "good" : "";
+          return `<span class="lesson-tag ${cls}">${esc(tag)}</span>`;
+        }).join("");
+        return `<tr>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a><div class="small">${esc(r.grade)}｜${esc(r.total_score)}/100</div></td>
+          <td data-label="訊號日">${esc(r.signal_date)}</td>
+          <td data-label="結果">${esc(r.outcome_label)}</td>
+          <td data-label="5日報酬">${fmtPct(r.return_5d)}${r.return_10d != null ? `<div class="small">10日 ${fmtPct(r.return_10d)}</div>` : ""}</td>
+          <td data-label="原因">${esc(r.outcome_reason)}<div class="lesson-tags">${tags}</div></td>
+        </tr>`;
+      };
+      document.querySelector("#postmortemMetrics").innerHTML = [
+        metric("已驗證", postmortem.sample ?? 0),
+        metric("飆股命中", countBy("big_winner")),
+        metric("方向正確", countBy("true_positive")),
+        metric("假訊號", countBy("false_positive")),
+        metric("跌破停損", countBy("stop_loss")),
+        metric("錯過機會", countBy("missed_opportunity")),
+      ].join("");
+      document.querySelector("#postmortemSuccess").innerHTML = (postmortem.success_cases || []).length
+        ? postmortem.success_cases.slice(0, 6).map(postmortemRow).join("")
+        : `<tr><td data-label="成功樣本" colspan="5">尚無已完成成功樣本</td></tr>`;
+      document.querySelector("#postmortemFailure").innerHTML = (postmortem.failure_cases || []).length
+        ? postmortem.failure_cases.slice(0, 6).map(postmortemRow).join("")
+        : `<tr><td data-label="失敗樣本" colspan="5">尚無已完成失敗樣本</td></tr>`;
+      document.querySelector("#postmortemNotes").innerHTML = (postmortem.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `
           <tr>

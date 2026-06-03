@@ -81,6 +81,51 @@ def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     assert summary["items"][0]["return_5d"] == 8
     assert summary["items"][0]["entry_triggered"] is True
     assert summary["items"][0]["stop_hit"] is False
+    assert summary["items"][0]["outcome_category"] == "big_winner"
+    assert summary["postmortem"]["counts"][0]["category"] == "big_winner"
+
+
+def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    winner = _score("2408", 98, price=100.0)
+    winner.stop_price = 95.0
+    winner.entry_limit_price = 103.0
+    stopped = _score("2344", 96, price=100.0)
+    stopped.stop_price = 95.0
+    stopped.entry_limit_price = 103.0
+    missed = _score("2317", 88, price=100.0)
+    missed.stop_price = 95.0
+    missed.entry_limit_price = 99.0
+
+    for signal in [winner, stopped, missed]:
+        store.save_daily_score(signal, day0)
+    store.save_watch_candidates(
+        [winner, stopped, missed],
+        day0,
+        {"2408": "Winner", "2344": "Stopped", "2317": "Missed"},
+    )
+
+    price_paths = {
+        "2408": [101.0, 105.0, 108.0, 110.0, 112.0],
+        "2344": [101.0, 96.0, 94.0, 93.0, 92.0],
+        "2317": [101.0, 103.0, 106.0, 108.0, 110.0],
+    }
+    for stock_id, prices in price_paths.items():
+        for index, price in enumerate(prices, start=1):
+            store.save_daily_score(_score(stock_id, 90, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+    by_stock = {item["stock_id"]: item for item in summary["items"]}
+
+    assert by_stock["2408"]["outcome_category"] == "big_winner"
+    assert by_stock["2344"]["outcome_category"] == "stop_loss"
+    assert by_stock["2317"]["outcome_category"] == "missed_opportunity"
+    assert summary["postmortem"]["sample"] == 3
+    assert summary["postmortem"]["success_cases"][0]["stock_id"] == "2408"
+    assert summary["postmortem"]["failure_cases"][0]["stock_id"] == "2344"
+    assert summary["postmortem"]["missed_cases"][0]["stock_id"] == "2317"
 
 
 def test_weekly_institutional_summary_groups_recent_flow(tmp_path) -> None:

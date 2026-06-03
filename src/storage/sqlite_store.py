@@ -816,6 +816,8 @@ class SQLiteStore:
                     "status": "已完成" if return_5d is not None else "進行中",
                 }
             )
+        for item in items:
+            item.update(_postmortem_item(item))
         completed = [item for item in items if item["return_5d"] is not None]
         a_completed = [item for item in completed if item["grade"] == "A"]
         stop_known = [item for item in items if item["stop_hit"] is not None]
@@ -844,6 +846,7 @@ class SQLiteStore:
             "score_bands": score_bands,
             "entry_analysis": _entry_analysis(items),
             "signal_lab": grade_return_summary(items),
+            "postmortem": _postmortem_summary(items),
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
             "selection_quality": _selection_quality_overview(
@@ -1314,6 +1317,150 @@ def _leaderboard(items: list[dict], limit: int = 8) -> dict:
         "top_5d": _rank(completed_5d, "return_5d", True),
         "bottom_5d": _rank(completed_5d, "return_5d", False),
         "top_3d": _rank(completed_3d, "return_3d", True),
+    }
+
+
+def _postmortem_item(item: dict) -> dict:
+    return_5d = item.get("return_5d")
+    return_10d = item.get("return_10d")
+    stop_hit = item.get("stop_hit")
+    entry_triggered = item.get("entry_triggered")
+    themes = item.get("themes") or []
+    grade = str(item.get("grade") or "")
+    score = int(item.get("total_score") or 0)
+
+    if return_5d is None:
+        return {
+            "outcome_category": "pending",
+            "outcome_label": "等待驗證",
+            "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+            "lesson_tags": ["等待驗證"],
+        }
+
+    ret5 = float(return_5d)
+    ret10 = float(return_10d) if return_10d is not None else None
+    tags: list[str] = []
+    if grade in {"S+", "S"}:
+        tags.append("高分訊號")
+    if entry_triggered is True:
+        tags.append("進場觸發")
+    elif entry_triggered is False:
+        tags.append("進場未觸發")
+    if stop_hit is True:
+        tags.append("跌破停損")
+    if themes:
+        tags.extend([f"題材:{theme}" for theme in themes[:2]])
+
+    if stop_hit is True:
+        category = "stop_loss"
+        label = "失敗：跌破停損"
+        reason = "訊號後觸及停損，代表進場位置或風險條件需要檢討。"
+    elif entry_triggered is False and ret5 > 0:
+        category = "missed_opportunity"
+        label = "錯過機會"
+        reason = "股價後續上漲但未觸發進場條件，代表進場條件可能太嚴格。"
+    elif entry_triggered is False and ret5 <= 0:
+        category = "filtered_risk"
+        label = "成功過濾"
+        reason = "未觸發進場且後續表現不佳，代表進場條件有幫助。"
+    elif ret5 >= 8 or (ret10 is not None and ret10 >= 12):
+        category = "big_winner"
+        label = "飆股命中"
+        reason = "訊號後短期報酬明顯放大，應保留當時的題材、籌碼與技術條件。"
+    elif ret5 > 0:
+        category = "true_positive"
+        label = "成功：方向正確"
+        reason = "訊號後 5 日報酬為正，條件有效但未達飆股門檻。"
+    else:
+        category = "false_positive"
+        label = "失敗：假訊號"
+        reason = "訊號後 5 日報酬為負，需要檢查是否追高、題材退潮或籌碼轉弱。"
+
+    if score >= 95 and category in {"false_positive", "stop_loss"}:
+        tags.append("高分失敗")
+    if score >= 95 and category in {"big_winner", "true_positive"}:
+        tags.append("高分成功")
+    if category == "big_winner":
+        tags.append("飆股樣本")
+    if category in {"false_positive", "stop_loss"}:
+        tags.append("失敗樣本")
+
+    return {
+        "outcome_category": category,
+        "outcome_label": label,
+        "outcome_reason": reason,
+        "lesson_tags": tags[:8],
+    }
+
+
+def _postmortem_summary(items: list[dict], limit: int = 8) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    categories = [
+        ("big_winner", "飆股命中"),
+        ("true_positive", "方向正確"),
+        ("false_positive", "假訊號"),
+        ("stop_loss", "跌破停損"),
+        ("missed_opportunity", "錯過機會"),
+        ("filtered_risk", "成功過濾"),
+        ("pending", "等待驗證"),
+    ]
+    counts = []
+    for key, label in categories:
+        bucket = [item for item in items if item.get("outcome_category") == key]
+        completed_bucket = [item for item in bucket if item.get("return_5d") is not None]
+        counts.append(
+            {
+                "category": key,
+                "label": label,
+                "count": len(bucket),
+                "completed": len(completed_bucket),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed_bucket]),
+                "avg_return_10d": _avg([item.get("return_10d") for item in completed_bucket]),
+            }
+        )
+
+    def _rank(source: list[dict], reverse: bool) -> list[dict]:
+        ranked = sorted(source, key=lambda item: float(item.get("return_5d") or 0), reverse=reverse)[:limit]
+        return [
+            {
+                "signal_date": item.get("signal_date"),
+                "stock_id": item.get("stock_id"),
+                "name": item.get("name"),
+                "grade": item.get("grade"),
+                "total_score": item.get("total_score"),
+                "action": item.get("action"),
+                "themes": item.get("themes", []),
+                "return_3d": item.get("return_3d"),
+                "return_5d": item.get("return_5d"),
+                "return_10d": item.get("return_10d"),
+                "outcome_label": item.get("outcome_label"),
+                "outcome_reason": item.get("outcome_reason"),
+                "lesson_tags": item.get("lesson_tags", []),
+            }
+            for item in ranked
+        ]
+
+    success = [item for item in completed if item.get("outcome_category") in {"big_winner", "true_positive"}]
+    failure = [item for item in completed if item.get("outcome_category") in {"false_positive", "stop_loss"}]
+    missed = [item for item in completed if item.get("outcome_category") == "missed_opportunity"]
+
+    notes = []
+    if len(completed) < 20:
+        notes.append("樣本仍少，先看方向與失敗原因，等累積 20 筆以上再調整權重。")
+    if success:
+        notes.append("成功樣本會保留當時題材、分數、進場條件，用來找出重複出現的有效組合。")
+    if failure:
+        notes.append("失敗樣本會優先檢查高分失敗、跌破停損與追高假訊號。")
+    if missed:
+        notes.append("錯過機會代表條件可能太嚴格，之後可回頭調整進場確認門檻。")
+
+    return {
+        "sample": len(completed),
+        "counts": counts,
+        "success_cases": _rank(success, True),
+        "failure_cases": _rank(failure, False),
+        "missed_cases": _rank(missed, True),
+        "notes": notes,
     }
 
 
