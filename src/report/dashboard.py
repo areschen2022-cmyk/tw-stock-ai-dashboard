@@ -612,6 +612,7 @@ def build_dashboard_payload(
                 "matched_headlines": {},
                 "us_events": [],
             },
+            "discovery": theme_signal.discovered_themes if theme_signal else [],
         },
         "source_status": source_status or {"label": "未知"},
         "health": health,
@@ -891,6 +892,10 @@ def _html() -> str:
     .theme-table-wrap { max-height:178px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin:6px 0; }
     .theme-table-wrap table { border:0; border-radius:0; }
     .theme-reason, .theme-headline { font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .discovery-list { display:grid; gap:5px; margin-top:6px; }
+    .discovery-item { border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:#fcfcfd; }
+    .discovery-title { font-size:12px; font-weight:800; color:#0b4a8b; }
+    .discovery-meta { font-size:11px; color:var(--muted); margin-top:2px; }
     .mini-detail { margin-top:6px; }
     .mini-detail summary { cursor:pointer; color:#0b4a8b; font-size:13px; font-weight:700; }
     .row-detail summary { cursor:pointer; color:#0b4a8b; font-size:12px; font-weight:700; }
@@ -1298,11 +1303,26 @@ def _html() -> str:
         .filter(Boolean)
         .slice(0, 4)
         .join("");
+      const discoveries = (data.themes.discovery || []).slice(0, 5);
+      const discoveryHtml = discoveries.length
+        ? `<details class="mini-detail">
+            <summary>新題材雷達（先觀察，不加分）</summary>
+            <div class="discovery-list">
+              ${discoveries.map(item => `
+                <div class="discovery-item">
+                  <div class="discovery-title">${esc(item.keyword)}｜${esc(item.mentions || 0)} 則｜分數 ${esc(item.score || 0)}</div>
+                  <div class="discovery-meta">${esc((item.stock_hits || []).slice(0,4).join("、") || "尚無明確股票命中")}</div>
+                  <div class="discovery-meta">${esc((item.headlines || [])[0] || "")}</div>
+                </div>`).join("")}
+            </div>
+          </details>`
+        : "";
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
         <div class="line">政策：${esc(data.themes.policy?.summary || "未偵測到明顯政策訊號")}</div>
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${themeTableHtml}
+        ${discoveryHtml}
         <details class="mini-detail">
           <summary>新聞來源摘要</summary>
           ${themeReasons}

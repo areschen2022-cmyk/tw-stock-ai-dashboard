@@ -14,6 +14,7 @@ from src.news.catalyst_confidence import CatalystConfidence, classify_theme_cata
 from src.news.deepseek_theme_reviewer import ThemeReview, apply_theme_review_adjustments, review_theme_headlines
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import PolicySignal, classify_policy_headlines
+from src.news.theme_discovery import discover_emerging_themes
 
 try:
     import feedparser
@@ -43,6 +44,7 @@ class ThemeSignal:
     catalyst_confidence: dict[str, CatalystConfidence] = field(default_factory=dict)
     momentum: dict[str, ThemeMomentum] = field(default_factory=dict)
     ai_reviews: dict[str, ThemeReview] = field(default_factory=dict)
+    discovered_themes: list[dict] = field(default_factory=list)
     policy: PolicySignal | None = None
     source_count: int = 0
     failed_count: int = 0
@@ -262,11 +264,25 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         for theme, review in ai_review_result.reviews.items():
             quality[theme] = f"AI {review.confidence}：{review.reason or '題材複核'}"
 
+    matched_headline_set = {
+        headline
+        for rows in matched.values()
+        for headline in rows
+    }
+    unmatched_headlines = [headline for headline in deduped_scoring if headline not in matched_headline_set]
+    discovered_themes = discover_emerging_themes(
+        unmatched_headlines,
+        keyword_map,
+        stock_names=config.get("stock_names", {}),
+        config=news_cfg.get("theme_discovery", {}),
+    )
+
     # ── 3. Persist + load momentum ────────────────────────────
     momentum: dict[str, ThemeMomentum] = {}
     if store is not None:
         try:
             store.save_theme_signal_scores(scores, matched, target_date)
+            store.save_theme_discovery(discovered_themes, target_date)
             raw_momentum = store.theme_momentum(target_date)
             momentum = _build_momentum(raw_momentum)
         except Exception as exc:
@@ -296,6 +312,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         catalyst_confidence=catalyst_confidence,
         momentum=momentum,
         ai_reviews=ai_review_result.reviews,
+        discovered_themes=discovered_themes,
         policy=policy_signal,
         source_count=source_count,
         failed_count=failed_count,

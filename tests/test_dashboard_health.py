@@ -43,6 +43,15 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
             catalyst_confidence={
                 "defense_policy": CatalystConfidence("A", "已確認", "政策事件佐證", 1)
             },
+            discovered_themes=[
+                {
+                    "keyword": "石英元件",
+                    "score": 11,
+                    "mentions": 3,
+                    "stock_hits": ["2330 台積電"],
+                    "headlines": ["石英元件供應鏈升溫"],
+                }
+            ],
             source_count=2,
             failed_count=0,
             policy=PolicySignal(
@@ -77,6 +86,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["themes"]["quality"]["defense_policy"].startswith("高")
     assert payload["themes"]["catalyst_confidence"]["defense_policy"]["grade"] == "A"
     assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
+    assert payload["themes"]["discovery"][0]["keyword"] == "石英元件"
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

@@ -154,6 +154,21 @@ class SQLiteStore:
             )
             conn.execute(
                 """
+                CREATE TABLE IF NOT EXISTS theme_discovery_candidates (
+                    discovery_date TEXT NOT NULL,
+                    keyword TEXT NOT NULL,
+                    score INTEGER NOT NULL DEFAULT 0,
+                    mentions INTEGER NOT NULL DEFAULT 0,
+                    stock_hits_json TEXT NOT NULL DEFAULT '[]',
+                    headlines_json TEXT NOT NULL DEFAULT '[]',
+                    status TEXT NOT NULL DEFAULT '觀察中',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (discovery_date, keyword)
+                )
+                """
+            )
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS institutional_flow (
                     trade_date TEXT NOT NULL,
                     stock_id TEXT NOT NULL,
@@ -1249,6 +1264,84 @@ class SQLiteStore:
                         json.dumps(headlines[:10], ensure_ascii=False),
                     ),
                 )
+
+    def save_theme_discovery(self, candidates: list[dict], as_of: date) -> None:
+        """Persist emerging theme candidates for review and later validation."""
+        with self._connect() as conn:
+            conn.execute(
+                "DELETE FROM theme_discovery_candidates WHERE discovery_date = ?",
+                (as_of.isoformat(),),
+            )
+            for item in candidates:
+                keyword = str(item.get("keyword") or "").strip()
+                if not keyword:
+                    continue
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO theme_discovery_candidates
+                        (discovery_date, keyword, score, mentions, stock_hits_json, headlines_json, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        as_of.isoformat(),
+                        keyword,
+                        int(item.get("score") or 0),
+                        int(item.get("mentions") or 0),
+                        json.dumps(item.get("stock_hits") or [], ensure_ascii=False),
+                        json.dumps(item.get("headlines") or [], ensure_ascii=False),
+                        str(item.get("status") or "觀察中"),
+                    ),
+                )
+
+    def theme_discovery_summary(self, as_of: date, days: int = 7, limit: int = 12) -> dict:
+        """Return recent emerging theme candidates, grouped by keyword."""
+        since = (as_of - timedelta(days=days)).isoformat()
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT discovery_date, keyword, score, mentions, stock_hits_json, headlines_json, status
+                FROM theme_discovery_candidates
+                WHERE discovery_date >= ?
+                ORDER BY discovery_date DESC, score DESC, mentions DESC
+                """,
+                (since,),
+            ).fetchall()
+
+        by_keyword: dict[str, dict] = {}
+        for discovery_date, keyword, score, mentions, stock_hits_json, headlines_json, status in rows:
+            item = by_keyword.setdefault(
+                keyword,
+                {
+                    "keyword": keyword,
+                    "latest_date": discovery_date,
+                    "days": 0,
+                    "total_score": 0,
+                    "total_mentions": 0,
+                    "stock_hits": [],
+                    "headlines": [],
+                    "status": status or "觀察中",
+                },
+            )
+            item["days"] += 1
+            item["total_score"] += int(score or 0)
+            item["total_mentions"] += int(mentions or 0)
+            for hit in json.loads(stock_hits_json or "[]"):
+                if hit not in item["stock_hits"]:
+                    item["stock_hits"].append(hit)
+            for headline in json.loads(headlines_json or "[]"):
+                if headline not in item["headlines"]:
+                    item["headlines"].append(headline)
+
+        candidates = sorted(
+            by_keyword.values(),
+            key=lambda item: (item["days"], item["total_score"], item["total_mentions"], item["keyword"]),
+            reverse=True,
+        )[:limit]
+        return {
+            "as_of": as_of.isoformat(),
+            "days": days,
+            "candidates": candidates,
+        }
 
     def theme_momentum(self, as_of: date, lookback_days: int = 7) -> dict[str, dict]:
         """Return momentum stats per theme over the last *lookback_days* days.

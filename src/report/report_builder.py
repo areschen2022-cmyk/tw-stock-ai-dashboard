@@ -85,6 +85,12 @@ def build_report(
         f"掃描：{len(scores)} 檔｜進場觀察：{len(candidates)} 檔｜題材雷達：{len(opportunity_candidates)} 檔",
         "分數：滿分100；95以上=S+，85以上=S，75以上=A，65以上=B。",
     ]
+    if theme_signal and theme_signal.discovered_themes:
+        discovered = "、".join(
+            f"{item.get('keyword')}({item.get('mentions', 0)})"
+            for item in theme_signal.discovered_themes[:3]
+        )
+        lines.append(f"新題材觀察：{discovered}（先記錄，不加分）")
     if market_warning:
         lines.append(f"提醒：{market_warning}")
 
