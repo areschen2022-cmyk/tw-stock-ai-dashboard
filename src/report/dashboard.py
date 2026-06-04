@@ -347,6 +347,9 @@ def _data_quality(
     error = int(status.get("error") or 0)
     empty = int(status.get("empty") or 0)
     fallback = int(status.get("fallback") or 0)
+    official_snapshots = dict(status.get("official_snapshots") or {})
+    official_valid = sum(1 for item in official_snapshots.values() if item.get("valid"))
+    official_invalid = sum(1 for item in official_snapshots.values() if not item.get("valid"))
     retry_recovered = int((retry_summary or {}).get("recovered") or 0)
     recovered = fallback + retry_recovered
     effective_empty = max(0, empty - recovered)
@@ -369,6 +372,8 @@ def _data_quality(
     warnings = []
     if quota:
         warnings.append(f"資料源限流 {quota} 次")
+    if official_invalid:
+        warnings.append(f"官方快照未通過日期/內容檢查 {official_invalid} 項")
     if effective_error:
         warnings.append(f"資料源錯誤 {effective_error} 次")
     if recovered:
@@ -411,6 +416,9 @@ def _data_quality(
         "event_summary": event_summary,
         "details": details,
         "recovery_status": recovery_status,
+        "official_snapshots": official_snapshots,
+        "official_valid": official_valid,
+        "official_invalid": official_invalid,
     }
 
 
@@ -1235,6 +1243,8 @@ def _html() -> str:
       document.querySelector("#dataQuality").innerHTML = `
         <div class="line ${qualityCls}"><b>${esc(qualityHuman)}</b>｜${esc(quality.score ?? "—")}/100</div>
         <div class="line">${esc(qualityNote)}</div>
+        <div class="line">官方快照：通過 ${esc(quality.official_valid || 0)}｜未通過 ${esc(quality.official_invalid || 0)}</div>
+        ${Object.entries(quality.official_snapshots || {}).slice(0,4).map(([key, row]) => `<div class="line small">${esc(key)}｜${row.valid ? "已驗證" : "未通過"}${row.date ? `｜${esc(row.date)}` : ""}｜${esc(row.rows || 0)} 筆</div>`).join("")}
         ${(quality.warnings || []).length ? quality.warnings.slice(0,2).map(w => `<div class="line warn">- ${esc(w)}</div>`).join("") : '<div class="line">目前無重大資料品質警示</div>'}
         <details class="mini-detail">
           <summary>資料細節</summary>

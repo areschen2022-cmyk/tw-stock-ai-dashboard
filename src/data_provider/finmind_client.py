@@ -150,6 +150,34 @@ class FinMindClient:
             df = df[(dates >= start_date) & (dates <= end_date)]
         return df
 
+    def cached_only(self, dataset: str, data_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        """Read existing FinMind cache without making a network request."""
+        frames = []
+        for year, month, _, _, is_current in self._month_segments(start_date, end_date):
+            candidates = [
+                self._cache_path(dataset, data_id, year, month, current=is_current),
+                self._cache_path(dataset, data_id, year, month, current=False),
+                self._cache_path(dataset, data_id, year, month, current=True),
+            ]
+            for cache_path in dict.fromkeys(candidates):
+                if not cache_path.exists():
+                    continue
+                frame = pd.read_json(cache_path, orient="records")
+                if not frame.empty:
+                    frames.append(frame)
+                    self._count("cache")
+                break
+        if not frames:
+            return pd.DataFrame()
+        df = pd.concat(frames, ignore_index=True)
+        for column in ("date", "Date"):
+            if column not in df.columns:
+                continue
+            df[column] = pd.to_datetime(df[column], errors="coerce")
+            dates = df[column].dt.date
+            df = df[(dates >= start_date) & (dates <= end_date)]
+        return df.reset_index(drop=True)
+
     def source_status(self) -> dict[str, Any]:
         quota = self.status_counts["quota"]
         error = self.status_counts["error"]

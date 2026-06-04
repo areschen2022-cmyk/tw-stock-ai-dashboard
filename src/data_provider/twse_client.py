@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -18,6 +18,12 @@ class TwseClient:
     VALUATION_URL = "https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_ALL"
     INDEX_URL = "https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX"
     DIVIDEND_URL = "https://openapi.twse.com.tw/v1/exchangeReport/TWT48U_ALL"
+    INSTITUTIONAL_URL = "https://www.twse.com.tw/rwd/zh/fund/T86"
+    MARGIN_URL = "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGN"
+    REVENUE_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap05_L"
+    TPEX_QUOTES_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
+    TPEX_INSTITUTIONAL_URL = "https://www.tpex.org.tw/openapi/v1/tpex_3insti_daily_trading"
+    TPEX_MARGIN_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_margin_balance"
 
     def __init__(
         self,
@@ -38,6 +44,19 @@ class TwseClient:
         self._valuation_df: pd.DataFrame | None = None  # in-memory cache for BWIBBU_ALL
         self._sector_lock = Lock()
         self._sector_df: pd.DataFrame | None = None    # in-memory cache for MI_INDEX
+        self._institutional_lock = Lock()
+        self._institutional_df: pd.DataFrame | None = None
+        self._margin_lock = Lock()
+        self._margin_df: pd.DataFrame | None = None
+        self._revenue_lock = Lock()
+        self._revenue_df: pd.DataFrame | None = None
+        self._tpex_quotes_lock = Lock()
+        self._tpex_quotes_df: pd.DataFrame | None = None
+        self._tpex_institutional_lock = Lock()
+        self._tpex_institutional_df: pd.DataFrame | None = None
+        self._tpex_margin_lock = Lock()
+        self._tpex_margin_df: pd.DataFrame | None = None
+        self.official_snapshots: dict[str, dict[str, Any]] = {}
         self.headers = {
             "User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0; research dashboard)",
             "Accept": "application/json,text/plain,*/*",
@@ -78,11 +97,110 @@ class TwseClient:
             "error": error,
             "events": [*self.status_events, *fallback_events][-20:],
             "fallback_status": fallback_status,
+            "official_snapshots": self.official_snapshots,
         }
 
     def _cache_path(self, dataset: str, data_id: str, key: str) -> Path:
         safe_id = data_id.replace("^", "idx_").replace("/", "_").replace(" ", "_")
         return self.cache_dir / f"{dataset}__{safe_id}__{key}.json"
+
+    def _official_history_path(self, dataset: str, stock_id: str) -> Path:
+        history_dir = self.cache_dir / "official_history"
+        history_dir.mkdir(parents=True, exist_ok=True)
+        return history_dir / f"{dataset}__{stock_id}.json"
+
+    def _load_official_history(self, dataset: str, stock_id: str) -> pd.DataFrame:
+        path = self._official_history_path(dataset, stock_id)
+        if not path.exists():
+            return pd.DataFrame()
+        return pd.read_json(path, orient="records")
+
+    def _save_official_history(
+        self,
+        dataset: str,
+        stock_id: str,
+        current: pd.DataFrame,
+        *,
+        subset: list[str],
+    ) -> pd.DataFrame:
+        history = self._load_official_history(dataset, stock_id)
+        frames = [frame for frame in (history, current) if not frame.empty]
+        if not frames:
+            return pd.DataFrame()
+        merged = pd.concat(frames, ignore_index=True)
+        if "date" in merged.columns:
+            merged["date"] = pd.to_datetime(merged["date"], errors="coerce")
+        merged = merged.drop_duplicates(subset=subset, keep="last")
+        if "date" in merged.columns:
+            merged = merged.sort_values("date")
+        merged.to_json(
+            self._official_history_path(dataset, stock_id),
+            orient="records",
+            force_ascii=False,
+            date_format="iso",
+        )
+        return merged.reset_index(drop=True)
+
+    def _cached_fallback(
+        self,
+        dataset: str,
+        stock_id: str,
+        start_date: date,
+        end_date: date,
+    ) -> pd.DataFrame:
+        cached_only = getattr(self.fallback, "cached_only", None)
+        if not callable(cached_only):
+            return pd.DataFrame()
+        return cached_only(dataset, stock_id, start_date, end_date)
+
+    def _latest_official_trade_date(self) -> date | None:
+        all_df = self._get_today_all()
+        if all_df.empty or "Date" not in all_df.columns:
+            return None
+        for value in all_df["Date"].dropna().astype(str):
+            try:
+                return _roc_compact_date(value)
+            except ValueError:
+                continue
+        return None
+
+    def _is_current_official_snapshot(self, snapshot_date: date | None, end_date: date) -> bool:
+        return bool(
+            snapshot_date
+            and snapshot_date <= end_date
+            and end_date - snapshot_date <= timedelta(days=7)
+        )
+
+    def _is_twse_stock(self, stock_id: str) -> bool:
+        all_df = self._get_today_all()
+        return bool(
+            not all_df.empty
+            and "Code" in all_df.columns
+            and (all_df["Code"].astype(str) == str(stock_id)).any()
+        )
+
+    def _is_tpex_stock(self, stock_id: str) -> bool:
+        quotes, _ = self._tpex_quotes_today(date.today())
+        return bool(
+            not quotes.empty
+            and "SecuritiesCompanyCode" in quotes.columns
+            and (quotes["SecuritiesCompanyCode"].astype(str) == str(stock_id)).any()
+        )
+
+    def _record_official_snapshot(
+        self,
+        dataset: str,
+        snapshot_date: date | None,
+        *,
+        valid: bool,
+        rows: int,
+    ) -> None:
+        self.official_snapshots[dataset] = {
+            "date": snapshot_date.isoformat() if snapshot_date else "",
+            "valid": valid,
+            "rows": rows,
+            "source": "official",
+        }
 
     def _month_segments(self, start_date: date, end_date: date) -> list[tuple[int, int]]:
         segments = []
@@ -230,6 +348,31 @@ class TwseClient:
         return df
 
     def stock_prices(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        if self._is_tpex_stock(stock_id):
+            quotes, snapshot_date = self._tpex_quotes_today(end_date)
+            current = pd.DataFrame()
+            if snapshot_date is not None:
+                rows = quotes[quotes["SecuritiesCompanyCode"].astype(str) == str(stock_id)]
+                if not rows.empty:
+                    row = rows.iloc[0]
+                    current = pd.DataFrame([{
+                        "date": snapshot_date,
+                        "stock_id": stock_id,
+                        "open": _num(row.get("Open", 0)),
+                        "high": _num(row.get("High", 0)),
+                        "low": _num(row.get("Low", 0)),
+                        "close": _num(row.get("Close", 0)),
+                        "volume": _num(row.get("TradingShares", 0)),
+                    }])
+            official = self._save_official_history("prices", stock_id, current, subset=["date"])
+            cached = self._cached_fallback("TaiwanStockPrice", stock_id, start_date, end_date)
+            merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            if not merged.empty and ((end_date - start_date).days <= 7 or len(merged) >= 20):
+                return merged
+            self._count("fallback", record_event=False)
+            fallback = self.fallback.stock_prices(stock_id, start_date, end_date)
+            return _merge_frames(fallback, official, subset=["date"], start_date=start_date, end_date=end_date)
+
         frames = []
         missing = False
         for year, month in self._month_segments(start_date, end_date):
@@ -250,15 +393,246 @@ class TwseClient:
         dates = pd.to_datetime(df["date"], errors="coerce").dt.date
         return df[(dates >= start_date) & (dates <= end_date)]
 
+    def _tpex_quotes_today(self, end_date: date) -> tuple[pd.DataFrame, date | None]:
+        with self._tpex_quotes_lock:
+            if self._tpex_quotes_df is not None:
+                return self._tpex_quotes_df, _snapshot_date(self._tpex_quotes_df)
+            raw = self._official_list_snapshot("tpex_quotes", self.TPEX_QUOTES_URL)
+            snapshot_date = _snapshot_date(raw)
+            valid = self._is_current_official_snapshot(snapshot_date, end_date)
+            if not valid:
+                raw = pd.DataFrame()
+            self._tpex_quotes_df = raw
+            self._record_official_snapshot("tpex_quotes", snapshot_date, valid=valid and not raw.empty, rows=len(raw))
+            return raw, snapshot_date
+
+    def _official_list_snapshot(self, dataset: str, url: str) -> pd.DataFrame:
+        cache_path = self._cache_path(dataset, "all", date.today().isoformat())
+        if cache_path.exists():
+            self._count("cache")
+            return pd.read_json(cache_path, orient="records")
+        try:
+            response = requests.get(url, headers=self.headers, timeout=self.timeout)
+            response.raise_for_status()
+            raw = pd.DataFrame(response.json())
+        except Exception:
+            self._count("error", dataset=dataset, data_id="all", reason="fetch_failed")
+            return pd.DataFrame()
+        if raw.empty:
+            self._count("empty", dataset=dataset, data_id="all")
+            return raw
+        raw.to_json(cache_path, orient="records", force_ascii=False)
+        self._count("api")
+        return raw
+
+    def _institutional_today(self, end_date: date) -> tuple[pd.DataFrame, date | None]:
+        with self._institutional_lock:
+            snapshot_date = self._latest_official_trade_date()
+            valid = self._is_current_official_snapshot(snapshot_date, end_date)
+            if self._institutional_df is not None:
+                return self._institutional_df, snapshot_date
+            if not valid or snapshot_date is None:
+                self._record_official_snapshot("institutional", snapshot_date, valid=False, rows=0)
+                self._institutional_df = pd.DataFrame()
+                return self._institutional_df, snapshot_date
+            cache_path = self._cache_path("T86", "all", snapshot_date.isoformat())
+            if cache_path.exists():
+                raw = pd.read_json(cache_path, orient="records")
+                self._count("cache")
+            else:
+                try:
+                    response = requests.get(
+                        self.INSTITUTIONAL_URL,
+                        params={"response": "json", "date": snapshot_date.strftime("%Y%m%d"), "selectType": "ALLBUT0999"},
+                        headers=self.headers,
+                        timeout=self.timeout,
+                    )
+                    response.raise_for_status()
+                    payload = response.json()
+                    raw = pd.DataFrame(payload.get("data") or [], columns=payload.get("fields") or [])
+                except Exception:
+                    self._count("error", dataset="T86", data_id="all", reason="fetch_failed")
+                    raw = pd.DataFrame()
+                if not raw.empty:
+                    raw.to_json(cache_path, orient="records", force_ascii=False)
+                    self._count("api")
+            self._institutional_df = raw
+            self._record_official_snapshot("institutional", snapshot_date, valid=not raw.empty, rows=len(raw))
+            return raw, snapshot_date
+
     def institutional(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        raw, snapshot_date = self._institutional_today(end_date)
+        current = pd.DataFrame()
+        if not raw.empty and snapshot_date is not None and "證券代號" in raw.columns:
+            rows = raw[raw["證券代號"].astype(str) == str(stock_id)]
+            if not rows.empty:
+                row = rows.iloc[0]
+                dealer_buy = _num(row.get("自營商買進股數(自行買賣)", 0)) + _num(row.get("自營商買進股數(避險)", 0))
+                dealer_sell = _num(row.get("自營商賣出股數(自行買賣)", 0)) + _num(row.get("自營商賣出股數(避險)", 0))
+                current = pd.DataFrame(
+                    [
+                        {"date": snapshot_date, "stock_id": stock_id, "name": "Foreign_Investor", "buy": _num(row.get("外陸資買進股數(不含外資自營商)", 0)), "sell": _num(row.get("外陸資賣出股數(不含外資自營商)", 0))},
+                        {"date": snapshot_date, "stock_id": stock_id, "name": "Investment_Trust", "buy": _num(row.get("投信買進股數", 0)), "sell": _num(row.get("投信賣出股數", 0))},
+                        {"date": snapshot_date, "stock_id": stock_id, "name": "Dealer", "buy": dealer_buy, "sell": dealer_sell},
+                    ]
+                )
+        if not current.empty or self._is_twse_stock(stock_id):
+            official = self._save_official_history("institutional", stock_id, current, subset=["date", "name"])
+            cached = self._cached_fallback("TaiwanStockInstitutionalInvestorsBuySell", stock_id, start_date, end_date)
+            return _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
+        tpex_raw, tpex_date = self._tpex_institutional_today(end_date)
+        if not tpex_raw.empty and tpex_date is not None:
+            rows = tpex_raw[tpex_raw["SecuritiesCompanyCode"].astype(str) == str(stock_id)]
+            if not rows.empty:
+                row = rows.iloc[0]
+                current = pd.DataFrame([
+                    {"date": tpex_date, "stock_id": stock_id, "name": "Foreign_Investor", "buy": _num(row.get("ForeignInvestorsIncludeMainlandAreaInvestors-TotalBuy", 0)), "sell": _num(row.get("ForeignInvestorsIncludeMainlandAreaInvestors-TotalSell", 0))},
+                    {"date": tpex_date, "stock_id": stock_id, "name": "Investment_Trust", "buy": _num(row.get("SecuritiesInvestmentTrustCompanies-TotalBuy", 0)), "sell": _num(row.get("SecuritiesInvestmentTrustCompanies-TotalSell", 0))},
+                    {"date": tpex_date, "stock_id": stock_id, "name": "Dealer", "buy": _num(row.get("Dealers-TotalBuy", 0)), "sell": _num(row.get("Dealers-TotalSell", 0))},
+                ])
+        if not current.empty or self._is_tpex_stock(stock_id):
+            official = self._save_official_history("institutional", stock_id, current, subset=["date", "name"])
+            cached = self._cached_fallback("TaiwanStockInstitutionalInvestorsBuySell", stock_id, start_date, end_date)
+            return _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
         self._count("fallback", record_event=False)
         return self.fallback.institutional(stock_id, start_date, end_date)
 
+    def _tpex_institutional_today(self, end_date: date) -> tuple[pd.DataFrame, date | None]:
+        with self._tpex_institutional_lock:
+            if self._tpex_institutional_df is not None:
+                return self._tpex_institutional_df, _snapshot_date(self._tpex_institutional_df)
+            raw = self._official_list_snapshot("tpex_institutional", self.TPEX_INSTITUTIONAL_URL)
+            snapshot_date = _snapshot_date(raw)
+            valid = self._is_current_official_snapshot(snapshot_date, end_date)
+            if not valid:
+                raw = pd.DataFrame()
+            self._tpex_institutional_df = raw
+            self._record_official_snapshot("tpex_institutional", snapshot_date, valid=valid and not raw.empty, rows=len(raw))
+            return raw, snapshot_date
+
+    def _margin_today(self, end_date: date) -> tuple[pd.DataFrame, date | None]:
+        with self._margin_lock:
+            snapshot_date = self._latest_official_trade_date()
+            valid = self._is_current_official_snapshot(snapshot_date, end_date)
+            if self._margin_df is not None:
+                return self._margin_df, snapshot_date
+            if not valid or snapshot_date is None:
+                self._record_official_snapshot("margin", snapshot_date, valid=False, rows=0)
+                self._margin_df = pd.DataFrame()
+                return self._margin_df, snapshot_date
+            cache_path = self._cache_path("MI_MARGN", "all", snapshot_date.isoformat())
+            if cache_path.exists():
+                raw = pd.read_json(cache_path, orient="records")
+                self._count("cache")
+            else:
+                try:
+                    response = requests.get(self.MARGIN_URL, headers=self.headers, timeout=self.timeout)
+                    response.raise_for_status()
+                    raw = pd.DataFrame(response.json())
+                except Exception:
+                    self._count("error", dataset="MI_MARGN", data_id="all", reason="fetch_failed")
+                    raw = pd.DataFrame()
+                if not raw.empty:
+                    raw.to_json(cache_path, orient="records", force_ascii=False)
+                    self._count("api")
+            self._margin_df = raw
+            self._record_official_snapshot("margin", snapshot_date, valid=not raw.empty, rows=len(raw))
+            return raw, snapshot_date
+
     def margin(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        raw, snapshot_date = self._margin_today(end_date)
+        current = pd.DataFrame()
+        if not raw.empty and snapshot_date is not None and "股票代號" in raw.columns:
+            rows = raw[raw["股票代號"].astype(str) == str(stock_id)]
+            if not rows.empty:
+                row = rows.iloc[0]
+                current = pd.DataFrame(
+                    [{
+                        "date": snapshot_date,
+                        "stock_id": stock_id,
+                        "MarginPurchaseTodayBalance": _num(row.get("融資今日餘額", 0)),
+                        "ShortSaleTodayBalance": _num(row.get("融券今日餘額", 0)),
+                    }]
+                )
+        if not current.empty or self._is_twse_stock(stock_id):
+            official = self._save_official_history("margin", stock_id, current, subset=["date"])
+            cached = self._cached_fallback("TaiwanStockMarginPurchaseShortSale", stock_id, start_date, end_date)
+            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+        tpex_raw, tpex_date = self._tpex_margin_today(end_date)
+        if not tpex_raw.empty and tpex_date is not None:
+            rows = tpex_raw[tpex_raw["SecuritiesCompanyCode"].astype(str) == str(stock_id)]
+            if not rows.empty:
+                row = rows.iloc[0]
+                current = pd.DataFrame([{
+                    "date": tpex_date,
+                    "stock_id": stock_id,
+                    "MarginPurchaseTodayBalance": _num(row.get("MarginPurchaseBalance", 0)),
+                    "ShortSaleTodayBalance": _num(row.get("ShortSaleBalance", 0)),
+                }])
+        if not current.empty or self._is_tpex_stock(stock_id):
+            official = self._save_official_history("margin", stock_id, current, subset=["date"])
+            cached = self._cached_fallback("TaiwanStockMarginPurchaseShortSale", stock_id, start_date, end_date)
+            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
         self._count("fallback", record_event=False)
         return self.fallback.margin(stock_id, start_date, end_date)
 
+    def _tpex_margin_today(self, end_date: date) -> tuple[pd.DataFrame, date | None]:
+        with self._tpex_margin_lock:
+            if self._tpex_margin_df is not None:
+                return self._tpex_margin_df, _snapshot_date(self._tpex_margin_df)
+            raw = self._official_list_snapshot("tpex_margin", self.TPEX_MARGIN_URL)
+            snapshot_date = _snapshot_date(raw)
+            valid = self._is_current_official_snapshot(snapshot_date, end_date)
+            if not valid:
+                raw = pd.DataFrame()
+            self._tpex_margin_df = raw
+            self._record_official_snapshot("tpex_margin", snapshot_date, valid=valid and not raw.empty, rows=len(raw))
+            return raw, snapshot_date
+
+    def _revenue_latest(self) -> pd.DataFrame:
+        with self._revenue_lock:
+            if self._revenue_df is not None:
+                return self._revenue_df
+            cache_path = self._cache_path("t187ap05_L", "all", date.today().isoformat())
+            if cache_path.exists():
+                raw = pd.read_json(cache_path, orient="records")
+                self._count("cache")
+            else:
+                try:
+                    response = requests.get(self.REVENUE_URL, headers=self.headers, timeout=self.timeout)
+                    response.raise_for_status()
+                    raw = pd.DataFrame(response.json())
+                except Exception:
+                    self._count("error", dataset="t187ap05_L", data_id="all", reason="fetch_failed")
+                    raw = pd.DataFrame()
+            if not raw.empty:
+                raw.to_json(cache_path, orient="records", force_ascii=False)
+                self._count("api")
+            self._revenue_df = raw
+            revenue_date = None
+            if not raw.empty and "資料年月" in raw.columns:
+                try:
+                    revenue_date = _roc_month_date(raw.iloc[0]["資料年月"])
+                except ValueError:
+                    pass
+            self._record_official_snapshot("revenue", revenue_date, valid=not raw.empty, rows=len(raw))
+            return raw
+
     def monthly_revenue(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
+        raw = self._revenue_latest()
+        current = pd.DataFrame()
+        if not raw.empty and "公司代號" in raw.columns:
+            rows = raw[raw["公司代號"].astype(str) == str(stock_id)]
+            if not rows.empty:
+                row = rows.iloc[0]
+                revenue_date = _roc_month_date(row.get("資料年月", ""))
+                current = pd.DataFrame(
+                    [{"date": revenue_date, "stock_id": stock_id, "revenue": _num(row.get("營業收入-當月營收", 0))}]
+                )
+        if not current.empty or self._is_twse_stock(stock_id):
+            official = self._save_official_history("revenue", stock_id, current, subset=["date"])
+            cached = self._cached_fallback("TaiwanStockMonthRevenue", stock_id, start_date, end_date)
+            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
         self._count("fallback", record_event=False)
         return self.fallback.monthly_revenue(stock_id, start_date, end_date)
 
@@ -459,3 +833,39 @@ def _roc_compact_date(value: object) -> date:
     if len(text) < 7:
         raise ValueError(f"Invalid ROC date: {value}")
     return date(int(text[:3]) + 1911, int(text[3:5]), int(text[5:7]))
+
+
+def _roc_month_date(value: object) -> date:
+    text = str(value).strip()
+    if len(text) < 5:
+        raise ValueError(f"Invalid ROC month: {value}")
+    return date(int(text[:3]) + 1911, int(text[3:5]), 1)
+
+
+def _snapshot_date(df: pd.DataFrame) -> date | None:
+    if df.empty or "Date" not in df.columns:
+        return None
+    for value in df["Date"].dropna().astype(str):
+        try:
+            return _roc_compact_date(value)
+        except ValueError:
+            continue
+    return None
+
+
+def _merge_frames(
+    cached: pd.DataFrame,
+    official: pd.DataFrame,
+    *,
+    subset: list[str],
+    start_date: date,
+    end_date: date,
+) -> pd.DataFrame:
+    frames = [frame for frame in (cached, official) if not frame.empty]
+    if not frames:
+        return pd.DataFrame()
+    merged = pd.concat(frames, ignore_index=True)
+    merged["date"] = pd.to_datetime(merged["date"], errors="coerce")
+    merged = merged.dropna(subset=["date"]).drop_duplicates(subset=subset, keep="last")
+    dates = merged["date"].dt.date
+    return merged[(dates >= start_date) & (dates <= end_date)].sort_values("date").reset_index(drop=True)

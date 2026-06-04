@@ -67,6 +67,9 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
             "cache": 0,
             "quota": 0,
             "error": 0,
+            "official_snapshots": {
+                "institutional": {"date": "2026-05-18", "valid": True, "rows": 1000}
+            },
             "events": [{"type": "empty", "dataset": "STOCK_DAY", "data_id": "2330", "period": "2026-05"}],
         },
     )
@@ -81,6 +84,7 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["data_quality"]["label_text"] in {"高", "中", "偏低"}
     assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
     assert payload["data_quality"]["recovery_status"]["retryable"] == 1
+    assert payload["data_quality"]["official_valid"] == 1
     assert payload["decision_summary"]["top_theme"] == "defense_policy"
     assert payload["themes"]["matched_headlines"]["defense_policy"] == ["國防預算帶動軍工題材"]
     assert payload["themes"]["quality"]["defense_policy"].startswith("高")
