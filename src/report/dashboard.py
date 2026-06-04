@@ -1195,6 +1195,10 @@ def _html() -> str:
             <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
           </div>
           <div class="decision-reason">${esc(reason)}</div>
+          <details class="mini-detail">
+            <summary>個股開盤檢查表</summary>
+            ${(row.entry_checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("") || '<div class="line small">尚無足夠資料設定條件</div>'}
+          </details>
           <div class="decision-note-grid">
             <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
             <div class="decision-note"><b>散戶</b><br>${esc(retailText)}${retailReason ? `｜${esc(retailReason)}` : ""}</div>
@@ -1205,6 +1209,13 @@ def _html() -> str:
       const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
       document.querySelector("#actionLists").innerHTML = `
         <div class="line">S+/S/A/B 是訊號強度，不等於直接買；今日是否進場以操作結論、開盤跳空與量能確認為準。</div>
+        <details class="mini-detail open-check-guide">
+          <summary>開盤時怎麼確認？</summary>
+          <div class="line"><b>1. 等到 09:05</b>：先看前 5 分鐘，不在 09:00 第一筆追價。</div>
+          <div class="line"><b>2. 價格不超限</b>：現價不得高於卡片的「進場上限」；超過就放棄追價。</div>
+          <div class="line"><b>3. 價穩且有量</b>：價格站穩昨高或個股檢查條件，前 5 分鐘量達檢查表門檻。</div>
+          <div class="line"><b>4. 風控先寫好</b>：跌破「停損參考」不進場；進場後跌破則依紀律退出。</div>
+        </details>
         <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
         <div class="decision-card-grid">${chaseCards || '<div class="line">今日暫無高分可追清單</div>'}</div>
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
@@ -1228,6 +1239,9 @@ def _html() -> str:
         <div class="line warn"><b>觀察過熱</b>：${esc(retailSummary.watch_overheated ?? 0)} 檔</div>
         ${(retail.watch_overheated || []).slice(0,2).map(compactRetail).join("") || '<div class="line">尚未累積觀察過熱名單</div>'}`;
       const quality = data.data_quality || {};
+      const bundleCoverage = data.source_status?.bundle_coverage || {};
+      const coverageRows = bundleCoverage.datasets || {};
+      const marketSnapshots = data.source_status?.market_snapshots || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       const qualityHuman = quality.label === "high" ? "可用" : quality.label === "medium" ? "注意" : "偏低";
       const qualityNote = quality.label === "high"
@@ -1249,6 +1263,9 @@ def _html() -> str:
         <details class="mini-detail">
           <summary>資料細節</summary>
           <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
+          <div class="line"><b>逐檔資料稽核</b>：${bundleCoverage.all_critical_complete ? "核心資料完整" : "仍有缺口"}｜掃描 ${esc(bundleCoverage.stocks || 0)} 檔</div>
+          ${Object.entries(coverageRows).map(([key, row]) => `<div class="line small">${esc(key)}｜${esc(row.coverage_pct ?? 0)}%｜缺 ${esc((row.missing || []).length)}${(row.missing || []).length ? `｜${esc((row.missing || []).slice(0,6).join(","))}` : ""}</div>`).join("")}
+          ${Object.entries(marketSnapshots).map(([key, row]) => `<div class="line small">${esc(key)}｜${row.valid ? "已驗證" : "部分備援"}${row.date ? `｜${esc(row.date)}` : ""}｜${esc(row.source || "")}</div>`).join("")}
           ${(quality.details || []).length ? quality.details.slice(0,4).map(x => `<div class="line small">${esc(zh(EVENT_TYPE_TEXT, x.type))}｜${esc(zh(DATASET_TEXT, x.dataset))}｜${esc(x.data_id)}｜${esc(zh(REASON_TEXT, x.reason || x.period || "-"))}</div>`).join("") : '<div class="line small">目前無細節警示</div>'}
           <div class="line"><b>補抓佇列</b>：待補 ${esc(retry.pending || retryCounts.pending || 0)}｜已補 ${esc(retry.recovered || retryCounts.recovered || 0)}｜失敗 ${esc(retry.failed || retryCounts.failed || 0)}</div>
           ${retryLines || '<div class="line small">目前無待補抓資料</div>'}

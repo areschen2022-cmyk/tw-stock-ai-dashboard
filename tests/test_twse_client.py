@@ -200,6 +200,16 @@ def test_tpex_official_batch_snapshots_avoid_twse_html_and_finmind_network(tmp_p
                 "MarginPurchaseBalance": "1234",
                 "ShortSaleBalance": "56",
             }])
+        if url == TwseClient.REVENUE_URL:
+            return _Response([])
+        if url == TwseClient.TPEX_REVENUE_URL:
+            return _Response([{
+                "資料年月": "11504",
+                "公司代號": "6510",
+                "營業收入-當月營收": "888888",
+            }])
+        if url == TwseClient.TPEX_EMERGING_REVENUE_URL:
+            return _Response([])
         if url == TwseClient.STOCK_DAY_ALL_URL:
             return _Response([])
         raise AssertionError(f"unexpected URL: {url}")
@@ -210,10 +220,12 @@ def test_tpex_official_batch_snapshots_avoid_twse_html_and_finmind_network(tmp_p
     prices = client.stock_prices("6510", date(2026, 6, 3), date(2026, 6, 3))
     institutional = client.institutional("6510", date(2026, 6, 3), date(2026, 6, 3))
     margin = client.margin("6510", date(2026, 6, 3), date(2026, 6, 3))
+    revenue = client.monthly_revenue("6510", date(2026, 4, 1), date(2026, 6, 3))
 
     assert prices.iloc[-1]["close"] == 1000.0
     assert institutional["buy"].tolist() == [1000.0, 300.0, 80.0]
     assert margin.iloc[-1]["MarginPurchaseTodayBalance"] == 1234.0
+    assert revenue.iloc[-1]["revenue"] == 888888.0
     assert TwseClient.STOCK_DAY_URL not in calls
     assert calls.count(TwseClient.TPEX_QUOTES_URL) == 1
     assert calls.count(TwseClient.TPEX_INSTITUTIONAL_URL) == 1
@@ -222,3 +234,81 @@ def test_tpex_official_batch_snapshots_avoid_twse_html_and_finmind_network(tmp_p
     assert status["tpex_quotes"]["valid"] is True
     assert status["tpex_institutional"]["valid"] is True
     assert status["tpex_margin"]["valid"] is True
+    assert status["revenue_tpex"]["valid"] is True
+
+
+def test_public_overseas_market_uses_fallback_only_for_tx_night(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    def fake_get(url, params=None, headers=None, timeout=20):
+        calls.append(url)
+        return _Response({
+            "chart": {
+                "result": [{
+                    "timestamp": [1780272000, 1780358400],
+                    "indicators": {
+                        "quote": [{
+                            "open": [100.0, 101.0],
+                            "high": [102.0, 103.0],
+                            "low": [99.0, 100.0],
+                            "close": [101.0, 102.0],
+                            "volume": [1000, 1200],
+                        }]
+                    },
+                }]
+            }
+        })
+
+    class _OverseasFallback(_Fallback):
+        def futures_daily(self, futures_id, start_date, end_date):
+            return pd.DataFrame([{"date": end_date, "spread_per": 0.1}])
+
+        def us_stock_price(self, stock_id, start_date, end_date):
+            raise AssertionError("US stock fallback should not be used")
+
+        def government_bond_yield(self, name, start_date, end_date):
+            raise AssertionError("bond fallback should not be used")
+
+    monkeypatch.setattr("src.data_provider.twse_client.requests.get", fake_get)
+    client = TwseClient(fallback=_OverseasFallback(), cache_dir=tmp_path)
+
+    bundle = client.overseas_bundle(date(2026, 6, 1), date(2026, 6, 3))
+
+    assert len(bundle["sp500"]) == 2
+    assert bundle["us10y"]["value"].tolist() == [101.0, 102.0]
+    assert len(calls) == 13
+    snapshot = client.source_status()["market_snapshots"]["overseas_public_market"]
+    assert snapshot["valid"] is True
+    assert snapshot["rows"] == 13
+
+
+def test_official_revenue_cold_start_completes_history_with_fallback(tmp_path, monkeypatch) -> None:
+    def fake_get(url, params=None, headers=None, timeout=20):
+        if url == TwseClient.REVENUE_URL:
+            return _Response([{
+                "資料年月": "11504",
+                "公司代號": "2330",
+                "營業收入-當月營收": "999999",
+            }])
+        if url == TwseClient.TPEX_REVENUE_URL or url == TwseClient.TPEX_EMERGING_REVENUE_URL:
+            return _Response([])
+        if url == TwseClient.STOCK_DAY_ALL_URL:
+            return _Response([{"Date": "1150603", "Code": "2330"}])
+        raise AssertionError(f"unexpected URL: {url}")
+
+    class _ColdFallback(_Fallback):
+        def monthly_revenue(self, stock_id, start_date, end_date):
+            return pd.DataFrame({
+                "date": pd.date_range("2025-01-01", periods=16, freq="MS"),
+                "stock_id": [stock_id] * 16,
+                "revenue": list(range(16)),
+            })
+
+    monkeypatch.setattr("src.data_provider.twse_client.requests.get", fake_get)
+    client = TwseClient(fallback=_ColdFallback(), cache_dir=tmp_path)
+
+    revenue = client.monthly_revenue("2330", date(2025, 1, 1), date(2026, 6, 3))
+
+    assert len(revenue) >= 15
+    assert revenue.iloc[-1]["revenue"] == 999999.0
+    assert any(event.get("reason") == "cold_history_short" for event in client.status_events)

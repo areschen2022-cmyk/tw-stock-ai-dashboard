@@ -121,6 +121,36 @@ def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
 
 
+def bundle_coverage_report(bundles: dict[str, dict]) -> dict:
+    """Measure actual per-stock bundle coverage instead of inferring it from request status."""
+    datasets = {
+        "prices": {"minimum": 20, "complete": [], "missing": []},
+        "institutional": {"minimum": 1, "complete": [], "missing": []},
+        "margin": {"minimum": 1, "complete": [], "missing": []},
+        "revenue": {"minimum": 1, "complete": [], "missing": []},
+        "revenue_15m": {"minimum": 15, "complete": [], "missing": []},
+    }
+    for stock_id, bundle in bundles.items():
+        for key in ("prices", "institutional", "margin", "revenue"):
+            count = len(bundle.get(key, []))
+            target = datasets[key]
+            target["complete" if count >= target["minimum"] else "missing"].append(stock_id)
+        revenue_count = len(bundle.get("revenue", []))
+        datasets["revenue_15m"]["complete" if revenue_count >= 15 else "missing"].append(stock_id)
+    total = len(bundles)
+    for row in datasets.values():
+        row["count"] = len(row["complete"])
+        row["coverage_pct"] = round(row["count"] / total * 100, 1) if total else 0.0
+        row["missing"] = row["missing"][:20]
+        row.pop("complete", None)
+    critical = ["prices", "institutional", "margin", "revenue"]
+    return {
+        "stocks": total,
+        "datasets": datasets,
+        "all_critical_complete": all(not datasets[key]["missing"] for key in critical),
+    }
+
+
 def _score_label(total: int, config: dict) -> str:
     thresholds = config.get("thresholds", {})
     if total >= int(thresholds.get("buy_watch", 65)):
@@ -328,6 +358,7 @@ def main() -> int:
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
 
     source_status = provider.source_status()
+    source_status["bundle_coverage"] = bundle_coverage_report(bundles)
     watch_reviews = store.watch_reviews(as_of)
     exit_risks = build_exit_risks(
         results,

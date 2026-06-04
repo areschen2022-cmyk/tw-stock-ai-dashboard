@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -21,6 +21,8 @@ class TwseClient:
     INSTITUTIONAL_URL = "https://www.twse.com.tw/rwd/zh/fund/T86"
     MARGIN_URL = "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGN"
     REVENUE_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap05_L"
+    TPEX_REVENUE_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap05_O"
+    TPEX_EMERGING_REVENUE_URL = "https://www.tpex.org.tw/openapi/v1/t187ap05_R"
     TPEX_QUOTES_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
     TPEX_INSTITUTIONAL_URL = "https://www.tpex.org.tw/openapi/v1/tpex_3insti_daily_trading"
     TPEX_MARGIN_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_margin_balance"
@@ -50,6 +52,10 @@ class TwseClient:
         self._margin_df: pd.DataFrame | None = None
         self._revenue_lock = Lock()
         self._revenue_df: pd.DataFrame | None = None
+        self._tpex_revenue_lock = Lock()
+        self._tpex_revenue_df: pd.DataFrame | None = None
+        self._tpex_emerging_revenue_lock = Lock()
+        self._tpex_emerging_revenue_df: pd.DataFrame | None = None
         self._tpex_quotes_lock = Lock()
         self._tpex_quotes_df: pd.DataFrame | None = None
         self._tpex_institutional_lock = Lock()
@@ -57,6 +63,7 @@ class TwseClient:
         self._tpex_margin_lock = Lock()
         self._tpex_margin_df: pd.DataFrame | None = None
         self.official_snapshots: dict[str, dict[str, Any]] = {}
+        self.market_snapshots: dict[str, dict[str, Any]] = {}
         self.headers = {
             "User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0; research dashboard)",
             "Accept": "application/json,text/plain,*/*",
@@ -98,6 +105,7 @@ class TwseClient:
             "events": [*self.status_events, *fallback_events][-20:],
             "fallback_status": fallback_status,
             "official_snapshots": self.official_snapshots,
+            "market_snapshots": self.market_snapshots,
         }
 
     def _cache_path(self, dataset: str, data_id: str, key: str) -> Path:
@@ -153,6 +161,26 @@ class TwseClient:
             return pd.DataFrame()
         return cached_only(dataset, stock_id, start_date, end_date)
 
+    def _complete_history_if_short(
+        self,
+        merged: pd.DataFrame,
+        *,
+        minimum_rows: int,
+        minimum_span_days: int,
+        fetcher,
+        dataset: str,
+        stock_id: str,
+        start_date: date,
+        end_date: date,
+        subset: list[str],
+    ) -> pd.DataFrame:
+        """Use network fallback only on a cold/short history, never for a healthy cache."""
+        if (end_date - start_date).days < minimum_span_days or len(merged) >= minimum_rows:
+            return merged
+        self._count("fallback", dataset=dataset, data_id=stock_id, reason="cold_history_short")
+        fallback = fetcher(stock_id, start_date, end_date)
+        return _merge_frames(fallback, merged, subset=subset, start_date=start_date, end_date=end_date)
+
     def _latest_official_trade_date(self) -> date | None:
         all_df = self._get_today_all()
         if all_df.empty or "Date" not in all_df.columns:
@@ -200,6 +228,22 @@ class TwseClient:
             "valid": valid,
             "rows": rows,
             "source": "official",
+        }
+
+    def _record_market_snapshot(
+        self,
+        dataset: str,
+        snapshot_date: date | None,
+        *,
+        valid: bool,
+        rows: int,
+        source: str,
+    ) -> None:
+        self.market_snapshots[dataset] = {
+            "date": snapshot_date.isoformat() if snapshot_date else "",
+            "valid": valid,
+            "rows": rows,
+            "source": source,
         }
 
     def _month_segments(self, start_date: date, end_date: date) -> list[tuple[int, int]]:
@@ -479,7 +523,18 @@ class TwseClient:
         if not current.empty or self._is_twse_stock(stock_id):
             official = self._save_official_history("institutional", stock_id, current, subset=["date", "name"])
             cached = self._cached_fallback("TaiwanStockInstitutionalInvestorsBuySell", stock_id, start_date, end_date)
-            return _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
+            merged = _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
+            return self._complete_history_if_short(
+                merged,
+                minimum_rows=9,
+                minimum_span_days=14,
+                fetcher=self.fallback.institutional,
+                dataset="institutional",
+                stock_id=stock_id,
+                start_date=start_date,
+                end_date=end_date,
+                subset=["date", "name"],
+            )
         tpex_raw, tpex_date = self._tpex_institutional_today(end_date)
         if not tpex_raw.empty and tpex_date is not None:
             rows = tpex_raw[tpex_raw["SecuritiesCompanyCode"].astype(str) == str(stock_id)]
@@ -493,7 +548,18 @@ class TwseClient:
         if not current.empty or self._is_tpex_stock(stock_id):
             official = self._save_official_history("institutional", stock_id, current, subset=["date", "name"])
             cached = self._cached_fallback("TaiwanStockInstitutionalInvestorsBuySell", stock_id, start_date, end_date)
-            return _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
+            merged = _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
+            return self._complete_history_if_short(
+                merged,
+                minimum_rows=9,
+                minimum_span_days=14,
+                fetcher=self.fallback.institutional,
+                dataset="institutional",
+                stock_id=stock_id,
+                start_date=start_date,
+                end_date=end_date,
+                subset=["date", "name"],
+            )
         self._count("fallback", record_event=False)
         return self.fallback.institutional(stock_id, start_date, end_date)
 
@@ -557,7 +623,18 @@ class TwseClient:
         if not current.empty or self._is_twse_stock(stock_id):
             official = self._save_official_history("margin", stock_id, current, subset=["date"])
             cached = self._cached_fallback("TaiwanStockMarginPurchaseShortSale", stock_id, start_date, end_date)
-            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            return self._complete_history_if_short(
+                merged,
+                minimum_rows=3,
+                minimum_span_days=14,
+                fetcher=self.fallback.margin,
+                dataset="margin",
+                stock_id=stock_id,
+                start_date=start_date,
+                end_date=end_date,
+                subset=["date"],
+            )
         tpex_raw, tpex_date = self._tpex_margin_today(end_date)
         if not tpex_raw.empty and tpex_date is not None:
             rows = tpex_raw[tpex_raw["SecuritiesCompanyCode"].astype(str) == str(stock_id)]
@@ -572,7 +649,18 @@ class TwseClient:
         if not current.empty or self._is_tpex_stock(stock_id):
             official = self._save_official_history("margin", stock_id, current, subset=["date"])
             cached = self._cached_fallback("TaiwanStockMarginPurchaseShortSale", stock_id, start_date, end_date)
-            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            return self._complete_history_if_short(
+                merged,
+                minimum_rows=3,
+                minimum_span_days=14,
+                fetcher=self.fallback.margin,
+                dataset="margin",
+                stock_id=stock_id,
+                start_date=start_date,
+                end_date=end_date,
+                subset=["date"],
+            )
         self._count("fallback", record_event=False)
         return self.fallback.margin(stock_id, start_date, end_date)
 
@@ -618,21 +706,61 @@ class TwseClient:
             self._record_official_snapshot("revenue", revenue_date, valid=not raw.empty, rows=len(raw))
             return raw
 
+    def _tpex_revenue_latest(self, *, emerging: bool = False) -> pd.DataFrame:
+        lock = self._tpex_emerging_revenue_lock if emerging else self._tpex_revenue_lock
+        attr = "_tpex_emerging_revenue_df" if emerging else "_tpex_revenue_df"
+        dataset = "t187ap05_R" if emerging else "mopsfin_t187ap05_O"
+        url = self.TPEX_EMERGING_REVENUE_URL if emerging else self.TPEX_REVENUE_URL
+        snapshot_name = "revenue_emerging" if emerging else "revenue_tpex"
+        with lock:
+            cached_df = getattr(self, attr)
+            if cached_df is not None:
+                return cached_df
+            cache_path = self._cache_path(dataset, "all", date.today().isoformat())
+            if cache_path.exists():
+                raw = pd.read_json(cache_path, orient="records")
+                self._count("cache")
+            else:
+                try:
+                    response = requests.get(url, headers=self.headers, timeout=self.timeout)
+                    response.raise_for_status()
+                    raw = pd.DataFrame(response.json())
+                except Exception:
+                    self._count("error", dataset=dataset, data_id="all", reason="fetch_failed")
+                    raw = pd.DataFrame()
+            if not raw.empty:
+                raw.to_json(cache_path, orient="records", force_ascii=False)
+                self._count("api")
+            setattr(self, attr, raw)
+            revenue_date = _revenue_snapshot_date(raw)
+            self._record_official_snapshot(snapshot_name, revenue_date, valid=not raw.empty, rows=len(raw))
+            return raw
+
     def monthly_revenue(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        raw = self._revenue_latest()
         current = pd.DataFrame()
-        if not raw.empty and "公司代號" in raw.columns:
-            rows = raw[raw["公司代號"].astype(str) == str(stock_id)]
-            if not rows.empty:
-                row = rows.iloc[0]
-                revenue_date = _roc_month_date(row.get("資料年月", ""))
-                current = pd.DataFrame(
-                    [{"date": revenue_date, "stock_id": stock_id, "revenue": _num(row.get("營業收入-當月營收", 0))}]
-                )
-        if not current.empty or self._is_twse_stock(stock_id):
+        for raw in (
+            self._revenue_latest(),
+            self._tpex_revenue_latest(),
+            self._tpex_revenue_latest(emerging=True),
+        ):
+            current = _revenue_row(raw, stock_id)
+            if not current.empty:
+                break
+        if not current.empty or self._is_twse_stock(stock_id) or self._is_tpex_stock(stock_id):
             official = self._save_official_history("revenue", stock_id, current, subset=["date"])
             cached = self._cached_fallback("TaiwanStockMonthRevenue", stock_id, start_date, end_date)
-            return _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
+            return self._complete_history_if_short(
+                merged,
+                minimum_rows=15,
+                minimum_span_days=365,
+                fetcher=self.fallback.monthly_revenue,
+                dataset="revenue",
+                stock_id=stock_id,
+                start_date=start_date,
+                end_date=end_date,
+                subset=["date"],
+            )
         self._count("fallback", record_event=False)
         return self.fallback.monthly_revenue(stock_id, start_date, end_date)
 
@@ -783,8 +911,89 @@ class TwseClient:
             return df
 
     def overseas_bundle(self, start_date: date, end_date: date) -> dict[str, pd.DataFrame]:
-        self._count("fallback", record_event=False)
-        return self.fallback.overseas_bundle(start_date, end_date)
+        symbols = {
+            "sp500": "^GSPC",
+            "nasdaq": "^IXIC",
+            "dow": "^DJI",
+            "sox": "^SOX",
+            "tsm_adr": "TSM",
+            "glw": "GLW",
+            "cohr": "COHR",
+            "lite": "LITE",
+            "mu": "MU",
+            "nvda": "NVDA",
+            "rklb": "RKLB",
+            "asts": "ASTS",
+            "us10y": "^TNX",
+        }
+        bundle: dict[str, pd.DataFrame] = {}
+        valid = 0
+        latest_date: date | None = None
+        for name, symbol in symbols.items():
+            frame = self._yahoo_chart(symbol, start_date, end_date)
+            if frame.empty:
+                self._count("fallback", dataset="overseas", data_id=symbol, reason="public_market_unavailable")
+                if name == "us10y":
+                    frame = self.fallback.government_bond_yield("United States 10-Year", start_date, end_date)
+                else:
+                    frame = self.fallback.us_stock_price(symbol, start_date, end_date)
+            else:
+                valid += 1
+                frame_date = pd.to_datetime(frame["date"], errors="coerce").max()
+                if not pd.isna(frame_date):
+                    candidate = frame_date.date()
+                    latest_date = max(latest_date, candidate) if latest_date else candidate
+            if name == "us10y" and not frame.empty and "Close" in frame.columns and "value" not in frame.columns:
+                frame = frame.assign(value=frame["Close"])
+            bundle[name] = frame
+        bundle["tx_night"] = self.fallback.futures_daily("TX", start_date, end_date)
+        self._record_market_snapshot(
+            "overseas_public_market",
+            latest_date,
+            valid=valid == len(symbols),
+            rows=valid,
+            source="Yahoo Finance chart API",
+        )
+        return bundle
+
+    def _yahoo_chart(self, symbol: str, start_date: date, end_date: date) -> pd.DataFrame:
+        cache_path = self._cache_path("YAHOO_CHART", symbol, end_date.isoformat())
+        if cache_path.exists():
+            frame = pd.read_json(cache_path, orient="records")
+            if _valid_market_frame(frame, end_date):
+                self._count("cache")
+                return frame
+        period1 = int(datetime.combine(start_date, time.min, tzinfo=timezone.utc).timestamp())
+        period2 = int(datetime.combine(end_date + timedelta(days=1), time.min, tzinfo=timezone.utc).timestamp())
+        try:
+            response = requests.get(
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+                params={"period1": period1, "period2": period2, "interval": "1d"},
+                headers=self.headers,
+                timeout=self.timeout,
+            )
+            response.raise_for_status()
+            result = (response.json().get("chart", {}).get("result") or [])[0]
+            timestamps = result.get("timestamp") or []
+            quote = ((result.get("indicators") or {}).get("quote") or [{}])[0]
+            frame = pd.DataFrame(
+                {
+                    "date": pd.to_datetime(timestamps, unit="s", utc=True).tz_convert("America/New_York").date,
+                    "Open": quote.get("open", []),
+                    "High": quote.get("high", []),
+                    "Low": quote.get("low", []),
+                    "Close": quote.get("close", []),
+                    "Volume": quote.get("volume", []),
+                }
+            ).dropna(subset=["date", "Close"])
+        except Exception as exc:
+            logging.warning("Public overseas market request failed for %s: %s", symbol, exc)
+            return pd.DataFrame()
+        if not _valid_market_frame(frame, end_date):
+            return pd.DataFrame()
+        frame.to_json(cache_path, orient="records", force_ascii=False, date_format="iso")
+        self._count("api")
+        return frame.reset_index(drop=True)
 
     def stock_bundle(
         self,
@@ -840,6 +1049,47 @@ def _roc_month_date(value: object) -> date:
     if len(text) < 5:
         raise ValueError(f"Invalid ROC month: {value}")
     return date(int(text[:3]) + 1911, int(text[3:5]), 1)
+
+
+def _revenue_snapshot_date(df: pd.DataFrame) -> date | None:
+    if df.empty or "資料年月" not in df.columns:
+        return None
+    for value in df["資料年月"].dropna().astype(str):
+        try:
+            return _roc_month_date(value)
+        except ValueError:
+            continue
+    return None
+
+
+def _revenue_row(df: pd.DataFrame, stock_id: str) -> pd.DataFrame:
+    if df.empty or "公司代號" not in df.columns:
+        return pd.DataFrame()
+    rows = df[df["公司代號"].astype(str) == str(stock_id)]
+    if rows.empty:
+        return pd.DataFrame()
+    row = rows.iloc[0]
+    try:
+        revenue_date = _roc_month_date(row.get("資料年月", ""))
+    except ValueError:
+        return pd.DataFrame()
+    return pd.DataFrame(
+        [{
+            "date": revenue_date,
+            "stock_id": stock_id,
+            "revenue": _num(row.get("營業收入-當月營收", 0)),
+        }]
+    )
+
+
+def _valid_market_frame(frame: pd.DataFrame, end_date: date) -> bool:
+    if frame.empty or "date" not in frame.columns or "Close" not in frame.columns or len(frame) < 2:
+        return False
+    dates = pd.to_datetime(frame["date"], errors="coerce").dropna()
+    if dates.empty:
+        return False
+    latest = dates.max().date()
+    return latest <= end_date and end_date - latest <= timedelta(days=7)
 
 
 def _snapshot_date(df: pd.DataFrame) -> date | None:

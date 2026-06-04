@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from main import default_as_of, delivery_date_for_run, select_theme_pools
+from main import bundle_coverage_report, default_as_of, delivery_date_for_run, select_theme_pools
 
 
 TAIPEI = ZoneInfo("Asia/Taipei")
@@ -41,3 +41,28 @@ def test_empty_active_themes_do_not_select_all_theme_pools() -> None:
 
     assert select_theme_pools(pools, set()) == {}
     assert select_theme_pools(pools, {"memory"}) == {"memory": pools["memory"]}
+
+
+def test_bundle_coverage_report_measures_actual_rows() -> None:
+    report = bundle_coverage_report(
+        {
+            "2330": {
+                "prices": list(range(20)),
+                "institutional": [1],
+                "margin": [1],
+                "revenue": list(range(15)),
+            },
+            "6510": {
+                "prices": list(range(19)),
+                "institutional": [],
+                "margin": [1],
+                "revenue": [1],
+            },
+        }
+    )
+
+    assert report["all_critical_complete"] is False
+    assert report["datasets"]["prices"]["coverage_pct"] == 50.0
+    assert report["datasets"]["institutional"]["missing"] == ["6510"]
+    assert report["datasets"]["revenue"]["coverage_pct"] == 100.0
+    assert report["datasets"]["revenue_15m"]["missing"] == ["6510"]
