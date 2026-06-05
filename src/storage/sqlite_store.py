@@ -676,14 +676,14 @@ class SQLiteStore:
         with self._connect() as conn:
             signals = conn.execute(
                 """
-                SELECT signal_date, stock_id, entry_price
+                SELECT signal_date, stock_id, entry_price, tags_json
                 FROM potential_radar_signals
                 WHERE signal_date < ?
                   AND (return_5d IS NULL OR return_10d IS NULL)
                 """,
                 (as_of.isoformat(),),
             ).fetchall()
-            for signal_date, stock_id, entry_price in signals:
+            for signal_date, stock_id, entry_price, tags_json in signals:
                 base_entry = entry_price
                 if base_entry is None:
                     base = conn.execute(
@@ -711,7 +711,7 @@ class SQLiteStore:
                 return_3d = _pct_return(prices[2] if len(prices) >= 3 else None, base_entry)
                 return_5d = _pct_return(prices[4] if len(prices) >= 5 else None, base_entry)
                 return_10d = _pct_return(prices[9] if len(prices) >= 10 else None, base_entry)
-                outcome = _potential_outcome(return_5d, return_10d)
+                outcome = _potential_outcome(return_5d, return_10d, _json_list(tags_json))
                 conn.execute(
                     """
                     UPDATE potential_radar_signals
@@ -1840,6 +1840,8 @@ def _potential_factor_label(tag: str) -> str:
         return "K線風險"
     if tag.startswith("題材升溫"):
         return "題材升溫"
+    if tag.startswith("題材:"):
+        return "題材觀察"
     if "分數已成形" in tag:
         return "分數已成形"
     if "非過熱強度" in tag:
@@ -1871,14 +1873,35 @@ def _potential_factor_notes(factors: list[dict]) -> list[str]:
     if not completed:
         return ["潛力雷達因素仍在累積樣本，等 5 日結果完成後才會顯示有效與失效條件。"]
     best = _rank_potential_factors(factors, reverse=True, limit=1)
-    weak = _rank_potential_factors(factors, reverse=False, limit=1)
+    weak_pool = [
+        row for row in completed
+        if int(row.get("failure_count") or 0) > 0
+        or (
+            row.get("avg_return_5d") is not None
+            and float(row.get("avg_return_5d") or 0) <= 0
+        )
+    ]
+    weak = [
+        row for row in _rank_potential_factors(weak_pool, reverse=False, limit=3)
+        if not best or row.get("label") != best[0].get("label")
+    ][:1]
     notes = []
     if best:
         row = best[0]
-        notes.append(f"目前較有效因素：{row['label']}，5日平均 {row['avg_return_5d']}%，勝率 {row['win_rate_5d']}%。")
+        notes.append(
+            f"目前較有效因素：{row['label']}，完成 {row['completed']} 筆，"
+            f"5日平均 {_fmt_pct(row['avg_return_5d'])}，勝率 {_fmt_pct(row['win_rate_5d'])}。"
+        )
     if weak:
         row = weak[0]
-        notes.append(f"目前需小心因素：{row['label']}，5日平均 {row['avg_return_5d']}%，勝率 {row['win_rate_5d']}%。")
+        notes.append(
+            f"目前需小心因素：{row['label']}，完成 {row['completed']} 筆，"
+            f"5日平均 {_fmt_pct(row['avg_return_5d'])}，勝率 {_fmt_pct(row['win_rate_5d'])}。"
+        )
+    else:
+        notes.append("目前尚未累積明確失敗因素，先看方向，不急著調整權重。")
+    if len(completed) < 5:
+        notes.append("已完成樣本仍少，至少累積 5 筆後再判斷因素強弱。")
     return notes
 
 
@@ -1911,7 +1934,7 @@ def _potential_candidate(item: dict) -> dict:
     }
 
 
-def _potential_outcome(return_5d: float | None, return_10d: float | None) -> dict:
+def _potential_outcome(return_5d: float | None, return_10d: float | None, tags: list[str] | None = None) -> dict:
     if return_5d is None:
         return {
             "category": "potential_pending",
@@ -1933,8 +1956,45 @@ def _potential_outcome(return_5d: float | None, return_10d: float | None) -> dic
     return {
         "category": "potential_false_positive",
         "label": "假訊號",
-        "reason": "5 日後未轉強，需回查題材或量價條件。",
+        "reason": _potential_failure_reason(tags or []),
     }
+
+
+def _potential_failure_reason(tags: list[str]) -> str:
+    joined = " ".join(str(tag) for tag in tags)
+    reasons = []
+    if "題材升溫" in joined:
+        reasons.append("題材熱度沒有轉成 5 日報酬")
+    if "K線轉強" in joined:
+        reasons.append("K 線轉強後量價沒有延續")
+    if "法人開始同步" in joined:
+        reasons.append("法人訊號後續未形成買盤延續")
+    if "散戶減少" in joined or "籌碼轉乾淨" in joined:
+        reasons.append("籌碼轉乾淨但價格未跟上")
+    if "量價背離風險" in joined or "散戶過熱" in joined:
+        reasons.append("早期風險標籤成真")
+    if reasons:
+        return "；".join(reasons[:3]) + "。"
+    return "5 日後未轉強，需回查題材、量價與籌碼條件。"
+
+
+def _fmt_pct(value) -> str:
+    if value is None:
+        return "—"
+    try:
+        return f"{float(value):.1f}%"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _json_list(raw) -> list:
+    if not raw:
+        return []
+    try:
+        value = json.loads(raw)
+    except (TypeError, json.JSONDecodeError):
+        return []
+    return value if isinstance(value, list) else []
 
 
 def _learning_center_summary(items: list[dict]) -> dict:

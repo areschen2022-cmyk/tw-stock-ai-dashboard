@@ -17,11 +17,12 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "label": "BUY_WATCH",
             "decision_light": "yellow",
             "entry_decision": "等拉回",
-            "action_context": "今日未進場",
+            "action_context": "強勢但等拉回",
             "retail_context": "籌碼轉乾淨",
-            "retail_context_reason": "散戶人數下降但股價抗跌",
-            "pattern_tags": ["陽包陰"],
+            "retail_context_reason": "散戶人數減少，價格尚未失控",
+            "pattern_tags": ["突破整理"],
             "pattern_risk_tags": [],
+            "trigger_tags": ["法人共振", "技術突破"],
             "themes": ["記憶體/HBM"],
             "opportunity_score": 6,
             "price": 100.0,
@@ -35,21 +36,21 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "decision_light": "green",
             "entry_decision": "可追",
             "retail_context": "籌碼轉乾淨",
-            "pattern_tags": ["突破"],
+            "pattern_tags": ["放量長紅"],
             "themes": ["AI伺服器"],
             "opportunity_score": 8,
             "price": 1500.0,
         },
         {
             "stock_id": "9999",
-            "name": "風險股",
+            "name": "高風險股",
             "score": 80,
             "grade": "A",
             "label": "BUY_WATCH",
             "decision_light": "red",
-            "entry_decision": "避免",
+            "entry_decision": "避開",
             "retail_context": "籌碼轉乾淨",
-            "pattern_tags": ["陽包陰"],
+            "pattern_tags": ["突破整理"],
             "themes": ["題材"],
             "price": 10.0,
         },
@@ -58,10 +59,33 @@ def test_potential_radar_prefers_early_confluence() -> None:
     candidates = build_potential_radar_candidates(rows, date(2026, 6, 3))
 
     assert [row["stock_id"] for row in candidates] == ["2408"]
-    assert candidates[0]["potential_score"] >= 8
+    assert candidates[0]["potential_score"] >= 10
     assert "散戶減少/籌碼轉乾淨" in candidates[0]["tags"]
-    assert "K線轉強:陽包陰" in candidates[0]["tags"]
+    assert "K線轉強:突破整理" in candidates[0]["tags"]
+    assert "法人開始同步" in candidates[0]["tags"]
     assert candidates[0]["reason"].startswith("潛力分")
+
+
+def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> None:
+    rows = [
+        {
+            "stock_id": "2344",
+            "name": "華邦電",
+            "score": 78,
+            "grade": "A",
+            "label": "BUY_WATCH",
+            "decision_light": "yellow",
+            "entry_decision": "只觀察",
+            "retail_context": "散戶過熱，人數增加",
+            "pattern_tags": ["突破整理"],
+            "trigger_tags": ["放量不漲"],
+            "themes": ["記憶體/HBM"],
+            "opportunity_score": 6,
+            "price": 50.0,
+        }
+    ]
+
+    assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
 
 
 def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path) -> None:
@@ -85,7 +109,7 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "potential_score": 9,
                 "action": "等拉回",
                 "reason": "潛力分 9",
-                "tags": ["散戶減少/籌碼轉乾淨", "K線轉強:陽包陰", "題材升溫:記憶體/HBM"],
+                "tags": ["散戶減少/籌碼轉乾淨", "K線轉強:突破整理", "題材升溫:記憶體/HBM"],
                 "themes": ["記憶體/HBM"],
                 "entry_price": 100.0,
             },
