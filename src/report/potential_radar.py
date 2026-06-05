@@ -26,8 +26,15 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
             continue
 
         points, tags = _score_row(row, score, grade)
+        chase_risk = _chase_risk(row, score, grade)
+        if chase_risk["level"] == "high":
+            continue
+        if chase_risk["level"] == "medium":
+            points -= 2
+            tags.append(chase_risk["label"])
         if points < 5:
             continue
+        stage = _stage(row, score, grade, tags, chase_risk["level"])
 
         candidates.append(
             {
@@ -43,8 +50,12 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
                 "return_3d": None,
                 "return_5d": None,
                 "entry_triggered": None,
+                "stage": stage["key"],
+                "stage_label": stage["label"],
+                "chase_risk": chase_risk["level"],
+                "chase_risk_label": chase_risk["label"],
                 "tags": _dedupe(tags)[:10],
-                "reason": _reason(points, tags),
+                "reason": _reason(points, tags, stage["label"], chase_risk["label"]),
             }
         )
 
@@ -132,11 +143,42 @@ def _score_row(row: dict[str, Any], score: int, grade: str) -> tuple[int, list[s
     return points, tags
 
 
-def _reason(points: int, tags: list[str]) -> str:
+def _reason(points: int, tags: list[str], stage_label: str = "", chase_label: str = "") -> str:
     clean_tags = _dedupe([tag for tag in tags if tag])
+    prefix = f"{stage_label}｜" if stage_label else ""
+    suffix = f"；{chase_label}" if chase_label else ""
     if clean_tags:
-        return f"潛力分 {points}：{' + '.join(clean_tags[:5])}"
-    return f"潛力分 {points}：多項早期條件開始聚集"
+        return f"{prefix}潛力分 {points}：{' + '.join(clean_tags[:5])}{suffix}"
+    return f"{prefix}潛力分 {points}：多項早期條件開始聚集{suffix}"
+
+
+def _stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, str]:
+    tag_text = " ".join(tags)
+    decision_text = _text(row.get("entry_decision"), row.get("action_context"), row.get("action_context_reason"))
+    if _has_any(tag_text, ["強勢但等拉回"]) or _has_any(decision_text, ["等拉回", "等待拉回"]):
+        return {"key": "pullback_watch", "label": "強勢等拉回"}
+    if score >= 80 or grade in {"S", "A"}:
+        return {"key": "early_turn", "label": "轉強初動"}
+    if chase_risk == "medium":
+        return {"key": "wait_cooldown", "label": "降溫觀察"}
+    return {"key": "low_base", "label": "低位醞釀"}
+
+
+def _chase_risk(row: dict[str, Any], score: int, grade: str) -> dict[str, str]:
+    decision_text = _text(row.get("entry_decision"), row.get("action_context"), row.get("action_context_reason"))
+    trigger_text = _text(row.get("trigger_summary"), *(row.get("trigger_tags") or []))
+    price = _float(row.get("price"))
+    entry_limit = _float(row.get("entry_limit_price"))
+
+    if price is not None and entry_limit is not None and price > entry_limit:
+        return {"level": "high", "label": f"價格已高於進場上限 {entry_limit:g}"}
+    if grade == "S+" or score >= 96:
+        return {"level": "high", "label": "已屬高強度追價區"}
+    if _has_any(decision_text, ["避免追高", "不追", "避開"]):
+        return {"level": "high", "label": "操作結論避免追高"}
+    if score >= 90 and _has_any(trigger_text, ["放量長紅", "突破整理"]):
+        return {"level": "medium", "label": "追高風險：強勢放量後需等拉回"}
+    return {"level": "low", "label": "尚未過熱"}
 
 
 def _early_bonus(item: dict[str, Any]) -> int:
@@ -164,6 +206,15 @@ def _int(value: Any) -> int:
         return int(float(value or 0))
     except (TypeError, ValueError):
         return 0
+
+
+def _float(value: Any) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def _dedupe(items: list[str]) -> list[str]:

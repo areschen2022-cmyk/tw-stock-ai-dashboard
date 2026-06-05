@@ -26,6 +26,7 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "themes": ["記憶體/HBM"],
             "opportunity_score": 6,
             "price": 100.0,
+            "entry_limit_price": 103.0,
         },
         {
             "stock_id": "2330",
@@ -63,7 +64,10 @@ def test_potential_radar_prefers_early_confluence() -> None:
     assert "散戶減少/籌碼轉乾淨" in candidates[0]["tags"]
     assert "K線轉強:突破整理" in candidates[0]["tags"]
     assert "法人開始同步" in candidates[0]["tags"]
-    assert candidates[0]["reason"].startswith("潛力分")
+    assert candidates[0]["stage"] == "pullback_watch"
+    assert candidates[0]["stage_label"] == "強勢等拉回"
+    assert candidates[0]["chase_risk"] == "low"
+    assert candidates[0]["reason"].startswith("強勢等拉回｜潛力分")
 
 
 def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> None:
@@ -82,6 +86,29 @@ def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> 
             "themes": ["記憶體/HBM"],
             "opportunity_score": 6,
             "price": 50.0,
+        }
+    ]
+
+    assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
+
+
+def test_potential_radar_filters_chasing_above_entry_limit() -> None:
+    rows = [
+        {
+            "stock_id": "6770",
+            "name": "力積電",
+            "score": 88,
+            "grade": "A",
+            "label": "BUY_WATCH",
+            "decision_light": "yellow",
+            "entry_decision": "等拉回",
+            "retail_context": "籌碼轉乾淨",
+            "pattern_tags": ["突破整理"],
+            "trigger_tags": ["法人共振", "技術突破"],
+            "themes": ["AI伺服器"],
+            "opportunity_score": 6,
+            "price": 110.0,
+            "entry_limit_price": 105.0,
         }
     ]
 
@@ -112,6 +139,10 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "tags": ["散戶減少/籌碼轉乾淨", "K線轉強:突破整理", "題材升溫:記憶體/HBM"],
                 "themes": ["記憶體/HBM"],
                 "entry_price": 100.0,
+                "stage": "pullback_watch",
+                "stage_label": "強勢等拉回",
+                "chase_risk": "low",
+                "chase_risk_label": "尚未過熱",
             },
             {
                 "signal_date": day0.isoformat(),
@@ -125,6 +156,10 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "tags": ["題材升溫:記憶體/HBM"],
                 "themes": ["記憶體/HBM"],
                 "entry_price": 100.0,
+                "stage": "low_base",
+                "stage_label": "低位醞釀",
+                "chase_risk": "low",
+                "chase_risk_label": "尚未過熱",
             },
         ],
         day0,
@@ -150,6 +185,8 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert factors["題材升溫"]["completed"] == 2
     assert factors["題材升溫"]["success_count"] == 1
     assert factors["題材升溫"]["failure_count"] == 1
+    assert summary["items"][0]["stage_label"] in {"強勢等拉回", "低位醞釀"}
+    assert summary["stage_stats"]
     assert summary["strong_factors"]
     assert summary["weak_factors"]
     assert summary["factor_notes"]

@@ -1843,7 +1843,7 @@ def _performance_html() -> str:
         <h2>潛力觀察</h2>
         <div class="note">這裡不是買進清單，而是「尚未飆、但條件開始聚集」的觀察名單。</div>
         <table>
-          <thead><tr><th>股票</th><th>訊號日</th><th>強度</th><th>3日表現</th><th>觀察理由</th></tr></thead>
+          <thead><tr><th>股票</th><th>階段</th><th>強度</th><th>3日表現</th><th>觀察理由</th></tr></thead>
           <tbody id="potentialCandidates"></tbody>
         </table>
       </section>
@@ -2087,10 +2087,10 @@ def _performance_html() -> str:
         const tags = (row.tags || []).slice(0, 5).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
         return `<tr>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a></td>
-          <td data-label="訊號日">${esc(row.signal_date)}</td>
+          <td data-label="階段"><b>${esc(row.stage_label || "觀察")}</b><div class="small">${esc(row.signal_date)}</div></td>
           <td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td>
           <td data-label="3日表現">${fmtPct(row.return_3d)}</td>
-          <td data-label="觀察理由">${esc(row.reason)}<div class="lesson-tags">${tags}</div></td>
+          <td data-label="觀察理由">${esc(row.reason)}${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div class="lesson-tags">${tags}</div></td>
         </tr>`;
       };
       document.querySelector("#successFactors").innerHTML = (learning.success_factors || []).length
@@ -2104,10 +2104,11 @@ def _performance_html() -> str:
         : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       const radar = data.potential_radar || {};
       const radarStats = radar.stats || {};
+      const topStage = (radar.stage_stats || [])[0];
       const radarRow = row => {
         const tags = (row.tags || []).slice(0, 4).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
         return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.grade)}｜${esc(row.total_score)}/100｜潛力 ${esc(row.potential_score ?? "-")}</div></td>
+          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.stage_label || "觀察")}｜${esc(row.grade)}｜${esc(row.total_score)}/100｜潛力 ${esc(row.potential_score ?? "-")}</div></td>
           <td data-label="日期">${esc(row.signal_date)}</td>
           <td data-label="結果">${esc(row.outcome_label || "觀察中")}</td>
           <td data-label="5日">${fmtPct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${fmtPct(row.return_10d)}</div>` : ""}</td>
@@ -2120,7 +2121,7 @@ def _performance_html() -> str:
         metric("觀察中", radarStats.pending ?? 0),
         metric("5日勝率", radarStats.win_rate_5d?.toFixed(1), "%"),
         metric("5日平均", radarStats.avg_return_5d?.toFixed(1), "%"),
-        metric("提前命中", radarStats.big_winner_count ?? 0),
+        metric(topStage ? `主階段：${topStage.label}` : "主階段", topStage ? `${topStage.signals}` : "—", topStage ? "檔" : ""),
       ].join("");
       document.querySelector("#potentialRadarSuccess").innerHTML = (radar.success_cases || []).length
         ? radar.success_cases.map(radarRow).join("")

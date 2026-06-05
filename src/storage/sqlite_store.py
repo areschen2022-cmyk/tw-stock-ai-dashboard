@@ -103,6 +103,10 @@ class SQLiteStore:
                     tags_json TEXT NOT NULL DEFAULT '[]',
                     themes_json TEXT NOT NULL DEFAULT '[]',
                     entry_price REAL,
+                    stage TEXT,
+                    stage_label TEXT,
+                    chase_risk TEXT,
+                    chase_risk_label TEXT,
                     return_3d REAL,
                     return_5d REAL,
                     return_10d REAL,
@@ -121,6 +125,10 @@ class SQLiteStore:
                 ("outcome_category", "TEXT"),
                 ("outcome_label", "TEXT"),
                 ("outcome_reason", "TEXT"),
+                ("stage", "TEXT"),
+                ("stage_label", "TEXT"),
+                ("chase_risk", "TEXT"),
+                ("chase_risk_label", "TEXT"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -654,8 +662,9 @@ class SQLiteStore:
                     """
                     INSERT OR REPLACE INTO potential_radar_signals (
                         signal_date, stock_id, name, grade, total_score, potential_score, action,
-                        reason, tags_json, themes_json, entry_price
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        reason, tags_json, themes_json, entry_price, stage, stage_label,
+                        chase_risk, chase_risk_label
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -669,6 +678,10 @@ class SQLiteStore:
                         json.dumps(item.get("tags") or [], ensure_ascii=False),
                         json.dumps(item.get("themes") or [], ensure_ascii=False),
                         item.get("entry_price"),
+                        item.get("stage"),
+                        item.get("stage_label"),
+                        item.get("chase_risk"),
+                        item.get("chase_risk_label"),
                     ),
                 )
 
@@ -1014,6 +1027,7 @@ class SQLiteStore:
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, action,
                        potential_score, reason, tags_json, themes_json, entry_price,
+                       stage, stage_label, chase_risk, chase_risk_label,
                        return_3d, return_5d, return_10d,
                        outcome_category, outcome_label, outcome_reason
                 FROM potential_radar_signals
@@ -1024,10 +1038,10 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            outcome = _potential_outcome(row[12], row[13])
-            category = row[14] or outcome["category"]
-            label = row[15] or outcome["label"]
-            reason = row[16] or outcome["reason"]
+            outcome = _potential_outcome(row[16], row[17], _json_list(row[8]))
+            category = row[18] or outcome["category"]
+            label = row[19] or outcome["label"]
+            reason = row[20] or outcome["reason"]
             items.append(
                 {
                     "signal_date": row[0],
@@ -1041,9 +1055,13 @@ class SQLiteStore:
                     "tags": json.loads(row[8] or "[]"),
                     "themes": json.loads(row[9] or "[]"),
                     "entry_price": row[10],
-                    "return_3d": row[11],
-                    "return_5d": row[12],
-                    "return_10d": row[13],
+                    "stage": row[11] or _infer_potential_stage(row[6], row[4], row[3], _json_list(row[8]))["key"],
+                    "stage_label": row[12] or _infer_potential_stage(row[6], row[4], row[3], _json_list(row[8]))["label"],
+                    "chase_risk": row[13] or "",
+                    "chase_risk_label": row[14] or "",
+                    "return_3d": row[15],
+                    "return_5d": row[16],
+                    "return_10d": row[17],
                     "outcome_category": category,
                     "outcome_label": label,
                     "outcome_reason": reason,
@@ -1083,6 +1101,7 @@ class SQLiteStore:
             "failure_cases": sorted(failure, key=lambda item: float(item["return_5d"] or 0))[:8],
             "pending_candidates": pending[:8],
             "factor_stats": factor_stats,
+            "stage_stats": _potential_stage_stats(items),
             "strong_factors": _rank_potential_factors(factor_stats, reverse=True),
             "weak_factors": _rank_potential_factors(factor_stats, reverse=False),
             "factor_notes": _potential_factor_notes(factor_stats),
@@ -1827,6 +1846,33 @@ def _potential_factor_stats(items: list[dict]) -> list[dict]:
     return rows
 
 
+def _potential_stage_stats(items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        label = str(item.get("stage_label") or "觀察")
+        buckets.setdefault(label, []).append(item)
+    rows = []
+    for label, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        success = [
+            item for item in completed
+            if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
+        ]
+        rows.append(
+            {
+                "label": label,
+                "signals": len(bucket),
+                "completed": len(completed),
+                "pending": len([item for item in bucket if item.get("return_5d") is None]),
+                "success_count": len(success),
+                "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+            }
+        )
+    rows.sort(key=lambda row: (int(row["completed"]), int(row["signals"]), str(row["label"])), reverse=True)
+    return rows
+
+
 def _potential_factor_label(tag: str) -> str:
     if "籌碼轉乾淨" in tag or "散戶減少" in tag:
         return "散戶減少/籌碼轉乾淨"
@@ -1852,6 +1898,10 @@ def _potential_factor_label(tag: str) -> str:
         return "尚在低檔觀察"
     if "避開" in tag:
         return "避開訊號"
+    if "追高風險" in tag:
+        return "追高風險"
+    if tag.startswith("階段:"):
+        return tag.replace("階段:", "", 1)
     return tag[:24] if tag else ""
 
 
@@ -1917,6 +1967,14 @@ def _potential_candidate(item: dict) -> dict:
         tags.append("尚未大漲")
     for theme in (item.get("themes") or [])[:2]:
         tags.append(f"題材:{theme}")
+    stage = {
+        "key": item.get("stage") or "",
+        "label": item.get("stage_label") or "",
+    }
+    if not stage["label"]:
+        stage = _infer_potential_stage(item.get("potential_score"), item.get("total_score"), item.get("grade"), item.get("tags") or tags)
+    if stage["label"]:
+        tags.insert(0, f"階段:{stage['label']}")
     return {
         "signal_date": item.get("signal_date"),
         "stock_id": item.get("stock_id"),
@@ -1929,9 +1987,26 @@ def _potential_candidate(item: dict) -> dict:
         "return_3d": item.get("return_3d"),
         "return_5d": item.get("return_5d"),
         "entry_triggered": item.get("entry_triggered"),
+        "stage": stage["key"],
+        "stage_label": stage["label"],
+        "chase_risk": item.get("chase_risk"),
+        "chase_risk_label": item.get("chase_risk_label"),
         "tags": tags[:6],
         "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。",
     }
+
+
+def _infer_potential_stage(potential_score, total_score, grade, tags: list | None) -> dict[str, str]:
+    tag_text = " ".join(str(tag) for tag in (tags or []))
+    score = int(total_score or 0)
+    potential = int(potential_score or 0)
+    if "強勢但等拉回" in tag_text or "等拉回" in tag_text:
+        return {"key": "pullback_watch", "label": "強勢等拉回"}
+    if grade in {"S", "A"} or score >= 80 or potential >= 9:
+        return {"key": "early_turn", "label": "轉強初動"}
+    if "追高風險" in tag_text:
+        return {"key": "wait_cooldown", "label": "降溫觀察"}
+    return {"key": "low_base", "label": "低位醞釀"}
 
 
 def _potential_outcome(return_5d: float | None, return_10d: float | None, tags: list[str] | None = None) -> dict:
@@ -2037,7 +2112,7 @@ def _learning_center_summary(items: list[dict]) -> dict:
         "sample": len(completed),
         "success_factors": _top_factor_rows(success_factors, reverse=True),
         "failure_factors": _top_factor_rows(failure_factors, reverse=False),
-        "potential_candidates": [_potential_candidate(item) for item in potential_source[:8]],
+        "potential_candidates": [_potential_candidate(item) for item in potential_source[:5]],
         "notes": [
             "潛力觀察只找條件正在成形、但尚未大漲或尚未完成驗證的股票。",
             "失敗因素若反覆出現，下一步才適合調整分數權重。",
