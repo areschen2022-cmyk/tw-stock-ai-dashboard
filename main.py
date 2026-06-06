@@ -28,6 +28,7 @@ from src.report.dashboard import (
     enrich_dashboard_payload,
     write_dashboard,
     write_performance,
+    write_potential,
     write_theme_history,
     write_weekly_overview,
 )
@@ -474,6 +475,7 @@ def main() -> int:
     store.update_potential_forward_returns(as_of)
     performance_payload = store.performance_summary(as_of, days=30)
     write_performance(performance_payload, ROOT / "dashboard")
+    write_potential(performance_payload, ROOT / "dashboard")
     theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
     write_theme_history(
         theme_history_payload,

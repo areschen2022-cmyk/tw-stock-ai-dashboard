@@ -722,6 +722,25 @@ def write_performance(payload: dict, output_dir: Path) -> None:
     (output_dir / "performance.html").write_text(html, encoding="utf-8")
 
 
+def write_potential(payload: dict, output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    potential_payload = {
+        "as_of": payload.get("as_of"),
+        "days": payload.get("days"),
+        "potential_radar": payload.get("potential_radar", {}),
+        "learning_center": payload.get("learning_center", {}),
+    }
+    json_text = json.dumps(potential_payload, ensure_ascii=False, indent=2)
+    (output_dir / "potential_data.json").write_text(json_text, encoding="utf-8")
+    safe_json = json_text.replace("</script>", r"<\/script>")
+    inline_script = f"window.__POTENTIAL_DATA__ = {safe_json};"
+    html = _potential_html().replace(
+        "/* __INLINE_POTENTIAL_SENTINEL__ */",
+        inline_script,
+    )
+    (output_dir / "potential.html").write_text(html, encoding="utf-8")
+
+
 def write_theme_history(payload: dict[str, list[dict]], output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     json_text = json.dumps(payload, ensure_ascii=False, indent=2)
@@ -949,6 +968,7 @@ def _html() -> str:
     <nav class="nav-tabs" aria-label="頁面切換">
       <a class="nav-tab active" href="index.html">今日監控</a>
       <a class="nav-tab" href="performance.html">訊號成效</a>
+      <a class="nav-tab" href="potential.html">潛力雷達</a>
       <a class="nav-tab" href="weekly.html">每週總覽</a>
     </nav>
     <div class="metrics" id="metrics"></div>
@@ -1596,6 +1616,7 @@ def _weekly_html() -> str:
     <nav class="nav-tabs" aria-label="頁面切換">
       <a class="nav-tab" href="index.html">今日監控</a>
       <a class="nav-tab" href="performance.html">訊號成效</a>
+      <a class="nav-tab" href="potential.html">潛力雷達</a>
       <a class="nav-tab active" href="weekly.html">每週總覽</a>
     </nav>
     <div class="summary-grid" id="metrics"></div>
@@ -1699,6 +1720,134 @@ def _weekly_html() -> str:
 """
 
 
+def _potential_html() -> str:
+    return r"""<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>台股 AI 潛力雷達</title>
+  <style>
+    :root { --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --bad:#b42318; --warn:#9a6700; --blue:#0b4a8b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    main { max-width:1280px; margin:auto; padding:18px 24px 36px; }
+    h1 { margin:0 0 8px; font-size:24px; }
+    h2 { margin:0 0 10px; font-size:16px; }
+    a { color:var(--blue); text-decoration:none; font-weight:700; }
+    a:hover { text-decoration:underline; }
+    .sub, .small, .note { color:var(--muted); }
+    .sub { font-size:14px; }
+    .small { font-size:12px; margin-top:3px; line-height:1.45; }
+    .note { font-size:13px; line-height:1.55; margin:4px 0 10px; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--blue); }
+    .nav-tab.active { background:var(--blue); color:white; border-color:var(--blue); }
+    section, .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .metrics { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+    .metric b { display:block; font-size:22px; margin-bottom:4px; }
+    .grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,.72fr); gap:12px; align-items:start; }
+    .stack { display:grid; gap:12px; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th { background:#eef1f5; color:#475467; font-size:12px; }
+    .tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:700; margin:2px 3px 0 0; border:1px solid #e2e8f0; background:#f8fafc; color:#475467; }
+    .stage { color:white; background:var(--blue); border-color:var(--blue); }
+    .good { color:var(--good); }
+    .bad { color:var(--bad); }
+    .warn { color:var(--warn); }
+    @media (max-width:1080px) { .metrics { grid-template-columns:repeat(3,minmax(0,1fr)); } .grid { grid-template-columns:1fr; } }
+    @media (max-width:720px) {
+      main, header { padding-left:12px; padding-right:12px; }
+      .metrics { grid-template-columns:1fr 1fr; }
+      table, thead, tbody, tr, td { display:block; width:100%; }
+      thead { display:none; }
+      table { border:0; background:transparent; }
+      tr { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:10px; padding:10px; }
+      td { border:0; padding:5px 0; }
+      td::before { content:attr(data-label); display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>台股 AI 潛力雷達</h1>
+    <div class="sub" id="subtitle">載入中...</div>
+  </header>
+  <main>
+    <nav class="nav-tabs" aria-label="頁面切換">
+      <a class="nav-tab" href="index.html">今日監控</a>
+      <a class="nav-tab" href="performance.html">訊號成效</a>
+      <a class="nav-tab active" href="potential.html">潛力雷達</a>
+      <a class="nav-tab" href="weekly.html">每週總覽</a>
+    </nav>
+    <div class="metrics" id="metrics"></div>
+    <div class="grid">
+      <div class="stack">
+        <section>
+          <h2>階段勝率</h2>
+          <div class="note">比較低位醞釀、轉強初動、強勢等拉回哪一類比較有效；樣本少時先看方向。</div>
+          <table><thead><tr><th>階段</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>觀察中</th></tr></thead><tbody id="stageStats"></tbody></table>
+        </section>
+        <section>
+          <h2>潛力觀察</h2>
+          <div class="note">不是買進清單，而是尚未完成驗證、但條件正在累積的股票。</div>
+          <table><thead><tr><th>股票</th><th>階段</th><th>強度</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
+        </section>
+        <section>
+          <h2>因素歸因</h2>
+          <div class="note">拆解散戶轉乾淨、K 線轉強、題材升溫等因素是否真的有效。</div>
+          <table><thead><tr><th>因素</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>成功/失敗</th></tr></thead><tbody id="factorStats"></tbody></table>
+          <div class="note" id="factorNotes"></div>
+        </section>
+      </div>
+      <div class="stack">
+        <section><h2>命中樣本</h2><table><thead><tr><th>股票</th><th>階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="successRows"></tbody></table></section>
+        <section><h2>失敗樣本</h2><table><thead><tr><th>股票</th><th>階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="failureRows"></tbody></table></section>
+      </div>
+    </div>
+  </main>
+  <script>
+    /* __INLINE_POTENTIAL_SENTINEL__ */
+    let data = null;
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    const pct = value => value === null || value === undefined ? "—" : `<span class="${value >= 0 ? "good" : "bad"}">${value >= 0 ? "+" : ""}${Number(value).toFixed(1)}%</span>`;
+    const neutralPct = value => value === null || value === undefined ? "—" : `${Number(value).toFixed(1)}%`;
+    const metric = (label, value, suffix="") => `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
+    const stock = row => `<a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name || "")}</a>`;
+    const tags = row => (row.tags || []).slice(0, 5).map(tag => `<span class="tag">${esc(tag)}</span>`).join("");
+    const stageTag = row => `<span class="tag stage">${esc(row.stage_label || "觀察")}</span>`;
+    function signalRow(row) {
+      return `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}</td><td data-label="5日">${pct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${pct(row.return_10d)}</div>` : ""}</td><td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div>${tags(row)}</div></td></tr>`;
+    }
+    function render() {
+      const radar = data.potential_radar || {};
+      const learning = data.learning_center || {};
+      const stats = radar.stats || {};
+      document.querySelector("#subtitle").textContent = `${data.as_of || ""}｜近 ${data.days || 30} 天｜僅供研究追蹤`;
+      document.querySelector("#metrics").innerHTML = [
+        metric("雷達記錄", stats.signals ?? 0),
+        metric("已驗證", stats.completed ?? 0),
+        metric("觀察中", stats.pending ?? 0),
+        metric("5日勝率", stats.win_rate_5d?.toFixed(1), "%"),
+        metric("5日平均", stats.avg_return_5d?.toFixed(1), "%"),
+        metric("提前命中", stats.big_winner_count ?? 0),
+      ].join("");
+      document.querySelector("#stageStats").innerHTML = (radar.stage_stats || []).length ? radar.stage_stats.map(row => `<tr><td data-label="階段"><b>${esc(row.label)}</b></td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="觀察中">${esc(row.pending)}</td></tr>`).join("") : `<tr><td data-label="階段" colspan="6">尚無潛力雷達資料</td></tr>`;
+      document.querySelector("#candidates").innerHTML = (learning.potential_candidates || radar.pending_candidates || []).length ? (learning.potential_candidates || radar.pending_candidates || []).slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由">${esc(row.reason || "")}${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
+      document.querySelector("#factorStats").innerHTML = (radar.factor_stats || []).length ? radar.factor_stats.map(row => `<tr><td data-label="因素">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="成功/失敗">${esc(row.success_count || 0)} / ${esc(row.failure_count || 0)}</td></tr>`).join("") : `<tr><td data-label="因素" colspan="6">因素樣本仍在累積中</td></tr>`;
+      document.querySelector("#factorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
+      document.querySelector("#successRows").innerHTML = (radar.success_cases || []).length ? radar.success_cases.map(signalRow).join("") : `<tr><td data-label="命中樣本" colspan="4">尚無已驗證命中樣本</td></tr>`;
+      document.querySelector("#failureRows").innerHTML = (radar.failure_cases || []).length ? radar.failure_cases.map(signalRow).join("") : `<tr><td data-label="失敗樣本" colspan="4">尚無已驗證失敗樣本</td></tr>`;
+    }
+    if (window.__POTENTIAL_DATA__) { data = window.__POTENTIAL_DATA__; render(); }
+    fetch("potential_data.json").then(r => r.json()).then(json => { data = json; render(); }).catch(() => {});
+  </script>
+</body>
+</html>"""
+
+
 def _performance_html() -> str:
     return r"""<!doctype html>
 <html lang="zh-Hant">
@@ -1773,6 +1922,7 @@ def _performance_html() -> str:
     <nav class="nav-tabs" aria-label="頁面切換">
       <a class="nav-tab" href="index.html">今日監控</a>
       <a class="nav-tab active" href="performance.html">訊號成效</a>
+      <a class="nav-tab" href="potential.html">潛力雷達</a>
       <a class="nav-tab" href="weekly.html">每週總覽</a>
     </nav>
     <div class="metrics" id="metrics"></div>

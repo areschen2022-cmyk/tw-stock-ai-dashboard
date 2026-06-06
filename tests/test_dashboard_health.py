@@ -5,7 +5,7 @@ from datetime import date
 from src.news.policy_signal import PolicySignal
 from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
-from src.report.dashboard import build_dashboard_payload, build_weekly_overview_payload
+from src.report.dashboard import build_dashboard_payload, build_weekly_overview_payload, write_potential
 from src.scoring.score_engine import StockScore
 
 
@@ -228,3 +228,34 @@ def test_weekly_overview_payload_summarizes_existing_sections() -> None:
     assert payload["themes"][0]["name"] == "memory"
     assert payload["themes"][0]["week_score"] == 8
     assert payload["retail_divergence"]["summary"]["clean"] == 1
+
+
+def test_write_potential_creates_dedicated_page(tmp_path) -> None:
+    payload = {
+        "as_of": "2026-05-29",
+        "days": 30,
+        "potential_radar": {
+            "stats": {"signals": 1, "completed": 0, "pending": 1},
+            "stage_stats": [
+                {
+                    "label": "低位醞釀",
+                    "signals": 1,
+                    "completed": 0,
+                    "pending": 1,
+                    "win_rate_5d": None,
+                    "avg_return_5d": None,
+                }
+            ],
+            "pending_candidates": [],
+            "factor_stats": [],
+        },
+        "learning_center": {"potential_candidates": []},
+    }
+
+    write_potential(payload, tmp_path)
+
+    html = (tmp_path / "potential.html").read_text(encoding="utf-8")
+    data = (tmp_path / "potential_data.json").read_text(encoding="utf-8")
+    assert "台股 AI 潛力雷達" in html
+    assert "potential_data.json" in html
+    assert "低位醞釀" in data
