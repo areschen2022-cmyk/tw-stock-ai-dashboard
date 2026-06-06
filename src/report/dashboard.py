@@ -747,6 +747,114 @@ def write_theme_history(payload: dict[str, list[dict]], output_dir: Path) -> Non
     (output_dir / "theme_history.json").write_text(json_text, encoding="utf-8")
 
 
+def build_traceability_summary(dashboard_payload: dict, performance_payload: dict | None = None) -> dict:
+    """Build a compact end-to-end health map for the dashboard."""
+
+    performance = performance_payload or {}
+    summary = dashboard_payload.get("summary") or {}
+    source_status = dashboard_payload.get("source_status") or {}
+    data_quality = dashboard_payload.get("data_quality") or {}
+    retry = dashboard_payload.get("data_retry") or {}
+    perf_stats = performance.get("stats") or {}
+    potential_stats = (performance.get("potential_radar") or {}).get("stats") or {}
+    ai_status = (dashboard_payload.get("ai_council") or {}).get("status") or {}
+    ai_health = ai_status.get("health") or {}
+
+    def _pct(value) -> str:
+        if value is None:
+            return "-"
+        try:
+            return f"{float(value):.1f}%"
+        except (TypeError, ValueError):
+            return "-"
+
+    def _count(value) -> int:
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    source_label = str(source_status.get("label") or "unknown")
+    source_problem = source_label in {"錯誤", "限流"} or _count(source_status.get("error")) > 0
+    source_warn = source_problem or _count(source_status.get("quota")) > 0 or str(data_quality.get("label")) == "low"
+    source_step_status = "bad" if source_problem else "warn" if source_warn else "ok"
+
+    scanned = _count(summary.get("scanned"))
+    valid = _count(summary.get("valid"))
+    watch_total = _count(perf_stats.get("signals"))
+    watch_completed = _count(perf_stats.get("completed"))
+    potential_total = _count(potential_stats.get("signals"))
+    potential_completed = _count(potential_stats.get("completed"))
+    retry_pending = _count(retry.get("pending")) + _count((retry.get("status_counts") or {}).get("pending"))
+    retry_failed = _count(retry.get("failed")) + _count((retry.get("status_counts") or {}).get("failed"))
+    retry_recovered = _count(retry.get("recovered")) + _count((retry.get("status_counts") or {}).get("recovered"))
+    ai_score = _count(ai_health.get("score"))
+
+    steps = [
+        {
+            "key": "source",
+            "label": "資料源",
+            "status": source_step_status,
+            "value": source_status.get("label") or "-",
+            "note": f"API {source_status.get('api', 0)} | 快取 {source_status.get('cache', 0)} | 限流 {source_status.get('quota', 0)}",
+        },
+        {
+            "key": "score",
+            "label": "每日評分",
+            "status": "ok" if valid > 0 else "bad",
+            "value": f"{valid}/{scanned} 檔",
+            "note": f"S+ {summary.get('s_plus_grade', 0)} | S {summary.get('s_grade', 0)} | A {summary.get('a_grade', 0)}",
+        },
+        {
+            "key": "watch",
+            "label": "進場追蹤",
+            "status": "ok" if watch_total > 0 else "warn",
+            "value": f"{watch_total} 筆",
+            "note": f"完成 {watch_completed} | 5日勝率 {_pct(perf_stats.get('win_rate_5d'))}",
+        },
+        {
+            "key": "potential",
+            "label": "潛力雷達",
+            "status": "ok" if potential_total > 0 else "warn",
+            "value": f"{potential_total} 筆",
+            "note": f"完成 {potential_completed} | 5日勝率 {_pct(potential_stats.get('win_rate_5d'))}",
+        },
+        {
+            "key": "ai",
+            "label": "AI 複核",
+            "status": "ok" if ai_score >= 70 else "warn" if ai_score > 0 else "warn",
+            "value": ai_health.get("label") or "-",
+            "note": f"模型 {ai_status.get('successful_models', 0)}/{ai_status.get('requested_models', 0)} | 同意門檻 {dashboard_payload.get('ai_council', {}).get('min_agree_count', '-')}",
+        },
+        {
+            "key": "retry",
+            "label": "補抓佇列",
+            "status": "warn" if (retry_failed or retry_pending) else "ok",
+            "value": f"待補 {retry_pending}",
+            "note": f"已補 {retry_recovered} | 失敗 {retry_failed}",
+        },
+        {
+            "key": "pages",
+            "label": "頁面輸出",
+            "status": "ok",
+            "value": "4 頁",
+            "note": "今日監控 | 訊號成效 | 潛力雷達 | 每週總覽",
+        },
+    ]
+    return {
+        "generated_at": datetime.now(TAIPEI).isoformat(timespec="seconds"),
+        "steps": steps,
+        "summary": {
+            "scanned": scanned,
+            "valid": valid,
+            "watch_signals": watch_total,
+            "watch_completed": watch_completed,
+            "potential_signals": potential_total,
+            "potential_completed": potential_completed,
+        },
+    }
+
+
 def build_weekly_overview_payload(
     as_of: date,
     dashboard_payload: dict,
@@ -837,6 +945,14 @@ def _html() -> str:
     details.panel[open] summary::after { content:"－"; }
     .section-note { color:var(--muted); font-size:12px; margin-top:-4px; margin-bottom:8px; }
     .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+    .trace-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:8px; }
+    .trace-card { border:1px solid var(--line); border-radius:8px; padding:8px; background:#fbfcfe; min-height:74px; }
+    .trace-card.ok { border-left:4px solid var(--good); }
+    .trace-card.warn { border-left:4px solid var(--warn); }
+    .trace-card.bad { border-left:4px solid var(--bad); }
+    .trace-card b { display:block; font-size:13px; margin-bottom:3px; }
+    .trace-value { font-size:17px; font-weight:800; line-height:1.25; }
+    .trace-note { color:var(--muted); font-size:11px; line-height:1.35; margin-top:3px; }
     .action-panel { border-left:4px solid var(--good); }
     .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
     .decision-pill { border:1px solid var(--line); border-radius:8px; padding:7px 8px; background:#fbfcfe; min-height:54px; }
@@ -935,6 +1051,7 @@ def _html() -> str:
       .side-stack { position:static; }
       .market-theme-grid { grid-template-columns:1fr; }
       .detail-grid { grid-template-columns:1fr 1fr; }
+      .trace-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .decision-card-grid { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
     }
@@ -943,6 +1060,7 @@ def _html() -> str:
       main, header { padding-left:12px; padding-right:12px; }
       .metrics { grid-template-columns:1fr 1fr; }
       .dashboard-layout, .detail-grid, .status-grid { grid-template-columns:1fr; }
+      .trace-grid { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:1fr 1fr; }
       .decision-prices { grid-template-columns:1fr 1fr; }
       .toolbar { align-items:stretch; }
@@ -977,7 +1095,7 @@ def _html() -> str:
         <section class="action-panel"><h2>今日操作結論</h2><div id="actionLists"></div></section>
         <div class="market-theme-grid">
           <section><h2>市場風向</h2><div id="market"></div></section>
-          <section class="theme-panel"><h2>新聞題材</h2><div id="themes"></div></section>
+          <details class="panel theme-panel" open><summary>新聞題材</summary><div id="themes"></div></details>
         </div>
       </div>
       <div class="side-stack">
@@ -993,6 +1111,11 @@ def _html() -> str:
         <details class="panel">
           <summary>美國政策雷達</summary>
           <div id="usPolicyRadar"></div>
+        </details>
+        <details class="panel wide-panel" open>
+          <summary>資料鏈檢查</summary>
+          <div class="section-note">確認資料源、評分、追蹤、回測、潛力雷達與頁面輸出都有串接。</div>
+          <div id="traceability"></div>
         </details>
         <details class="panel wide-panel">
           <summary>系統與資料狀態</summary>
@@ -1295,6 +1418,17 @@ def _html() -> str:
         document.querySelector("#dataQuality").insertAdjacentHTML("beforeend",
           `<div class="line warn">補抓狀態：${esc(zh(RECOVERY_TEXT, recovery.label))}｜可補抓 ${esc(recovery.retryable || 0)}｜暫停 ${esc(recovery.blocked || 0)}</div>`);
       }
+      const traceability = data.traceability || {};
+      const traceSteps = traceability.steps || [];
+      const traceClass = status => status === "ok" ? "ok" : status === "bad" ? "bad" : "warn";
+      document.querySelector("#traceability").innerHTML = traceSteps.length
+        ? `<div class="trace-grid">${traceSteps.map(step => `
+            <div class="trace-card ${traceClass(step.status)}">
+              <b>${esc(step.label)}</b>
+              <div class="trace-value">${esc(step.value || "-")}</div>
+              <div class="trace-note">${esc(step.note || "")}</div>
+            </div>`).join("")}</div>`
+        : `<div class="line warn">尚未產生資料鏈檢查結果；請確認本次 run 是否完成到回測輸出階段。</div>`;
       const usEvents = data.themes?.policy?.us_events || [];
       document.querySelector("#usPolicyRadar").innerHTML = usEvents.length
         ? usEvents.slice(0,4).map(e => `<div class="line"><b>${esc(e.event_zh || zh(POLICY_EVENT_TEXT, e.event))}</b>｜${esc(zh(POLICY_LEVEL_TEXT, e.sensitivity))}｜${esc(zh(POLICY_LEVEL_TEXT, e.confidence))}｜${esc(zh(POLICY_LEVEL_TEXT, e.direction))}<div class="small">${esc((e.themes || []).map(themeName).join(" / "))}</div><div class="small">${esc(e.headline_zh || e.headline)}</div></div>`).join("")

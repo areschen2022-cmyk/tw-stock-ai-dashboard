@@ -5,7 +5,12 @@ from datetime import date
 from src.news.policy_signal import PolicySignal
 from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
-from src.report.dashboard import build_dashboard_payload, build_weekly_overview_payload, write_potential
+from src.report.dashboard import (
+    build_dashboard_payload,
+    build_traceability_summary,
+    build_weekly_overview_payload,
+    write_potential,
+)
 from src.scoring.score_engine import StockScore
 
 
@@ -91,6 +96,39 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["themes"]["catalyst_confidence"]["defense_policy"]["grade"] == "A"
     assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
     assert payload["themes"]["discovery"][0]["keyword"] == "石英元件"
+
+
+def test_build_traceability_summary_links_scoring_and_backtests() -> None:
+    dashboard_payload = {
+        "summary": {"scanned": 5, "valid": 4, "s_plus_grade": 1, "s_grade": 1, "a_grade": 2},
+        "source_status": {"label": "正常", "api": 10, "cache": 2, "quota": 0, "error": 0},
+        "data_quality": {"label": "high"},
+        "data_retry": {"pending": 0, "recovered": 3, "failed": 0, "status_counts": {}},
+        "ai_council": {
+            "min_agree_count": 4,
+            "status": {"requested_models": 5, "successful_models": 4, "health": {"label": "穩定", "score": 90}},
+        },
+    }
+    performance_payload = {
+        "stats": {"signals": 12, "completed": 8, "win_rate_5d": 62.5},
+        "potential_radar": {"stats": {"signals": 7, "completed": 3, "win_rate_5d": 66.7}},
+    }
+
+    trace = build_traceability_summary(dashboard_payload, performance_payload)
+
+    assert len(trace["steps"]) == 7
+    assert trace["summary"]["valid"] == 4
+    assert trace["summary"]["watch_signals"] == 12
+    assert trace["summary"]["potential_signals"] == 7
+    assert {step["key"] for step in trace["steps"]} == {
+        "source",
+        "score",
+        "watch",
+        "potential",
+        "ai",
+        "retry",
+        "pages",
+    }
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

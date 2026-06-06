@@ -24,6 +24,7 @@ from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import (
     build_dashboard_payload,
+    build_traceability_summary,
     build_weekly_overview_payload,
     enrich_dashboard_payload,
     write_dashboard,
@@ -467,13 +468,14 @@ def main() -> int:
         exit_risks=exit_risks,
         retry_summary=dashboard_payload.get("data_retry", {}),
     )
-    write_dashboard(dashboard_payload, ROOT / "dashboard")
     store.save_potential_radar(
         build_potential_radar_candidates(dashboard_payload.get("rows", []), as_of),
         as_of,
     )
     store.update_potential_forward_returns(as_of)
     performance_payload = store.performance_summary(as_of, days=30)
+    dashboard_payload["traceability"] = build_traceability_summary(dashboard_payload, performance_payload)
+    write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(performance_payload, ROOT / "dashboard")
     write_potential(performance_payload, ROOT / "dashboard")
     theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
