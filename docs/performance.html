@@ -13,6 +13,7 @@
     .sub, .small { color:var(--muted); font-size:13px; }
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+    .compact-metrics { grid-template-columns:repeat(5,minmax(120px,1fr)); }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
     .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
@@ -139,42 +140,11 @@
         </section>
       </div>
       <section style="margin-top:12px;">
-        <h2>潛力觀察</h2>
-        <div class="note">這裡不是買進清單，而是「尚未飆、但條件開始聚集」的觀察名單。</div>
-        <table>
-          <thead><tr><th>股票</th><th>階段</th><th>強度</th><th>3日表現</th><th>觀察理由</th></tr></thead>
-          <tbody id="potentialCandidates"></tbody>
-        </table>
-      </section>
-      <section style="margin-top:12px;">
-        <h2>潛力雷達成效</h2>
-        <div class="note">每天保留潛力觀察名單，回頭驗證 3/5/10 日表現，區分提前命中、方向正確、假訊號與觀察中。</div>
-        <div class="metrics" id="potentialRadarMetrics"></div>
-        <div class="analysis-grid">
-          <section>
-            <h2>雷達命中</h2>
-            <table>
-              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
-              <tbody id="potentialRadarSuccess"></tbody>
-            </table>
-          </section>
-          <section>
-            <h2>雷達失敗</h2>
-            <table>
-              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
-              <tbody id="potentialRadarFailure"></tbody>
-            </table>
-          </section>
-        </div>
-        <section style="margin-top:12px;">
-          <h2>潛力因素歸因</h2>
-          <div class="note">拆解潛力雷達的成功與失敗來源，例如散戶轉乾淨、K線轉強、題材升溫是否真的有效。</div>
-          <table>
-            <thead><tr><th>因素</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>成功/失敗</th></tr></thead>
-            <tbody id="potentialFactorStats"></tbody>
-          </table>
-          <div class="note" id="potentialFactorNotes"></div>
-        </section>
+        <h2>潛力雷達摘要</h2>
+        <div class="note">潛力股的階段勝率、命中/失敗樣本與因素歸因已移到獨立頁，成效頁只保留摘要避免資訊過載。</div>
+        <div class="metrics compact-metrics" id="potentialRadarSummary"></div>
+        <p class="note" id="potentialRadarSummaryNote"></p>
+        <a class="nav-tab" href="potential.html">查看潛力雷達完整追蹤</a>
       </section>
       <div class="note" id="learningNotes"></div>
     </section>
@@ -274,7 +244,7 @@
   "as_of": "2026-06-05",
   "days": 30,
   "stats": {
-    "signals": 416,
+    "signals": 419,
     "completed": 241,
     "win_rate_5d": 65.14522821576763,
     "avg_return_5d": 6.044636309840819,
@@ -288,7 +258,7 @@
       "signals": 96,
       "completed": 77,
       "win_rate_5d": 46.75324675324675,
-      "avg_return_5d": 0.3723053193385954,
+      "avg_return_5d": 0.37230531933859606,
       "avg_return_10d": null,
       "stop_hit_rate": 30.526315789473685
     },
@@ -297,7 +267,7 @@
       "signals": 92,
       "completed": 50,
       "win_rate_5d": 84.0,
-      "avg_return_5d": 9.266971323863128,
+      "avg_return_5d": 9.266971323863126,
       "avg_return_10d": null,
       "stop_hit_rate": 13.793103448275861
     },
@@ -306,7 +276,7 @@
       "signals": 62,
       "completed": 43,
       "win_rate_5d": 69.76744186046511,
-      "avg_return_5d": 13.305252953486285,
+      "avg_return_5d": 13.305252953486287,
       "avg_return_10d": null,
       "stop_hit_rate": 22.58064516129032
     },
@@ -329,6 +299,15 @@
       "stop_hit_rate": 0.0
     },
     {
+      "label": "AI電力/重電/電網",
+      "signals": 18,
+      "completed": 9,
+      "win_rate_5d": 100.0,
+      "avg_return_5d": 14.871847247105727,
+      "avg_return_10d": null,
+      "stop_hit_rate": 0.0
+    },
+    {
       "label": "金融降息/併購",
       "signals": 17,
       "completed": 9,
@@ -336,15 +315,6 @@
       "avg_return_5d": 5.322201764821712,
       "avg_return_10d": null,
       "stop_hit_rate": 23.52941176470588
-    },
-    {
-      "label": "AI電力/重電/電網",
-      "signals": 16,
-      "completed": 9,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 14.871847247105725,
-      "avg_return_10d": null,
-      "stop_hit_rate": 0.0
     },
     {
       "label": "光學鏡頭/視覺",
@@ -393,7 +363,7 @@
     },
     {
       "label": "原物料/低基期傳產",
-      "signals": 1,
+      "signals": 2,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
@@ -404,10 +374,10 @@
   "top_themes": [
     {
       "label": "AI電力/重電/電網",
-      "signals": 16,
+      "signals": 18,
       "completed": 9,
       "win_rate_5d": 100.0,
-      "avg_return_5d": 14.871847247105725,
+      "avg_return_5d": 14.871847247105727,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
     },
@@ -416,7 +386,7 @@
       "signals": 62,
       "completed": 43,
       "win_rate_5d": 69.76744186046511,
-      "avg_return_5d": 13.305252953486285,
+      "avg_return_5d": 13.305252953486287,
       "avg_return_10d": null,
       "stop_hit_rate": 22.58064516129032
     },
@@ -434,7 +404,7 @@
       "signals": 92,
       "completed": 50,
       "win_rate_5d": 84.0,
-      "avg_return_5d": 9.266971323863128,
+      "avg_return_5d": 9.266971323863126,
       "avg_return_10d": null,
       "stop_hit_rate": 13.793103448275861
     },
@@ -460,25 +430,25 @@
     },
     {
       "label": "只觀察",
-      "signals": 153,
+      "signals": 156,
       "completed": 88,
       "win_rate_5d": 67.04545454545455,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_5d": 7.5997697107672515,
       "avg_return_10d": null,
       "stop_hit_rate": 27.7027027027027
     },
     {
       "label": "等拉回",
-      "signals": 65,
+      "signals": 64,
       "completed": 40,
       "win_rate_5d": 52.5,
-      "avg_return_5d": 4.051103667406473,
+      "avg_return_5d": 4.0511036674064735,
       "avg_return_10d": null,
       "stop_hit_rate": 29.03225806451613
     },
     {
       "label": "避免追高",
-      "signals": 2,
+      "signals": 3,
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
@@ -851,34 +821,27 @@
     ]
   },
   "data_quality": {
-    "signals": 416,
+    "signals": 419,
     "completed_5d": 241,
-    "pending_5d": 59,
+    "pending_5d": 62,
     "data_missing_5d": 116,
-    "completion_rate_5d": 57.932692307692314,
+    "completion_rate_5d": 57.51789976133651,
     "entry_trigger_known": 407,
     "entry_trigger_rate": 65.35626535626535,
     "stop_known": 407,
     "stop_hit_rate": 21.375921375921376,
     "status_counts": {
       "completed_5d": 241,
-      "pending_5d": 59,
+      "pending_5d": 62,
       "data_missing": 116
     },
     "pending_examples": [
       {
         "signal_date": "2026-06-05",
-        "stock_id": "2059",
-        "name": "川湖",
+        "stock_id": "1303",
+        "name": "南亞",
         "grade": "S",
         "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2395",
-        "name": "研華",
-        "grade": "A",
-        "action": "等拉回"
       },
       {
         "signal_date": "2026-06-05",
@@ -896,6 +859,27 @@
       },
       {
         "signal_date": "2026-06-05",
+        "stock_id": "6669",
+        "name": "緯穎",
+        "grade": "B",
+        "action": "只觀察"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "2059",
+        "name": "川湖",
+        "grade": "B",
+        "action": "只觀察"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "3583",
+        "name": "辛耘",
+        "grade": "B",
+        "action": "只觀察"
+      },
+      {
+        "signal_date": "2026-06-05",
         "stock_id": "3324",
         "name": "雙鴻",
         "grade": "B",
@@ -903,22 +887,8 @@
       },
       {
         "signal_date": "2026-06-05",
-        "stock_id": "2301",
-        "name": "光寶科",
-        "grade": "B",
-        "action": "只觀察"
-      },
-      {
-        "signal_date": "2026-06-05",
         "stock_id": "2356",
         "name": "英業達",
-        "grade": "B",
-        "action": "只觀察"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2449",
-        "name": "京元電子",
         "grade": "B",
         "action": "只觀察"
       }
@@ -994,19 +964,19 @@
     },
     {
       "label": "65-74",
-      "signals": 154,
+      "signals": 158,
       "completed": 88,
       "win_rate_5d": 67.04545454545455,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_5d": 7.5997697107672515,
       "avg_return_10d": null,
       "stop_hit_rate": 28.187919463087248
     },
     {
       "label": "75-84",
-      "signals": 112,
+      "signals": 111,
       "completed": 66,
       "win_rate_5d": 54.54545454545454,
-      "avg_return_5d": 3.0734217632163046,
+      "avg_return_5d": 3.0734217632163054,
       "avg_return_10d": null,
       "stop_hit_rate": 22.93577981651376
     },
@@ -1024,7 +994,7 @@
       "signals": 74,
       "completed": 41,
       "win_rate_5d": 82.92682926829268,
-      "avg_return_5d": 11.41288743178298,
+      "avg_return_5d": 11.412887431782979,
       "avg_return_10d": null,
       "stop_hit_rate": 10.81081081081081
     }
@@ -1033,7 +1003,7 @@
     "triggered": {
       "count": 164,
       "win_rate_5d": 51.829268292682926,
-      "avg_return_5d": 2.1572206142911754
+      "avg_return_5d": 2.157220614291175
     },
     "not_triggered": {
       "count": 77,
@@ -1051,7 +1021,7 @@
       "win_rate_3d": 67.27272727272727,
       "win_rate_5d": 90.625,
       "win_rate_10d": null,
-      "avg_return_3d": 6.456366841869899,
+      "avg_return_3d": 6.456366841869897,
       "avg_return_5d": 14.096151348554322,
       "avg_return_10d": null
     },
@@ -1070,28 +1040,28 @@
     },
     {
       "grade": "A",
-      "signals": 138,
+      "signals": 137,
       "completed_3d": 116,
       "completed_5d": 92,
       "completed_10d": 0,
       "win_rate_3d": 49.137931034482754,
       "win_rate_5d": 52.17391304347826,
       "win_rate_10d": null,
-      "avg_return_3d": 1.579369569773237,
-      "avg_return_5d": 1.7966652306305606,
+      "avg_return_3d": 1.5793695697732384,
+      "avg_return_5d": 1.7966652306305608,
       "avg_return_10d": null
     },
     {
       "grade": "B",
-      "signals": 154,
+      "signals": 158,
       "completed_3d": 125,
       "completed_5d": 88,
       "completed_10d": 0,
       "win_rate_3d": 62.4,
       "win_rate_5d": 67.04545454545455,
       "win_rate_10d": null,
-      "avg_return_3d": 4.519312596883239,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_3d": 4.519312596883243,
+      "avg_return_5d": 7.5997697107672515,
       "avg_return_10d": null
     }
   ],
@@ -1111,7 +1081,7 @@
         "label": "方向正確",
         "count": 41,
         "completed": 41,
-        "avg_return_5d": 3.3949141768478617,
+        "avg_return_5d": 3.3949141768478626,
         "avg_return_10d": null
       },
       {
@@ -1119,7 +1089,7 @@
         "label": "假訊號",
         "count": 34,
         "completed": 34,
-        "avg_return_5d": -4.856405255416595,
+        "avg_return_5d": -4.856405255416596,
         "avg_return_10d": null
       },
       {
@@ -1127,7 +1097,7 @@
         "label": "跌破停損",
         "count": 64,
         "completed": 64,
-        "avg_return_5d": -2.2253284058295772,
+        "avg_return_5d": -2.2253284058295777,
         "avg_return_10d": null
       },
       {
@@ -1135,7 +1105,7 @@
         "label": "錯過機會",
         "count": 71,
         "completed": 71,
-        "avg_return_5d": 15.846530858789185,
+        "avg_return_5d": 15.846530858789189,
         "avg_return_10d": null
       },
       {
@@ -1149,7 +1119,7 @@
       {
         "category": "pending",
         "label": "等待驗證",
-        "count": 175,
+        "count": 178,
         "completed": 0,
         "avg_return_5d": null,
         "avg_return_10d": null
@@ -1679,7 +1649,7 @@
         "count": 17,
         "completed": 17,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 10.577227089180502,
+        "avg_return_5d": 10.577227089180504,
         "avg_return_10d": null,
         "reason": "95 分以上且方向正確，代表高分條件有發揮。"
       },
@@ -1688,7 +1658,7 @@
         "count": 68,
         "completed": 68,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 9.722407815288395,
+        "avg_return_5d": 9.722407815288392,
         "avg_return_10d": null,
         "reason": "進場條件觸發後仍上漲，代表確認條件有效。"
       },
@@ -1697,7 +1667,7 @@
         "count": 23,
         "completed": 23,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 9.226363510209636,
+        "avg_return_5d": 9.226363510209637,
         "avg_return_10d": null,
         "reason": "高強度級別成功，適合觀察是否可提高優先權。"
       }
@@ -1717,7 +1687,7 @@
         "count": 96,
         "completed": 96,
         "win_rate_5d": 17.708333333333336,
-        "avg_return_5d": -3.2014536530818547,
+        "avg_return_5d": -3.2014536530818543,
         "avg_return_10d": null,
         "reason": "進場條件觸發但後續轉弱，代表確認條件可能不足。"
       },
@@ -1726,7 +1696,7 @@
         "count": 64,
         "completed": 64,
         "win_rate_5d": 28.125,
-        "avg_return_5d": -2.2253284058295772,
+        "avg_return_5d": -2.2253284058295777,
         "avg_return_10d": null,
         "reason": "訊號後觸及停損，代表風險條件需要更保守。"
       },
@@ -1735,7 +1705,7 @@
         "count": 8,
         "completed": 8,
         "win_rate_5d": 25.0,
-        "avg_return_5d": -1.7095743143235702,
+        "avg_return_5d": -1.7095743143235698,
         "avg_return_10d": null,
         "reason": "高分仍失敗，優先檢查是否追高或題材退潮。"
       },
@@ -1744,7 +1714,7 @@
         "count": 71,
         "completed": 71,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 15.846530858789185,
+        "avg_return_5d": 15.846530858789189,
         "avg_return_10d": null,
         "reason": "股價後續上漲但未觸發進場，代表進場條件可能太嚴格。"
       }
@@ -1895,9 +1865,9 @@
   },
   "potential_radar": {
     "stats": {
-      "signals": 30,
+      "signals": 31,
       "completed": 1,
-      "pending": 29,
+      "pending": 30,
       "win_rate_5d": 100.0,
       "avg_return_5d": 1.4644351464435146,
       "avg_return_10d": null,
@@ -1907,7 +1877,7 @@
     "counts": [
       {
         "category": "potential_pending",
-        "count": 29
+        "count": 30
       },
       {
         "category": "potential_success",
@@ -1951,59 +1921,27 @@
     "pending_candidates": [
       {
         "signal_date": "2026-06-05",
-        "stock_id": "2059",
-        "name": "川湖",
+        "stock_id": "1303",
+        "name": "南亞",
         "grade": "S",
-        "total_score": 86,
+        "total_score": 89,
         "action": "開盤確認",
-        "potential_score": 14,
-        "reason": "轉強初動｜潛力分 14：散戶減少/籌碼轉乾淨 + K線轉強:突破整理 + 題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強；尚未過熱",
+        "potential_score": 12,
+        "reason": "轉強初動｜潛力分 12：散戶減少/籌碼轉乾淨 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數已成形；尚未過熱",
         "tags": [
           "散戶減少/籌碼轉乾淨",
-          "K線轉強:突破整理",
-          "題材升溫:AI伺服器",
+          "題材升溫:原物料/低基期傳產",
           "法人開始同步",
           "量價開始轉強",
           "分數已成形",
           "強度中高"
         ],
         "themes": [
-          "AI伺服器"
+          "原物料/低基期傳產"
         ],
-        "entry_price": 5620.0,
+        "entry_price": 104.5,
         "stage": "early_turn",
         "stage_label": "轉強初動",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2395",
-        "name": "研華",
-        "grade": "A",
-        "total_score": 78,
-        "action": "等拉回",
-        "potential_score": 8,
-        "reason": "強勢等拉回｜潛力分 8：題材升溫:AI伺服器 + 法人開始同步 + 分數已成形 + 強勢但等拉回 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "題材升溫:AI伺服器",
-          "法人開始同步",
-          "分數已成形",
-          "強勢但等拉回",
-          "尚未過熱強度"
-        ],
-        "themes": [
-          "AI伺服器"
-        ],
-        "entry_price": 496.0,
-        "stage": "pullback_watch",
-        "stage_label": "強勢等拉回",
         "chase_risk": "low",
         "chase_risk_label": "尚未過熱",
         "return_3d": null,
@@ -2074,6 +2012,100 @@
       },
       {
         "signal_date": "2026-06-05",
+        "stock_id": "6669",
+        "name": "緯穎",
+        "grade": "B",
+        "total_score": 71,
+        "action": "量價不確認取消",
+        "potential_score": 8,
+        "reason": "低位醞釀｜潛力分 8：題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "題材升溫:AI伺服器",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "AI伺服器"
+        ],
+        "entry_price": 5660.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "2059",
+        "name": "川湖",
+        "grade": "B",
+        "total_score": 71,
+        "action": "量價不確認取消",
+        "potential_score": 13,
+        "reason": "低位醞釀｜潛力分 13：散戶減少/籌碼轉乾淨 + K線轉強:突破整理 + 題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強；尚未過熱",
+        "tags": [
+          "散戶減少/籌碼轉乾淨",
+          "K線轉強:突破整理",
+          "題材升溫:AI伺服器",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "AI伺服器"
+        ],
+        "entry_price": 5620.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "3583",
+        "name": "辛耘",
+        "grade": "B",
+        "total_score": 70,
+        "action": "量價不確認取消",
+        "potential_score": 5,
+        "reason": "低位醞釀｜潛力分 5：題材升溫:先進封裝/CoWoS + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "題材升溫:先進封裝/CoWoS",
+          "法人開始同步",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "先進封裝/CoWoS"
+        ],
+        "entry_price": 868.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
         "stock_id": "3324",
         "name": "雙鴻",
         "grade": "B",
@@ -2093,36 +2125,6 @@
           "散熱/液冷"
         ],
         "entry_price": 1110.0,
-        "stage": "low_base",
-        "stage_label": "低位醞釀",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2301",
-        "name": "光寶科",
-        "grade": "B",
-        "total_score": 70,
-        "action": "量價不確認取消",
-        "potential_score": 5,
-        "reason": "低位醞釀｜潛力分 5：題材升溫:AI電力/重電/電網 + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "題材升溫:AI電力/重電/電網",
-          "法人開始同步",
-          "分數醞釀中",
-          "尚未過熱強度"
-        ],
-        "themes": [
-          "AI電力/重電/電網"
-        ],
-        "entry_price": 230.0,
         "stage": "low_base",
         "stage_label": "低位醞釀",
         "chase_risk": "low",
@@ -2163,44 +2165,14 @@
         "outcome_category": "potential_pending",
         "outcome_label": "觀察中",
         "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2449",
-        "name": "京元電子",
-        "grade": "B",
-        "total_score": 66,
-        "action": "量價不確認取消",
-        "potential_score": 5,
-        "reason": "低位醞釀｜潛力分 5：題材升溫:先進封裝/CoWoS + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "題材升溫:先進封裝/CoWoS",
-          "法人開始同步",
-          "分數醞釀中",
-          "尚未過熱強度"
-        ],
-        "themes": [
-          "先進封裝/CoWoS"
-        ],
-        "entry_price": 309.5,
-        "stage": "low_base",
-        "stage_label": "低位醞釀",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       }
     ],
     "factor_stats": [
       {
         "label": "分數已成形",
-        "signals": 23,
+        "signals": 22,
         "completed": 1,
-        "pending": 22,
+        "pending": 21,
         "success_count": 1,
         "failure_count": 0,
         "win_rate_5d": 100.0,
@@ -2253,9 +2225,9 @@
       },
       {
         "label": "題材升溫",
-        "signals": 19,
+        "signals": 20,
         "completed": 0,
-        "pending": 19,
+        "pending": 20,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2264,9 +2236,9 @@
       },
       {
         "label": "法人開始同步",
-        "signals": 19,
+        "signals": 20,
         "completed": 0,
-        "pending": 19,
+        "pending": 20,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2275,9 +2247,9 @@
       },
       {
         "label": "尚未過熱強度",
-        "signals": 17,
+        "signals": 18,
         "completed": 0,
-        "pending": 17,
+        "pending": 18,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2286,9 +2258,9 @@
       },
       {
         "label": "量價開始轉強",
-        "signals": 13,
+        "signals": 15,
         "completed": 0,
-        "pending": 13,
+        "pending": 15,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2307,10 +2279,10 @@
         "avg_return_10d": null
       },
       {
-        "label": "強勢但等拉回",
-        "signals": 7,
+        "label": "分數醞釀中",
+        "signals": 9,
         "completed": 0,
-        "pending": 7,
+        "pending": 9,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2318,10 +2290,10 @@
         "avg_return_10d": null
       },
       {
-        "label": "分數醞釀中",
-        "signals": 7,
+        "label": "強勢但等拉回",
+        "signals": 6,
         "completed": 0,
-        "pending": 7,
+        "pending": 6,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2330,9 +2302,9 @@
       },
       {
         "label": "散戶減少/籌碼轉乾淨",
-        "signals": 4,
+        "signals": 5,
         "completed": 0,
-        "pending": 4,
+        "pending": 5,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -2373,16 +2345,16 @@
         "avg_return_5d": 1.4644351464435146
       },
       {
-        "label": "強勢等拉回",
-        "signals": 7,
+        "label": "低位醞釀",
+        "signals": 8,
         "completed": 0,
-        "pending": 7,
+        "pending": 8,
         "success_count": 0,
         "win_rate_5d": null,
         "avg_return_5d": null
       },
       {
-        "label": "低位醞釀",
+        "label": "強勢等拉回",
         "signals": 6,
         "completed": 0,
         "pending": 6,
@@ -2394,9 +2366,9 @@
     "strong_factors": [
       {
         "label": "分數已成形",
-        "signals": 23,
+        "signals": 22,
         "completed": 1,
-        "pending": 22,
+        "pending": 21,
         "success_count": 1,
         "failure_count": 0,
         "win_rate_5d": 100.0,
@@ -2451,9 +2423,9 @@
     "weak_factors": [
       {
         "label": "分數已成形",
-        "signals": 23,
+        "signals": 22,
         "completed": 1,
-        "pending": 22,
+        "pending": 21,
         "success_count": 1,
         "failure_count": 0,
         "win_rate_5d": 100.0,
@@ -2512,59 +2484,27 @@
     "items": [
       {
         "signal_date": "2026-06-05",
-        "stock_id": "2059",
-        "name": "川湖",
+        "stock_id": "1303",
+        "name": "南亞",
         "grade": "S",
-        "total_score": 86,
+        "total_score": 89,
         "action": "開盤確認",
-        "potential_score": 14,
-        "reason": "轉強初動｜潛力分 14：散戶減少/籌碼轉乾淨 + K線轉強:突破整理 + 題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強；尚未過熱",
+        "potential_score": 12,
+        "reason": "轉強初動｜潛力分 12：散戶減少/籌碼轉乾淨 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數已成形；尚未過熱",
         "tags": [
           "散戶減少/籌碼轉乾淨",
-          "K線轉強:突破整理",
-          "題材升溫:AI伺服器",
+          "題材升溫:原物料/低基期傳產",
           "法人開始同步",
           "量價開始轉強",
           "分數已成形",
           "強度中高"
         ],
         "themes": [
-          "AI伺服器"
+          "原物料/低基期傳產"
         ],
-        "entry_price": 5620.0,
+        "entry_price": 104.5,
         "stage": "early_turn",
         "stage_label": "轉強初動",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2395",
-        "name": "研華",
-        "grade": "A",
-        "total_score": 78,
-        "action": "等拉回",
-        "potential_score": 8,
-        "reason": "強勢等拉回｜潛力分 8：題材升溫:AI伺服器 + 法人開始同步 + 分數已成形 + 強勢但等拉回 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "題材升溫:AI伺服器",
-          "法人開始同步",
-          "分數已成形",
-          "強勢但等拉回",
-          "尚未過熱強度"
-        ],
-        "themes": [
-          "AI伺服器"
-        ],
-        "entry_price": 496.0,
-        "stage": "pullback_watch",
-        "stage_label": "強勢等拉回",
         "chase_risk": "low",
         "chase_risk_label": "尚未過熱",
         "return_3d": null,
@@ -2635,6 +2575,100 @@
       },
       {
         "signal_date": "2026-06-05",
+        "stock_id": "6669",
+        "name": "緯穎",
+        "grade": "B",
+        "total_score": 71,
+        "action": "量價不確認取消",
+        "potential_score": 8,
+        "reason": "低位醞釀｜潛力分 8：題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "題材升溫:AI伺服器",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "AI伺服器"
+        ],
+        "entry_price": 5660.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "2059",
+        "name": "川湖",
+        "grade": "B",
+        "total_score": 71,
+        "action": "量價不確認取消",
+        "potential_score": 13,
+        "reason": "低位醞釀｜潛力分 13：散戶減少/籌碼轉乾淨 + K線轉強:突破整理 + 題材升溫:AI伺服器 + 法人開始同步 + 量價開始轉強；尚未過熱",
+        "tags": [
+          "散戶減少/籌碼轉乾淨",
+          "K線轉強:突破整理",
+          "題材升溫:AI伺服器",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "AI伺服器"
+        ],
+        "entry_price": 5620.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
+        "stock_id": "3583",
+        "name": "辛耘",
+        "grade": "B",
+        "total_score": 70,
+        "action": "量價不確認取消",
+        "potential_score": 5,
+        "reason": "低位醞釀｜潛力分 5：題材升溫:先進封裝/CoWoS + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "題材升溫:先進封裝/CoWoS",
+          "法人開始同步",
+          "分數醞釀中",
+          "尚未過熱強度"
+        ],
+        "themes": [
+          "先進封裝/CoWoS"
+        ],
+        "entry_price": 868.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+      },
+      {
+        "signal_date": "2026-06-05",
         "stock_id": "3324",
         "name": "雙鴻",
         "grade": "B",
@@ -2654,36 +2688,6 @@
           "散熱/液冷"
         ],
         "entry_price": 1110.0,
-        "stage": "low_base",
-        "stage_label": "低位醞釀",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
-      },
-      {
-        "signal_date": "2026-06-05",
-        "stock_id": "2301",
-        "name": "光寶科",
-        "grade": "B",
-        "total_score": 70,
-        "action": "量價不確認取消",
-        "potential_score": 5,
-        "reason": "低位醞釀｜潛力分 5：題材升溫:AI電力/重電/電網 + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "題材升溫:AI電力/重電/電網",
-          "法人開始同步",
-          "分數醞釀中",
-          "尚未過熱強度"
-        ],
-        "themes": [
-          "AI電力/重電/電網"
-        ],
-        "entry_price": 230.0,
         "stage": "low_base",
         "stage_label": "低位醞釀",
         "chase_risk": "low",
@@ -2727,23 +2731,23 @@
       },
       {
         "signal_date": "2026-06-05",
-        "stock_id": "2449",
-        "name": "京元電子",
+        "stock_id": "2301",
+        "name": "光寶科",
         "grade": "B",
-        "total_score": 66,
+        "total_score": 65,
         "action": "量價不確認取消",
         "potential_score": 5,
-        "reason": "低位醞釀｜潛力分 5：題材升溫:先進封裝/CoWoS + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
+        "reason": "低位醞釀｜潛力分 5：題材升溫:AI電力/重電/電網 + 法人開始同步 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
         "tags": [
-          "題材升溫:先進封裝/CoWoS",
+          "題材升溫:AI電力/重電/電網",
           "法人開始同步",
           "分數醞釀中",
           "尚未過熱強度"
         ],
         "themes": [
-          "先進封裝/CoWoS"
+          "AI電力/重電/電網"
         ],
-        "entry_price": 309.5,
+        "entry_price": 230.0,
         "stage": "low_base",
         "stage_label": "低位醞釀",
         "chase_risk": "low",
@@ -3447,10 +3451,10 @@
       {
         "group": "theme",
         "label": "AI電力/重電/電網",
-        "signals": 16,
+        "signals": 18,
         "completed": 9,
         "win_rate_5d": 100.0,
-        "avg_return_5d": 14.871847247105725,
+        "avg_return_5d": 14.871847247105727,
         "stop_hit_rate": 0.0
       },
       {
@@ -3468,7 +3472,7 @@
         "signals": 62,
         "completed": 43,
         "win_rate_5d": 69.76744186046511,
-        "avg_return_5d": 13.305252953486285,
+        "avg_return_5d": 13.305252953486287,
         "stop_hit_rate": 22.58064516129032
       },
       {
@@ -3486,7 +3490,7 @@
         "signals": 92,
         "completed": 50,
         "win_rate_5d": 84.0,
-        "avg_return_5d": 9.266971323863128,
+        "avg_return_5d": 9.266971323863126,
         "stop_hit_rate": 13.793103448275861
       }
     ],
@@ -3502,84 +3506,12 @@
       }
     ],
     "notes": [
-      "目前最佳區塊：theme AI電力/重電/電網，5日平均 14.871847247105725%",
+      "目前最佳區塊：theme AI電力/重電/電網，5日平均 14.871847247105727%",
       "需檢討區塊：theme AI國防/軍工，5日平均 -9.325842696629213%"
     ]
   },
   "ai_council": {
     "items": [
-      {
-        "review_date": "2026-06-05",
-        "stock_id": "2059",
-        "name": "川湖",
-        "score": 86,
-        "grade": "S",
-        "consensus_action": "可追",
-        "confidence": 0.85,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 1,
-        "is_ai_pick": true,
-        "reason": "AI伺服器題材強勁，投信買超且技術突破，營收加速成長，但股價淨值比極高需注意風險。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
-      {
-        "review_date": "2026-06-05",
-        "stock_id": "2395",
-        "name": "研華",
-        "score": 78,
-        "grade": "A",
-        "consensus_action": "等拉回",
-        "confidence": 0.75,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 0,
-        "is_ai_pick": false,
-        "reason": "法人買超且技術偏多，營收成長，但股價已漲多，建議拉回再進場。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
-      {
-        "review_date": "2026-06-05",
-        "stock_id": "6505",
-        "name": "台塑化",
-        "score": 75,
-        "grade": "A",
-        "consensus_action": "等拉回",
-        "confidence": 0.65,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 0,
-        "is_ai_pick": false,
-        "reason": "法人買超且營收成長，但出現高位陰包陽，短期可能修正，建議等拉回。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
-      {
-        "review_date": "2026-06-05",
-        "stock_id": "2882",
-        "name": "國泰金",
-        "score": 75,
-        "grade": "A",
-        "consensus_action": "等拉回",
-        "confidence": 0.7,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 0,
-        "is_ai_pick": false,
-        "reason": "外資買超且技術突破，營收大幅成長，但金融股波動較大，建議等拉回。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
       {
         "review_date": "2026-06-04",
         "stock_id": "6282",
@@ -4088,15 +4020,15 @@
     "by_action": [
       {
         "action": "可追",
-        "signals": 20,
+        "signals": 19,
         "completed": 11,
         "win_rate_5d": 90.9090909090909,
-        "avg_return_5d": 13.498666432931488,
+        "avg_return_5d": 13.498666432931492,
         "avg_return_10d": null
       },
       {
         "action": "等拉回",
-        "signals": 10,
+        "signals": 7,
         "completed": 1,
         "win_rate_5d": 100.0,
         "avg_return_5d": 31.5884476534296,
@@ -4120,10 +4052,10 @@
       }
     ],
     "stats": {
-      "signals": 32,
+      "signals": 28,
       "completed": 12,
       "win_rate_5d": 91.66666666666666,
-      "avg_return_5d": 15.006148201306331
+      "avg_return_5d": 15.006148201306333
     }
   },
   "selection_quality": {
@@ -4143,10 +4075,10 @@
     },
     "weak_grade": {
       "label": "A",
-      "signals": 138,
+      "signals": 137,
       "completed": 92,
       "win_rate_5d": 52.17391304347826,
-      "avg_return_5d": 1.7966652306305606,
+      "avg_return_5d": 1.7966652306305608,
       "avg_return_10d": null,
       "stop_hit_rate": null
     },
@@ -4155,7 +4087,7 @@
       "signals": 74,
       "completed": 41,
       "win_rate_5d": 82.92682926829268,
-      "avg_return_5d": 11.41288743178298,
+      "avg_return_5d": 11.412887431782979,
       "avg_return_10d": null,
       "stop_hit_rate": 10.81081081081081
     },
@@ -4170,10 +4102,10 @@
     },
     "best_theme": {
       "label": "AI電力/重電/電網",
-      "signals": 16,
+      "signals": 18,
       "completed": 9,
       "win_rate_5d": 100.0,
-      "avg_return_5d": 14.871847247105725,
+      "avg_return_5d": 14.871847247105727,
       "avg_return_10d": null,
       "stop_hit_rate": 0.0
     },
@@ -4188,27 +4120,27 @@
     },
     "best_action": {
       "label": "只觀察",
-      "signals": 153,
+      "signals": 156,
       "completed": 88,
       "win_rate_5d": 67.04545454545455,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_5d": 7.5997697107672515,
       "avg_return_10d": null,
       "stop_hit_rate": 27.7027027027027
     },
     "weak_action": {
       "label": "等拉回",
-      "signals": 65,
+      "signals": 64,
       "completed": 40,
       "win_rate_5d": 52.5,
-      "avg_return_5d": 4.051103667406473,
+      "avg_return_5d": 4.0511036674064735,
       "avg_return_10d": null,
       "stop_hit_rate": 29.03225806451613
     },
     "ai": {
-      "signals": 32,
+      "signals": 28,
       "completed": 12,
       "win_rate_5d": 91.66666666666666,
-      "avg_return_5d": 15.006148201306331,
+      "avg_return_5d": 15.006148201306333,
       "sample_label": "觀察中"
     }
   },
@@ -4228,7 +4160,7 @@
       "label": "B",
       "completed": 88,
       "win_rate_5d": 67.04545454545455,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_5d": 7.5997697107672515,
       "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
     },
     {
@@ -4237,7 +4169,7 @@
       "label": "只觀察",
       "completed": 88,
       "win_rate_5d": 67.04545454545455,
-      "avg_return_5d": 7.599769710767253,
+      "avg_return_5d": 7.5997697107672515,
       "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
     },
     {
@@ -4246,7 +4178,7 @@
       "label": "AI伺服器",
       "completed": 50,
       "win_rate_5d": 84.0,
-      "avg_return_5d": 9.266971323863128,
+      "avg_return_5d": 9.266971323863126,
       "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
     },
     {
@@ -4255,7 +4187,7 @@
       "label": "記憶體/HBM",
       "completed": 43,
       "win_rate_5d": 69.76744186046511,
-      "avg_return_5d": 13.305252953486285,
+      "avg_return_5d": 13.305252953486287,
       "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
     },
     {
@@ -4289,11 +4221,11 @@
   "items": [
     {
       "signal_date": "2026-06-05",
-      "stock_id": "2059",
-      "name": "川湖",
+      "stock_id": "1303",
+      "name": "南亞",
       "grade": "S",
-      "total_score": 86,
-      "entry_price": 5620.0,
+      "total_score": 89,
+      "entry_price": 104.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -4301,33 +4233,7 @@
       "stop_hit": null,
       "action": "可追蹤突破",
       "themes": [
-        "AI伺服器"
-      ],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-05",
-      "stock_id": "2395",
-      "name": "研華",
-      "grade": "A",
-      "total_score": 78,
-      "entry_price": 496.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [
-        "AI伺服器"
+        "原物料/低基期傳產"
       ],
       "status_code": "pending_5d",
       "status_label": "pending",
@@ -4389,6 +4295,84 @@
     },
     {
       "signal_date": "2026-06-05",
+      "stock_id": "6669",
+      "name": "緯穎",
+      "grade": "B",
+      "total_score": 71,
+      "entry_price": 5660.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-05",
+      "stock_id": "2059",
+      "name": "川湖",
+      "grade": "B",
+      "total_score": 71,
+      "entry_price": 5620.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-05",
+      "stock_id": "3583",
+      "name": "辛耘",
+      "grade": "B",
+      "total_score": 70,
+      "entry_price": 868.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-05",
       "stock_id": "3324",
       "name": "雙鴻",
       "grade": "B",
@@ -4403,32 +4387,6 @@
       "themes": [
         "AI伺服器",
         "散熱/液冷"
-      ],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-05",
-      "stock_id": "2301",
-      "name": "光寶科",
-      "grade": "B",
-      "total_score": 70,
-      "entry_price": 230.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [
-        "AI電力/重電/電網"
       ],
       "status_code": "pending_5d",
       "status_label": "pending",
@@ -4468,19 +4426,19 @@
     },
     {
       "signal_date": "2026-06-05",
-      "stock_id": "2449",
-      "name": "京元電子",
+      "stock_id": "1514",
+      "name": "亞力",
       "grade": "B",
-      "total_score": 66,
-      "entry_price": 309.5,
+      "total_score": 68,
+      "entry_price": 135.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": null,
-      "action": "只觀察",
+      "action": "避免追高",
       "themes": [
-        "先進封裝/CoWoS"
+        "AI電力/重電/電網"
       ],
       "status_code": "pending_5d",
       "status_label": "pending",
@@ -4494,11 +4452,37 @@
     },
     {
       "signal_date": "2026-06-05",
-      "stock_id": "2376",
-      "name": "技嘉",
+      "stock_id": "6282",
+      "name": "康舒",
       "grade": "B",
-      "total_score": 66,
-      "entry_price": 369.0,
+      "total_score": 67,
+      "entry_price": 63.8,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "AI電力/重電/電網"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-05",
+      "stock_id": "2382",
+      "name": "廣達",
+      "grade": "B",
+      "total_score": 67,
+      "entry_price": 390.5,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -4507,6 +4491,32 @@
       "action": "只觀察",
       "themes": [
         "AI伺服器"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-05",
+      "stock_id": "2301",
+      "name": "光寶科",
+      "grade": "B",
+      "total_score": 65,
+      "entry_price": 230.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "AI電力/重電/電網"
       ],
       "status_code": "pending_5d",
       "status_label": "pending",
@@ -15648,65 +15658,25 @@
         <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
         <td data-label="解讀">${esc(row.reason)}</td>
       </tr>`;
-      const potentialRow = row => {
-        const tags = (row.tags || []).slice(0, 5).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
-        return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a></td>
-          <td data-label="階段"><b>${esc(row.stage_label || "觀察")}</b><div class="small">${esc(row.signal_date)}</div></td>
-          <td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td>
-          <td data-label="3日表現">${fmtPct(row.return_3d)}</td>
-          <td data-label="觀察理由">${esc(row.reason)}${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div class="lesson-tags">${tags}</div></td>
-        </tr>`;
-      };
       document.querySelector("#successFactors").innerHTML = (learning.success_factors || []).length
         ? learning.success_factors.map(factorRow).join("")
         : `<tr><td data-label="成功因素" colspan="5">尚無足夠成功因素樣本</td></tr>`;
       document.querySelector("#failureFactors").innerHTML = (learning.failure_factors || []).length
         ? learning.failure_factors.map(factorRow).join("")
         : `<tr><td data-label="失敗因素" colspan="5">尚無足夠失敗因素樣本</td></tr>`;
-      document.querySelector("#potentialCandidates").innerHTML = (learning.potential_candidates || []).length
-        ? learning.potential_candidates.map(potentialRow).join("")
-        : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       const radar = data.potential_radar || {};
       const radarStats = radar.stats || {};
       const topStage = (radar.stage_stats || [])[0];
-      const radarRow = row => {
-        const tags = (row.tags || []).slice(0, 4).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
-        return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.stage_label || "觀察")}｜${esc(row.grade)}｜${esc(row.total_score)}/100｜潛力 ${esc(row.potential_score ?? "-")}</div></td>
-          <td data-label="日期">${esc(row.signal_date)}</td>
-          <td data-label="結果">${esc(row.outcome_label || "觀察中")}</td>
-          <td data-label="5日">${fmtPct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${fmtPct(row.return_10d)}</div>` : ""}</td>
-          <td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div class="lesson-tags">${tags}</div></td>
-        </tr>`;
-      };
-      document.querySelector("#potentialRadarMetrics").innerHTML = [
+      document.querySelector("#potentialRadarSummary").innerHTML = [
         metric("雷達記錄", radarStats.signals ?? 0),
         metric("已驗證", radarStats.completed ?? 0),
         metric("觀察中", radarStats.pending ?? 0),
         metric("5日勝率", radarStats.win_rate_5d?.toFixed(1), "%"),
-        metric("5日平均", radarStats.avg_return_5d?.toFixed(1), "%"),
         metric(topStage ? `主階段：${topStage.label}` : "主階段", topStage ? `${topStage.signals}` : "—", topStage ? "檔" : ""),
       ].join("");
-      document.querySelector("#potentialRadarSuccess").innerHTML = (radar.success_cases || []).length
-        ? radar.success_cases.map(radarRow).join("")
-        : `<tr><td data-label="雷達命中" colspan="5">尚無已驗證命中樣本</td></tr>`;
-      document.querySelector("#potentialRadarFailure").innerHTML = (radar.failure_cases || []).length
-        ? radar.failure_cases.map(radarRow).join("")
-        : `<tr><td data-label="雷達失敗" colspan="5">尚無已驗證失敗樣本</td></tr>`;
-      document.querySelector("#potentialFactorStats").innerHTML = (radar.factor_stats || []).length
-        ? radar.factor_stats.map(row => `
-          <tr>
-            <td data-label="因素">${esc(row.label)}</td>
-            <td data-label="訊號">${esc(row.signals)}</td>
-            <td data-label="完成">${esc(row.completed)}</td>
-            <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
-            <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
-            <td data-label="成功/失敗">${esc(row.success_count ?? 0)} / ${esc(row.failure_count ?? 0)}</td>
-          </tr>
-        `).join("")
-        : `<tr><td data-label="潛力因素" colspan="6">因素樣本仍在累積中</td></tr>`;
-      document.querySelector("#potentialFactorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
+      document.querySelector("#potentialRadarSummaryNote").textContent = topStage
+        ? `目前樣本最多的階段是「${topStage.label}」，完整命中與失敗原因請到潛力雷達頁查看。`
+        : "潛力雷達樣本仍在累積中。";
       document.querySelector("#learningNotes").innerHTML = (learning.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `

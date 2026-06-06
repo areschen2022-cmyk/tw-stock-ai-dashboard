@@ -1864,6 +1864,7 @@ def _performance_html() -> str:
     .sub, .small { color:var(--muted); font-size:13px; }
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+    .compact-metrics { grid-template-columns:repeat(5,minmax(120px,1fr)); }
     .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
     .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
@@ -1990,42 +1991,11 @@ def _performance_html() -> str:
         </section>
       </div>
       <section style="margin-top:12px;">
-        <h2>潛力觀察</h2>
-        <div class="note">這裡不是買進清單，而是「尚未飆、但條件開始聚集」的觀察名單。</div>
-        <table>
-          <thead><tr><th>股票</th><th>階段</th><th>強度</th><th>3日表現</th><th>觀察理由</th></tr></thead>
-          <tbody id="potentialCandidates"></tbody>
-        </table>
-      </section>
-      <section style="margin-top:12px;">
-        <h2>潛力雷達成效</h2>
-        <div class="note">每天保留潛力觀察名單，回頭驗證 3/5/10 日表現，區分提前命中、方向正確、假訊號與觀察中。</div>
-        <div class="metrics" id="potentialRadarMetrics"></div>
-        <div class="analysis-grid">
-          <section>
-            <h2>雷達命中</h2>
-            <table>
-              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
-              <tbody id="potentialRadarSuccess"></tbody>
-            </table>
-          </section>
-          <section>
-            <h2>雷達失敗</h2>
-            <table>
-              <thead><tr><th>股票</th><th>日期</th><th>結果</th><th>5日</th><th>原因</th></tr></thead>
-              <tbody id="potentialRadarFailure"></tbody>
-            </table>
-          </section>
-        </div>
-        <section style="margin-top:12px;">
-          <h2>潛力因素歸因</h2>
-          <div class="note">拆解潛力雷達的成功與失敗來源，例如散戶轉乾淨、K線轉強、題材升溫是否真的有效。</div>
-          <table>
-            <thead><tr><th>因素</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>成功/失敗</th></tr></thead>
-            <tbody id="potentialFactorStats"></tbody>
-          </table>
-          <div class="note" id="potentialFactorNotes"></div>
-        </section>
+        <h2>潛力雷達摘要</h2>
+        <div class="note">潛力股的階段勝率、命中/失敗樣本與因素歸因已移到獨立頁，成效頁只保留摘要避免資訊過載。</div>
+        <div class="metrics compact-metrics" id="potentialRadarSummary"></div>
+        <p class="note" id="potentialRadarSummaryNote"></p>
+        <a class="nav-tab" href="potential.html">查看潛力雷達完整追蹤</a>
       </section>
       <div class="note" id="learningNotes"></div>
     </section>
@@ -2233,65 +2203,25 @@ def _performance_html() -> str:
         <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
         <td data-label="解讀">${esc(row.reason)}</td>
       </tr>`;
-      const potentialRow = row => {
-        const tags = (row.tags || []).slice(0, 5).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
-        return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a></td>
-          <td data-label="階段"><b>${esc(row.stage_label || "觀察")}</b><div class="small">${esc(row.signal_date)}</div></td>
-          <td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td>
-          <td data-label="3日表現">${fmtPct(row.return_3d)}</td>
-          <td data-label="觀察理由">${esc(row.reason)}${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div class="lesson-tags">${tags}</div></td>
-        </tr>`;
-      };
       document.querySelector("#successFactors").innerHTML = (learning.success_factors || []).length
         ? learning.success_factors.map(factorRow).join("")
         : `<tr><td data-label="成功因素" colspan="5">尚無足夠成功因素樣本</td></tr>`;
       document.querySelector("#failureFactors").innerHTML = (learning.failure_factors || []).length
         ? learning.failure_factors.map(factorRow).join("")
         : `<tr><td data-label="失敗因素" colspan="5">尚無足夠失敗因素樣本</td></tr>`;
-      document.querySelector("#potentialCandidates").innerHTML = (learning.potential_candidates || []).length
-        ? learning.potential_candidates.map(potentialRow).join("")
-        : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       const radar = data.potential_radar || {};
       const radarStats = radar.stats || {};
       const topStage = (radar.stage_stats || [])[0];
-      const radarRow = row => {
-        const tags = (row.tags || []).slice(0, 4).map(tag => `<span class="lesson-tag">${esc(tag)}</span>`).join("");
-        return `<tr>
-          <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a><div class="small">${esc(row.stage_label || "觀察")}｜${esc(row.grade)}｜${esc(row.total_score)}/100｜潛力 ${esc(row.potential_score ?? "-")}</div></td>
-          <td data-label="日期">${esc(row.signal_date)}</td>
-          <td data-label="結果">${esc(row.outcome_label || "觀察中")}</td>
-          <td data-label="5日">${fmtPct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${fmtPct(row.return_10d)}</div>` : ""}</td>
-          <td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div class="lesson-tags">${tags}</div></td>
-        </tr>`;
-      };
-      document.querySelector("#potentialRadarMetrics").innerHTML = [
+      document.querySelector("#potentialRadarSummary").innerHTML = [
         metric("雷達記錄", radarStats.signals ?? 0),
         metric("已驗證", radarStats.completed ?? 0),
         metric("觀察中", radarStats.pending ?? 0),
         metric("5日勝率", radarStats.win_rate_5d?.toFixed(1), "%"),
-        metric("5日平均", radarStats.avg_return_5d?.toFixed(1), "%"),
         metric(topStage ? `主階段：${topStage.label}` : "主階段", topStage ? `${topStage.signals}` : "—", topStage ? "檔" : ""),
       ].join("");
-      document.querySelector("#potentialRadarSuccess").innerHTML = (radar.success_cases || []).length
-        ? radar.success_cases.map(radarRow).join("")
-        : `<tr><td data-label="雷達命中" colspan="5">尚無已驗證命中樣本</td></tr>`;
-      document.querySelector("#potentialRadarFailure").innerHTML = (radar.failure_cases || []).length
-        ? radar.failure_cases.map(radarRow).join("")
-        : `<tr><td data-label="雷達失敗" colspan="5">尚無已驗證失敗樣本</td></tr>`;
-      document.querySelector("#potentialFactorStats").innerHTML = (radar.factor_stats || []).length
-        ? radar.factor_stats.map(row => `
-          <tr>
-            <td data-label="因素">${esc(row.label)}</td>
-            <td data-label="訊號">${esc(row.signals)}</td>
-            <td data-label="完成">${esc(row.completed)}</td>
-            <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
-            <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
-            <td data-label="成功/失敗">${esc(row.success_count ?? 0)} / ${esc(row.failure_count ?? 0)}</td>
-          </tr>
-        `).join("")
-        : `<tr><td data-label="潛力因素" colspan="6">因素樣本仍在累積中</td></tr>`;
-      document.querySelector("#potentialFactorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
+      document.querySelector("#potentialRadarSummaryNote").textContent = topStage
+        ? `目前樣本最多的階段是「${topStage.label}」，完整命中與失敗原因請到潛力雷達頁查看。`
+        : "潛力雷達樣本仍在累積中。";
       document.querySelector("#learningNotes").innerHTML = (learning.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#themeStats").innerHTML = (data.theme_stats || []).length
         ? data.theme_stats.map(r => `
