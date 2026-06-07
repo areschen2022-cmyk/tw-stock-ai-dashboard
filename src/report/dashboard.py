@@ -1048,15 +1048,15 @@ def _html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>台股 AI 開盤前監控</title>
   <style>
-    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; }
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#eef2f7; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; --terminal:#0f172a; --terminal2:#111827; --blue:#0b4a8b; --soft:#f8fafc; }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); line-height:1.45; }
-    header { padding:18px 24px 11px; border-bottom:1px solid var(--line); background:var(--panel); }
+    body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#e9eef6 0,#f7f8fb 360px); line-height:1.45; }
+    header { padding:18px 24px 12px; border-bottom:1px solid #263244; background:linear-gradient(135deg,var(--terminal),#172033 62%,#0b4a8b); color:#fff; box-shadow:0 6px 18px rgba(15,23,42,.12); }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
-    .sub { color:var(--muted); font-size:14px; }
+    .sub { color:#cbd5e1; font-size:14px; }
     main { padding:14px 20px 32px; max-width:1640px; margin:auto; }
     .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:12px; }
-    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 11px; min-height:64px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 11px; min-height:64px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
     .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(340px,.65fr); gap:12px; margin-bottom:16px; align-items:start; }
@@ -1064,7 +1064,7 @@ def _html() -> str:
     .side-stack { position:sticky; top:10px; }
     .market-theme-grid { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:12px; }
     .detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; grid-column:1 / -1; }
-    section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
+    section, details.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     details.panel summary { cursor:pointer; font-weight:700; font-size:16px; list-style:none; }
     details.panel summary::-webkit-details-marker { display:none; }
     details.panel summary::after { content:"＋"; float:right; color:var(--muted); }
@@ -1112,11 +1112,12 @@ def _html() -> str:
     .temperature-card.bad { border-left:4px solid var(--bad); }
     .temperature-card b { display:block; font-size:20px; margin-bottom:4px; }
     .decision-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:8px; margin:8px 0 10px; }
-    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; min-height:138px; }
+    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; min-height:138px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
     .decision-card.chase { border-left:4px solid var(--good); }
     .decision-card.pullback { border-left:4px solid var(--warn); }
     .decision-card.avoid { border-left:4px solid var(--bad); }
     .decision-card-head { display:flex; gap:8px; justify-content:space-between; align-items:flex-start; }
+    .decision-card-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
     .decision-card-title { font-weight:800; line-height:1.25; }
     .decision-light { display:inline-flex; align-items:center; gap:4px; margin-top:3px; font-size:12px; font-weight:800; }
     .decision-dot { width:9px; height:9px; border-radius:999px; display:inline-block; background:#94a3b8; }
@@ -1142,16 +1143,18 @@ def _html() -> str:
     details.panel h2 { font-size:14px; margin:12px 0 6px; }
     h2 { font-size:15px; margin:0 0 8px; }
     .line { color:var(--muted); margin:4px 0; font-size:13px; line-height:1.45; }
-    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; }
-    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
-    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
-    .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
+    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; padding:10px; background:rgba(255,255,255,.86); border:1px solid var(--line); border-radius:8px; position:sticky; top:56px; z-index:12; backdrop-filter:blur(10px); }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; position:sticky; top:0; z-index:20; padding:10px 0; background:rgba(238,242,247,.94); backdrop-filter:blur(10px); border-bottom:1px solid rgba(208,213,221,.75); }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid #cfd7e6; border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .nav-tab.active { background:var(--terminal); color:white; border-color:var(--terminal); }
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .chart-wrap { height:96px; margin-top:6px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef1f5; font-size:12px; color:#475467; }
+    tbody tr[data-stock-id] { cursor:pointer; }
+    tbody tr[data-stock-id]:hover { background:#fbfcfe; }
     .grade { font-weight:700; border-radius:999px; padding:3px 8px; display:inline-block; min-width:32px; text-align:center; }
     .grade-S\+ { color:white; background:#7c2d12; }
     .grade-S { color:white; background:#b42318; }
@@ -1163,6 +1166,9 @@ def _html() -> str:
     .themes { color:#175cd3; }
     a.stock-link { color:#0b4a8b; text-decoration:none; }
     a.stock-link:hover { text-decoration:underline; }
+    .detail-button { appearance:none; border:1px solid #cfd7e6; background:#fff; color:#0b4a8b; border-radius:6px; min-height:28px; padding:4px 8px; font-size:12px; font-weight:800; cursor:pointer; }
+    .detail-button:hover { background:#eff6ff; border-color:#93c5fd; }
+    .row-actions { margin-top:5px; }
     .bad { color:var(--bad); }
     .warn { color:var(--warn); }
     .good { color:var(--good); }
@@ -1193,6 +1199,19 @@ def _html() -> str:
     .mini-detail summary { cursor:pointer; color:#0b4a8b; font-size:13px; font-weight:700; }
     .row-detail summary { cursor:pointer; color:#0b4a8b; font-size:12px; font-weight:700; }
     .row-detail[open] { margin-top:4px; }
+    .stock-drawer-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.34); opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:80; }
+    .stock-drawer-backdrop.open { opacity:1; pointer-events:auto; }
+    .stock-drawer { position:fixed; top:0; right:0; width:min(460px,100%); height:100dvh; background:#fff; border-left:1px solid var(--line); box-shadow:-18px 0 38px rgba(15,23,42,.2); transform:translateX(104%); transition:transform .2s ease; z-index:81; overflow:auto; }
+    .stock-drawer.open { transform:translateX(0); }
+    .drawer-head { position:sticky; top:0; background:#fff; border-bottom:1px solid var(--line); padding:14px 16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; z-index:1; }
+    .drawer-title { font-size:20px; font-weight:900; line-height:1.2; }
+    .drawer-body { padding:14px 16px 20px; display:grid; gap:10px; }
+    .drawer-close { appearance:none; border:1px solid var(--line); background:#fff; border-radius:6px; min-width:34px; min-height:32px; cursor:pointer; font-weight:900; }
+    .drawer-section { border:1px solid var(--line); border-radius:8px; background:#fbfcfe; padding:10px; }
+    .drawer-section b { display:block; margin-bottom:4px; }
+    .drawer-kv { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .drawer-kv div { border:1px solid #eef1f5; border-radius:6px; padding:8px; background:#fff; min-height:54px; }
+    .drawer-kv span { display:block; color:var(--muted); font-size:11px; margin-bottom:3px; }
     @media (max-width: 1180px) {
       .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .dashboard-layout { grid-template-columns:1fr; }
@@ -1290,6 +1309,17 @@ def _html() -> str:
       <tbody id="rows"></tbody>
     </table>
   </main>
+  <div class="stock-drawer-backdrop" id="stockDrawerBackdrop" aria-hidden="true"></div>
+  <aside class="stock-drawer" id="stockDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title" id="drawerTitle">Stock</div>
+        <div class="small" id="drawerSubtitle"></div>
+      </div>
+      <button class="drawer-close" type="button" data-drawer-close aria-label="Close">×</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
   <script>
     const chartScript = document.createElement("script");
     chartScript.src = "https://cdn.jsdelivr.net/npm/chart.js";
@@ -1303,6 +1333,78 @@ def _html() -> str:
     const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[ch]));
+    function priceText(value) {
+      if (value === null || value === undefined || value === "") return "待確認";
+      const n = Number(value);
+      return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/, "") : String(value);
+    }
+    function detailStockLink(row) {
+      return `https://www.wantgoo.com/stock/${encodeURIComponent(String(row.stock_id || ""))}`;
+    }
+    function findRow(stockId) {
+      return (data?.rows || []).find(row => String(row.stock_id) === String(stockId));
+    }
+    function detailList(items) {
+      if (!items || !items.length) return '<div class="small">無資料</div>';
+      return items.slice(0, 6).map(item => `<div class="small">- ${esc(item)}</div>`).join("");
+    }
+    function openStockDrawer(row) {
+      if (!row) return;
+      const drawer = document.querySelector("#stockDrawer");
+      const backdrop = document.querySelector("#stockDrawerBackdrop");
+      document.querySelector("#drawerTitle").innerHTML = `${esc(row.stock_id)} ${esc(row.name)}`;
+      document.querySelector("#drawerSubtitle").innerHTML = `${esc(row.score ?? "-")}/100 | ${esc(row.grade || "-")} | ${esc(row.entry_decision || row.action || "-")}`;
+      document.querySelector("#drawerBody").innerHTML = `
+        <div class="drawer-kv">
+          <div><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
+          <div><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+          <div><span>AI 複核</span><b>${esc(row.ai_label || "未審核")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
+          <div><span>散戶狀態</span><b>${esc(row.retail_context || "無明顯訊號")}</b></div>
+        </div>
+        <div class="drawer-section"><b>主要理由</b><div class="small">${esc(row.decision_reason || row.trigger_summary || row.action || "-")}</div></div>
+        <div class="drawer-section"><b>題材</b><div class="themes">${esc((row.theme_tiers || []).join(" / ") || (row.themes || []).join(" / ") || "-")}</div></div>
+        <div class="drawer-section"><b>原因標籤</b><div class="tags">${renderTags(row.trigger_tags || [])}</div></div>
+        <div class="drawer-section"><b>開盤檢查</b>${detailList(row.entry_checklist || [])}</div>
+        <div class="drawer-section"><b>技術 / 籌碼 / 基本 / 風險</b>
+          <div class="small">技術：${esc(row.technical || "-")}</div>
+          <div class="small">籌碼：${esc(row.chip || "-")}</div>
+          <div class="small">基本：${esc(row.fundamental || "-")}</div>
+          <div class="small">風險：${esc(row.risk || "-")}</div>
+        </div>
+        <div><a class="nav-tab" href="${esc(detailStockLink(row))}" target="_blank" rel="noopener noreferrer">開啟玩股網</a></div>
+      `;
+      drawer.classList.add("open");
+      backdrop.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+      backdrop.setAttribute("aria-hidden", "false");
+    }
+    function closeStockDrawer() {
+      const drawer = document.querySelector("#stockDrawer");
+      const backdrop = document.querySelector("#stockDrawerBackdrop");
+      drawer.classList.remove("open");
+      backdrop.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+    document.addEventListener("click", event => {
+      const detailButton = event.target.closest("[data-detail-stock]");
+      if (detailButton) {
+        event.preventDefault();
+        openStockDrawer(findRow(detailButton.dataset.detailStock));
+        return;
+      }
+      const stockRow = event.target.closest("tr[data-stock-id]");
+      if (stockRow && !event.target.closest("a, button, summary, details, input, select")) {
+        openStockDrawer(findRow(stockRow.dataset.stockId));
+        return;
+      }
+      if (event.target.closest("[data-drawer-close]") || event.target.id === "stockDrawerBackdrop") {
+        closeStockDrawer();
+      }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeStockDrawer();
+    });
     const zh = (map, value, fallback = "") => map[value] || value || fallback;
     const QUALITY_TEXT = { high: "高", medium: "中", low: "偏低" };
     const RECOVERY_TEXT = { retry_ready: "可自動補抓", manual_check: "需人工檢查", clean: "正常" };
@@ -1482,7 +1584,10 @@ def _html() -> str:
               <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}${aiText}</div>
               <div class="decision-light ${esc(light)}"><span class="decision-dot"></span>${esc(lightLabel)}<span class="small">｜${esc(lightReason)}</span></div>
             </div>
-            <span class="decision-badge ${mode}">${badgeText}</span>
+            <div class="decision-card-actions">
+              <button class="detail-button" type="button" data-detail-stock="${esc(row.stock_id)}">詳情</button>
+              <span class="decision-badge ${mode}">${badgeText}</span>
+            </div>
           </div>
           <div class="decision-prices">
             <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
@@ -1744,7 +1849,7 @@ def _html() -> str:
         return quickOk && (!q || blob.includes(q)) && (!g || r.grade === g);
       });
       document.querySelector("#rows").innerHTML = rows.map(r => `
-        <tr>
+        <tr data-stock-id="${esc(r.stock_id)}">
           <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "AI 未複核")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
