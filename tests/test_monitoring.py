@@ -44,6 +44,31 @@ def test_watch_reviews_compare_current_price(tmp_path) -> None:
     assert format_watch_reviews(reviews)[0].startswith("2408 南亞科：+10.0%")
 
 
+def test_traceability_runs_persist_recent_history(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 10)
+    trace = {
+        "generated_at": "2026-05-10T08:00:00+08:00",
+        "steps": [
+            {"key": "source", "status": "ok"},
+            {"key": "score", "status": "ok"},
+            {"key": "watch", "status": "ok"},
+            {"key": "retry", "status": "warn"},
+        ],
+        "summary": {"valid": 10, "watch_signals": 3},
+    }
+
+    store.save_traceability_run(trace, day0)
+    store.save_traceability_run({**trace, "steps": [{"key": "source", "status": "ok"}]}, day0 + timedelta(days=1))
+
+    rows = store.recent_traceability_runs(day0 + timedelta(days=2), days=10)
+
+    assert [row["run_date"] for row in rows] == ["2026-05-11", "2026-05-10"]
+    assert rows[0]["overall_status"] == "ok"
+    assert rows[1]["overall_status"] == "warn"
+    assert rows[1]["summary"]["watch_signals"] == 3
+
+
 def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     signal_day = date(2026, 5, 10)

@@ -252,6 +252,25 @@ class SQLiteStore:
             )
             conn.execute(
                 """
+                CREATE TABLE IF NOT EXISTS traceability_runs (
+                    run_date TEXT NOT NULL PRIMARY KEY,
+                    generated_at TEXT NOT NULL,
+                    overall_status TEXT NOT NULL,
+                    source_status TEXT NOT NULL DEFAULT '',
+                    score_status TEXT NOT NULL DEFAULT '',
+                    watch_status TEXT NOT NULL DEFAULT '',
+                    potential_status TEXT NOT NULL DEFAULT '',
+                    ai_status TEXT NOT NULL DEFAULT '',
+                    retry_status TEXT NOT NULL DEFAULT '',
+                    pages_status TEXT NOT NULL DEFAULT '',
+                    summary_json TEXT NOT NULL DEFAULT '{}',
+                    steps_json TEXT NOT NULL DEFAULT '[]',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS retail_holder_signals (
                     week_date TEXT NOT NULL,
                     stock_id TEXT NOT NULL,
@@ -281,6 +300,85 @@ class SQLiteStore:
                 )
                 """
             )
+
+    def save_traceability_run(self, traceability: dict, run_date: date) -> None:
+        steps = list(traceability.get("steps") or [])
+        status_by_key = {str(item.get("key") or ""): str(item.get("status") or "") for item in steps}
+        statuses = [status for status in status_by_key.values() if status]
+        if any(status == "bad" for status in statuses):
+            overall_status = "bad"
+        elif any(status == "warn" for status in statuses):
+            overall_status = "warn"
+        else:
+            overall_status = "ok"
+        generated_at = str(traceability.get("generated_at") or datetime.now(TAIPEI).isoformat(timespec="seconds"))
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO traceability_runs (
+                    run_date, generated_at, overall_status,
+                    source_status, score_status, watch_status, potential_status,
+                    ai_status, retry_status, pages_status,
+                    summary_json, steps_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_date.isoformat(),
+                    generated_at,
+                    overall_status,
+                    status_by_key.get("source", ""),
+                    status_by_key.get("score", ""),
+                    status_by_key.get("watch", ""),
+                    status_by_key.get("potential", ""),
+                    status_by_key.get("ai", ""),
+                    status_by_key.get("retry", ""),
+                    status_by_key.get("pages", ""),
+                    json.dumps(traceability.get("summary") or {}, ensure_ascii=False),
+                    json.dumps(steps, ensure_ascii=False),
+                ),
+            )
+
+    def recent_traceability_runs(self, as_of: date | None = None, days: int = 14) -> list[dict]:
+        with self._connect() as conn:
+            params: tuple
+            where = ""
+            if as_of is not None:
+                where = "WHERE run_date <= ?"
+                params = (as_of.isoformat(), int(days))
+            else:
+                params = (int(days),)
+            rows = conn.execute(
+                f"""
+                SELECT run_date, generated_at, overall_status,
+                       source_status, score_status, watch_status, potential_status,
+                       ai_status, retry_status, pages_status,
+                       summary_json, steps_json
+                FROM traceability_runs
+                {where}
+                ORDER BY run_date DESC
+                LIMIT ?
+                """,
+                params,
+            ).fetchall()
+        history = []
+        for row in rows:
+            history.append(
+                {
+                    "run_date": row[0],
+                    "generated_at": row[1],
+                    "overall_status": row[2],
+                    "source_status": row[3],
+                    "score_status": row[4],
+                    "watch_status": row[5],
+                    "potential_status": row[6],
+                    "ai_status": row[7],
+                    "retry_status": row[8],
+                    "pages_status": row[9],
+                    "summary": json.loads(row[10] or "{}"),
+                    "steps": json.loads(row[11] or "[]"),
+                }
+            )
+        return history
 
     def has_delivered_today(self, channel: str, delivery_date: date, message_type: str) -> bool:
         with self._connect() as conn:

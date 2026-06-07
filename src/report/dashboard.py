@@ -953,6 +953,11 @@ def _html() -> str:
     .trace-card b { display:block; font-size:13px; margin-bottom:3px; }
     .trace-value { font-size:17px; font-weight:800; line-height:1.25; }
     .trace-note { color:var(--muted); font-size:11px; line-height:1.35; margin-top:3px; }
+    .trace-history { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .trace-day { border:1px solid var(--line); border-radius:999px; padding:4px 8px; font-size:11px; background:#fff; }
+    .trace-day.ok { color:var(--good); border-color:#abefc6; }
+    .trace-day.warn { color:var(--warn); border-color:#f6d365; }
+    .trace-day.bad { color:var(--bad); border-color:#fecdd6; }
     .action-panel { border-left:4px solid var(--good); }
     .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
     .decision-pill { border:1px solid var(--line); border-radius:8px; padding:7px 8px; background:#fbfcfe; min-height:54px; }
@@ -1421,13 +1426,19 @@ def _html() -> str:
       const traceability = data.traceability || {};
       const traceSteps = traceability.steps || [];
       const traceClass = status => status === "ok" ? "ok" : status === "bad" ? "bad" : "warn";
+      const traceHistory = (traceability.history || []).slice(0, 10);
+      const traceHistoryHtml = traceHistory.length
+        ? `<div class="trace-history">${traceHistory.map(item => `
+            <span class="trace-day ${traceClass(item.overall_status)}">${esc(item.run_date)} ${esc(item.overall_status || "-")}</span>
+          `).join("")}</div>`
+        : "";
       document.querySelector("#traceability").innerHTML = traceSteps.length
         ? `<div class="trace-grid">${traceSteps.map(step => `
             <div class="trace-card ${traceClass(step.status)}">
               <b>${esc(step.label)}</b>
               <div class="trace-value">${esc(step.value || "-")}</div>
               <div class="trace-note">${esc(step.note || "")}</div>
-            </div>`).join("")}</div>`
+            </div>`).join("")}</div>${traceHistoryHtml}`
         : `<div class="line warn">尚未產生資料鏈檢查結果；請確認本次 run 是否完成到回測輸出階段。</div>`;
       const usEvents = data.themes?.policy?.us_events || [];
       document.querySelector("#usPolicyRadar").innerHTML = usEvents.length
