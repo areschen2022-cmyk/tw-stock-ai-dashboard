@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import os
@@ -1959,22 +1959,23 @@ def _weekly_html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>台股 AI 每週總覽</title>
   <style>
-    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; --blue:#0b4a8b; }
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#eef2f7; --panel:#fff; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; --blue:#0b4a8b; --terminal:#0f172a; }
     * { box-sizing:border-box; }
-    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
-    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#e9eef6 0,#f7f8fb 360px); }
+    header { padding:20px 24px 12px; border-bottom:1px solid #263244; background:linear-gradient(135deg,var(--terminal),#172033 62%,#0b4a8b); color:white; box-shadow:0 6px 18px rgba(15,23,42,.12); }
     main { max-width:1280px; margin:auto; padding:18px 24px 36px; }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     h2 { margin:0 0 10px; font-size:16px; }
     .sub, .line, .small { color:var(--muted); }
     .sub { font-size:14px; }
+    header .sub { color:#cbd5e1; }
     .line { margin:6px 0; font-size:14px; line-height:1.55; }
     .small { font-size:12px; margin-top:3px; line-height:1.45; }
-    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
-    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--blue); text-decoration:none; font-weight:700; }
-    .nav-tab.active { background:var(--blue); color:white; border-color:var(--blue); }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; position:sticky; top:0; z-index:20; padding:10px 0; background:rgba(238,242,247,.94); backdrop-filter:blur(10px); border-bottom:1px solid rgba(208,213,221,.75); }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid #cfd7e6; border-radius:6px; background:var(--panel); color:var(--blue); text-decoration:none; font-weight:700; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .nav-tab.active { background:var(--terminal); color:white; border-color:var(--terminal); }
     .summary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
-    .metric, section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .metric, section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .metric b { display:block; font-size:22px; margin-bottom:4px; }
     .content-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.72fr); gap:12px; align-items:start; }
     .stack { display:grid; gap:12px; }
@@ -2124,10 +2125,10 @@ def _potential_html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>台股 AI 潛力雷達</title>
   <style>
-    :root { --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --bad:#b42318; --warn:#9a6700; --blue:#0b4a8b; }
+    :root { --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#eef2f7; --panel:#fff; --good:#0f7b4f; --bad:#b42318; --warn:#9a6700; --blue:#0b4a8b; --terminal:#0f172a; }
     * { box-sizing:border-box; }
-    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
-    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#e9eef6 0,#f7f8fb 360px); }
+    header { padding:20px 24px 12px; border-bottom:1px solid #263244; background:linear-gradient(135deg,var(--terminal),#172033 62%,#0b4a8b); color:white; box-shadow:0 6px 18px rgba(15,23,42,.12); }
     main { max-width:1280px; margin:auto; padding:18px 24px 36px; }
     h1 { margin:0 0 8px; font-size:24px; }
     h2 { margin:0 0 10px; font-size:16px; }
@@ -2135,12 +2136,13 @@ def _potential_html() -> str:
     a:hover { text-decoration:underline; }
     .sub, .small, .note { color:var(--muted); }
     .sub { font-size:14px; }
+    header .sub { color:#cbd5e1; }
     .small { font-size:12px; margin-top:3px; line-height:1.45; }
     .note { font-size:13px; line-height:1.55; margin:4px 0 10px; }
-    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
-    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--blue); }
-    .nav-tab.active { background:var(--blue); color:white; border-color:var(--blue); }
-    section, .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; position:sticky; top:0; z-index:20; padding:10px 0; background:rgba(238,242,247,.94); backdrop-filter:blur(10px); border-bottom:1px solid rgba(208,213,221,.75); }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid #cfd7e6; border-radius:6px; background:var(--panel); color:var(--blue); text-decoration:none; font-weight:700; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .nav-tab.active { background:var(--terminal); color:white; border-color:var(--terminal); }
+    section, .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .metrics { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
     .metric b { display:block; font-size:22px; margin-bottom:4px; }
     .grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,.72fr); gap:12px; align-items:start; }
@@ -2252,26 +2254,27 @@ def _performance_html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>台股 AI 訊號成效追蹤</title>
   <style>
-    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#f6f7f9; --panel:#fff; --good:#0f7b4f; --bad:#b42318; }
+    :root { color-scheme: light; --ink:#18202a; --muted:#667085; --line:#d9dee7; --bg:#eef2f7; --panel:#fff; --good:#0f7b4f; --bad:#b42318; --blue:#0b4a8b; --terminal:#0f172a; }
     * { box-sizing:border-box; }
-    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
-    header { padding:20px 24px 12px; border-bottom:1px solid var(--line); background:var(--panel); }
+    body { margin:0; font-family:"Segoe UI", Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#e9eef6 0,#f7f8fb 360px); }
+    header { padding:20px 24px 12px; border-bottom:1px solid #263244; background:linear-gradient(135deg,var(--terminal),#172033 62%,#0b4a8b); color:white; box-shadow:0 6px 18px rgba(15,23,42,.12); }
     h1 { margin:0 0 8px; font-size:24px; }
     .sub, .small { color:var(--muted); font-size:13px; }
+    header .sub { color:#cbd5e1; }
     main { padding:18px 24px 32px; max-width:1320px; margin:auto; }
     .metrics { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
     .compact-metrics { grid-template-columns:repeat(5,minmax(120px,1fr)); }
-    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .metric b { display:block; font-size:clamp(18px, 4vw, 22px); margin-bottom:2px; overflow-wrap:anywhere; }
     .toolbar { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
-    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; }
-    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; }
-    .nav-tab.active { background:#0b4a8b; color:white; border-color:#0b4a8b; }
+    .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; position:sticky; top:0; z-index:20; padding:10px 0; background:rgba(238,242,247,.94); backdrop-filter:blur(10px); border-bottom:1px solid rgba(208,213,221,.75); }
+    .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 14px; border:1px solid #cfd7e6; border-radius:6px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:700; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .nav-tab.active { background:var(--terminal); color:white; border-color:var(--terminal); }
     input, select { border:1px solid var(--line); border-radius:6px; padding:9px 10px; background:white; min-height:38px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .analysis-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .quality-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:10px; }
     .quality-card { border:1px solid var(--line); border-radius:8px; padding:10px; min-height:94px; background:#fbfcfe; }
     .quality-card b { display:block; font-size:15px; margin-bottom:4px; }
@@ -2775,3 +2778,4 @@ def _performance_html() -> str:
   </script>
 </body>
 </html>"""
+
