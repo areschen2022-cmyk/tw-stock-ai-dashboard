@@ -7,6 +7,7 @@ from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
 from src.report.dashboard import (
     build_dashboard_payload,
+    build_traceability_diagnosis,
     build_traceability_summary,
     build_weekly_overview_payload,
     write_potential,
@@ -129,6 +130,37 @@ def test_build_traceability_summary_links_scoring_and_backtests() -> None:
         "retry",
         "pages",
     }
+
+
+def test_build_traceability_diagnosis_is_internal_for_non_ok_steps() -> None:
+    dashboard_payload = {
+        "summary": {"scanned": 5, "valid": 4},
+        "source_status": {"label": "正常", "api": 10, "cache": 2, "quota": 0, "error": 0},
+        "data_quality": {"label": "high"},
+        "data_retry": {"pending": 1, "recovered": 3, "failed": 0, "status_counts": {}},
+        "ai_council": {
+            "status": {
+                "requested_models": 5,
+                "successful_models": 3,
+                "failed_models": 1,
+                "timed_out_models": 1,
+                "health": {"label": "不穩定", "score": 50},
+            }
+        },
+    }
+    traceability = {
+        "steps": [
+            {"key": "source", "label": "資料源", "status": "ok", "note": "ok"},
+            {"key": "ai", "label": "AI 複核", "status": "warn", "note": "3/5"},
+            {"key": "retry", "label": "補抓佇列", "status": "warn", "note": "pending"},
+        ]
+    }
+
+    diagnosis = build_traceability_diagnosis(traceability, dashboard_payload)
+
+    assert [item["key"] for item in diagnosis] == ["ai", "retry"]
+    assert "successful=3" in diagnosis[0]["evidence"]
+    assert "pending=1" in diagnosis[1]["evidence"]
 
 
 def test_dashboard_health_includes_schedule_delay(monkeypatch) -> None:

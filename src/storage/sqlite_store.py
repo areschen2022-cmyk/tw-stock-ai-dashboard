@@ -265,10 +265,14 @@ class SQLiteStore:
                     pages_status TEXT NOT NULL DEFAULT '',
                     summary_json TEXT NOT NULL DEFAULT '{}',
                     steps_json TEXT NOT NULL DEFAULT '[]',
+                    diagnosis_json TEXT NOT NULL DEFAULT '[]',
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
                 """
             )
+            trace_columns = {row[1] for row in conn.execute("PRAGMA table_info(traceability_runs)").fetchall()}
+            if "diagnosis_json" not in trace_columns:
+                conn.execute("ALTER TABLE traceability_runs ADD COLUMN diagnosis_json TEXT NOT NULL DEFAULT '[]'")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS retail_holder_signals (
@@ -319,8 +323,8 @@ class SQLiteStore:
                     run_date, generated_at, overall_status,
                     source_status, score_status, watch_status, potential_status,
                     ai_status, retry_status, pages_status,
-                    summary_json, steps_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    summary_json, steps_json, diagnosis_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     run_date.isoformat(),
@@ -335,6 +339,7 @@ class SQLiteStore:
                     status_by_key.get("pages", ""),
                     json.dumps(traceability.get("summary") or {}, ensure_ascii=False),
                     json.dumps(steps, ensure_ascii=False),
+                    json.dumps(traceability.get("diagnosis") or [], ensure_ascii=False),
                 ),
             )
 

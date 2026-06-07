@@ -855,6 +855,132 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
     }
 
 
+def build_traceability_diagnosis(traceability: dict, dashboard_payload: dict) -> list[dict]:
+    """Build internal-only root-cause notes for non-OK data chain steps."""
+
+    retry = dashboard_payload.get("data_retry") or {}
+    source_status = dashboard_payload.get("source_status") or {}
+    data_quality = dashboard_payload.get("data_quality") or {}
+    summary = dashboard_payload.get("summary") or {}
+    ai_council = dashboard_payload.get("ai_council") or {}
+    ai_status = ai_council.get("status") or {}
+
+    def _count(value) -> int:
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    def _step_value(key: str, field: str = "status") -> str:
+        for step in traceability.get("steps") or []:
+            if str(step.get("key") or "") == key:
+                return str(step.get(field) or "")
+        return ""
+
+    def _retry_count(key: str) -> int:
+        return _count(retry.get(key)) + _count((retry.get("status_counts") or {}).get(key))
+
+    def _metric_count(value) -> int:
+        if isinstance(value, (list, tuple, set)):
+            return len(value)
+        return _count(value)
+
+    diagnosis: list[dict] = []
+    for step in traceability.get("steps") or []:
+        key = str(step.get("key") or "")
+        status = str(step.get("status") or "")
+        if status == "ok":
+            continue
+
+        item = {
+            "key": key,
+            "status": status,
+            "label": step.get("label") or key,
+            "reason": "",
+            "evidence": step.get("note") or step.get("value") or "",
+            "next_action": "",
+        }
+        if key == "source":
+            item.update(
+                {
+                    "reason": "資料源狀態或資料品質低於正常門檻。",
+                    "evidence": (
+                        f"source={source_status.get('label', '-')}; "
+                        f"quality={data_quality.get('label', '-')}; "
+                        f"api={source_status.get('api', 0)}; cache={source_status.get('cache', 0)}; "
+                        f"quota={source_status.get('quota', 0)}; error={source_status.get('error', 0)}"
+                    ),
+                    "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。",
+                }
+            )
+        elif key == "score":
+            item.update(
+                {
+                    "reason": "本次掃描沒有足夠有效評分標的。",
+                    "evidence": f"valid={summary.get('valid', 0)}; scanned={summary.get('scanned', 0)}",
+                    "next_action": "檢查行情資料、股票池與評分輸入是否缺漏。",
+                }
+            )
+        elif key == "watch":
+            item.update(
+                {
+                    "reason": "本次沒有產生可追蹤的進場訊號。",
+                    "evidence": _step_value("watch", "note"),
+                    "next_action": "檢查 BUY_WATCH 門檻、操作結論與 watch_signals 寫入流程。",
+                }
+            )
+        elif key == "potential":
+            item.update(
+                {
+                    "reason": "潛力雷達沒有產生可追蹤訊號。",
+                    "evidence": _step_value("potential", "note"),
+                    "next_action": "檢查潛力雷達條件是否過嚴，或題材/籌碼/K 線資料是否缺漏。",
+                }
+            )
+        elif key == "ai":
+            item.update(
+                {
+                    "reason": "AI 複核模型未完全穩定或成功數不足。",
+                    "evidence": (
+                        f"successful={_metric_count(ai_status.get('successful_models'))}; "
+                        f"requested={_metric_count(ai_status.get('requested_models'))}; "
+                        f"failed={_metric_count(ai_status.get('failed_models'))}; "
+                        f"timed_out={_metric_count(ai_status.get('timed_out_models'))}"
+                    ),
+                    "next_action": "確認 DeepSeek/OpenRouter Secret、模型名稱、timeout 與回傳 JSON 格式。",
+                }
+            )
+        elif key == "retry":
+            item.update(
+                {
+                    "reason": "補抓佇列仍有待補或失敗紀錄。",
+                    "evidence": (
+                        f"pending={_retry_count('pending')}; "
+                        f"recovered={_retry_count('recovered')}; "
+                        f"failed={_retry_count('failed')}"
+                    ),
+                    "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。",
+                }
+            )
+        elif key == "pages":
+            item.update(
+                {
+                    "reason": "Dashboard 或 GitHub Pages 輸出流程異常。",
+                    "evidence": _step_value("pages", "note"),
+                    "next_action": "檢查 dashboard/docs 檔案是否同步，以及 Pages workflow 是否成功。",
+                }
+            )
+        else:
+            item.update(
+                {
+                    "reason": "未知資料鏈步驟出現非正常狀態。",
+                    "next_action": "檢查 traceability steps 原始紀錄。",
+                }
+            )
+        diagnosis.append(item)
+    return diagnosis
+
+
 def build_weekly_overview_payload(
     as_of: date,
     dashboard_payload: dict,

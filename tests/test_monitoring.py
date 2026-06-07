@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import date, timedelta
 
 from src.report.monitoring import detect_alerts, format_watch_reviews
@@ -56,6 +57,15 @@ def test_traceability_runs_persist_recent_history(tmp_path) -> None:
             {"key": "retry", "status": "warn"},
         ],
         "summary": {"valid": 10, "watch_signals": 3},
+        "diagnosis": [
+            {
+                "key": "retry",
+                "status": "warn",
+                "reason": "補抓佇列仍有待補或失敗紀錄。",
+                "evidence": "pending=1",
+                "next_action": "observe",
+            }
+        ],
     }
 
     store.save_traceability_run(trace, day0)
@@ -67,6 +77,13 @@ def test_traceability_runs_persist_recent_history(tmp_path) -> None:
     assert rows[0]["overall_status"] == "ok"
     assert rows[1]["overall_status"] == "warn"
     assert rows[1]["summary"]["watch_signals"] == 3
+    assert "diagnosis" not in rows[1]
+    with store._connect() as conn:
+        diagnosis_json = conn.execute(
+            "SELECT diagnosis_json FROM traceability_runs WHERE run_date = ?",
+            (day0.isoformat(),),
+        ).fetchone()[0]
+    assert json.loads(diagnosis_json)[0]["key"] == "retry"
 
 
 def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
