@@ -101,6 +101,23 @@ def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
     assert rows == [("2344",)]
 
 
+def test_prune_daily_scores_keeps_current_scan_only(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    scan_day = date(2026, 5, 10)
+
+    store.save_daily_score(_score("2408", 80, price=100.0), scan_day)
+    store.save_daily_score(_score("2344", 80, price=50.0), scan_day)
+    store.prune_daily_scores(scan_day, ["2344"])
+
+    with store._connect() as conn:
+        rows = conn.execute(
+            "SELECT stock_id FROM daily_scores WHERE as_of_date = ? ORDER BY stock_id",
+            (scan_day.isoformat(),),
+        ).fetchall()
+
+    assert rows == [("2344",)]
+
+
 def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)

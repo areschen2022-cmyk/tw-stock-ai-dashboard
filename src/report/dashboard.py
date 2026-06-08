@@ -1641,6 +1641,7 @@ def _html() -> str:
       const bundleCoverage = data.source_status?.bundle_coverage || {};
       const coverageRows = bundleCoverage.datasets || {};
       const marketSnapshots = data.source_status?.market_snapshots || {};
+      const universe = data.source_status?.universe || {};
       const qualityCls = (quality.label === "high" || quality.label === "高") ? "good" : (quality.label === "medium" || quality.label === "中") ? "warn" : "bad";
       const qualityHuman = quality.label === "high" ? "可用" : quality.label === "medium" ? "注意" : "偏低";
       const qualityNote = quality.label === "high"
@@ -1662,6 +1663,8 @@ def _html() -> str:
         <details class="mini-detail">
           <summary>資料細節</summary>
           <div class="line">資料源 ${esc(quality.source_score ?? "—")}/100｜覆蓋率 ${esc(quality.coverage ?? "—")}%</div>
+          <div class="line"><b>分層股票池</b>：${esc(universe.mode || "未啟用")}｜本次 ${esc(universe.selected_count || data.summary?.scanned || 0)} 檔｜約 ${esc(universe.coverage_pct ?? "—")}% / ${esc(universe.target_total_listed || 1056)} 家</div>
+          <div class="line small">核心 ${esc(universe.core_count || 0)}｜當日題材 ${esc(universe.active_theme_count || 0)}｜題材輪動 ${esc(universe.theme_rotation_count || 0)}｜高成交候選 ${esc(universe.market_liquidity_count || 0)}｜官方候選 ${esc(universe.market_universe_available || 0)}</div>
           <div class="line"><b>逐檔資料稽核</b>：${bundleCoverage.all_critical_complete ? "核心資料完整" : "仍有缺口"}｜掃描 ${esc(bundleCoverage.stocks || 0)} 檔</div>
           ${Object.entries(coverageRows).map(([key, row]) => `<div class="line small">${esc(key)}｜${esc(row.coverage_pct ?? 0)}%｜缺 ${esc((row.missing || []).length)}${(row.missing || []).length ? `｜${esc((row.missing || []).slice(0,6).join(","))}` : ""}</div>`).join("")}
           ${Object.entries(marketSnapshots).map(([key, row]) => `<div class="line small">${esc(key)}｜${row.valid ? "已驗證" : "部分備援"}${row.date ? `｜${esc(row.date)}` : ""}｜${esc(row.source || "")}</div>`).join("")}

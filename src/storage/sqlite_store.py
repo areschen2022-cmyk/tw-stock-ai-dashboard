@@ -700,6 +700,19 @@ class SQLiteStore:
                 ),
             )
 
+    def prune_daily_scores(self, as_of: date, stock_ids: list[str]) -> None:
+        """Keep same-day daily_scores aligned with the current scan universe."""
+        keep_ids = [str(stock_id) for stock_id in dict.fromkeys(stock_ids) if str(stock_id).strip()]
+        with self._connect() as conn:
+            if not keep_ids:
+                conn.execute("DELETE FROM daily_scores WHERE as_of_date = ?", (as_of.isoformat(),))
+                return
+            placeholders = ",".join("?" for _ in keep_ids)
+            conn.execute(
+                f"DELETE FROM daily_scores WHERE as_of_date = ? AND stock_id NOT IN ({placeholders})",
+                (as_of.isoformat(), *keep_ids),
+            )
+
     def latest_score_before(self, stock_id: str, as_of: date) -> dict | None:
         with self._connect() as conn:
             row = conn.execute(

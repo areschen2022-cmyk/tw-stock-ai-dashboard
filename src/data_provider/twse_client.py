@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from threading import Lock
@@ -214,6 +215,62 @@ class TwseClient:
             and "SecuritiesCompanyCode" in quotes.columns
             and (quotes["SecuritiesCompanyCode"].astype(str) == str(stock_id)).any()
         )
+
+    def market_universe(self, as_of: date | None = None) -> list[dict[str, Any]]:
+        """Return official listed/OTC candidates ranked by turnover.
+
+        This is intentionally a broad, shallow market snapshot. It avoids
+        per-stock requests and is used only to decide which extra stocks deserve
+        deeper scoring in the layered scanner.
+        """
+        end_date = as_of or date.today()
+        rows: list[dict[str, Any]] = []
+
+        twse = self._get_today_all()
+        if not twse.empty:
+            for _, row in twse.iterrows():
+                stock_id = str(row.get("Code") or "").strip()
+                if not _is_common_stock_code(stock_id):
+                    continue
+                rows.append(
+                    {
+                        "stock_id": stock_id,
+                        "name": str(row.get("Name") or "").strip(),
+                        "market": "listed",
+                        "trade_value": _num(row.get("TradeValue", 0)),
+                        "volume": _num(row.get("TradeVolume", 0)),
+                    }
+                )
+
+        tpex, _ = self._tpex_quotes_today(end_date)
+        if not tpex.empty:
+            for _, row in tpex.iterrows():
+                stock_id = str(row.get("SecuritiesCompanyCode") or "").strip()
+                if not _is_common_stock_code(stock_id):
+                    continue
+                rows.append(
+                    {
+                        "stock_id": stock_id,
+                        "name": str(row.get("CompanyName") or row.get("SecuritiesCompanyName") or "").strip(),
+                        "market": "otc",
+                        "trade_value": _num(_first_existing(row, ["TradingValue", "TransactionAmount", "TradeValue"])),
+                        "volume": _num(_first_existing(row, ["TradingShares", "TradingVolume", "TradeVolume"])),
+                    }
+                )
+
+        deduped: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            current = deduped.get(row["stock_id"])
+            if current is None or float(row.get("trade_value") or 0) > float(current.get("trade_value") or 0):
+                deduped[row["stock_id"]] = row
+        result = sorted(deduped.values(), key=lambda item: float(item.get("trade_value") or 0), reverse=True)
+        self.market_snapshots["universe"] = {
+            "date": end_date.isoformat(),
+            "valid": bool(result),
+            "rows": len(result),
+            "source": "official",
+        }
+        return result
 
     def _record_official_snapshot(
         self,
@@ -1101,6 +1158,18 @@ def _snapshot_date(df: pd.DataFrame) -> date | None:
         except ValueError:
             continue
     return None
+
+
+def _is_common_stock_code(stock_id: str) -> bool:
+    value = str(stock_id).strip()
+    return bool(re.fullmatch(r"\d{4}", value)) and not value.startswith("0")
+
+
+def _first_existing(row: pd.Series, keys: list[str]) -> object:
+    for key in keys:
+        if key in row and pd.notna(row.get(key)):
+            return row.get(key)
+    return 0
 
 
 def _merge_frames(

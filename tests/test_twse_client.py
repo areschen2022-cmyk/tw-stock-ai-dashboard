@@ -4,7 +4,7 @@ from datetime import date
 
 import pandas as pd
 
-from src.data_provider.twse_client import TwseClient, _roc_compact_date, _roc_slash_date
+from src.data_provider.twse_client import TwseClient, _is_common_stock_code, _roc_compact_date, _roc_slash_date
 
 
 class _Response:
@@ -43,6 +43,13 @@ class _Fallback:
 def test_roc_date_parsers() -> None:
     assert _roc_slash_date("115/05/04") == date(2026, 5, 4)
     assert _roc_compact_date("1150519") == date(2026, 5, 19)
+
+
+def test_common_stock_code_excludes_etf_codes() -> None:
+    assert _is_common_stock_code("2330") is True
+    assert _is_common_stock_code("6510") is True
+    assert _is_common_stock_code("0050") is False
+    assert _is_common_stock_code("00878") is False
 
 
 def test_twse_stock_prices_parse_and_cache(tmp_path, monkeypatch) -> None:
@@ -235,6 +242,59 @@ def test_tpex_official_batch_snapshots_avoid_twse_html_and_finmind_network(tmp_p
     assert status["tpex_institutional"]["valid"] is True
     assert status["tpex_margin"]["valid"] is True
     assert status["revenue_tpex"]["valid"] is True
+
+
+def test_market_universe_merges_listed_and_otc_without_etfs(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    def fake_get(url, params=None, headers=None, timeout=20):
+        calls.append(url)
+        if url == TwseClient.STOCK_DAY_ALL_URL:
+            return _Response([
+                {
+                    "Date": "1150603",
+                    "Code": "0050",
+                    "Name": "ETF",
+                    "TradeValue": "9999999999",
+                    "TradeVolume": "1000000",
+                },
+                {
+                    "Date": "1150603",
+                    "Code": "2330",
+                    "Name": "TSMC",
+                    "TradeValue": "1000000",
+                    "TradeVolume": "1000",
+                },
+                {
+                    "Date": "1150603",
+                    "Code": "2408",
+                    "Name": "NANYA",
+                    "TradeValue": "3000000",
+                    "TradeVolume": "3000",
+                },
+            ])
+        if url == TwseClient.TPEX_QUOTES_URL:
+            return _Response([
+                {
+                    "Date": "1150603",
+                    "SecuritiesCompanyCode": "6510",
+                    "CompanyName": "CHPT",
+                    "TradingValue": "2000000",
+                    "TradingShares": "2000",
+                }
+            ])
+        raise AssertionError(f"unexpected URL: {url}")
+
+    monkeypatch.setattr("src.data_provider.twse_client.requests.get", fake_get)
+    client = TwseClient(fallback=_Fallback(), cache_dir=tmp_path)
+
+    rows = client.market_universe(date(2026, 6, 3))
+
+    assert [row["stock_id"] for row in rows] == ["2408", "6510", "2330"]
+    assert "0050" not in {row["stock_id"] for row in rows}
+    assert client.source_status()["market_snapshots"]["universe"]["rows"] == 3
+    assert calls.count(TwseClient.STOCK_DAY_ALL_URL) == 1
+    assert calls.count(TwseClient.TPEX_QUOTES_URL) == 1
 
 
 def test_public_overseas_market_uses_fallback_only_for_tx_night(tmp_path, monkeypatch) -> None:

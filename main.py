@@ -124,6 +124,130 @@ def select_theme_pools(theme_pools: dict, active_theme_keys: set[str]) -> dict:
     return {key: value for key, value in theme_pools.items() if key in active_theme_keys}
 
 
+def _theme_stock_ids(theme_pools: dict) -> list[str]:
+    stock_ids: list[str] = []
+    for theme_cfg in theme_pools.values():
+        for stock_id in theme_cfg.get("stocks", {}):
+            sid = str(stock_id).strip()
+            if sid and sid not in stock_ids:
+                stock_ids.append(sid)
+    return stock_ids
+
+
+def _market_candidates(provider, as_of: date) -> list[dict]:
+    market_universe = getattr(provider, "market_universe", None)
+    if not callable(market_universe):
+        return []
+    try:
+        rows = market_universe(as_of)
+    except Exception as exc:  # pragma: no cover - runtime guard
+        logging.warning("market universe fetch failed: %s", exc)
+        return []
+    normalized = []
+    for row in rows or []:
+        stock_id = str(row.get("stock_id") or "").strip()
+        if not stock_id:
+            continue
+        normalized.append(
+            {
+                "stock_id": stock_id,
+                "name": str(row.get("name") or "").strip(),
+                "market": str(row.get("market") or "").strip(),
+                "trade_value": float(row.get("trade_value") or 0),
+            }
+        )
+    normalized.sort(key=lambda item: item["trade_value"], reverse=True)
+    return normalized
+
+
+def build_layered_stock_universe(
+    config: dict,
+    theme_signal,
+    selected_theme_pools: dict,
+    provider,
+    as_of: date,
+) -> tuple[list[str], dict]:
+    """Build a rate-limit aware stock universe for the current run.
+
+    Layers:
+    - core: manually curated daily watch list.
+    - active_theme: stocks tied to themes detected today.
+    - theme_rotation: broader thematic pool, mainly for weekly expansion.
+    - market_liquidity: official TWSE/TPEX market list ranked by turnover.
+    """
+    universe_cfg = config.get("universe", {})
+    core_ids = [str(stock_id) for stock_id in config.get("stocks", [])]
+    active_theme_ids = _theme_stock_ids(selected_theme_pools)
+    all_theme_ids = _theme_stock_ids(config.get("theme_pools", {}))
+    stock_names = config.setdefault("stock_names", {})
+
+    enabled = bool(universe_cfg.get("enabled", False))
+    weekly_weekday = int(universe_cfg.get("weekly_full_scan_weekday", 0))
+    is_weekly = as_of.weekday() == weekly_weekday
+    mode = "weekly_full_scan" if enabled and is_weekly else "daily_layered"
+    market_limit = int(
+        universe_cfg.get("weekly_market_limit" if is_weekly else "daily_market_limit", 0)
+    )
+    theme_rotation_limit = int(
+        universe_cfg.get("weekly_theme_rotation_limit" if is_weekly else "daily_theme_rotation_limit", 0)
+    )
+    max_total = int(universe_cfg.get("max_weekly_total" if is_weekly else "max_daily_total", 0))
+
+    ordered: list[str] = []
+
+    def add_many(stock_ids: list[str]) -> int:
+        before = len(ordered)
+        for stock_id in stock_ids:
+            sid = str(stock_id).strip()
+            if sid and sid not in ordered:
+                ordered.append(sid)
+        return len(ordered) - before
+
+    core_added = add_many(core_ids)
+    active_theme_added = add_many(active_theme_ids)
+    theme_rotation_added = 0
+    market_added = 0
+    market_rows = []
+
+    if enabled:
+        if theme_rotation_limit > 0:
+            theme_rotation_added = add_many(all_theme_ids[:theme_rotation_limit])
+        market_rows = _market_candidates(provider, as_of)
+        for row in market_rows:
+            if market_added >= market_limit:
+                break
+            stock_id = row["stock_id"]
+            if stock_id in ordered:
+                continue
+            if row.get("name"):
+                stock_names.setdefault(stock_id, row["name"])
+            ordered.append(stock_id)
+            market_added += 1
+        if max_total > 0 and len(ordered) > max_total:
+            ordered = ordered[:max_total]
+
+    report = {
+        "enabled": enabled,
+        "mode": mode,
+        "target_total_listed": int(universe_cfg.get("target_total_listed", 1056)),
+        "selected_count": len(ordered),
+        "coverage_pct": round(
+            len(ordered) / max(1, int(universe_cfg.get("target_total_listed", 1056))) * 100,
+            1,
+        ),
+        "core_count": core_added,
+        "active_theme_count": active_theme_added,
+        "theme_rotation_count": theme_rotation_added,
+        "market_liquidity_count": market_added,
+        "market_universe_available": len(market_rows),
+        "daily_market_limit": int(universe_cfg.get("daily_market_limit", 0)),
+        "weekly_market_limit": int(universe_cfg.get("weekly_market_limit", 0)),
+        "weekly_full_scan_weekday": weekly_weekday,
+        "active_themes": list(theme_signal.active_themes or []) if theme_signal else [],
+    }
+    return ordered, report
+
+
 def bundle_coverage_report(bundles: dict[str, dict]) -> dict:
     """Measure actual per-stock bundle coverage instead of inferring it from request status."""
     datasets = {
@@ -302,7 +426,13 @@ def main() -> int:
             if meta:
                 stock_theme_details.setdefault(stock_id, []).append(meta)
 
-    all_stock_ids = list(dict.fromkeys([*config["stocks"], *stock_themes.keys()]))
+    all_stock_ids, universe_report = build_layered_stock_universe(
+        config,
+        theme_signal,
+        selected_theme_pools,
+        provider,
+        as_of,
+    )
     core_ids = set(config["stocks"])
     bundles = {}
     max_workers = int(config.get("runtime", {}).get("fetch_workers", 3))
@@ -359,9 +489,11 @@ def main() -> int:
         results.append(score)
         store.save_daily_score(score, as_of)
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
+    store.prune_daily_scores(as_of, [score.stock_id for score in results])
 
     source_status = provider.source_status()
     source_status["bundle_coverage"] = bundle_coverage_report(bundles)
+    source_status["universe"] = universe_report
     watch_reviews = store.watch_reviews(as_of)
     exit_risks = build_exit_risks(
         results,
