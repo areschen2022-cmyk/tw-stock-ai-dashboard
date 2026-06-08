@@ -171,6 +171,10 @@ def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path
     assert summary["learning_center"]["success_factors"]
     assert summary["learning_center"]["failure_factors"]
     assert any(row["label"] == "高分失敗" for row in summary["learning_center"]["failure_factors"])
+    assert summary["signal_attribution"]["summary_rows"]
+    assert summary["signal_attribution"]["summary_rows"][0]["label"] == "今日操作訊號"
+    assert summary["signal_attribution"]["factor_rows"]
+    assert summary["signal_attribution"]["best_factor"]
 
 
 def test_learning_center_lists_potential_candidates(tmp_path) -> None:

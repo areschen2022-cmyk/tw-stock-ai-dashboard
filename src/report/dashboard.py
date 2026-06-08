@@ -429,9 +429,9 @@ def _decision_summary(rows: list[dict], action_lists: dict, data_quality: dict, 
     s_count = sum(1 for row in rows if row.get("grade") in {"S+", "S"})
     quality_label = str(data_quality.get("label") or "")
     health_label = str(health.get("label") or "")
-    if health_label in {"甇?虜", "正常"} and quality_label in {"擃?", "高", "high"} and chase_count:
+    if health_label in {"正常"} and quality_label in {"高", "high"} and chase_count:
         posture = "active_watch"
-    elif risk_count or quality_label in {"??", "偏低", "low"}:
+    elif risk_count or quality_label in {"偏低", "low"}:
         posture = "risk_control"
     else:
         posture = "selective_watch"
@@ -2295,6 +2295,7 @@ def _performance_html() -> str:
     .lesson-tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:700; background:#f8fafc; color:#475467; border:1px solid #e2e8f0; }
     .lesson-tag.good { background:#f0f9f5; color:var(--good); border-color:#abefc6; }
     .lesson-tag.bad { background:#fff5f5; color:var(--bad); border-color:#fecdd6; }
+    .tag-good { background:#f0f9f5; color:var(--good); border:1px solid #abefc6; }
     @media (max-width:1100px) {
       .metrics { grid-template-columns:repeat(3,1fr); }
     }
@@ -2331,6 +2332,27 @@ def _performance_html() -> str:
       <div class="note" id="qualityNote">載入中...</div>
       <div class="quality-grid" id="selectionQuality"></div>
       <div class="advice-list" id="calibrationAdvice"></div>
+    </section>
+    <section style="margin-bottom:16px;">
+      <h2>信號歸因中心</h2>
+      <div class="note">把今日操作、潛力雷達、AI 複核放在同一張表比較，用來看哪一層真的提升勝率；樣本不足時只觀察，不自動改權重。</div>
+      <div class="analysis-grid">
+        <section>
+          <h2>來源層成效</h2>
+          <table>
+            <thead><tr><th>來源</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>狀態</th></tr></thead>
+            <tbody id="attributionSources"></tbody>
+          </table>
+        </section>
+        <section>
+          <h2>因素層成效</h2>
+          <table>
+            <thead><tr><th>因素</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>樣本</th></tr></thead>
+            <tbody id="attributionFactors"></tbody>
+          </table>
+        </section>
+      </div>
+      <div class="note" id="attributionNotes"></div>
     </section>
     <div class="analysis-grid">
       <section>
@@ -2550,6 +2572,30 @@ def _performance_html() -> str:
       document.querySelector("#calibrationAdvice").innerHTML = (data.calibration_advice || []).length
         ? data.calibration_advice.map(row => `<div class="advice-item ${adviceClass(row.priority)}"><b>${esc(row.priority)}｜${esc(row.group)}：${esc(row.label)}</b><div>${esc(row.reason)}</div><div class="small">完成 ${esc(row.completed)} 筆｜5日勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}｜5日平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}</div></div>`).join("")
         : `<div class="advice-item">目前樣本不足或無明顯需要調權的區塊，先持續記錄。</div>`;
+      const attribution = data.signal_attribution || {};
+      const attrSourceRow = row => `<tr>
+        <td data-label="來源"><b>${esc(row.label)}</b><div class="small">${esc(row.note || "")}</div></td>
+        <td data-label="訊號">${esc(row.signals ?? 0)}</td>
+        <td data-label="完成">${esc(row.completed ?? 0)}</td>
+        <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
+        <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
+        <td data-label="狀態"><span class="tag ${Number(row.completed || 0) >= 20 ? "tag-good" : "tag-default"}">${Number(row.completed || 0) >= 20 ? "可參考" : "累積中"}</span></td>
+      </tr>`;
+      const attrFactorRow = row => `<tr>
+        <td data-label="因素"><b>${esc(row.label)}</b></td>
+        <td data-label="訊號">${esc(row.signals ?? 0)}</td>
+        <td data-label="完成">${esc(row.completed ?? 0)}</td>
+        <td data-label="5日勝率">${fmtPct(row.win_rate_5d)}</td>
+        <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
+        <td data-label="樣本">${esc(row.sample_label || "樣本不足")}</td>
+      </tr>`;
+      document.querySelector("#attributionSources").innerHTML = (attribution.summary_rows || []).length
+        ? attribution.summary_rows.map(attrSourceRow).join("")
+        : `<tr><td data-label="來源層成效" colspan="6">尚無歸因資料</td></tr>`;
+      document.querySelector("#attributionFactors").innerHTML = (attribution.factor_rows || []).length
+        ? attribution.factor_rows.slice(0, 8).map(attrFactorRow).join("")
+        : `<tr><td data-label="因素層成效" colspan="6">尚無因素歸因資料</td></tr>`;
+      document.querySelector("#attributionNotes").innerHTML = (attribution.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       const leaderRow = (r, includeStop=false) => `
         <tr>
           <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>

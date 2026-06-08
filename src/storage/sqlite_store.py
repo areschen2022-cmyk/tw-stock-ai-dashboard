@@ -1083,6 +1083,7 @@ class SQLiteStore:
         score_bands = _score_band_stats(items)
         ai_council = self.ai_council_summary(as_of, days=days)
         backtest_insights = _backtest_insights(items)
+        potential_radar = self.potential_radar_summary(as_of, days=days)
         return {
             "as_of": as_of.isoformat(),
             "days": days,
@@ -1105,9 +1106,10 @@ class SQLiteStore:
             "signal_lab": grade_return_summary(items),
             "postmortem": _postmortem_summary(items),
             "learning_center": _learning_center_summary(items),
-            "potential_radar": self.potential_radar_summary(as_of, days=days),
+            "potential_radar": potential_radar,
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
+            "signal_attribution": _signal_attribution_center(items, potential_radar, ai_council),
             "selection_quality": _selection_quality_overview(
                 items,
                 theme_stats=theme_stats,
@@ -1680,6 +1682,151 @@ def _bucket_stats(label: str, items: list[dict]) -> dict:
     }
 
 
+def _signal_attribution_center(watch_items: list[dict], potential_radar: dict, ai_council: dict) -> dict:
+    potential_items = list((potential_radar or {}).get("items") or [])
+    ai_stats = (ai_council or {}).get("stats") or {}
+    rows = [
+        _attribution_source_row(
+            "watch",
+            "今日操作訊號",
+            watch_items,
+            note="正式列入買進觀察後的 3/5/10 日驗證。",
+        ),
+        _attribution_source_row(
+            "potential",
+            "潛力雷達",
+            potential_items,
+            note="尚未完全進入買點前的早期觀察驗證。",
+        ),
+        {
+            "key": "ai_council",
+            "label": "AI 複核同意",
+            "signals": ai_stats.get("signals", 0),
+            "completed": ai_stats.get("completed", 0),
+            "win_rate_5d": ai_stats.get("win_rate_5d"),
+            "avg_return_5d": ai_stats.get("avg_return_5d"),
+            "avg_return_10d": ai_stats.get("avg_return_10d"),
+            "success_count": ai_stats.get("wins_5d", 0),
+            "failure_count": ai_stats.get("losses_5d", 0),
+            "pending_count": max(int(ai_stats.get("signals") or 0) - int(ai_stats.get("completed") or 0), 0),
+            "note": "AI 只作為複核層，勝率用來評估是否值得採信。",
+        },
+    ]
+    factor_rows = _factor_attribution_rows(watch_items, potential_items)
+    return {
+        "summary_rows": rows,
+        "factor_rows": factor_rows,
+        "best_factor": factor_rows[0] if factor_rows else None,
+        "weak_factor": _weak_factor(factor_rows),
+        "notes": [
+            "同一檔股票可能同時有多個訊號，因素統計允許重複計入，用來判斷訊號品質，不等於唯一股票數。",
+            "樣本少時只做觀察，不自動調整分數權重。",
+        ],
+    }
+
+
+def _attribution_source_row(key: str, label: str, items: list[dict], note: str) -> dict:
+    completed = [item for item in items if item.get("return_5d") is not None]
+    success = [item for item in completed if float(item.get("return_5d") or 0) > 0]
+    failure = [item for item in completed if float(item.get("return_5d") or 0) <= 0]
+    return {
+        "key": key,
+        "label": label,
+        "signals": len(items),
+        "completed": len(completed),
+        "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+        "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+        "avg_return_10d": _avg([item.get("return_10d") for item in items if item.get("return_10d") is not None]),
+        "success_count": len(success),
+        "failure_count": len(failure),
+        "pending_count": len(items) - len(completed),
+        "note": note,
+    }
+
+
+def _factor_attribution_rows(watch_items: list[dict], potential_items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+
+    for item in watch_items:
+        for tag in _watch_factor_tags(item):
+            buckets.setdefault(tag, []).append(item)
+
+    for item in potential_items:
+        for tag in _potential_factor_tags(item):
+            buckets.setdefault(tag, []).append(item)
+
+    rows = []
+    for label, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        if not bucket:
+            continue
+        rows.append(
+            {
+                "label": label,
+                "signals": len(bucket),
+                "completed": len(completed),
+                "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "avg_return_10d": _avg([item.get("return_10d") for item in bucket if item.get("return_10d") is not None]),
+                "sample_label": _sample_label(len(completed)),
+            }
+        )
+
+    rows.sort(
+        key=lambda row: (
+            int(row.get("completed") or 0) >= 5,
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else -999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else -999),
+            int(row.get("signals") or 0),
+        ),
+        reverse=True,
+    )
+    return rows[:12]
+
+
+def _watch_factor_tags(item: dict) -> list[str]:
+    tags = list(item.get("lesson_tags") or [])
+    grade = str(item.get("grade") or "")
+    action = str(item.get("action") or "")
+    if grade in {"S+", "S"}:
+        tags.append("高強度訊號")
+    if item.get("entry_triggered") is True:
+        tags.append("進場條件觸發")
+    elif item.get("entry_triggered") is False:
+        tags.append("進場條件未觸發")
+    if "等拉回" in action:
+        tags.append("等拉回策略")
+    if item.get("stop_hit") is True:
+        tags.append("停損觸及")
+    tags.extend([f"題材:{theme}" for theme in (item.get("themes") or [])[:2]])
+    return _dedupe(tags)
+
+
+def _potential_factor_tags(item: dict) -> list[str]:
+    tags = list(item.get("tags") or [])
+    stage = str(item.get("stage_label") or "")
+    chase = str(item.get("chase_risk_label") or "")
+    if stage:
+        tags.append(f"潛力階段:{stage}")
+    if chase:
+        tags.append(f"追高檢查:{chase}")
+    tags.extend([f"題材:{theme}" for theme in (item.get("themes") or [])[:2]])
+    return _dedupe(tags)
+
+
+def _weak_factor(rows: list[dict]) -> dict | None:
+    completed = [row for row in rows if int(row.get("completed") or 0) > 0]
+    if not completed:
+        return None
+    return min(
+        completed,
+        key=lambda row: (
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else 999),
+            float(row.get("win_rate_5d") if row.get("win_rate_5d") is not None else 999),
+        ),
+    )
+
+
 def _theme_stats(items: list[dict]) -> list[dict]:
     buckets: dict[str, list[dict]] = {}
     for item in items:
@@ -2173,6 +2320,14 @@ def _json_list(raw) -> list:
     except (TypeError, json.JSONDecodeError):
         return []
     return value if isinstance(value, list) else []
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result
 
 
 def _learning_center_summary(items: list[dict]) -> dict:

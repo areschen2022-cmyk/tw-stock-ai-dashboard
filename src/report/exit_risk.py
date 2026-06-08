@@ -42,6 +42,8 @@ def build_exit_risks(
     score_drop_limit = int(cfg.get("score_drop", 15))
     margin_rise_pct = float(cfg.get("margin_rise_pct", 0.08))
     price_drop_5d_pct = float(cfg.get("price_drop_5d_pct", -5.0))
+    retail_rows = store.latest_retail_holder_signals(limit=int(cfg.get("retail_signal_limit", 400)))
+    retail_by_stock = {str(row.get("stock_id")): row for row in retail_rows}
 
     risks: list[ExitRisk] = []
     for score in scores:
@@ -73,9 +75,13 @@ def build_exit_risks(
         points += margin_points
         reasons.extend(margin_reasons)
 
+        retail_points, retail_reasons = _retail_holder_risk(retail_by_stock.get(score.stock_id), prices)
+        points += retail_points
+        reasons.extend(retail_reasons)
+
         divergence_points, divergence_reasons = _chip_divergence_risk(
             sell_reasons,
-            margin_reasons,
+            [*margin_reasons, *retail_reasons],
             price_reasons,
         )
         points += divergence_points
@@ -244,7 +250,7 @@ def _chip_divergence_risk(
     price_reasons: list[str],
 ) -> tuple[int, list[str]]:
     has_institutional_sell = any("外資" in reason or "投信" in reason for reason in sell_reasons)
-    has_margin_rise = any("融資增" in reason for reason in margin_reasons)
+    has_margin_rise = any("融資增" in reason or "散戶" in reason for reason in margin_reasons)
     has_price_weakness = any(
         keyword in reason
         for reason in price_reasons
@@ -255,6 +261,47 @@ def _chip_divergence_risk(
     if has_institutional_sell and has_margin_rise:
         return 2, ["法人賣、融資增，籌碼背離"]
     return 0, []
+
+
+def _retail_holder_risk(retail_signal: dict | None, prices: pd.DataFrame) -> tuple[int, list[str]]:
+    if not retail_signal:
+        return 0, []
+
+    signal = str(retail_signal.get("signal") or "")
+    holder_change_pct = retail_signal.get("holder_change_pct")
+    price_change_pct = retail_signal.get("price_change_pct")
+    reasons: list[str] = []
+    points = 0
+
+    if "散戶過熱" in signal:
+        points += 2
+        reasons.append(_retail_reason("散戶過熱", holder_change_pct, price_change_pct))
+    elif "觀察過熱" in signal:
+        points += 1
+        reasons.append(_retail_reason("散戶偏熱", holder_change_pct, price_change_pct))
+
+    if points and not prices.empty and len(prices) >= 4:
+        close = prices.sort_values("date")["close"].astype(float)
+        recent_change = close.iloc[-1] / close.iloc[-4] - 1
+        if recent_change <= 0:
+            points += 1
+            reasons.append("散戶增加但近 3 日股價未轉強")
+
+    return points, reasons
+
+
+def _retail_reason(label: str, holder_change_pct, price_change_pct) -> str:
+    detail = []
+    try:
+        detail.append(f"人數 {float(holder_change_pct):+.1f}%")
+    except (TypeError, ValueError):
+        pass
+    try:
+        detail.append(f"股價 {float(price_change_pct):+.1f}%")
+    except (TypeError, ValueError):
+        pass
+    suffix = f"（{'，'.join(detail)}）" if detail else ""
+    return f"{label}{suffix}"
 
 
 def _margin_retail_risk(

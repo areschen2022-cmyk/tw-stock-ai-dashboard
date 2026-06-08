@@ -22,6 +22,12 @@ Copy-Item -Force -Path $dashboardIndex -Destination (Join-Path $docs "index.html
 Copy-Item -Force -Path (Join-Path $dashboard "dashboard_data.json") -Destination (Join-Path $docs "dashboard_data.json")
 Copy-Item -Force -Path (Join-Path $dashboard "performance.html") -Destination (Join-Path $docs "performance.html")
 Copy-Item -Force -Path (Join-Path $dashboard "performance_data.json") -Destination (Join-Path $docs "performance_data.json")
+if (Test-Path (Join-Path $dashboard "potential.html")) {
+  Copy-Item -Force -Path (Join-Path $dashboard "potential.html") -Destination (Join-Path $docs "potential.html")
+}
+if (Test-Path (Join-Path $dashboard "potential_data.json")) {
+  Copy-Item -Force -Path (Join-Path $dashboard "potential_data.json") -Destination (Join-Path $docs "potential_data.json")
+}
 if (Test-Path (Join-Path $dashboard "weekly.html")) {
   Copy-Item -Force -Path (Join-Path $dashboard "weekly.html") -Destination (Join-Path $docs "weekly.html")
 }
