@@ -61,8 +61,12 @@ def test_real_theme_database_includes_satellite_and_passive_components() -> None
     assert merged["theme_pools"]["low_orbit_satellite"]["name"] == "低軌衛星/SpaceX"
     assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["3491"] == "昇達科"
     assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2313"] == "華通"
+    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2314"] == "台揚"
+    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2455"] == "全新"
     assert "SpaceX" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
     assert "Starlink" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
+    assert "宇宙級IPO" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
+    assert "抗輻射太陽能電池" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
     assert merged["theme_stock_meta"]["3491"]["low_orbit_satellite"]["tier"] == "core"
 
     assert merged["theme_pools"]["passive_components"]["name"] == "被動元件"

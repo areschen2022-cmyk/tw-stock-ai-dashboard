@@ -2151,10 +2151,12 @@ def _potential_html() -> str:
     .grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,.72fr); gap:12px; align-items:start; }
     .stack { display:grid; gap:12px; }
     table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-    th, td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th, td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; line-height:1.45; }
     th { background:#eef1f5; color:#475467; font-size:12px; }
-    .tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:700; margin:2px 3px 0 0; border:1px solid #e2e8f0; background:#f8fafc; color:#475467; }
-    .stage { color:white; background:var(--blue); border-color:var(--blue); }
+    .tag { display:inline-flex; align-items:center; max-width:100%; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; line-height:1.35; margin:2px 3px 0 0; border:1px solid #e2e8f0; background:#f8fafc; color:#475467; white-space:nowrap; word-break:keep-all; }
+    .stage { min-width:72px; justify-content:center; color:white; background:var(--blue); border-color:var(--blue); font-size:12px; letter-spacing:0; }
+    .stock-link { display:inline-block; min-width:max-content; white-space:nowrap; word-break:keep-all; }
+    .stage-col { min-width:90px; }
     .good { color:var(--good); }
     .bad { color:var(--bad); }
     .warn { color:var(--warn); }
@@ -2189,12 +2191,12 @@ def _potential_html() -> str:
         <section>
           <h2>階段勝率</h2>
           <div class="note">比較低位醞釀、轉強初動、強勢等拉回哪一類比較有效；樣本少時先看方向。</div>
-          <table><thead><tr><th>階段</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>觀察中</th></tr></thead><tbody id="stageStats"></tbody></table>
+          <table><thead><tr><th class="stage-col">階段</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>觀察中</th></tr></thead><tbody id="stageStats"></tbody></table>
         </section>
         <section>
           <h2>潛力觀察</h2>
           <div class="note">不是買進清單，而是尚未完成驗證、但條件正在累積的股票。</div>
-          <table><thead><tr><th>股票</th><th>階段</th><th>強度</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
+          <table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>強度</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
         </section>
         <section>
           <h2>因素歸因</h2>
@@ -2204,8 +2206,8 @@ def _potential_html() -> str:
         </section>
       </div>
       <div class="stack">
-        <section><h2>命中樣本</h2><table><thead><tr><th>股票</th><th>階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="successRows"></tbody></table></section>
-        <section><h2>失敗樣本</h2><table><thead><tr><th>股票</th><th>階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="failureRows"></tbody></table></section>
+        <section><h2>命中樣本</h2><table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="successRows"></tbody></table></section>
+        <section><h2>失敗樣本</h2><table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="failureRows"></tbody></table></section>
       </div>
     </div>
   </main>
@@ -2216,7 +2218,7 @@ def _potential_html() -> str:
     const pct = value => value === null || value === undefined ? "—" : `<span class="${value >= 0 ? "good" : "bad"}">${value >= 0 ? "+" : ""}${Number(value).toFixed(1)}%</span>`;
     const neutralPct = value => value === null || value === undefined ? "—" : `${Number(value).toFixed(1)}%`;
     const metric = (label, value, suffix="") => `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
-    const stock = row => `<a href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name || "")}</a>`;
+    const stock = row => `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name || "")}</a>`;
     const tags = row => (row.tags || []).slice(0, 5).map(tag => `<span class="tag">${esc(tag)}</span>`).join("");
     const stageTag = row => `<span class="tag stage">${esc(row.stage_label || "觀察")}</span>`;
     function signalRow(row) {

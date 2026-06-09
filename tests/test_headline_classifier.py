@@ -72,6 +72,24 @@ def test_satellite_headline_matches_spacex_theme_keywords() -> None:
     assert result.matched_headlines["low_orbit_satellite"]
 
 
+def test_spacex_ipo_yahoo_style_headline_matches_satellite_theme() -> None:
+    result = classify_headlines(
+        ["SpaceX「宇宙級IPO」台鏈跟著飆上太空，星鏈網路連接與抗輻射太陽能電池概念股受惠"],
+        {
+            "low_orbit_satellite": [
+                "SpaceX",
+                "宇宙級IPO",
+                "星鏈",
+                "網路連接",
+                "抗輻射太陽能電池",
+            ]
+        },
+    )
+
+    assert result.scores["low_orbit_satellite"] >= 1
+    assert result.matched_headlines["low_orbit_satellite"]
+
+
 def test_spacex_rumor_is_marked_as_market_rumor() -> None:
     confidence = classify_catalyst_confidence([
         "SpaceX reportedly targets June 12 Nasdaq listing, sources say",
