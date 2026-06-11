@@ -531,17 +531,28 @@ def _data_source_health(source_status: dict | None, data_quality: dict | None, r
     status = source_status or {}
     quality = data_quality or {}
     retry = retry_summary or {}
-    pending = int(retry.get("pending") or 0) + int((retry.get("status_counts") or {}).get("pending") or 0)
-    failed = int(retry.get("failed") or 0) + int((retry.get("status_counts") or {}).get("failed") or 0)
-    recovered = int(retry.get("recovered") or 0) + int((retry.get("status_counts") or {}).get("recovered") or 0)
+    pending = _retry_status_count(retry, "pending")
+    failed = _retry_status_count(retry, "failed")
+    recovered = _retry_status_count(retry, "recovered")
     official = quality.get("official_snapshots") or status.get("official_snapshots") or {}
     invalid = int(quality.get("official_invalid") or 0)
     effective_error = int(quality.get("effective_error") or 0)
     effective_empty = int(quality.get("effective_empty") or 0)
-    blocked = invalid + effective_error + failed
+    active_blocking = invalid + effective_error
+    failed_ratio = failed / max(1, failed + recovered)
+    historical_blocking = failed if failed and recovered == 0 else 0
+    blocked = active_blocking + historical_blocking
+    if blocked:
+        label = "需檢查"
+    elif failed or pending:
+        label = "可用但待補"
+    else:
+        label = "可用"
     return {
-        "label": "需檢查" if blocked else "可用",
+        "label": label,
         "blocking_count": blocked,
+        "historical_failed_count": failed,
+        "failed_recovered_ratio": round(failed_ratio, 4),
         "pending_count": pending,
         "failed_count": failed,
         "recovered_count": recovered,
@@ -552,8 +563,15 @@ def _data_source_health(source_status: dict | None, data_quality: dict | None, r
         "official_snapshots": official,
         "retry_diagnosis": retry.get("diagnosis", []),
         "recovered_by_dataset": retry.get("recovered_by_dataset", []),
-        "note": "已補回成功的資料不列為阻塞；只把官方快照無效、有效錯誤、補抓失敗列入需檢查。",
+        "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。",
     }
+
+
+def _retry_status_count(retry: dict, status: str) -> int:
+    status_counts = retry.get("status_counts") or {}
+    if status in status_counts:
+        return int(status_counts.get(status) or 0)
+    return int(retry.get(status) or 0)
 
 
 def _build_health_status(
@@ -870,6 +888,7 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
     summary = dashboard_payload.get("summary") or {}
     source_status = dashboard_payload.get("source_status") or {}
     data_quality = dashboard_payload.get("data_quality") or {}
+    data_source_health = dashboard_payload.get("data_source_health") or {}
     retry = dashboard_payload.get("data_retry") or {}
     perf_stats = performance.get("stats") or {}
     potential_stats = (performance.get("potential_radar") or {}).get("stats") or {}
@@ -891,8 +910,18 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
             return 0
 
     source_label = str(source_status.get("label") or "unknown")
-    source_problem = source_label in {"錯誤", "限流"} or _count(source_status.get("error")) > 0
-    source_warn = source_problem or _count(source_status.get("quota")) > 0 or str(data_quality.get("label")) == "low"
+    health_label = str(data_source_health.get("label") or "")
+    source_problem = (
+        source_label in {"錯誤", "限流"}
+        or _count(source_status.get("error")) > 0
+        or health_label == "需檢查"
+    )
+    source_warn = (
+        source_problem
+        or _count(source_status.get("quota")) > 0
+        or str(data_quality.get("label")) == "low"
+        or health_label == "可用但待補"
+    )
     source_step_status = "bad" if source_problem else "warn" if source_warn else "ok"
 
     scanned = _count(summary.get("scanned"))
@@ -901,9 +930,9 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
     watch_completed = _count(perf_stats.get("completed"))
     potential_total = _count(potential_stats.get("signals"))
     potential_completed = _count(potential_stats.get("completed"))
-    retry_pending = _count(retry.get("pending")) + _count((retry.get("status_counts") or {}).get("pending"))
-    retry_failed = _count(retry.get("failed")) + _count((retry.get("status_counts") or {}).get("failed"))
-    retry_recovered = _count(retry.get("recovered")) + _count((retry.get("status_counts") or {}).get("recovered"))
+    retry_pending = _retry_status_count(retry, "pending")
+    retry_failed = _retry_status_count(retry, "failed")
+    retry_recovered = _retry_status_count(retry, "recovered")
     ai_score = _count(ai_health.get("score"))
 
     steps = [
