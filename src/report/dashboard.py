@@ -109,6 +109,79 @@ def _retail_context(row: dict, retail_lookup: dict[str, dict]) -> tuple[str, str
     return f"散戶：{signal or '觀察'}", reason
 
 
+def _as_float(value) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _round_price(value: float | None) -> float | None:
+    if value is None:
+        return None
+    return round(float(value), 2)
+
+
+def _exit_plan(row: dict) -> dict:
+    price = _as_float(row.get("price"))
+    entry_limit = _as_float(row.get("entry_limit_price")) or price
+    stop_price = _as_float(row.get("stop_price"))
+    atr_pct = _as_float(row.get("atr_pct"))
+    grade = str(row.get("grade") or "")
+    entry_decision = str(row.get("entry_decision") or row.get("action") or "")
+    risk_per_share = None
+    if entry_limit is not None and stop_price is not None and entry_limit > stop_price:
+        risk_per_share = entry_limit - stop_price
+
+    if risk_per_share:
+        take_profit_1 = entry_limit + risk_per_share
+        take_profit_2 = entry_limit + risk_per_share * 2
+    elif entry_limit is not None:
+        take_profit_1 = entry_limit * 1.06
+        take_profit_2 = entry_limit * 1.12
+    else:
+        take_profit_1 = None
+        take_profit_2 = None
+
+    if stop_price is None:
+        hard_stop = "資料不足，暫不建立持倉"
+    else:
+        hard_stop = f"跌破 {stop_price:.2f} 退出，不攤平"
+
+    if "等拉回" in entry_decision:
+        plan_type = "等拉回型"
+        rule = "未回到進場區前不追價；進場後先守停損，站穩再提高停利。"
+    elif grade in {"S+", "S"}:
+        plan_type = "強勢延伸型"
+        rule = "第一段停利後，剩餘部位用 MA5 或前一日低點移動停利；跌破 MA10 先降部位。"
+    else:
+        plan_type = "標準控風險"
+        rule = "達第一段先保護獲利，未突破前高或量能退潮時不加碼。"
+
+    if atr_pct is not None and atr_pct >= 7:
+        plan_type = "高波動控倉"
+        rule = "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。"
+
+    checklist = [
+        hard_stop,
+        "達第一段停利可先減碼 1/3 到 1/2",
+        "達第二段停利後改用移動停利保護",
+        "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利",
+    ]
+
+    return {
+        "plan_type": plan_type,
+        "hard_stop": hard_stop,
+        "take_profit_1": _round_price(take_profit_1),
+        "take_profit_2": _round_price(take_profit_2),
+        "risk_per_share": _round_price(risk_per_share),
+        "trailing_rule": rule,
+        "checklist": checklist,
+    }
+
+
 def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_risks: list[dict] | None = None) -> dict:
     ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
     exit_ids = {str(item.get("stock_id")) for item in exit_risks or []}
@@ -127,6 +200,7 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "reason": reason or row.get("trigger_summary") or row.get("decision_reason") or "",
             "entry_limit_price": row.get("entry_limit_price"),
             "stop_price": row.get("stop_price"),
+            "exit_plan": row.get("exit_plan") or _exit_plan(row),
             "themes": row.get("themes", []),
             "pattern_tags": row.get("pattern_tags", []),
             "pattern_risk_tags": row.get("pattern_risk_tags", []),
@@ -526,49 +600,49 @@ def build_dashboard_payload(
     rows = []
     for item in sorted(scores, key=lambda score: score.total_score, reverse=True):
         ai_review = ai_reviews.get(item.stock_id)
-        rows.append(
-            {
-                "stock_id": item.stock_id,
-                "name": stock_names.get(item.stock_id, "名稱未設定"),
-                "score": item.total_score,
-                "grade": _grade(item.total_score),
-                "label": item.label,
-                "label_text": _status_text(item.label),
-                "price": item.price,
-                "technical": _first(item.reasons.get("technical", [])),
-                "chip": _first(item.reasons.get("chip", [])),
-                "fundamental": _first(item.reasons.get("fundamental", [])),
-                "risk": _first(item.reasons.get("risk", [])),
-                "opportunity": _first(item.reasons.get("opportunity", [])),
-                "technical_score": item.technical_score,
-                "chip_score": item.chip_score,
-                "fundamental_score": item.fundamental_score,
-                "risk_score": item.risk_score,
-                "action": item.action or "只觀察",
-                "entry_condition": item.entry_condition or "資料不足，暫不設進場條件",
-                "stop_reference": item.stop_reference or "資料不足，暫不設停損參考",
-                "stop_price": item.stop_price,
-                "entry_limit_price": item.entry_limit_price,
-                "themes": item.themes,
-                "theme_tiers": item.theme_tiers,
-                "entry_decision": item.entry_decision,
-                "entry_checklist": item.entry_checklist,
-                "overseas_adjustment": item.overseas_adjustment,
-                "opportunity_score": item.opportunity_score,
-                "warnings": item.warnings,
-                "trigger_tags": item.trigger_tags,
-                "pattern_tags": item.pattern_tags,
-                "pattern_risk_tags": item.pattern_risk_tags,
-                "atr_pct": item.atr_pct,
-                "trigger_summary": item.trigger_summary,
-                "decision_reason": _decision_reason(item),
-                "retail_signal": item.retail_signal,
-                "selection_quality_adjustment": item.selection_quality_adjustment,
-                "selection_quality_notes": item.selection_quality_notes,
-                "ai_review": ai_review,
-                "ai_label": _ai_review_label(ai_review),
-            }
-        )
+        row = {
+            "stock_id": item.stock_id,
+            "name": stock_names.get(item.stock_id, "名稱未設定"),
+            "score": item.total_score,
+            "grade": _grade(item.total_score),
+            "label": item.label,
+            "label_text": _status_text(item.label),
+            "price": item.price,
+            "technical": _first(item.reasons.get("technical", [])),
+            "chip": _first(item.reasons.get("chip", [])),
+            "fundamental": _first(item.reasons.get("fundamental", [])),
+            "risk": _first(item.reasons.get("risk", [])),
+            "opportunity": _first(item.reasons.get("opportunity", [])),
+            "technical_score": item.technical_score,
+            "chip_score": item.chip_score,
+            "fundamental_score": item.fundamental_score,
+            "risk_score": item.risk_score,
+            "action": item.action or "只觀察",
+            "entry_condition": item.entry_condition or "資料不足，暫不設進場條件",
+            "stop_reference": item.stop_reference or "資料不足，暫不設停損參考",
+            "stop_price": item.stop_price,
+            "entry_limit_price": item.entry_limit_price,
+            "themes": item.themes,
+            "theme_tiers": item.theme_tiers,
+            "entry_decision": item.entry_decision,
+            "entry_checklist": item.entry_checklist,
+            "overseas_adjustment": item.overseas_adjustment,
+            "opportunity_score": item.opportunity_score,
+            "warnings": item.warnings,
+            "trigger_tags": item.trigger_tags,
+            "pattern_tags": item.pattern_tags,
+            "pattern_risk_tags": item.pattern_risk_tags,
+            "atr_pct": item.atr_pct,
+            "trigger_summary": item.trigger_summary,
+            "decision_reason": _decision_reason(item),
+            "retail_signal": item.retail_signal,
+            "selection_quality_adjustment": item.selection_quality_adjustment,
+            "selection_quality_notes": item.selection_quality_notes,
+            "ai_review": ai_review,
+            "ai_label": _ai_review_label(ai_review),
+        }
+        row["exit_plan"] = _exit_plan(row)
+        rows.append(row)
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
     action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
     _annotate_action_context(rows, action_lists, exit_risks=exit_risks, retail_divergence=retail_divergence)
@@ -1141,6 +1215,10 @@ def _html() -> str:
     .decision-price { border:1px solid #eef1f5; border-radius:6px; padding:6px; min-height:48px; }
     .decision-price span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
     .decision-price b { font-size:15px; }
+    .decision-exit { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:7px 0; }
+    .decision-exit div { border:1px solid #eef1f5; border-radius:6px; padding:6px; background:#fbfcfe; min-height:46px; }
+    .decision-exit span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    .decision-exit b { font-size:14px; }
     .decision-reason { color:var(--muted); font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .risk-panel { border-left:4px solid var(--bad); }
     .risk-panel #exitRisks { max-height:280px; overflow:auto; padding-right:4px; scrollbar-width:thin; }
@@ -1235,6 +1313,7 @@ def _html() -> str:
       .trace-grid { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:1fr 1fr; }
       .decision-prices { grid-template-columns:1fr 1fr; }
+      .decision-exit { grid-template-columns:1fr; }
       .decision-card { min-height:auto; }
       .risk-panel #exitRisks { max-height:none; }
       .theme-panel #themes { max-height:none; }
@@ -1357,16 +1436,23 @@ def _html() -> str:
       if (!row) return;
       const drawer = document.querySelector("#stockDrawer");
       const backdrop = document.querySelector("#stockDrawerBackdrop");
+      const exitPlan = row.exit_plan || {};
       document.querySelector("#drawerTitle").innerHTML = `${esc(row.stock_id)} ${esc(row.name)}`;
       document.querySelector("#drawerSubtitle").innerHTML = `${esc(row.score ?? "-")}/100 | ${esc(row.grade || "-")} | ${esc(row.entry_decision || row.action || "-")}`;
       document.querySelector("#drawerBody").innerHTML = `
         <div class="drawer-kv">
           <div><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
           <div><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+          <div><span>第一段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+          <div><span>第二段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
           <div><span>AI 複核</span><b>${esc(row.ai_label || "未審核")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
           <div><span>散戶狀態</span><b>${esc(row.retail_context || "無明顯訊號")}</b></div>
         </div>
         <div class="drawer-section"><b>主要理由</b><div class="small">${esc(row.decision_reason || row.trigger_summary || row.action || "-")}</div></div>
+        <div class="drawer-section"><b>出場計劃｜${esc(exitPlan.plan_type || "標準控風險")}</b>
+          <div class="small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
+          ${(exitPlan.checklist || []).map(item => `<div class="small">□ ${esc(item)}</div>`).join("")}
+        </div>
         <div class="drawer-section"><b>題材</b><div class="themes">${esc((row.theme_tiers || []).join(" / ") || (row.themes || []).join(" / ") || "-")}</div></div>
         <div class="drawer-section"><b>原因標籤</b><div class="tags">${renderTags(row.trigger_tags || [])}</div></div>
         <div class="drawer-section"><b>開盤檢查</b>${detailList(row.entry_checklist || [])}</div>
@@ -1582,6 +1668,7 @@ def _html() -> str:
         const aiReason = row.ai_reason || "";
         const retailText = row.retail_context || "散戶：無明顯背離";
         const retailReason = row.retail_context_reason || "";
+        const exitPlan = row.exit_plan || {};
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
@@ -1598,10 +1685,20 @@ def _html() -> str:
             <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
             <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
           </div>
+          <div class="decision-exit">
+            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
+          </div>
           <div class="decision-reason">${esc(reason)}</div>
           <details class="mini-detail">
             <summary>個股開盤檢查表</summary>
             ${(row.entry_checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("") || '<div class="line small">尚無足夠資料設定條件</div>'}
+          </details>
+          <details class="mini-detail">
+            <summary>持倉出場計劃｜${esc(exitPlan.plan_type || "標準控風險")}</summary>
+            <div class="line small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
+            ${(exitPlan.checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("")}
           </details>
           <div class="decision-note-grid">
             <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
@@ -1878,11 +1975,15 @@ def _html() -> str:
           <td data-label="進場/停損">
             ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
             ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
+            ${r.exit_plan?.take_profit_1 != null ? `<div class="small good">第一段停利：${esc(priceText(r.exit_plan.take_profit_1))}</div>` : ""}
+            ${r.exit_plan?.take_profit_2 != null ? `<div class="small good">第二段停利：${esc(priceText(r.exit_plan.take_profit_2))}</div>` : ""}
             <details class="row-detail">
               <summary>進出場條件</summary>
               ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}
               <div class="small">${esc(r.entry_condition || "資料不足，暫不設進場條件")}</div>
               <div class="small">${esc(r.stop_reference || "資料不足，暫不設停損參考")}</div>
+              <div class="small"><b>出場：</b>${esc(r.exit_plan?.trailing_rule || "依停損與移動停利控管。")}</div>
+              ${(r.exit_plan?.checklist || []).slice(0,4).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}
             </details>
           </td>
         </tr>`).join("");
