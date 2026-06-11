@@ -1,15 +1,15 @@
 {
   "as_of": "2026-06-11",
-  "generated_at": "2026-06-11T22:35:40+08:00",
-  "dashboard_generated_at": "2026-06-11T22:35:37+08:00",
+  "generated_at": "2026-06-12T04:32:42+08:00",
+  "dashboard_generated_at": "2026-06-12T04:32:37+08:00",
   "source_status": {
-    "label": "正常",
-    "api": 4,
-    "cache": 3808,
-    "fallback": 1,
+    "label": "部分限流",
+    "api": 5,
+    "cache": 4240,
+    "fallback": 4,
     "quota": 0,
-    "error": 0,
-    "empty": 1,
+    "error": 1,
+    "empty": 2,
     "official_snapshots": {
       "tpex_quotes": {
         "date": "2026-06-10",
@@ -78,18 +78,19 @@
   "data_quality": {
     "label": "high",
     "label_text": "高",
-    "score": 100,
+    "score": 99,
     "source_score": 100,
-    "coverage": 98.8,
-    "recovered_fetches": 112,
+    "coverage": 97.9,
+    "recovered_fetches": 116,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 112 次"
+      "已由備援/補抓補回 116 次"
     ],
     "event_summary": {
-      "empty": 1,
-      "fallback": 1
+      "empty": 2,
+      "fallback": 2,
+      "error": 1
     },
     "details": [
       {
@@ -105,13 +106,34 @@
         "data_id": "TAIEX",
         "period": "",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "6980",
+        "period": "2025-12",
+        "reason": ""
+      },
+      {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "6980",
+        "period": "",
+        "reason": "twse_month_missing"
+      },
+      {
+        "type": "error",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "data_id": "6980",
+        "period": "2025-12-01",
+        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)"
       }
     ],
     "recovery_status": {
       "label": "clean",
       "retryable": 0,
       "blocked": 0,
-      "recovered": 2,
+      "recovered": 5,
       "items": [
         {
           "dataset": "STOCK_DAY",
@@ -125,6 +147,27 @@
           "data_id": "TAIEX",
           "period": "",
           "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "6980",
+          "period": "2025-12",
+          "type": "empty",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "6980",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "TaiwanStockMarginPurchaseShortSale",
+          "data_id": "6980",
+          "period": "2025-12-01",
+          "type": "error",
           "next_step": "recovered_by_fallback"
         }
       ]
@@ -186,10 +229,10 @@
     "label": "可用但待補",
     "blocking_count": 0,
     "historical_failed_count": 9,
-    "failed_recovered_ratio": 0.075,
+    "failed_recovered_ratio": 0.0744,
     "pending_count": 8,
     "failed_count": 9,
-    "recovered_count": 111,
+    "recovered_count": 112,
     "effective_error": 0,
     "effective_empty": 0,
     "official_valid": 8,
@@ -274,15 +317,6 @@
       },
       {
         "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "",
-        "count": 2,
-        "last_attempt_at": "2026-06-01T22:30:52+08:00",
-        "first_seen_at": "2026-06-01T15:15:02+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "pending",
         "dataset": "TaiwanStockMonthRevenue",
         "reason": "",
         "count": 1,
@@ -298,13 +332,31 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)",
+        "count": 1,
+        "last_attempt_at": "2026-06-01T22:30:52+08:00",
+        "first_seen_at": "2026-06-01T15:15:02+08:00",
+        "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "",
+        "count": 1,
+        "last_attempt_at": "2026-05-26T23:39:15+08:00",
+        "first_seen_at": "2026-05-26T23:22:43+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
       }
     ],
     "recovered_by_dataset": [
       {
         "dataset": "STOCK_DAY",
-        "count": 103,
-        "last_recovered_at": "2026-06-11T16:01:59+08:00"
+        "count": 104,
+        "last_recovered_at": "2026-06-12T04:32:42+08:00"
       },
       {
         "dataset": "stock_prices",
@@ -315,49 +367,51 @@
     "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。"
   },
   "bundle_coverage": {
-    "stocks": 84,
+    "stocks": 94,
     "datasets": {
       "prices": {
         "minimum": 20,
         "missing": [],
-        "count": 84,
+        "count": 94,
         "coverage_pct": 100.0
       },
       "institutional": {
         "minimum": 1,
         "missing": [],
-        "count": 84,
+        "count": 94,
         "coverage_pct": 100.0
       },
       "margin": {
         "minimum": 1,
-        "missing": [],
-        "count": 84,
-        "coverage_pct": 100.0
+        "missing": [
+          "6980"
+        ],
+        "count": 93,
+        "coverage_pct": 98.9
       },
       "revenue": {
         "minimum": 1,
         "missing": [],
-        "count": 84,
+        "count": 94,
         "coverage_pct": 100.0
       },
       "revenue_15m": {
         "minimum": 15,
         "missing": [],
-        "count": 84,
+        "count": 94,
         "coverage_pct": 100.0
       }
     },
-    "all_critical_complete": true
+    "all_critical_complete": false
   },
   "universe": {
     "enabled": true,
     "mode": "daily_layered",
     "target_total_listed": 1056,
-    "selected_count": 84,
-    "coverage_pct": 8.0,
+    "selected_count": 94,
+    "coverage_pct": 8.9,
     "core_count": 10,
-    "active_theme_count": 49,
+    "active_theme_count": 59,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
     "market_universe_available": 1969,
@@ -367,20 +421,20 @@
     "active_themes": [
       "advanced_packaging",
       "ai_server",
-      "silicon_photonics",
-      "power_grid",
-      "network_optical_communication"
+      "low_orbit_satellite",
+      "network_optical_communication",
+      "silicon_photonics"
     ]
   },
   "retry": {
     "status_counts": {
       "failed": 9,
       "pending": 8,
-      "recovered": 111
+      "recovered": 112
     },
     "pending": 8,
     "failed": 9,
-    "recovered": 111,
+    "recovered": 112,
     "diagnosis": [
       {
         "status": "failed",
@@ -411,15 +465,6 @@
       },
       {
         "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "",
-        "count": 2,
-        "last_attempt_at": "2026-06-01T22:30:52+08:00",
-        "first_seen_at": "2026-06-01T15:15:02+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "pending",
         "dataset": "TaiwanStockMonthRevenue",
         "reason": "",
         "count": 1,
@@ -435,13 +480,31 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)",
+        "count": 1,
+        "last_attempt_at": "2026-06-01T22:30:52+08:00",
+        "first_seen_at": "2026-06-01T15:15:02+08:00",
+        "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "",
+        "count": 1,
+        "last_attempt_at": "2026-05-26T23:39:15+08:00",
+        "first_seen_at": "2026-05-26T23:22:43+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
       }
     ],
     "recovered_by_dataset": [
       {
         "dataset": "STOCK_DAY",
-        "count": 103,
-        "last_recovered_at": "2026-06-11T16:01:59+08:00"
+        "count": 104,
+        "last_recovered_at": "2026-06-12T04:32:42+08:00"
       },
       {
         "dataset": "stock_prices",
@@ -450,6 +513,18 @@
       }
     ],
     "recent_items": [
+      {
+        "dataset": "STOCK_DAY",
+        "data_id": "6980",
+        "period": "2025-12",
+        "reason": "",
+        "status": "recovered",
+        "attempts": 1,
+        "first_seen_at": "2026-06-12T04:32:41+08:00",
+        "last_attempt_at": "2026-06-12T04:32:42+08:00",
+        "last_error": "",
+        "recovered_at": "2026-06-12T04:32:42+08:00"
+      },
       {
         "dataset": "STOCK_DAY",
         "data_id": "TAIEX",
@@ -533,18 +608,6 @@
         "last_attempt_at": "2026-06-09T04:33:19+08:00",
         "last_error": "",
         "recovered_at": "2026-06-09T04:33:19+08:00"
-      },
-      {
-        "dataset": "STOCK_DAY",
-        "data_id": "3149",
-        "period": "2026-05",
-        "reason": "html",
-        "status": "recovered",
-        "attempts": 3,
-        "first_seen_at": "2026-06-08T19:32:57+08:00",
-        "last_attempt_at": "2026-06-08T19:49:55+08:00",
-        "last_error": "",
-        "recovered_at": "2026-06-08T19:49:55+08:00"
       }
     ]
   },
@@ -553,29 +616,29 @@
       {
         "key": "source",
         "label": "資料源",
-        "status": "warn",
-        "value": "正常",
-        "note": "API 4 | 快取 3808 | 限流 0"
+        "status": "bad",
+        "value": "部分限流",
+        "note": "API 5 | 快取 4240 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
-        "value": "83/84 檔",
+        "value": "92/94 檔",
         "note": "S+ 1 | S 2 | A 2"
       },
       {
         "key": "watch",
         "label": "進場追蹤",
         "status": "ok",
-        "value": "479 筆",
+        "value": "483 筆",
         "note": "完成 331 | 5日勝率 54.1%"
       },
       {
         "key": "potential",
         "label": "潛力雷達",
         "status": "ok",
-        "value": "67 筆",
+        "value": "70 筆",
         "note": "完成 13 | 5日勝率 7.7%"
       },
       {
@@ -590,7 +653,7 @@
         "label": "補抓佇列",
         "status": "warn",
         "value": "待補 8",
-        "note": "已補 111 | 失敗 9"
+        "note": "已補 112 | 失敗 9"
       },
       {
         "key": "pages",
@@ -601,15 +664,15 @@
       }
     ],
     "summary": {
-      "scanned": 84,
-      "valid": 83,
-      "watch_signals": 479,
+      "scanned": 94,
+      "valid": 92,
+      "watch_signals": 483,
       "watch_completed": 331,
-      "potential_signals": 67,
+      "potential_signals": 70,
       "potential_completed": 13,
       "data_coverage": {
-        "bundle_stocks": 84,
-        "all_critical_complete": true,
+        "bundle_stocks": 94,
+        "all_critical_complete": false,
         "datasets": {
           "prices": {
             "coverage_pct": 100.0,
@@ -620,8 +683,8 @@
             "missing_count": 0
           },
           "margin": {
-            "coverage_pct": 100.0,
-            "missing_count": 0
+            "coverage_pct": 98.9,
+            "missing_count": 1
           },
           "revenue": {
             "coverage_pct": 100.0,
@@ -635,19 +698,19 @@
       },
       "universe": {
         "mode": "daily_layered",
-        "selected_count": 84,
+        "selected_count": 94,
         "target_total_listed": 1056,
-        "coverage_pct": 8.0,
+        "coverage_pct": 8.9,
         "market_universe_available": 1969
       }
     },
     "diagnosis": [
       {
         "key": "source",
-        "status": "warn",
+        "status": "bad",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=4; cache=3808; quota=0; error=0",
+        "evidence": "source=部分限流; quality=high; api=5; cache=4240; quota=0; error=1",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -655,16 +718,16 @@
         "status": "warn",
         "label": "補抓佇列",
         "reason": "補抓佇列仍有待補或失敗紀錄。",
-        "evidence": "pending=16; recovered=222; failed=18",
+        "evidence": "pending=16; recovered=224; failed=18",
         "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。"
       }
     ],
     "history": [
       {
         "run_date": "2026-06-11",
-        "generated_at": "2026-06-11T22:35:40+08:00",
-        "overall_status": "warn",
-        "source_status": "warn",
+        "generated_at": "2026-06-12T04:32:42+08:00",
+        "overall_status": "bad",
+        "source_status": "bad",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
@@ -672,15 +735,15 @@
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
-          "scanned": 84,
-          "valid": 83,
-          "watch_signals": 479,
+          "scanned": 94,
+          "valid": 92,
+          "watch_signals": 483,
           "watch_completed": 331,
-          "potential_signals": 67,
+          "potential_signals": 70,
           "potential_completed": 13,
           "data_coverage": {
-            "bundle_stocks": 84,
-            "all_critical_complete": true,
+            "bundle_stocks": 94,
+            "all_critical_complete": false,
             "datasets": {
               "prices": {
                 "coverage_pct": 100.0,
@@ -691,8 +754,8 @@
                 "missing_count": 0
               },
               "margin": {
-                "coverage_pct": 100.0,
-                "missing_count": 0
+                "coverage_pct": 98.9,
+                "missing_count": 1
               },
               "revenue": {
                 "coverage_pct": 100.0,
@@ -706,9 +769,9 @@
           },
           "universe": {
             "mode": "daily_layered",
-            "selected_count": 84,
+            "selected_count": 94,
             "target_total_listed": 1056,
-            "coverage_pct": 8.0,
+            "coverage_pct": 8.9,
             "market_universe_available": 1969
           }
         },
@@ -716,29 +779,29 @@
           {
             "key": "source",
             "label": "資料源",
-            "status": "warn",
-            "value": "正常",
-            "note": "API 4 | 快取 3808 | 限流 0"
+            "status": "bad",
+            "value": "部分限流",
+            "note": "API 5 | 快取 4240 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
-            "value": "83/84 檔",
+            "value": "92/94 檔",
             "note": "S+ 1 | S 2 | A 2"
           },
           {
             "key": "watch",
             "label": "進場追蹤",
             "status": "ok",
-            "value": "479 筆",
+            "value": "483 筆",
             "note": "完成 331 | 5日勝率 54.1%"
           },
           {
             "key": "potential",
             "label": "潛力雷達",
             "status": "ok",
-            "value": "67 筆",
+            "value": "70 筆",
             "note": "完成 13 | 5日勝率 7.7%"
           },
           {
@@ -753,7 +816,7 @@
             "label": "補抓佇列",
             "status": "warn",
             "value": "待補 8",
-            "note": "已補 111 | 失敗 9"
+            "note": "已補 112 | 失敗 9"
           },
           {
             "key": "pages",
@@ -1070,23 +1133,23 @@
   },
   "performance": {
     "stats": {
-      "signals": 479,
+      "signals": 483,
       "completed": 331,
       "win_rate_5d": 54.0785498489426,
       "avg_return_5d": 2.791186286181442,
       "avg_return_10d": null,
-      "stop_hit_rate": 31.042128603104214,
+      "stop_hit_rate": 31.194690265486724,
       "a_win_rate_5d": 47.22222222222222
     },
     "potential_radar": {
-      "signals": 67,
+      "signals": 70,
       "completed": 13,
-      "pending": 54,
+      "pending": 57,
       "win_rate_5d": 7.6923076923076925,
       "avg_return_5d": -11.302366387959525,
       "avg_return_10d": -7.949790794979079,
       "big_winner_count": 0,
-      "false_positive_count": 12
+      "false_positive_count": 10
     }
   },
   "note": "Internal diagnostics only. It contains no secrets and is not linked from the dashboard UI."
