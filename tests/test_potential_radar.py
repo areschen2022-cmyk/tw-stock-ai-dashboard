@@ -24,7 +24,14 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "pattern_risk_tags": [],
             "trigger_tags": ["法人共振", "技術突破"],
             "themes": ["記憶體/HBM"],
+            "theme_tiers": ["core"],
             "opportunity_score": 6,
+            "technical_score": 14,
+            "chip_score": 14,
+            "fundamental_score": 14,
+            "fundamental": "最新月營收年增 30%，營收加速創高",
+            "risk": "風險條件可接受",
+            "atr_pct": 4.2,
             "price": 100.0,
             "entry_limit_price": 103.0,
         },
@@ -67,6 +74,11 @@ def test_potential_radar_prefers_early_confluence() -> None:
     assert candidates[0]["stage"] == "pullback_watch"
     assert candidates[0]["stage_label"] == "強勢等拉回"
     assert candidates[0]["chase_risk"] == "low"
+    assert candidates[0]["research_score"] >= 7
+    assert candidates[0]["research_label"] == "順風研究"
+    assert candidates[0]["stock_type_label"] == "成長確認型"
+    assert candidates[0]["position_hint_label"] == "正常部位"
+    assert any(item["label"] == "營收加速" and item["passed"] for item in candidates[0]["research_factors"])
     assert candidates[0]["reason"].startswith("強勢等拉回｜潛力分")
 
 
@@ -143,6 +155,13 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "stage_label": "強勢等拉回",
                 "chase_risk": "low",
                 "chase_risk_label": "尚未過熱",
+                "research_score": 8,
+                "research_label": "順風研究",
+                "research_factors": [{"label": "散戶結構", "passed": True}],
+                "stock_type": "growth_confirmed",
+                "stock_type_label": "成長確認型",
+                "position_hint": "normal",
+                "position_hint_label": "正常部位",
             },
             {
                 "signal_date": day0.isoformat(),
@@ -160,6 +179,13 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "stage_label": "低位醞釀",
                 "chase_risk": "low",
                 "chase_risk_label": "尚未過熱",
+                "research_score": 5,
+                "research_label": "正常篩選",
+                "research_factors": [{"label": "產業題材", "passed": True}],
+                "stock_type": "cyclical_recovery",
+                "stock_type_label": "景氣反轉型",
+                "position_hint": "half",
+                "position_hint_label": "半部位",
             },
         ],
         day0,
@@ -185,7 +211,12 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert factors["題材升溫"]["completed"] == 2
     assert factors["題材升溫"]["success_count"] == 1
     assert factors["題材升溫"]["failure_count"] == 1
+    assert factors["順風研究"]["completed"] == 1
+    assert factors["成長確認型"]["win_rate_5d"] == 100
     assert summary["items"][0]["stage_label"] in {"強勢等拉回", "低位醞釀"}
+    assert summary["items"][0]["research_label"] in {"順風研究", "正常篩選"}
+    assert summary["items"][0]["stock_type_label"] in {"成長確認型", "景氣反轉型"}
+    assert summary["items"][0]["position_hint_label"] in {"正常部位", "半部位"}
     assert summary["stage_stats"]
     assert summary["strong_factors"]
     assert summary["weak_factors"]

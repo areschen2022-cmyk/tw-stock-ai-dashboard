@@ -35,6 +35,16 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         if points < 5:
             continue
         stage = _stage(row, score, grade, tags, chase_risk["level"])
+        research = _research_filter(row, score, grade, tags, chase_risk["level"])
+        stock_type = _stock_type(row, score, grade, tags, stage["key"])
+        position = _position_hint(row, chase_risk["level"])
+        tags.extend(
+            [
+                f"快篩:{research['label']}",
+                f"類型:{stock_type['label']}",
+                f"部位:{position['label']}",
+            ]
+        )
 
         candidates.append(
             {
@@ -54,6 +64,13 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
                 "stage_label": stage["label"],
                 "chase_risk": chase_risk["level"],
                 "chase_risk_label": chase_risk["label"],
+                "research_score": research["score"],
+                "research_label": research["label"],
+                "research_factors": research["factors"],
+                "stock_type": stock_type["key"],
+                "stock_type_label": stock_type["label"],
+                "position_hint": position["key"],
+                "position_hint_label": position["label"],
                 "tags": _dedupe(tags)[:10],
                 "reason": _reason(points, tags, stage["label"], chase_risk["label"]),
             }
@@ -141,6 +158,90 @@ def _score_row(row: dict[str, Any], score: int, grade: str) -> tuple[int, list[s
         tags.append("風險需複核")
 
     return points, tags
+
+
+def _research_filter(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, Any]:
+    """Compact version of the image-inspired 10-factor research checklist.
+
+    The result is a research completeness signal, not a buy/sell rule. It is stored
+    for later attribution so we can learn which factors actually helped.
+    """
+    text = _text(
+        row.get("trigger_summary"),
+        row.get("technical"),
+        row.get("chip"),
+        row.get("fundamental"),
+        row.get("risk"),
+        row.get("opportunity"),
+        row.get("retail_context"),
+        *(row.get("trigger_tags") or []),
+        *tags,
+    )
+    factors = [
+        _factor("market_strength", "市場/強度", score >= 75 or grade in {"S", "A"}, "分數或強度已到研究門檻"),
+        _factor("theme", "產業題材", bool(row.get("themes")), "有明確題材或供應鏈位置"),
+        _factor("catalyst", "催化劑", _int(row.get("opportunity_score")) >= 5 or _has_any(text, ["題材升溫", "題材強共振", "催化", "新產品", "訂單"]), "題材熱度或催化正在升溫"),
+        _factor("revenue", "營收加速", _int(row.get("fundamental_score")) >= 12 or _has_any(text, ["營收", "年增", "月增", "新高", "加速"]), "營收或基本面有改善訊號"),
+        _factor("valuation_risk", "估值風險", not _has_any(text, ["本益比過高", "估值過高", "風險偏高", "紅色警戒"]), "未出現明顯估值或風險警訊"),
+        _factor("institutional", "法人籌碼", _int(row.get("chip_score")) >= 12 or _has_any(text, ["法人共振", "外資買超", "投信買超"]), "法人或籌碼面有支撐"),
+        _factor("retail_clean", "散戶結構", _has_any(text, ["籌碼轉乾淨", "散戶減少", "觀察轉乾淨"]), "散戶籌碼沒有過熱"),
+        _factor("technical", "技術型態", _int(row.get("technical_score")) >= 12 or bool(row.get("pattern_tags")), "技術面或 K 線型態轉強"),
+        _factor("volume", "量能確認", _has_any(text, ["放量長紅", "突破整理", "技術突破", "量價開始轉強"]), "量價有初步確認"),
+        _factor("overheat_guard", "過熱排除", chase_risk != "high" and not row.get("pattern_risk_tags") and score < 96, "未進入明顯追高或型態風險區"),
+    ]
+    passed = sum(1 for item in factors if item["passed"])
+    if passed >= 7:
+        label = "順風研究"
+    elif passed >= 5:
+        label = "正常篩選"
+    elif passed >= 3:
+        label = "降溫等待"
+    else:
+        label = "先停手"
+    return {"score": passed, "label": label, "factors": factors}
+
+
+def _factor(key: str, label: str, passed: bool, reason: str) -> dict[str, Any]:
+    return {"key": key, "label": label, "passed": bool(passed), "reason": reason}
+
+
+def _stock_type(row: dict[str, Any], score: int, grade: str, tags: list[str], stage_key: str) -> dict[str, str]:
+    text = _text(
+        row.get("trigger_summary"),
+        row.get("fundamental"),
+        row.get("opportunity"),
+        *(row.get("themes") or []),
+        *(row.get("theme_tiers") or []),
+        *tags,
+    )
+    theme_tiers = {str(item) for item in row.get("theme_tiers") or []}
+    themes = " ".join(str(item) for item in row.get("themes") or [])
+    if (
+        score >= 80
+        and _has_any(text, ["營收", "年增", "新高", "營收加速", "最新月營收"])
+        and bool(row.get("themes"))
+    ):
+        return {"key": "growth_confirmed", "label": "成長確認型"}
+    if theme_tiers.intersection({"beneficiary", "speculative"}) or _has_any(text, ["二階", "受惠", "供應鏈"]):
+        return {"key": "tier2_beneficiary", "label": "二階受惠型"}
+    if _has_any(themes + " " + text, ["記憶體", "面板", "原物料", "低基期", "景氣", "塑膠", "鋼鐵", "水泥"]):
+        return {"key": "cyclical_recovery", "label": "景氣反轉型"}
+    if stage_key == "early_turn" or _has_any(text, ["轉機", "復甦", "改善", "突破整理", "技術突破"]):
+        return {"key": "turnaround_confirmed", "label": "轉機確認型"}
+    return {"key": "research_watch", "label": "研究觀察型"}
+
+
+def _position_hint(row: dict[str, Any], chase_risk: str) -> dict[str, str]:
+    atr = _float(row.get("atr_pct"))
+    if chase_risk == "high":
+        return {"key": "avoid_chase", "label": "不追價"}
+    if atr is None:
+        return {"key": "unknown", "label": "部位未定"}
+    if atr >= 8:
+        return {"key": "small", "label": "小部位"}
+    if atr >= 5:
+        return {"key": "half", "label": "半部位"}
+    return {"key": "normal", "label": "正常部位"}
 
 
 def _reason(points: int, tags: list[str], stage_label: str = "", chase_label: str = "") -> str:

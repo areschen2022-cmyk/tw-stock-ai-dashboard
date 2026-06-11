@@ -43,6 +43,7 @@ class StockScore:
     trigger_tags: list[str] = field(default_factory=list)
     pattern_tags: list[str] = field(default_factory=list)
     pattern_risk_tags: list[str] = field(default_factory=list)
+    atr_pct: float | None = None
     retail_signal: dict[str, Any] = field(default_factory=dict)
     selection_quality_adjustment: int = 0
     selection_quality_notes: list[str] = field(default_factory=list)
@@ -125,6 +126,30 @@ def _build_trigger_tags(
     return tags or ["綜合訊號"]
 
 
+def _atr_pct(prices: pd.DataFrame, period: int = 14) -> float | None:
+    required = {"high", "low", "close"}
+    if prices.empty or len(prices) < period + 1 or not required.issubset(set(prices.columns)):
+        return None
+    df = prices.copy().sort_values("date").tail(period + 1)
+    high = df["high"].astype(float)
+    low = df["low"].astype(float)
+    close = df["close"].astype(float)
+    prev_close = close.shift(1)
+    true_range = pd.concat(
+        [
+            high - low,
+            (high - prev_close).abs(),
+            (low - prev_close).abs(),
+        ],
+        axis=1,
+    ).max(axis=1)
+    atr = true_range.tail(period).mean()
+    last_close = close.iloc[-1]
+    if not last_close or pd.isna(atr):
+        return None
+    return round(float(atr / last_close * 100), 2)
+
+
 class ScoreEngine:
     def __init__(self, config: dict) -> None:
         self.config = config
@@ -179,6 +204,7 @@ class ScoreEngine:
 
         t_score, t_reasons = technical_score(prices)
         pattern_tags, pattern_risk_tags = candlestick_patterns(prices)
+        atr_pct = _atr_pct(prices)
         c_score, c_reasons = chip_score(
             bundle.get("institutional", pd.DataFrame()),
             bundle.get("margin", pd.DataFrame()),
@@ -249,4 +275,5 @@ class ScoreEngine:
             trigger_tags=tags,
             pattern_tags=pattern_tags,
             pattern_risk_tags=pattern_risk_tags,
+            atr_pct=atr_pct,
         )

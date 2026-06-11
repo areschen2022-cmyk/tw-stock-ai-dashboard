@@ -208,8 +208,8 @@ class TwseClient:
             and (all_df["Code"].astype(str) == str(stock_id)).any()
         )
 
-    def _is_tpex_stock(self, stock_id: str) -> bool:
-        quotes, _ = self._tpex_quotes_today(date.today())
+    def _is_tpex_stock(self, stock_id: str, as_of: date | None = None) -> bool:
+        quotes, _ = self._tpex_quotes_today(as_of or date.today())
         return bool(
             not quotes.empty
             and "SecuritiesCompanyCode" in quotes.columns
@@ -449,7 +449,7 @@ class TwseClient:
         return df
 
     def stock_prices(self, stock_id: str, start_date: date, end_date: date) -> pd.DataFrame:
-        if self._is_tpex_stock(stock_id):
+        if self._is_tpex_stock(stock_id, end_date):
             quotes, snapshot_date = self._tpex_quotes_today(end_date)
             current = pd.DataFrame()
             if snapshot_date is not None:
@@ -602,7 +602,7 @@ class TwseClient:
                     {"date": tpex_date, "stock_id": stock_id, "name": "Investment_Trust", "buy": _num(row.get("SecuritiesInvestmentTrustCompanies-TotalBuy", 0)), "sell": _num(row.get("SecuritiesInvestmentTrustCompanies-TotalSell", 0))},
                     {"date": tpex_date, "stock_id": stock_id, "name": "Dealer", "buy": _num(row.get("Dealers-TotalBuy", 0)), "sell": _num(row.get("Dealers-TotalSell", 0))},
                 ])
-        if not current.empty or self._is_tpex_stock(stock_id):
+        if not current.empty or self._is_tpex_stock(stock_id, end_date):
             official = self._save_official_history("institutional", stock_id, current, subset=["date", "name"])
             cached = self._cached_fallback("TaiwanStockInstitutionalInvestorsBuySell", stock_id, start_date, end_date)
             merged = _merge_frames(cached, official, subset=["date", "name"], start_date=start_date, end_date=end_date)
@@ -703,7 +703,7 @@ class TwseClient:
                     "MarginPurchaseTodayBalance": _num(row.get("MarginPurchaseBalance", 0)),
                     "ShortSaleTodayBalance": _num(row.get("ShortSaleBalance", 0)),
                 }])
-        if not current.empty or self._is_tpex_stock(stock_id):
+        if not current.empty or self._is_tpex_stock(stock_id, end_date):
             official = self._save_official_history("margin", stock_id, current, subset=["date"])
             cached = self._cached_fallback("TaiwanStockMarginPurchaseShortSale", stock_id, start_date, end_date)
             merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)
@@ -803,7 +803,7 @@ class TwseClient:
             current = _revenue_row(raw, stock_id)
             if not current.empty:
                 break
-        if not current.empty or self._is_twse_stock(stock_id) or self._is_tpex_stock(stock_id):
+        if not current.empty or self._is_twse_stock(stock_id) or self._is_tpex_stock(stock_id, end_date):
             official = self._save_official_history("revenue", stock_id, current, subset=["date"])
             cached = self._cached_fallback("TaiwanStockMonthRevenue", stock_id, start_date, end_date)
             merged = _merge_frames(cached, official, subset=["date"], start_date=start_date, end_date=end_date)

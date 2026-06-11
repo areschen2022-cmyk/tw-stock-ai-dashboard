@@ -107,6 +107,13 @@ class SQLiteStore:
                     stage_label TEXT,
                     chase_risk TEXT,
                     chase_risk_label TEXT,
+                    research_score INTEGER,
+                    research_label TEXT,
+                    research_factors_json TEXT NOT NULL DEFAULT '[]',
+                    stock_type TEXT,
+                    stock_type_label TEXT,
+                    position_hint TEXT,
+                    position_hint_label TEXT,
                     return_3d REAL,
                     return_5d REAL,
                     return_10d REAL,
@@ -129,6 +136,13 @@ class SQLiteStore:
                 ("stage_label", "TEXT"),
                 ("chase_risk", "TEXT"),
                 ("chase_risk_label", "TEXT"),
+                ("research_score", "INTEGER"),
+                ("research_label", "TEXT"),
+                ("research_factors_json", "TEXT NOT NULL DEFAULT '[]'"),
+                ("stock_type", "TEXT"),
+                ("stock_type_label", "TEXT"),
+                ("position_hint", "TEXT"),
+                ("position_hint_label", "TEXT"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -779,8 +793,10 @@ class SQLiteStore:
                     INSERT OR REPLACE INTO potential_radar_signals (
                         signal_date, stock_id, name, grade, total_score, potential_score, action,
                         reason, tags_json, themes_json, entry_price, stage, stage_label,
-                        chase_risk, chase_risk_label
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        chase_risk, chase_risk_label, research_score, research_label,
+                        research_factors_json, stock_type, stock_type_label, position_hint,
+                        position_hint_label
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -798,6 +814,13 @@ class SQLiteStore:
                         item.get("stage_label"),
                         item.get("chase_risk"),
                         item.get("chase_risk_label"),
+                        item.get("research_score"),
+                        item.get("research_label"),
+                        json.dumps(item.get("research_factors") or [], ensure_ascii=False),
+                        item.get("stock_type"),
+                        item.get("stock_type_label"),
+                        item.get("position_hint"),
+                        item.get("position_hint_label"),
                     ),
                 )
 
@@ -1146,6 +1169,8 @@ class SQLiteStore:
                 SELECT signal_date, stock_id, name, grade, total_score, action,
                        potential_score, reason, tags_json, themes_json, entry_price,
                        stage, stage_label, chase_risk, chase_risk_label,
+                       research_score, research_label, research_factors_json,
+                       stock_type, stock_type_label, position_hint, position_hint_label,
                        return_3d, return_5d, return_10d,
                        outcome_category, outcome_label, outcome_reason
                 FROM potential_radar_signals
@@ -1156,10 +1181,10 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            outcome = _potential_outcome(row[16], row[17], _json_list(row[8]))
-            category = row[18] or outcome["category"]
-            label = row[19] or outcome["label"]
-            reason = row[20] or outcome["reason"]
+            outcome = _potential_outcome(row[23], row[24], _json_list(row[8]))
+            category = row[25] or outcome["category"]
+            label = row[26] or outcome["label"]
+            reason = row[27] or outcome["reason"]
             items.append(
                 {
                     "signal_date": row[0],
@@ -1177,9 +1202,16 @@ class SQLiteStore:
                     "stage_label": row[12] or _infer_potential_stage(row[6], row[4], row[3], _json_list(row[8]))["label"],
                     "chase_risk": row[13] or "",
                     "chase_risk_label": row[14] or "",
-                    "return_3d": row[15],
-                    "return_5d": row[16],
-                    "return_10d": row[17],
+                    "research_score": row[15],
+                    "research_label": row[16] or "",
+                    "research_factors": json.loads(row[17] or "[]"),
+                    "stock_type": row[18] or "",
+                    "stock_type_label": row[19] or "",
+                    "position_hint": row[20] or "",
+                    "position_hint_label": row[21] or "",
+                    "return_3d": row[22],
+                    "return_5d": row[23],
+                    "return_10d": row[24],
                     "outcome_category": category,
                     "outcome_label": label,
                     "outcome_reason": reason,
@@ -1819,10 +1851,19 @@ def _potential_factor_tags(item: dict) -> list[str]:
     tags = list(item.get("tags") or [])
     stage = str(item.get("stage_label") or "")
     chase = str(item.get("chase_risk_label") or "")
+    research = str(item.get("research_label") or "")
+    stock_type = str(item.get("stock_type_label") or "")
+    position = str(item.get("position_hint_label") or "")
     if stage:
         tags.append(f"潛力階段:{stage}")
     if chase:
         tags.append(f"追高檢查:{chase}")
+    if research:
+        tags.append(f"研究快篩:{research}")
+    if stock_type:
+        tags.append(f"股票類型:{stock_type}")
+    if position:
+        tags.append(f"部位提示:{position}")
     tags.extend([f"題材:{theme}" for theme in (item.get("themes") or [])[:2]])
     return _dedupe(tags)
 
@@ -2078,7 +2119,7 @@ def _top_factor_rows(factors: list[dict], *, reverse: bool, limit: int = 6) -> l
 def _potential_factor_stats(items: list[dict]) -> list[dict]:
     buckets: dict[str, list[dict]] = {}
     for item in items:
-        for tag in item.get("tags") or []:
+        for tag in _potential_factor_tags(item):
             factor = _potential_factor_label(str(tag))
             if not factor:
                 continue
@@ -2163,6 +2204,12 @@ def _potential_factor_label(tag: str) -> str:
         return "避開訊號"
     if "追高風險" in tag:
         return "追高風險"
+    if tag.startswith("快篩:") or tag.startswith("研究快篩:"):
+        return tag.split(":", 1)[1] if ":" in tag else tag
+    if tag.startswith("類型:") or tag.startswith("股票類型:"):
+        return tag.split(":", 1)[1] if ":" in tag else tag
+    if tag.startswith("部位:") or tag.startswith("部位提示:"):
+        return tag.split(":", 1)[1] if ":" in tag else tag
     if tag.startswith("階段:"):
         return tag.replace("階段:", "", 1)
     return tag[:24] if tag else ""
@@ -2238,6 +2285,12 @@ def _potential_candidate(item: dict) -> dict:
         stage = _infer_potential_stage(item.get("potential_score"), item.get("total_score"), item.get("grade"), item.get("tags") or tags)
     if stage["label"]:
         tags.insert(0, f"階段:{stage['label']}")
+    if item.get("research_label"):
+        tags.append(f"快篩:{item.get('research_label')}")
+    if item.get("stock_type_label"):
+        tags.append(f"類型:{item.get('stock_type_label')}")
+    if item.get("position_hint_label"):
+        tags.append(f"部位:{item.get('position_hint_label')}")
     return {
         "signal_date": item.get("signal_date"),
         "stock_id": item.get("stock_id"),
@@ -2254,7 +2307,14 @@ def _potential_candidate(item: dict) -> dict:
         "stage_label": stage["label"],
         "chase_risk": item.get("chase_risk"),
         "chase_risk_label": item.get("chase_risk_label"),
-        "tags": tags[:6],
+        "research_score": item.get("research_score"),
+        "research_label": item.get("research_label"),
+        "research_factors": item.get("research_factors", []),
+        "stock_type": item.get("stock_type"),
+        "stock_type_label": item.get("stock_type_label"),
+        "position_hint": item.get("position_hint"),
+        "position_hint_label": item.get("position_hint_label"),
+        "tags": _dedupe(tags)[:8],
         "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。",
     }
 

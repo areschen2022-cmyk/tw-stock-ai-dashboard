@@ -540,6 +540,10 @@ def build_dashboard_payload(
                 "fundamental": _first(item.reasons.get("fundamental", [])),
                 "risk": _first(item.reasons.get("risk", [])),
                 "opportunity": _first(item.reasons.get("opportunity", [])),
+                "technical_score": item.technical_score,
+                "chip_score": item.chip_score,
+                "fundamental_score": item.fundamental_score,
+                "risk_score": item.risk_score,
                 "action": item.action or "只觀察",
                 "entry_condition": item.entry_condition or "資料不足，暫不設進場條件",
                 "stop_reference": item.stop_reference or "資料不足，暫不設停損參考",
@@ -555,6 +559,7 @@ def build_dashboard_payload(
                 "trigger_tags": item.trigger_tags,
                 "pattern_tags": item.pattern_tags,
                 "pattern_risk_tags": item.pattern_risk_tags,
+                "atr_pct": item.atr_pct,
                 "trigger_summary": item.trigger_summary,
                 "decision_reason": _decision_reason(item),
                 "retail_signal": item.retail_signal,
@@ -2154,9 +2159,17 @@ def _potential_html() -> str:
     th, td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; line-height:1.45; }
     th { background:#eef1f5; color:#475467; font-size:12px; }
     .tag { display:inline-flex; align-items:center; max-width:100%; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; line-height:1.35; margin:2px 3px 0 0; border:1px solid #e2e8f0; background:#f8fafc; color:#475467; white-space:nowrap; word-break:keep-all; }
+    .tag.good { background:#f0fdf4; color:var(--good); border-color:#abefc6; }
+    .tag.warn { background:#fffbeb; color:var(--warn); border-color:#f6d365; }
+    .tag.info { background:#eff6ff; color:var(--blue); border-color:#bfdbfe; }
     .stage { min-width:72px; justify-content:center; color:white; background:var(--blue); border-color:var(--blue); font-size:12px; letter-spacing:0; }
     .stock-link { display:inline-block; min-width:max-content; white-space:nowrap; word-break:keep-all; }
     .stage-col { min-width:90px; }
+    .research-cell { min-width:160px; }
+    .research-score { display:block; font-weight:800; margin-bottom:3px; }
+    .factor-list { display:grid; gap:3px; margin-top:5px; }
+    .factor-item { font-size:11px; color:var(--muted); line-height:1.35; }
+    .factor-item.pass { color:var(--good); }
     .good { color:var(--good); }
     .bad { color:var(--bad); }
     .warn { color:var(--warn); }
@@ -2196,7 +2209,7 @@ def _potential_html() -> str:
         <section>
           <h2>潛力觀察</h2>
           <div class="note">不是買進清單，而是尚未完成驗證、但條件正在累積的股票。</div>
-          <table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>強度</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
+          <table><thead><tr><th>股票</th><th class="stage-col">階段</th><th class="research-cell">研究快篩</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
         </section>
         <section>
           <h2>因素歸因</h2>
@@ -2219,8 +2232,19 @@ def _potential_html() -> str:
     const neutralPct = value => value === null || value === undefined ? "—" : `${Number(value).toFixed(1)}%`;
     const metric = (label, value, suffix="") => `<div class="metric"><b>${value ?? "—"}${value === null || value === undefined ? "" : suffix}</b><span>${label}</span></div>`;
     const stock = row => `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name || "")}</a>`;
-    const tags = row => (row.tags || []).slice(0, 5).map(tag => `<span class="tag">${esc(tag)}</span>`).join("");
+    const tags = row => (row.tags || []).slice(0, 6).map(tag => `<span class="tag">${esc(tag)}</span>`).join("");
     const stageTag = row => `<span class="tag stage">${esc(row.stage_label || "觀察")}</span>`;
+    const researchClass = label => label === "順風研究" ? "good" : label === "正常篩選" ? "info" : label === "降溫等待" ? "warn" : "";
+    function researchCell(row) {
+      const score = row.research_score == null ? "—" : `${row.research_score}/10`;
+      const factors = (row.research_factors || []).filter(item => item.passed).slice(0, 3)
+        .map(item => `<div class="factor-item pass">✓ ${esc(item.label)}</div>`).join("");
+      return `<span class="research-score">${esc(score)}</span>
+        ${row.research_label ? `<span class="tag ${researchClass(row.research_label)}">${esc(row.research_label)}</span>` : ""}
+        ${row.stock_type_label ? `<span class="tag info">${esc(row.stock_type_label)}</span>` : ""}
+        ${row.position_hint_label ? `<span class="tag">${esc(row.position_hint_label)}</span>` : ""}
+        ${factors ? `<div class="factor-list">${factors}</div>` : ""}`;
+    }
     function signalRow(row) {
       return `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}</td><td data-label="5日">${pct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${pct(row.return_10d)}</div>` : ""}</td><td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div>${tags(row)}</div></td></tr>`;
     }
@@ -2238,7 +2262,8 @@ def _potential_html() -> str:
         metric("提前命中", stats.big_winner_count ?? 0),
       ].join("");
       document.querySelector("#stageStats").innerHTML = (radar.stage_stats || []).length ? radar.stage_stats.map(row => `<tr><td data-label="階段"><b>${esc(row.label)}</b></td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="觀察中">${esc(row.pending)}</td></tr>`).join("") : `<tr><td data-label="階段" colspan="6">尚無潛力雷達資料</td></tr>`;
-      document.querySelector("#candidates").innerHTML = (learning.potential_candidates || radar.pending_candidates || []).length ? (learning.potential_candidates || radar.pending_candidates || []).slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="強度">${esc(row.grade)}｜${esc(row.total_score)}/100</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由">${esc(row.reason || "")}${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
+      const potentialRows = (radar.pending_candidates || []).length ? radar.pending_candidates : (learning.potential_candidates || []);
+      document.querySelector("#candidates").innerHTML = potentialRows.length ? potentialRows.slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="研究快篩">${researchCell(row)}</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由"><b>${esc(row.grade)}｜${esc(row.total_score)}/100</b><div class="small">${esc(row.reason || "")}</div>${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       document.querySelector("#factorStats").innerHTML = (radar.factor_stats || []).length ? radar.factor_stats.map(row => `<tr><td data-label="因素">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="成功/失敗">${esc(row.success_count || 0)} / ${esc(row.failure_count || 0)}</td></tr>`).join("") : `<tr><td data-label="因素" colspan="6">因素樣本仍在累積中</td></tr>`;
       document.querySelector("#factorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#successRows").innerHTML = (radar.success_cases || []).length ? radar.success_cases.map(signalRow).join("") : `<tr><td data-label="命中樣本" colspan="4">尚無已驗證命中樣本</td></tr>`;
