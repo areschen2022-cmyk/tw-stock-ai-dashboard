@@ -24,11 +24,13 @@ from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import (
     build_dashboard_payload,
+    build_debug_payload,
     build_traceability_diagnosis,
     build_traceability_summary,
     build_weekly_overview_payload,
     enrich_dashboard_payload,
     write_dashboard,
+    write_debug,
     write_performance,
     write_potential,
     write_theme_history,
@@ -616,6 +618,7 @@ def main() -> int:
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(performance_payload, ROOT / "dashboard")
     write_potential(performance_payload, ROOT / "dashboard")
+    write_debug(build_debug_payload(dashboard_payload, performance_payload), ROOT / "dashboard")
     theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
     write_theme_history(
         theme_history_payload,

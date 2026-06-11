@@ -881,6 +881,74 @@ def write_theme_history(payload: dict[str, list[dict]], output_dir: Path) -> Non
     (output_dir / "theme_history.json").write_text(json_text, encoding="utf-8")
 
 
+def build_debug_payload(dashboard_payload: dict, performance_payload: dict | None = None) -> dict:
+    """Build an internal data-chain snapshot for troubleshooting daily runs."""
+
+    source_status = dashboard_payload.get("source_status") or {}
+    data_quality = dashboard_payload.get("data_quality") or {}
+    data_retry = dashboard_payload.get("data_retry") or {}
+    traceability = dashboard_payload.get("traceability") or {}
+    ai_status = (dashboard_payload.get("ai_council") or {}).get("status") or {}
+    performance = performance_payload or {}
+    bundle_coverage = source_status.get("bundle_coverage") or {}
+    universe = source_status.get("universe") or {}
+    return {
+        "as_of": dashboard_payload.get("as_of"),
+        "generated_at": datetime.now(TAIPEI).isoformat(timespec="seconds"),
+        "dashboard_generated_at": dashboard_payload.get("generated_at"),
+        "source_status": {
+            "label": source_status.get("label"),
+            "api": source_status.get("api", 0),
+            "cache": source_status.get("cache", 0),
+            "fallback": source_status.get("fallback", 0),
+            "quota": source_status.get("quota", 0),
+            "error": source_status.get("error", 0),
+            "empty": source_status.get("empty", 0),
+            "official_snapshots": source_status.get("official_snapshots", {}),
+            "market_snapshots": source_status.get("market_snapshots", {}),
+        },
+        "data_quality": data_quality,
+        "data_source_health": dashboard_payload.get("data_source_health", {}),
+        "bundle_coverage": bundle_coverage,
+        "universe": universe,
+        "retry": {
+            "status_counts": data_retry.get("status_counts", {}),
+            "pending": data_retry.get("pending", 0),
+            "failed": data_retry.get("failed", 0),
+            "recovered": data_retry.get("recovered", 0),
+            "diagnosis": data_retry.get("diagnosis", []),
+            "recovered_by_dataset": data_retry.get("recovered_by_dataset", []),
+            "recent_items": data_retry.get("items", []),
+        },
+        "traceability": {
+            "steps": traceability.get("steps", []),
+            "summary": traceability.get("summary", {}),
+            "diagnosis": build_traceability_diagnosis(traceability, dashboard_payload),
+            "history": traceability.get("history", []),
+        },
+        "ai": {
+            "health": ai_status.get("health", {}),
+            "requested_models": ai_status.get("requested_models", 0),
+            "successful_models": ai_status.get("successful_models", 0),
+            "failed_model_names": ai_status.get("failed_model_names", []),
+            "success_model_names": ai_status.get("success_model_names", []),
+        },
+        "performance": {
+            "stats": performance.get("stats", {}),
+            "potential_radar": (performance.get("potential_radar") or {}).get("stats", {}),
+        },
+        "note": "Internal diagnostics only. It contains no secrets and is not linked from the dashboard UI.",
+    }
+
+
+def write_debug(payload: dict, output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "debug_data.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
 def build_traceability_summary(dashboard_payload: dict, performance_payload: dict | None = None) -> dict:
     """Build a compact end-to-end health map for the dashboard."""
 
@@ -894,6 +962,8 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
     potential_stats = (performance.get("potential_radar") or {}).get("stats") or {}
     ai_status = (dashboard_payload.get("ai_council") or {}).get("status") or {}
     ai_health = ai_status.get("health") or {}
+    bundle_coverage = source_status.get("bundle_coverage") or {}
+    universe = source_status.get("universe") or {}
 
     def _pct(value) -> str:
         if value is None:
@@ -996,6 +1066,24 @@ def build_traceability_summary(dashboard_payload: dict, performance_payload: dic
             "watch_completed": watch_completed,
             "potential_signals": potential_total,
             "potential_completed": potential_completed,
+            "data_coverage": {
+                "bundle_stocks": bundle_coverage.get("stocks", 0),
+                "all_critical_complete": bool(bundle_coverage.get("all_critical_complete", False)),
+                "datasets": {
+                    key: {
+                        "coverage_pct": row.get("coverage_pct"),
+                        "missing_count": len(row.get("missing") or []),
+                    }
+                    for key, row in (bundle_coverage.get("datasets") or {}).items()
+                },
+            },
+            "universe": {
+                "mode": universe.get("mode"),
+                "selected_count": universe.get("selected_count"),
+                "target_total_listed": universe.get("target_total_listed"),
+                "coverage_pct": universe.get("coverage_pct"),
+                "market_universe_available": universe.get("market_universe_available"),
+            },
         },
     }
 
