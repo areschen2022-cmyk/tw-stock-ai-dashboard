@@ -1,14 +1,14 @@
 {
   "as_of": "2026-06-11",
-  "generated_at": "2026-06-12T04:32:42+08:00",
-  "dashboard_generated_at": "2026-06-12T04:32:37+08:00",
+  "generated_at": "2026-06-12T05:02:42+08:00",
+  "dashboard_generated_at": "2026-06-12T05:02:38+08:00",
   "source_status": {
-    "label": "部分限流",
-    "api": 5,
-    "cache": 4240,
+    "label": "正常",
+    "api": 3,
+    "cache": 4244,
     "fallback": 4,
     "quota": 0,
-    "error": 1,
+    "error": 0,
     "empty": 2,
     "official_snapshots": {
       "tpex_quotes": {
@@ -88,9 +88,8 @@
       "已由備援/補抓補回 116 次"
     ],
     "event_summary": {
-      "empty": 2,
-      "fallback": 2,
-      "error": 1
+      "empty": 3,
+      "fallback": 2
     },
     "details": [
       {
@@ -122,11 +121,11 @@
         "reason": "twse_month_missing"
       },
       {
-        "type": "error",
+        "type": "empty",
         "dataset": "TaiwanStockMarginPurchaseShortSale",
         "data_id": "6980",
         "period": "2025-12-01",
-        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)"
+        "reason": ""
       }
     ],
     "recovery_status": {
@@ -167,7 +166,7 @@
           "dataset": "TaiwanStockMarginPurchaseShortSale",
           "data_id": "6980",
           "period": "2025-12-01",
-          "type": "error",
+          "type": "empty",
           "next_step": "recovered_by_fallback"
         }
       ]
@@ -317,6 +316,15 @@
       },
       {
         "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-06-01T22:30:52+08:00",
+        "first_seen_at": "2026-06-01T15:15:02+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "pending",
         "dataset": "TaiwanStockMonthRevenue",
         "reason": "",
         "count": 1,
@@ -332,24 +340,6 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)",
-        "count": 1,
-        "last_attempt_at": "2026-06-01T22:30:52+08:00",
-        "first_seen_at": "2026-06-01T15:15:02+08:00",
-        "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-05-26T23:39:15+08:00",
-        "first_seen_at": "2026-05-26T23:22:43+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
       }
     ],
     "recovered_by_dataset": [
@@ -465,6 +455,15 @@
       },
       {
         "status": "pending",
+        "dataset": "TaiwanStockMarginPurchaseShortSale",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-06-01T22:30:52+08:00",
+        "first_seen_at": "2026-06-01T15:15:02+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "pending",
         "dataset": "TaiwanStockMonthRevenue",
         "reason": "",
         "count": 1,
@@ -480,24 +479,6 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "HTTPSConnectionPool(host='api.finmindtrade.com', port=443): Read timed out. (read timeout=20)",
-        "count": 1,
-        "last_attempt_at": "2026-06-01T22:30:52+08:00",
-        "first_seen_at": "2026-06-01T15:15:02+08:00",
-        "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-05-26T23:39:15+08:00",
-        "first_seen_at": "2026-05-26T23:22:43+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
       }
     ],
     "recovered_by_dataset": [
@@ -616,9 +597,9 @@
       {
         "key": "source",
         "label": "資料源",
-        "status": "bad",
-        "value": "部分限流",
-        "note": "API 5 | 快取 4240 | 限流 0"
+        "status": "warn",
+        "value": "正常",
+        "note": "API 3 | 快取 4244 | 限流 0"
       },
       {
         "key": "score",
@@ -707,10 +688,10 @@
     "diagnosis": [
       {
         "key": "source",
-        "status": "bad",
+        "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=部分限流; quality=high; api=5; cache=4240; quota=0; error=1",
+        "evidence": "source=正常; quality=high; api=3; cache=4244; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -725,9 +706,9 @@
     "history": [
       {
         "run_date": "2026-06-11",
-        "generated_at": "2026-06-12T04:32:42+08:00",
-        "overall_status": "bad",
-        "source_status": "bad",
+        "generated_at": "2026-06-12T05:02:42+08:00",
+        "overall_status": "warn",
+        "source_status": "warn",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
@@ -779,9 +760,9 @@
           {
             "key": "source",
             "label": "資料源",
-            "status": "bad",
-            "value": "部分限流",
-            "note": "API 5 | 快取 4240 | 限流 0"
+            "status": "warn",
+            "value": "正常",
+            "note": "API 3 | 快取 4244 | 限流 0"
           },
           {
             "key": "score",
