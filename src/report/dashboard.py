@@ -527,6 +527,35 @@ def _decision_summary(rows: list[dict], action_lists: dict, data_quality: dict, 
     }
 
 
+def _data_source_health(source_status: dict | None, data_quality: dict | None, retry_summary: dict | None = None) -> dict:
+    status = source_status or {}
+    quality = data_quality or {}
+    retry = retry_summary or {}
+    pending = int(retry.get("pending") or 0) + int((retry.get("status_counts") or {}).get("pending") or 0)
+    failed = int(retry.get("failed") or 0) + int((retry.get("status_counts") or {}).get("failed") or 0)
+    recovered = int(retry.get("recovered") or 0) + int((retry.get("status_counts") or {}).get("recovered") or 0)
+    official = quality.get("official_snapshots") or status.get("official_snapshots") or {}
+    invalid = int(quality.get("official_invalid") or 0)
+    effective_error = int(quality.get("effective_error") or 0)
+    effective_empty = int(quality.get("effective_empty") or 0)
+    blocked = invalid + effective_error + failed
+    return {
+        "label": "需檢查" if blocked else "可用",
+        "blocking_count": blocked,
+        "pending_count": pending,
+        "failed_count": failed,
+        "recovered_count": recovered,
+        "effective_error": effective_error,
+        "effective_empty": effective_empty,
+        "official_valid": int(quality.get("official_valid") or 0),
+        "official_invalid": invalid,
+        "official_snapshots": official,
+        "retry_diagnosis": retry.get("diagnosis", []),
+        "recovered_by_dataset": retry.get("recovered_by_dataset", []),
+        "note": "已補回成功的資料不列為阻塞；只把官方快照無效、有效錯誤、補抓失敗列入需檢查。",
+    }
+
+
 def _build_health_status(
     as_of: date,
     source_status: dict | None,
@@ -651,6 +680,8 @@ def build_dashboard_payload(
     health = _build_health_status(as_of, source_status, theme_signal)
     return {
         "as_of": as_of.isoformat(),
+        "generated_at": health.get("generated_at"),
+        "generated_date": health.get("generated_date"),
         "market": {"summary": market_summary, "warning": market_warning},
         "overseas": {
             "label": overseas.label if overseas else "未納入",
@@ -709,6 +740,7 @@ def build_dashboard_payload(
         "retail_divergence": retail_divergence or empty_retail_divergence(as_of),
         "action_lists": action_lists,
         "data_quality": data_quality,
+        "data_source_health": _data_source_health(source_status, data_quality),
         "decision_summary": _decision_summary(rows, action_lists, data_quality, health, theme_signal),
         "summary": {
             "scanned": len(rows),
@@ -759,6 +791,11 @@ def enrich_dashboard_payload(
         rows,
         ai_status=ai_status,
         retry_summary=retry_summary if retry_summary is not None else payload.get("data_retry", {}),
+    )
+    payload["data_source_health"] = _data_source_health(
+        source_status if source_status is not None else payload.get("source_status", {}),
+        payload.get("data_quality", {}),
+        retry_summary if retry_summary is not None else payload.get("data_retry", {}),
     )
     previous_top_theme = (payload.get("decision_summary") or {}).get("top_theme")
     payload["decision_summary"] = _decision_summary(

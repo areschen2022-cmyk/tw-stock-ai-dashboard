@@ -678,12 +678,48 @@ class SQLiteStore:
                 """,
                 (limit,),
             ).fetchall()
+            reason_rows = conn.execute(
+                """
+                SELECT status, dataset, reason, COUNT(*), MAX(last_attempt_at), MAX(first_seen_at)
+                FROM data_retry_queue
+                WHERE status IN ('pending', 'failed')
+                GROUP BY status, dataset, reason
+                ORDER BY COUNT(*) DESC, MAX(COALESCE(last_attempt_at, first_seen_at)) DESC
+                LIMIT 12
+                """
+            ).fetchall()
+            recovered_rows = conn.execute(
+                """
+                SELECT dataset, COUNT(*), MAX(recovered_at)
+                FROM data_retry_queue
+                WHERE status = 'recovered'
+                GROUP BY dataset
+                ORDER BY COUNT(*) DESC
+                LIMIT 8
+                """
+            ).fetchall()
         return {
             "status_counts": counts,
             "pending": counts.get("pending", 0),
             "failed": counts.get("failed", 0),
             "recovered": counts.get("recovered", 0),
             "items": [_retry_row(row) for row in rows],
+            "diagnosis": [
+                {
+                    "status": row[0],
+                    "dataset": row[1],
+                    "reason": row[2],
+                    "count": row[3],
+                    "last_attempt_at": row[4],
+                    "first_seen_at": row[5],
+                    "suggestion": _retry_suggestion(row[1], row[2], row[0]),
+                }
+                for row in reason_rows
+            ],
+            "recovered_by_dataset": [
+                {"dataset": row[0], "count": row[1], "last_recovered_at": row[2]}
+                for row in recovered_rows
+            ],
         }
 
     def save_daily_score(self, score: StockScore, as_of: date) -> None:
@@ -2789,3 +2825,18 @@ def _retry_row(row: tuple) -> dict:
         "last_error": row[8],
         "recovered_at": row[9],
     }
+
+
+def _retry_suggestion(dataset: str, reason: str, status: str) -> str:
+    text = f"{dataset} {reason} {status}".lower()
+    if "quota" in text or "limit" in text or "429" in text:
+        return "限流類：降低同源請求、等待下一輪或改走官方快照。"
+    if "timeout" in text or "timed out" in text:
+        return "逾時類：保留重試，若連續失敗再降低批次大小。"
+    if "empty" in text or "missing" in text or "no data" in text:
+        return "空資料類：多半是尚未公布或該股票無資料，維持觀察即可。"
+    if "html" in text or "parse" in text or "json" in text:
+        return "格式類：來源回傳格式改變，優先檢查 parser 或 fallback。"
+    if status == "failed":
+        return "已達重試上限：保留紀錄，避免每日重複消耗請求。"
+    return "待補類：由每日補抓佇列自動重試。"

@@ -45,6 +45,8 @@ def test_data_retry_queue_enqueues_and_records_success(tmp_path) -> None:
     assert summary["pending"] == 0
     assert summary["recovered"] == 1
     assert summary["items"][0]["status"] == "recovered"
+    assert summary["recovered_by_dataset"][0]["dataset"] == "STOCK_DAY"
+    assert summary["recovered_by_dataset"][0]["count"] == 1
 
 
 def test_data_retry_queue_does_not_enqueue_fallback_recovered_items(tmp_path) -> None:
@@ -71,6 +73,8 @@ def test_data_retry_queue_marks_failed_after_three_attempts(tmp_path) -> None:
     summary = store.retry_queue_summary()
     assert summary["failed"] == 1
     assert summary["items"][0]["last_error"] == "empty_after_retry"
+    assert summary["diagnosis"][0]["status"] == "failed"
+    assert summary["diagnosis"][0]["suggestion"]
 
 
 def test_purge_retry_cache_supports_daily_and_monthly_cache_shapes(tmp_path) -> None:

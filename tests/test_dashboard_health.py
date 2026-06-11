@@ -81,6 +81,8 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     )
 
     assert payload["health"]["label"] == "正常"
+    assert payload["generated_at"] == payload["health"]["generated_at"]
+    assert payload["generated_date"] == payload["health"]["generated_date"]
     assert payload["health"]["website_schedule"] == "04:30 / 05:00"
     assert payload["health"]["telegram_schedule"] == "07:20 / 07:35 / 07:50 / 08:05"
     assert payload["health"]["news_sources"] == 2
@@ -91,6 +93,8 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["data_quality"]["details"][0]["dataset"] == "STOCK_DAY"
     assert payload["data_quality"]["recovery_status"]["retryable"] == 1
     assert payload["data_quality"]["official_valid"] == 1
+    assert payload["data_source_health"]["label"] == "可用"
+    assert payload["data_source_health"]["official_valid"] == 1
     assert payload["decision_summary"]["top_theme"] == "defense_policy"
     assert payload["themes"]["matched_headlines"]["defense_policy"] == ["國防預算帶動軍工題材"]
     assert payload["themes"]["quality"]["defense_policy"].startswith("高")
