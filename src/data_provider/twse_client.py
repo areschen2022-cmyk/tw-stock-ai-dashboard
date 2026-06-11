@@ -36,6 +36,7 @@ class TwseClient:
     ) -> None:
         self.fallback = fallback or FinMindClient()
         self.timeout = timeout
+        self.stock_day_timeout = min(timeout, 5)
         self.cache_dir = cache_dir or Path("data") / "cache" / "twse"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.status_counts = {"api": 0, "cache": 0, "quota": 0, "error": 0, "empty": 0, "fallback": 0}
@@ -414,7 +415,12 @@ class TwseClient:
             "response": "json",
         }
         try:
-            response = requests.get(self.STOCK_DAY_URL, params=params, headers=self.headers, timeout=self.timeout)
+            response = requests.get(
+                self.STOCK_DAY_URL,
+                params=params,
+                headers=self.headers,
+                timeout=self.stock_day_timeout,
+            )
             response.raise_for_status()
             if "json" not in response.headers.get("Content-Type", "").lower() and response.text.lstrip().startswith("<"):
                 self._count("empty", dataset="STOCK_DAY", data_id=stock_id, period=key, reason="html")
@@ -480,6 +486,7 @@ class TwseClient:
             frame = self._stock_month(stock_id, year, month)
             if frame.empty:
                 missing = True
+                break
             else:
                 frames.append(frame)
         if missing:

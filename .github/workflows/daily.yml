@@ -121,6 +121,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Update retail divergence signals
+        if: github.event_name != 'push'
         timeout-minutes: 3
         continue-on-error: true
         env:
