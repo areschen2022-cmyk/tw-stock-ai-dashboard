@@ -1287,12 +1287,12 @@ def _html() -> str:
     header { padding:18px 24px 12px; border-bottom:1px solid #263244; background:linear-gradient(135deg,var(--terminal),#172033 62%,#0b4a8b); color:#fff; box-shadow:0 6px 18px rgba(15,23,42,.12); }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:#cbd5e1; font-size:14px; }
-    main { padding:14px 20px 32px; max-width:1640px; margin:auto; }
-    .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:12px; }
-    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 11px; min-height:64px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
+    main { padding:14px 20px 32px; max-width:1560px; margin:auto; }
+    .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:10px; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 11px; min-height:58px; box-shadow:0 1px 2px rgba(15,23,42,.05); }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
-    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(340px,.65fr); gap:12px; margin-bottom:16px; align-items:start; }
+    .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(320px,.55fr); gap:12px; margin-bottom:16px; align-items:start; }
     .main-stack, .side-stack { display:grid; gap:12px; }
     .side-stack { position:sticky; top:10px; }
     .market-theme-grid { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:12px; }
@@ -1318,6 +1318,9 @@ def _html() -> str:
     .trace-day.warn { color:var(--warn); border-color:#f6d365; }
     .trace-day.bad { color:var(--bad); border-color:#fecdd6; }
     .action-panel { border-left:4px solid var(--good); padding:14px; }
+    .action-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,.48fr); gap:10px; align-items:start; margin-bottom:10px; }
+    .action-title h2 { font-size:18px; margin-bottom:4px; }
+    .action-title .line { margin:0; }
     .action-overview { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 10px; }
     .action-chip { display:inline-flex; align-items:center; min-height:32px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; font-weight:800; }
     .action-chip.good { color:var(--good); border-color:#abefc6; background:#f0fdf4; }
@@ -1332,6 +1335,8 @@ def _html() -> str:
     }
     #actionLists > .line.good { background:#f0fdf4; border:1px solid #abefc6; }
     #actionLists > .line.warn { background:#fffbeb; border:1px solid #f6d365; }
+    .decision-summary-compact { border:1px solid var(--line); border-radius:8px; padding:9px; background:#fbfcfe; }
+    .decision-summary-compact .temperature-card { margin-bottom:7px; }
     .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
     .decision-pill { border:1px solid var(--line); border-radius:8px; padding:7px 8px; background:#fbfcfe; min-height:54px; }
     .decision-pill b { display:block; font-size:18px; line-height:1.2; }
@@ -1344,8 +1349,8 @@ def _html() -> str:
     .temperature-card.warn { border-left:4px solid var(--warn); }
     .temperature-card.bad { border-left:4px solid var(--bad); }
     .temperature-card b { display:block; font-size:20px; margin-bottom:4px; }
-    .decision-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:8px; margin:8px 0 10px; }
-    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; min-height:138px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .decision-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:8px; margin:8px 0 10px; }
+    .decision-card { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; min-height:124px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
     .decision-card.chase { border-left:4px solid var(--good); }
     .decision-card.pullback { border-left:4px solid var(--warn); }
     .decision-card.avoid { border-left:4px solid var(--bad); }
@@ -1366,14 +1371,14 @@ def _html() -> str:
     .decision-badge.pullback { color:#3b2f00; background:#f6d365; }
     .decision-badge.avoid { color:#fff; background:var(--bad); }
     .decision-prices { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:7px 0; }
-    .decision-price { border:1px solid #eef1f5; border-radius:6px; padding:6px; min-height:48px; }
+    .decision-price { border:1px solid #eef1f5; border-radius:6px; padding:6px; min-height:44px; }
     .decision-price span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
     .decision-price b { font-size:15px; }
-    .decision-exit { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:7px 0; }
+    .decision-exit { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0; }
     .decision-exit div { border:1px solid #eef1f5; border-radius:6px; padding:6px; background:#fbfcfe; min-height:46px; }
     .decision-exit span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
     .decision-exit b { font-size:14px; }
-    .decision-reason { color:var(--muted); font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .decision-reason { color:var(--muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .risk-panel { border-left:4px solid var(--bad); }
     .risk-panel #exitRisks { max-height:280px; overflow:auto; padding-right:4px; scrollbar-width:thin; }
     .wide-panel { grid-column:1 / -1; }
@@ -1457,6 +1462,7 @@ def _html() -> str:
       .detail-grid { grid-template-columns:1fr 1fr; }
       .trace-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .decision-card-grid { grid-template-columns:1fr; }
+      .action-head { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
     }
     @media (max-width: 900px) {
@@ -1500,14 +1506,22 @@ def _html() -> str:
     <div class="metrics" id="metrics"></div>
     <div class="dashboard-layout">
       <div class="main-stack">
-        <section class="action-panel"><h2>今日操作結論</h2><div id="actionLists"></div></section>
+        <section class="action-panel">
+          <div class="action-head">
+            <div class="action-title">
+              <h2>今日操作結論</h2>
+              <div class="line">先看燈號與可追/等拉回，再用個股卡片確認進場上限、停損與開盤量能。</div>
+            </div>
+            <div id="decisionSummary" class="decision-summary-compact"></div>
+          </div>
+          <div id="actionLists"></div>
+        </section>
         <div class="market-theme-grid">
           <section><h2>市場風向</h2><div id="market"></div></section>
           <details class="panel theme-panel" open><summary>新聞題材</summary><div id="themes"></div></details>
         </div>
       </div>
       <div class="side-stack">
-        <section><h2>今日決策</h2><div id="decisionSummary"></div></section>
         <section class="risk-panel"><h2>危險名單</h2><div id="exitRisks"></div></section>
         <section><h2>異常提醒</h2><div id="alerts"></div></section>
       </div>
@@ -1520,7 +1534,7 @@ def _html() -> str:
           <summary>美國政策雷達</summary>
           <div id="usPolicyRadar"></div>
         </details>
-        <details class="panel wide-panel" open>
+        <details class="panel wide-panel">
           <summary>資料鏈檢查</summary>
           <div class="section-note">確認資料源、評分、追蹤、回測、潛力雷達與頁面輸出都有串接。</div>
           <div id="traceability"></div>
@@ -1863,7 +1877,6 @@ def _html() -> str:
       const chaseCards = (actionLists.chase || []).slice(0, 4).map(row => decisionCard(row, "chase")).join("");
       const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
       document.querySelector("#actionLists").innerHTML = `
-        <div class="line">S+/S/A/B 是訊號強度，不等於直接買；今日是否進場以操作結論、開盤跳空與量能確認為準。</div>
         <details class="mini-detail open-check-guide">
           <summary>開盤時怎麼確認？</summary>
           <div class="line"><b>1. 等到 09:05</b>：先看前 5 分鐘，不在 09:00 第一筆追價。</div>
