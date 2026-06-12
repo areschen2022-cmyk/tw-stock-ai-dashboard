@@ -101,6 +101,59 @@ def test_save_watch_candidates_replaces_same_day(tmp_path) -> None:
     assert rows == [("2344",)]
 
 
+def test_recommendation_stability_tracks_repeat_signals(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    day1 = day0 + timedelta(days=2)
+
+    first = _score("2408", 80, price=100.0)
+    second = _score("2408", 86, price=102.0)
+    for signal_day, signal in [(day0, first), (day1, second)]:
+        store.save_daily_score(signal, signal_day)
+        store.save_watch_candidates([signal], signal_day, {"2408": "Repeat"})
+
+    summary = store.recommendation_stability(day1, days=10)
+    row = summary["by_stock"]["2408"]
+
+    assert row["recent_count"] == 2
+    assert row["active_today"] is True
+    assert row["stability_label"] == "再次入選"
+    assert summary["summary"]["repeat_today"] == 1
+
+
+def test_exit_risk_summary_tracks_warning_outcomes(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    store.save_daily_score(_score("2408", 80, price=100.0), day0)
+    store.save_exit_risks(
+        [
+            {
+                "stock_id": "2408",
+                "name": "Risk",
+                "level": "紅色警戒",
+                "risk_score": 6,
+                "current_score": 80,
+                "previous_score": 95,
+                "price": 100.0,
+                "reasons": ["法人連賣", "跌破MA5"],
+                "action": "減碼觀察",
+            }
+        ],
+        day0,
+    )
+    for index, price in enumerate([99.0, 97.0, 96.0, 95.0, 92.0], start=1):
+        store.save_daily_score(_score("2408", 70, price=price), day0 + timedelta(days=index))
+
+    store.update_exit_risk_forward_returns(day0 + timedelta(days=5))
+    summary = store.exit_risk_summary(day0 + timedelta(days=5))
+
+    assert summary["stats"]["signals"] == 1
+    assert summary["stats"]["completed"] == 1
+    assert summary["stats"]["true_warning_rate_5d"] == 100
+    assert summary["true_warnings"][0]["stock_id"] == "2408"
+    assert summary["true_warnings"][0]["outcome"] == "strong_true_warning"
+
+
 def test_prune_daily_scores_keeps_current_scan_only(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     scan_day = date(2026, 5, 10)

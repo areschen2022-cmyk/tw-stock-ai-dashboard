@@ -214,6 +214,9 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "retail_context_reason": row.get("retail_context_reason"),
             "action_context": row.get("action_context"),
             "action_context_reason": row.get("action_context_reason"),
+            "stability": row.get("stability"),
+            "stability_label": row.get("stability_label"),
+            "stability_reason": row.get("stability_reason"),
         }
 
     chase = [
@@ -781,13 +784,21 @@ def enrich_dashboard_payload(
     ai_status: dict | None = None,
     exit_risks: list[dict] | None = None,
     retry_summary: dict | None = None,
+    recommendation_stability: dict | None = None,
 ) -> dict:
     rows = payload.get("rows", [])
     ai_reviews = {str(item.get("stock_id")): item for item in ai_picks or []}
+    stability_by_stock = (recommendation_stability or payload.get("recommendation_stability") or {}).get("by_stock", {})
     for row in rows:
         review = ai_reviews.get(str(row.get("stock_id")))
+        stability = stability_by_stock.get(str(row.get("stock_id"))) or {}
         row["ai_review"] = review
         row["ai_label"] = _ai_review_label(review)
+        row["stability"] = stability
+        row["stability_label"] = stability.get("stability_label") or "新進名單"
+        row["stability_reason"] = stability.get("stability_reason") or "近期尚無連續推薦紀錄。"
+    if recommendation_stability is not None:
+        payload["recommendation_stability"] = recommendation_stability
     payload["action_lists"] = _action_lists(
         rows,
         ai_picks=ai_picks,
@@ -1836,12 +1847,14 @@ def _html() -> str:
         const aiReason = row.ai_reason || "";
         const retailText = row.retail_context || "散戶：無明顯背離";
         const retailReason = row.retail_context_reason || "";
+        const stabilityLabel = row.stability_label || "新進名單";
+        const stabilityReason = row.stability_reason || "近期尚無連續推薦紀錄。";
         const exitPlan = row.exit_plan || {};
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
               <div class="decision-card-title">${stockLink}</div>
-              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}${aiText}</div>
+              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}｜${esc(stabilityLabel)}${aiText}</div>
               <div class="decision-light ${esc(light)}"><span class="decision-dot"></span>${esc(lightLabel)}<span class="small">｜${esc(lightReason)}</span></div>
             </div>
             <div class="decision-card-actions">
@@ -1870,6 +1883,7 @@ def _html() -> str:
           </details>
           <div class="decision-note-grid">
             <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
+            <div class="decision-note"><b>穩定性</b><br>${esc(stabilityReason)}</div>
             <div class="decision-note"><b>散戶</b><br>${esc(retailText)}${retailReason ? `｜${esc(retailReason)}` : ""}</div>
           </div>
         </article>`;
@@ -2654,6 +2668,9 @@ def _performance_html() -> str:
       <div class="note" id="qualityNote">載入中...</div>
       <div class="quality-grid" id="selectionQuality"></div>
       <div class="advice-list" id="calibrationAdvice"></div>
+      <h2 style="margin-top:14px;">反饋權重建議</h2>
+      <div class="note">根據已驗證的成功與失敗樣本提出調整方向；只做提示，不自動改核心分數。</div>
+      <div class="advice-list" id="adaptiveFeedback"></div>
     </section>
     <section style="margin-bottom:16px;">
       <h2>信號歸因中心</h2>
@@ -2718,6 +2735,15 @@ def _performance_html() -> str:
         <table>
           <thead><tr><th>原因</th><th>筆數</th><th>5日平均</th><th>停損率</th><th>代表樣本</th><th>下次修正</th></tr></thead>
           <tbody id="failureAttribution"></tbody>
+        </table>
+      </section>
+      <section style="margin-top:12px;">
+        <h2>危險名單回測</h2>
+        <div class="note">驗證危險名單提醒後 5 日內是否真的轉弱；命中率越高，代表避險規則越有效。</div>
+        <div class="metrics compact-metrics" id="exitRiskMetrics"></div>
+        <table>
+          <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>原因</th></tr></thead>
+          <tbody id="exitRiskBacktest"></tbody>
         </table>
       </section>
       <div class="note" id="postmortemNotes"></div>
@@ -2902,6 +2928,9 @@ def _performance_html() -> str:
       document.querySelector("#calibrationAdvice").innerHTML = (data.calibration_advice || []).length
         ? data.calibration_advice.map(row => `<div class="advice-item ${adviceClass(row.priority)}"><b>${esc(row.priority)}｜${esc(row.group)}：${esc(row.label)}</b><div>${esc(row.reason)}</div><div class="small">完成 ${esc(row.completed)} 筆｜5日勝率 ${row.win_rate_5d == null ? "—" : Number(row.win_rate_5d).toFixed(1) + "%"}｜5日平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}</div></div>`).join("")
         : `<div class="advice-item">目前樣本不足或無明顯需要調權的區塊，先持續記錄。</div>`;
+      document.querySelector("#adaptiveFeedback").innerHTML = (data.adaptive_feedback || []).length
+        ? data.adaptive_feedback.map(row => `<div class="advice-item ${row.priority === "high" ? "bad" : ""}"><b>${esc(row.source)}｜${esc(row.target || "整體")}：${esc(row.action || "持續觀察")}</b><div>${esc(row.reason || "")}</div><div class="small">樣本 ${esc(row.sample ?? 0)} 筆｜5日平均 ${row.avg_return_5d == null ? "—" : (row.avg_return_5d >= 0 ? "+" : "") + Number(row.avg_return_5d).toFixed(1) + "%"}</div></div>`).join("")
+        : `<div class="advice-item">反饋樣本仍在累積中；目前不建議調整權重。</div>`;
       const attribution = data.signal_attribution || {};
       const attrSourceRow = row => `<tr>
         <td data-label="來源"><b>${esc(row.label)}</b><div class="small">${esc(row.note || "")}</div></td>
@@ -2984,6 +3013,25 @@ def _performance_html() -> str:
       document.querySelector("#failureAttribution").innerHTML = (failureAttr.rows || []).length
         ? failureAttr.rows.map(failureAttrRow).join("")
         : `<tr><td data-label="失敗歸因" colspan="6">失敗樣本仍在累積中</td></tr>`;
+      const exitRisk = data.exit_risk || {};
+      const exitStats = exitRisk.stats || {};
+      document.querySelector("#exitRiskMetrics").innerHTML = [
+        metric("危險提醒", exitStats.signals ?? 0),
+        metric("已驗證", exitStats.completed ?? 0),
+        metric("5日命中率", exitStats.true_warning_rate_5d?.toFixed(1), "%"),
+        metric("提醒後平均", exitStats.avg_return_5d?.toFixed(1), "%"),
+      ].join("");
+      const exitRiskRow = r => `<tr>
+        <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
+        <td data-label="訊號日">${esc(r.signal_date)}</td>
+        <td data-label="等級">${esc(r.level)}｜${esc(r.risk_score || 0)}</td>
+        <td data-label="5日報酬">${fmtPct(r.return_5d)}</td>
+        <td data-label="原因">${esc((r.reasons || []).slice(0, 3).join("、") || r.action || "—")}</td>
+      </tr>`;
+      const exitRows = [...(exitRisk.true_warnings || []), ...(exitRisk.false_warnings || [])].slice(0, 8);
+      document.querySelector("#exitRiskBacktest").innerHTML = exitRows.length
+        ? exitRows.map(exitRiskRow).join("")
+        : `<tr><td data-label="危險名單回測" colspan="5">危險名單樣本仍在累積中</td></tr>`;
       document.querySelector("#postmortemNotes").innerHTML = (postmortem.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       const learning = data.learning_center || {};
       const factorRow = row => `<tr>

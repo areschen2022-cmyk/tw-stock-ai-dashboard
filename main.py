@@ -516,6 +516,8 @@ def main() -> int:
     )
     retail_divergence = summarize_retail_divergence(retail_rows) if retail_rows else empty_retail_divergence(as_of)
     exit_risks = merge_retail_exit_risks(exit_risks, retail_rows, config.get("stock_names", {}))
+    store.save_exit_risks(exit_risks, as_of)
+    store.update_exit_risk_forward_returns(as_of)
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
     store.update_forward_returns(as_of)
 
@@ -565,6 +567,7 @@ def main() -> int:
         pick_action=ai_pick_action,
         fallback_count=ai_fallback_count,
     )
+    recommendation_stability = store.recommendation_stability(as_of, days=10)
     dashboard_payload["ai_council"] = {
         "enabled": bool(ai_cfg.get("enabled", False)),
         "reviews": ai_reviews,
@@ -582,6 +585,7 @@ def main() -> int:
         ai_picks=ai_picks,
         ai_status=ai_status,
         exit_risks=exit_risks,
+        recommendation_stability=recommendation_stability,
     )
     retry_cfg = config.get("data_retry", {})
     if retry_cfg.get("enabled", True):
@@ -602,6 +606,7 @@ def main() -> int:
         ai_status=ai_status,
         exit_risks=exit_risks,
         retry_summary=dashboard_payload.get("data_retry", {}),
+        recommendation_stability=recommendation_stability,
     )
     store.save_potential_radar(
         build_potential_radar_candidates(dashboard_payload.get("rows", []), as_of),

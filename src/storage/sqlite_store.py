@@ -148,6 +148,27 @@ class SQLiteStore:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
             conn.execute(
                 """
+                CREATE TABLE IF NOT EXISTS exit_risk_signals (
+                    signal_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    level TEXT NOT NULL DEFAULT '',
+                    risk_score INTEGER NOT NULL DEFAULT 0,
+                    current_score INTEGER,
+                    previous_score INTEGER,
+                    entry_price REAL,
+                    reasons_json TEXT NOT NULL DEFAULT '[]',
+                    action TEXT NOT NULL DEFAULT '',
+                    return_3d REAL,
+                    return_5d REAL,
+                    outcome TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (signal_date, stock_id)
+                )
+                """
+            )
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS capital_flow_signals (
                     trade_date TEXT NOT NULL,
                     stock_id TEXT NOT NULL,
@@ -820,6 +841,81 @@ class SQLiteStore:
                     ),
                 )
 
+    def save_exit_risks(self, risks: list[dict], as_of: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM exit_risk_signals WHERE signal_date = ?", (as_of.isoformat(),))
+            for item in risks:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO exit_risk_signals (
+                        signal_date, stock_id, name, level, risk_score, current_score,
+                        previous_score, entry_price, reasons_json, action
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        as_of.isoformat(),
+                        str(item.get("stock_id") or ""),
+                        str(item.get("name") or ""),
+                        str(item.get("level") or ""),
+                        int(item.get("risk_score") or 0),
+                        item.get("current_score"),
+                        item.get("previous_score"),
+                        item.get("price"),
+                        json.dumps(item.get("reasons") or [], ensure_ascii=False),
+                        str(item.get("action") or ""),
+                    ),
+                )
+
+    def update_exit_risk_forward_returns(self, as_of: date) -> None:
+        with self._connect() as conn:
+            signals = conn.execute(
+                """
+                SELECT signal_date, stock_id, entry_price
+                FROM exit_risk_signals
+                WHERE signal_date < ? AND return_5d IS NULL
+                """,
+                (as_of.isoformat(),),
+            ).fetchall()
+            for signal_date, stock_id, entry_price in signals:
+                base_entry = entry_price
+                if base_entry is None:
+                    base = conn.execute(
+                        """
+                        SELECT price FROM daily_scores
+                        WHERE as_of_date = ? AND stock_id = ? AND price IS NOT NULL
+                        """,
+                        (signal_date, stock_id),
+                    ).fetchone()
+                    if not base:
+                        continue
+                    base_entry = float(base[0])
+                future_rows = conn.execute(
+                    """
+                    SELECT as_of_date, price
+                    FROM daily_scores
+                    WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
+                    ORDER BY as_of_date
+                    """,
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=14)).isoformat()),
+                ).fetchall()
+                if not future_rows:
+                    continue
+                prices = [float(row[1]) for row in future_rows]
+                return_3d = _pct_return(prices[2] if len(prices) >= 3 else None, base_entry)
+                return_5d = _pct_return(prices[4] if len(prices) >= 5 else None, base_entry)
+                outcome = _exit_risk_outcome(return_5d)
+                conn.execute(
+                    """
+                    UPDATE exit_risk_signals
+                    SET entry_price = COALESCE(entry_price, ?),
+                        return_3d = COALESCE(?, return_3d),
+                        return_5d = COALESCE(?, return_5d),
+                        outcome = ?
+                    WHERE signal_date = ? AND stock_id = ?
+                    """,
+                    (base_entry, return_3d, return_5d, outcome, signal_date, stock_id),
+                )
+
     def save_potential_radar(self, candidates: list[dict], as_of: date) -> None:
         with self._connect() as conn:
             conn.execute("DELETE FROM potential_radar_signals WHERE signal_date = ?", (as_of.isoformat(),))
@@ -1156,6 +1252,12 @@ class SQLiteStore:
         ai_council = self.ai_council_summary(as_of, days=days)
         backtest_insights = _backtest_insights(items)
         potential_radar = self.potential_radar_summary(as_of, days=days)
+        exit_risk = self.exit_risk_summary(as_of, days=days)
+        signal_lab = grade_return_summary(items)
+        postmortem = _postmortem_summary(items)
+        learning_center = _learning_center_summary(items)
+        signal_attribution = _signal_attribution_center(items, potential_radar, ai_council)
+        calibration_advice = _calibration_advice(signal_lab, action_stats, theme_stats)
         return {
             "as_of": as_of.isoformat(),
             "days": days,
@@ -1175,13 +1277,14 @@ class SQLiteStore:
             "data_quality": _performance_data_quality(items),
             "score_bands": score_bands,
             "entry_analysis": _entry_analysis(items),
-            "signal_lab": grade_return_summary(items),
-            "postmortem": _postmortem_summary(items),
-            "learning_center": _learning_center_summary(items),
+            "signal_lab": signal_lab,
+            "postmortem": postmortem,
+            "learning_center": learning_center,
             "potential_radar": potential_radar,
+            "exit_risk": exit_risk,
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
-            "signal_attribution": _signal_attribution_center(items, potential_radar, ai_council),
+            "signal_attribution": signal_attribution,
             "selection_quality": _selection_quality_overview(
                 items,
                 theme_stats=theme_stats,
@@ -1189,11 +1292,8 @@ class SQLiteStore:
                 score_bands=score_bands,
                 ai_council=ai_council,
             ),
-            "calibration_advice": _calibration_advice(
-                grade_return_summary(items),
-                action_stats,
-                theme_stats,
-            ),
+            "calibration_advice": calibration_advice,
+            "adaptive_feedback": _adaptive_feedback(postmortem, potential_radar, signal_attribution, calibration_advice),
             "items": items,
         }
 
@@ -1297,6 +1397,55 @@ class SQLiteStore:
             "items": items,
         }
 
+    def exit_risk_summary(self, as_of: date, days: int = 30) -> dict:
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT signal_date, stock_id, name, level, risk_score, current_score,
+                       previous_score, entry_price, reasons_json, action,
+                       return_3d, return_5d, outcome
+                FROM exit_risk_signals
+                WHERE signal_date >= ? AND signal_date <= ?
+                ORDER BY signal_date DESC, risk_score DESC
+                """,
+                (since.isoformat(), as_of.isoformat()),
+            ).fetchall()
+        items = [
+            {
+                "signal_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "level": row[3],
+                "risk_score": row[4],
+                "current_score": row[5],
+                "previous_score": row[6],
+                "entry_price": row[7],
+                "reasons": _json_list(row[8]),
+                "action": row[9],
+                "return_3d": row[10],
+                "return_5d": row[11],
+                "outcome": row[12],
+            }
+            for row in rows
+        ]
+        completed = [item for item in items if item.get("return_5d") is not None]
+        true_warnings = [item for item in completed if float(item.get("return_5d") or 0) < 0]
+        false_warnings = [item for item in completed if float(item.get("return_5d") or 0) >= 0]
+        return {
+            "items": items[:20],
+            "stats": {
+                "signals": len(items),
+                "completed": len(completed),
+                "true_warning_rate_5d": _rate([float(item.get("return_5d") or 0) < 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "true_warnings": len(true_warnings),
+                "false_warnings": len(false_warnings),
+            },
+            "true_warnings": sorted(true_warnings, key=lambda item: float(item.get("return_5d") or 0))[:8],
+            "false_warnings": sorted(false_warnings, key=lambda item: float(item.get("return_5d") or 0), reverse=True)[:8],
+        }
+
     def ai_council_summary(self, as_of: date, days: int = 30) -> dict:
         since = as_of - timedelta(days=days)
         with self._connect() as conn:
@@ -1397,6 +1546,86 @@ class SQLiteStore:
                 }
             )
         return reviews
+
+    def recommendation_stability(self, as_of: date, days: int = 10) -> dict:
+        """Summarize how often each stock has appeared in recent BUY_WATCH signals."""
+
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT signal_date, stock_id, name, grade, total_score, action, return_5d
+                FROM watch_signals
+                WHERE signal_date >= ? AND signal_date <= ?
+                ORDER BY stock_id, signal_date DESC
+                """,
+                (since.isoformat(), as_of.isoformat()),
+            ).fetchall()
+
+        grouped: dict[str, list[dict]] = {}
+        for row in rows:
+            grouped.setdefault(str(row[1]), []).append(
+                {
+                    "signal_date": row[0],
+                    "stock_id": row[1],
+                    "name": row[2],
+                    "grade": row[3],
+                    "total_score": row[4],
+                    "action": row[5],
+                    "return_5d": row[6],
+                }
+            )
+
+        by_stock = {}
+        rows_out = []
+        for stock_id, signals in grouped.items():
+            signals.sort(key=lambda item: str(item.get("signal_date") or ""), reverse=True)
+            latest = signals[0]
+            active_today = latest.get("signal_date") == as_of.isoformat()
+            first_seen = signals[-1].get("signal_date")
+            previous_seen = signals[1].get("signal_date") if len(signals) > 1 else None
+            recent_count = len(signals)
+            label = _stability_label(recent_count, active_today)
+            item = {
+                "stock_id": stock_id,
+                "name": latest.get("name"),
+                "active_today": active_today,
+                "recent_count": recent_count,
+                "first_seen": first_seen,
+                "last_seen": latest.get("signal_date"),
+                "previous_seen": previous_seen,
+                "best_grade": _best_grade([str(signal.get("grade") or "") for signal in signals]),
+                "best_score": max(int(signal.get("total_score") or 0) for signal in signals),
+                "completed": len([signal for signal in signals if signal.get("return_5d") is not None]),
+                "avg_return_5d": _avg([signal.get("return_5d") for signal in signals]),
+                "stability_label": label,
+                "stability_reason": _stability_reason(label, recent_count, first_seen, previous_seen),
+            }
+            by_stock[stock_id] = item
+            rows_out.append(item)
+
+        rows_out.sort(
+            key=lambda item: (
+                bool(item.get("active_today")),
+                int(item.get("recent_count") or 0),
+                int(item.get("best_score") or 0),
+            ),
+            reverse=True,
+        )
+        return {
+            "as_of": as_of.isoformat(),
+            "days": days,
+            "by_stock": by_stock,
+            "top": rows_out[:12],
+            "summary": {
+                "tracked": len(rows_out),
+                "active_today": len([item for item in rows_out if item.get("active_today")]),
+                "repeat_today": len([
+                    item for item in rows_out
+                    if item.get("active_today") and int(item.get("recent_count") or 0) >= 2
+                ]),
+            },
+        }
 
     def save_capital_flow(self, signals: list[dict], trade_date: date) -> None:
         with self._connect() as conn:
@@ -1736,6 +1965,34 @@ def _bool_or_none(value: int | None) -> bool | None:
     if value is None:
         return None
     return bool(value)
+
+
+def _best_grade(grades: list[str]) -> str:
+    order = {"S+": 0, "S": 1, "A": 2, "B": 3, "C": 4}
+    usable = [grade for grade in grades if grade]
+    if not usable:
+        return ""
+    return sorted(usable, key=lambda grade: order.get(grade, 99))[0]
+
+
+def _stability_label(recent_count: int, active_today: bool) -> str:
+    if not active_today:
+        return "近期曾入選"
+    if recent_count >= 3:
+        return "連續追蹤"
+    if recent_count == 2:
+        return "再次入選"
+    return "新進名單"
+
+
+def _stability_reason(label: str, recent_count: int, first_seen, previous_seen) -> str:
+    if label == "連續追蹤":
+        return f"近 10 天出現 {recent_count} 次，訊號有延續性。"
+    if label == "再次入選":
+        return f"上次入選日 {previous_seen or '-'}，今日重新轉強。"
+    if label == "新進名單":
+        return "今日首次進入近期觀察，先看開盤是否確認。"
+    return f"曾於 {first_seen or '-'} 入選，今日未必仍在操作清單。"
 
 
 def _avg(values: list[float | None]) -> float | None:
@@ -2623,6 +2880,16 @@ def _potential_failure_reason(tags: list[str]) -> str:
     return "5 日後未轉強，需回查題材、量價與籌碼條件。"
 
 
+def _exit_risk_outcome(return_5d: float | None) -> str:
+    if return_5d is None:
+        return "pending"
+    if float(return_5d) <= -5:
+        return "strong_true_warning"
+    if float(return_5d) < 0:
+        return "true_warning"
+    return "false_warning"
+
+
 def _fmt_pct(value) -> str:
     if value is None:
         return "—"
@@ -2977,6 +3244,117 @@ def _calibration_advice(
         )
     )
     return advice[:limit]
+
+
+def _adaptive_feedback(
+    postmortem: dict,
+    potential_radar: dict,
+    signal_attribution: dict,
+    calibration_advice: list[dict],
+    limit: int = 8,
+) -> list[dict]:
+    """Convert tracked outcomes into human-reviewable rule tuning hints."""
+
+    feedback: list[dict] = []
+
+    for row in (postmortem or {}).get("failure_attribution", {}).get("rows", []):
+        count = int(row.get("count") or 0)
+        if count <= 0:
+            continue
+        label = str(row.get("label") or "")
+        lesson = str(row.get("lesson") or "")
+        avg_return = row.get("avg_return_5d")
+        stop_hit_rate = row.get("stop_hit_rate")
+        if stop_hit_rate is not None and float(stop_hit_rate) >= 40:
+            action = "加嚴停損與追價條件"
+            reason = "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
+        elif "題材" in label or "theme" in label.lower():
+            action = "降低弱題材權重"
+            reason = "題材命中後沒有轉成報酬，先要求價量或法人同步。"
+        elif "散戶" in label or "retail" in label.lower():
+            action = "加強散戶過熱風控"
+            reason = "散戶籌碼惡化時，避免只因題材熱而追價。"
+        elif "量" in label or "volume" in label.lower():
+            action = "要求量能續航"
+            reason = "量能沒有延續時，突破訊號容易失敗。"
+        else:
+            action = "列入人工檢討"
+            reason = lesson or "失敗樣本已累積，需觀察是否為固定失敗模式。"
+        feedback.append(
+            {
+                "priority": "high" if count >= 3 or (avg_return is not None and float(avg_return) <= -5) else "medium",
+                "source": "失敗歸因",
+                "target": label or "未分類",
+                "sample": count,
+                "avg_return_5d": avg_return,
+                "action": action,
+                "reason": reason,
+            }
+        )
+
+    for row in (calibration_advice or [])[:4]:
+        feedback.append(
+            {
+                "priority": "medium",
+                "source": "分數校準",
+                "target": f"{row.get('group', '')}:{row.get('label', '')}",
+                "sample": row.get("completed"),
+                "avg_return_5d": row.get("avg_return_5d"),
+                "action": row.get("priority"),
+                "reason": row.get("reason"),
+            }
+        )
+
+    for row in (potential_radar or {}).get("stage_stats", [])[:4]:
+        completed = int(row.get("completed") or 0)
+        avg_return = row.get("avg_return_5d")
+        if completed < 3 or avg_return is None:
+            continue
+        if float(avg_return) < 0:
+            action = "潛力階段暫緩升級"
+            reason = "此階段尚未證明能帶來正報酬，維持觀察名單即可。"
+        else:
+            action = "保留潛力雷達條件"
+            reason = "此階段已有正報酬樣本，可繼續累積。"
+        feedback.append(
+            {
+                "priority": "medium",
+                "source": "潛力雷達",
+                "target": row.get("label"),
+                "sample": completed,
+                "avg_return_5d": avg_return,
+                "action": action,
+                "reason": reason,
+            }
+        )
+
+    for row in (signal_attribution or {}).get("factor_rows", [])[:6]:
+        completed = int(row.get("completed") or 0)
+        avg_return = row.get("avg_return_5d")
+        if completed < 5 or avg_return is None:
+            continue
+        if float(avg_return) < 0:
+            feedback.append(
+                {
+                    "priority": "medium",
+                    "source": "因素歸因",
+                    "target": row.get("label"),
+                    "sample": completed,
+                    "avg_return_5d": avg_return,
+                    "action": "降低單一因素信任度",
+                    "reason": "這類因素在已完成樣本中平均報酬偏弱，需搭配其他確認條件。",
+                }
+            )
+
+    priority_order = {"high": 0, "medium": 1, "low": 2}
+    feedback.sort(
+        key=lambda row: (
+            priority_order.get(str(row.get("priority")), 9),
+            -int(row.get("sample") or 0),
+            float(row.get("avg_return_5d") if row.get("avg_return_5d") is not None else 0),
+        )
+    )
+    return feedback[:limit]
 
 
 def _score_band_stats(items: list[dict]) -> list[dict]:
