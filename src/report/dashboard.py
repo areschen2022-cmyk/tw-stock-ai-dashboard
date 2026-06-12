@@ -2475,6 +2475,12 @@ def _potential_html() -> str:
           <table><thead><tr><th class="stage-col">階段</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th><th>觀察中</th></tr></thead><tbody id="stageStats"></tbody></table>
         </section>
         <section>
+          <h2>提前轉強漏斗</h2>
+          <div class="note">追蹤潛力股是否在 14 天內轉成正式 S/A 強訊號，用來驗證我們是否能提早發現。</div>
+          <div class="metrics compact-metrics" id="promotionMetrics"></div>
+          <table><thead><tr><th>股票</th><th class="stage-col">潛力階段</th><th>轉強日</th><th>強度</th><th>5日</th></tr></thead><tbody id="promotionRows"></tbody></table>
+        </section>
+        <section>
           <h2>潛力觀察</h2>
           <div class="note">不是買進清單，而是尚未完成驗證、但條件正在累積的股票。</div>
           <table><thead><tr><th>股票</th><th class="stage-col">階段</th><th class="research-cell">研究快篩</th><th>3日</th><th>理由</th></tr></thead><tbody id="candidates"></tbody></table>
@@ -2516,10 +2522,20 @@ def _potential_html() -> str:
     function signalRow(row) {
       return `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}</td><td data-label="5日">${pct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${pct(row.return_10d)}</div>` : ""}</td><td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div>${tags(row)}</div></td></tr>`;
     }
+    function promotionRow(row) {
+      return `<tr>
+        <td data-label="股票">${stock(row)}</td>
+        <td data-label="潛力階段">${esc(row.stage_label || "觀察")}<div class="small">${esc(row.signal_date || "")}</div></td>
+        <td data-label="轉強日">${esc(row.promoted_signal_date || "—")}${row.days_to_promotion != null ? `<div class="small">${esc(row.days_to_promotion)} 天</div>` : ""}</td>
+        <td data-label="強度">${esc(row.promoted_grade || "—")}${row.promoted_score != null ? `<div class="small">${esc(row.promoted_score)}/100</div>` : ""}</td>
+        <td data-label="5日">${pct(row.return_5d)}</td>
+      </tr>`;
+    }
     function render() {
       const radar = data.potential_radar || {};
       const learning = data.learning_center || {};
       const stats = radar.stats || {};
+      const funnel = radar.promotion_funnel || {};
       document.querySelector("#subtitle").textContent = `${data.as_of || ""}｜近 ${data.days || 30} 天｜僅供研究追蹤`;
       document.querySelector("#metrics").innerHTML = [
         metric("雷達記錄", stats.signals ?? 0),
@@ -2530,6 +2546,14 @@ def _potential_html() -> str:
         metric("提前命中", stats.big_winner_count ?? 0),
       ].join("");
       document.querySelector("#stageStats").innerHTML = (radar.stage_stats || []).length ? radar.stage_stats.map(row => `<tr><td data-label="階段"><b>${esc(row.label)}</b></td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="觀察中">${esc(row.pending)}</td></tr>`).join("") : `<tr><td data-label="階段" colspan="6">尚無潛力雷達資料</td></tr>`;
+      document.querySelector("#promotionMetrics").innerHTML = [
+        metric("潛力記錄", funnel.signals ?? 0),
+        metric("已轉強", funnel.promoted ?? 0),
+        metric("轉強率", funnel.conversion_rate?.toFixed(1), "%"),
+        metric("轉強後勝率", funnel.promoted_win_rate_5d?.toFixed(1), "%"),
+        metric("平均轉強", funnel.avg_days_to_promotion?.toFixed(1), "天"),
+      ].join("");
+      document.querySelector("#promotionRows").innerHTML = (funnel.examples || []).length ? funnel.examples.map(promotionRow).join("") : `<tr><td data-label="提前轉強" colspan="5">尚無潛力股轉強紀錄</td></tr>`;
       const potentialRows = (radar.pending_candidates || []).length ? radar.pending_candidates : (learning.potential_candidates || []);
       document.querySelector("#candidates").innerHTML = potentialRows.length ? potentialRows.slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="研究快篩">${researchCell(row)}</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由"><b>${esc(row.grade)}｜${esc(row.total_score)}/100</b><div class="small">${esc(row.reason || "")}</div>${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       document.querySelector("#factorStats").innerHTML = (radar.factor_stats || []).length ? radar.factor_stats.map(row => `<tr><td data-label="因素">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="成功/失敗">${esc(row.success_count || 0)} / ${esc(row.failure_count || 0)}</td></tr>`).join("") : `<tr><td data-label="因素" colspan="6">因素樣本仍在累積中</td></tr>`;
@@ -2688,6 +2712,14 @@ def _performance_html() -> str:
           </table>
         </section>
       </div>
+      <section style="margin-top:12px;">
+        <h2>失敗歸因</h2>
+        <div class="note">把失敗拆成可修正的原因，之後用來調整追價、停損與題材權重。</div>
+        <table>
+          <thead><tr><th>原因</th><th>筆數</th><th>5日平均</th><th>停損率</th><th>代表樣本</th><th>下次修正</th></tr></thead>
+          <tbody id="failureAttribution"></tbody>
+        </table>
+      </section>
       <div class="note" id="postmortemNotes"></div>
     </section>
     <section style="margin-bottom:16px;">
@@ -2937,6 +2969,21 @@ def _performance_html() -> str:
       document.querySelector("#postmortemFailure").innerHTML = (postmortem.failure_cases || []).length
         ? postmortem.failure_cases.slice(0, 6).map(postmortemRow).join("")
         : `<tr><td data-label="失敗樣本" colspan="5">尚無已完成失敗樣本</td></tr>`;
+      const failureAttr = postmortem.failure_attribution || {};
+      const failureAttrRow = row => {
+        const examples = (row.examples || []).map(item => `${esc(item.stock_id)} ${esc(item.name || "")} ${item.return_5d == null ? "" : Number(item.return_5d).toFixed(1) + "%"}`).join("<br>");
+        return `<tr>
+          <td data-label="原因"><b>${esc(row.label)}</b></td>
+          <td data-label="筆數">${esc(row.count ?? 0)}</td>
+          <td data-label="5日平均">${fmtPct(row.avg_return_5d)}</td>
+          <td data-label="停損率">${fmtNeutralPct(row.stop_hit_rate)}</td>
+          <td data-label="代表樣本">${examples || "—"}</td>
+          <td data-label="下次修正">${esc(row.lesson || "")}</td>
+        </tr>`;
+      };
+      document.querySelector("#failureAttribution").innerHTML = (failureAttr.rows || []).length
+        ? failureAttr.rows.map(failureAttrRow).join("")
+        : `<tr><td data-label="失敗歸因" colspan="6">失敗樣本仍在累積中</td></tr>`;
       document.querySelector("#postmortemNotes").innerHTML = (postmortem.notes || []).map(note => `- ${esc(note)}`).join("<br>");
       const learning = data.learning_center || {};
       const factorRow = row => `<tr>

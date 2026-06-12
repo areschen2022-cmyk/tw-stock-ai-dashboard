@@ -1253,6 +1253,8 @@ class SQLiteStore:
                     "outcome_reason": reason,
                 }
             )
+        with self._connect() as conn:
+            _annotate_potential_promotions(conn, items)
         completed = [item for item in items if item["return_5d"] is not None]
         success = [
             item for item in completed
@@ -1288,6 +1290,7 @@ class SQLiteStore:
             "pending_candidates": pending[:8],
             "factor_stats": factor_stats,
             "stage_stats": _potential_stage_stats(items),
+            "promotion_funnel": _potential_promotion_funnel(items),
             "strong_factors": _rank_potential_factors(factor_stats, reverse=True),
             "weak_factors": _rank_potential_factors(factor_stats, reverse=False),
             "factor_notes": _potential_factor_notes(factor_stats),
@@ -2122,7 +2125,215 @@ def _postmortem_summary(items: list[dict], limit: int = 8) -> dict:
         "success_cases": _rank(success, True),
         "failure_cases": _rank(failure, False),
         "missed_cases": _rank(missed, True),
+        "failure_attribution": _failure_attribution_summary(failure),
         "notes": notes,
+    }
+
+
+def _item_text(item: dict) -> str:
+    parts: list[str] = []
+    for key in [
+        "action",
+        "reason",
+        "outcome_reason",
+        "entry_condition",
+        "stop_reference",
+        "stage_label",
+        "research_label",
+        "stock_type_label",
+        "position_hint_label",
+    ]:
+        value = item.get(key)
+        if value:
+            parts.append(str(value))
+    for key in ["themes", "tags", "lesson_tags", "research_factors"]:
+        values = item.get(key) or []
+        for value in values:
+            if isinstance(value, dict):
+                parts.extend(str(v) for v in value.values() if v)
+            else:
+                parts.append(str(value))
+    return " ".join(parts)
+
+
+def _failure_reason_tags(item: dict) -> list[str]:
+    text = _item_text(item)
+    tags: list[str] = []
+    ret5 = float(item.get("return_5d") or 0)
+
+    if item.get("stop_hit") is True:
+        tags.append("停損觸發")
+    if item.get("entry_triggered") is True and ret5 <= 0:
+        tags.append("進場後轉弱")
+    if item.get("entry_triggered") is False and ret5 <= 0:
+        tags.append("進場條件保護")
+    if any(keyword in text for keyword in ["題材", "新聞", "升溫", "SpaceX", "AI"]):
+        tags.append("題材失靈")
+    if any(keyword in text for keyword in ["法人", "外資", "投信", "買超"]):
+        tags.append("籌碼失靈")
+    if any(keyword in text for keyword in ["放量不漲", "量縮", "量能", "成交量", "爆量"]):
+        tags.append("量能無承接")
+    if any(keyword in text for keyword in ["散戶過熱", "散戶", "過熱"]):
+        tags.append("散戶過熱")
+    if any(keyword in text for keyword in ["海外", "Nasdaq", "SOX", "美股", "台指期", "ADR"]):
+        tags.append("海外轉弱")
+    if not tags:
+        tags.append("一般假訊號")
+    return _dedupe(tags)[:6]
+
+
+def _failure_attribution_summary(items: list[dict], limit: int = 8) -> dict:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        for tag in _failure_reason_tags(item):
+            buckets.setdefault(tag, []).append(item)
+
+    rows = []
+    for label, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        examples = sorted(completed, key=lambda item: float(item.get("return_5d") or 0))[:3]
+        rows.append(
+            {
+                "label": label,
+                "count": len(bucket),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "stop_hit_rate": _rate([item.get("stop_hit") is True for item in completed]),
+                "examples": [
+                    {
+                        "stock_id": item.get("stock_id"),
+                        "name": item.get("name"),
+                        "return_5d": item.get("return_5d"),
+                    }
+                    for item in examples
+                ],
+                "lesson": _failure_lesson(label),
+            }
+        )
+    rows.sort(
+        key=lambda row: (
+            int(row.get("count") or 0),
+            -(float(row.get("avg_return_5d") or 0)),
+        ),
+        reverse=True,
+    )
+    return {
+        "sample": len(items),
+        "rows": rows[:limit],
+        "notes": _failure_attribution_notes(rows),
+    }
+
+
+def _failure_lesson(label: str) -> str:
+    lessons = {
+        "停損觸發": "先檢查停損距離與波動是否匹配，避免一開盤就被洗出。",
+        "進場後轉弱": "隔日開盤若沒有量價延續，強訊號也要降級處理。",
+        "進場條件保護": "沒有觸發進場且後續走弱，代表開盤條件有保護效果。",
+        "題材失靈": "新聞熱度不足以支撐價格時，要改看營收與法人是否同步。",
+        "籌碼失靈": "法人買超若沒有價格確認，可能只是短線調倉或被動買盤。",
+        "量能無承接": "爆量後沒有續攻，要優先檢查是否出貨或追高風險。",
+        "散戶過熱": "散戶過熱又漲不動時，先視為籌碼風險而非機會。",
+        "海外轉弱": "海外逆風時，台股同題材股需降低追價權重。",
+    }
+    return lessons.get(label, "樣本仍少，先保留觀察。")
+
+
+def _failure_attribution_notes(rows: list[dict]) -> list[str]:
+    if not rows:
+        return ["目前失敗樣本不足，先累積資料。"]
+    top = rows[0]
+    return [
+        f"目前最大失敗來源是「{top['label']}」，共 {top['count']} 筆。",
+        "失敗歸因只用於調整風控與追價條件，不會直接覆蓋核心分數。",
+    ]
+
+
+def _annotate_potential_promotions(conn: sqlite3.Connection, items: list[dict], max_days: int = 14) -> None:
+    for item in items:
+        signal_date = item.get("signal_date")
+        stock_id = item.get("stock_id")
+        if not signal_date or not stock_id:
+            continue
+        try:
+            end_date = (date.fromisoformat(str(signal_date)) + timedelta(days=max_days)).isoformat()
+        except ValueError:
+            end_date = str(signal_date)
+        row = conn.execute(
+            """
+            SELECT signal_date, grade, total_score
+            FROM watch_signals
+            WHERE stock_id = ?
+              AND signal_date > ?
+              AND signal_date <= ?
+              AND (grade IN ('S+', 'S', 'A') OR total_score >= 80)
+            ORDER BY signal_date ASC
+            LIMIT 1
+            """,
+            (stock_id, signal_date, end_date),
+        ).fetchone()
+        if row:
+            try:
+                days_to_promotion = (
+                    date.fromisoformat(str(row[0])) - date.fromisoformat(str(signal_date))
+                ).days
+            except ValueError:
+                days_to_promotion = None
+            item["promoted_signal_date"] = row[0]
+            item["promoted_grade"] = row[1]
+            item["promoted_score"] = row[2]
+            item["days_to_promotion"] = days_to_promotion
+            item["promotion_label"] = "已轉強"
+        else:
+            item["promoted_signal_date"] = None
+            item["promoted_grade"] = None
+            item["promoted_score"] = None
+            item["days_to_promotion"] = None
+            item["promotion_label"] = "尚未轉強"
+
+
+def _potential_promotion_funnel(items: list[dict]) -> dict:
+    promoted = [item for item in items if item.get("promoted_signal_date")]
+    completed = [item for item in items if item.get("return_5d") is not None]
+    promoted_completed = [item for item in promoted if item.get("return_5d") is not None]
+    big_winners = [
+        item for item in completed
+        if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
+    ]
+    promoted_winners = [
+        item for item in promoted_completed
+        if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
+    ]
+    examples = sorted(
+        promoted,
+        key=lambda item: (
+            float(item.get("return_5d") if item.get("return_5d") is not None else -999),
+            -(int(item.get("days_to_promotion") or 99)),
+        ),
+        reverse=True,
+    )[:8]
+    return {
+        "signals": len(items),
+        "promoted": len(promoted),
+        "completed": len(completed),
+        "big_winners": len(big_winners),
+        "promoted_winners": len(promoted_winners),
+        "conversion_rate": _rate([bool(item.get("promoted_signal_date")) for item in items]),
+        "promoted_win_rate_5d": _rate([item.get("return_5d") > 0 for item in promoted_completed]),
+        "avg_days_to_promotion": _avg([item.get("days_to_promotion") for item in promoted if item.get("days_to_promotion") is not None]),
+        "examples": [
+            {
+                "signal_date": item.get("signal_date"),
+                "stock_id": item.get("stock_id"),
+                "name": item.get("name"),
+                "stage_label": item.get("stage_label"),
+                "promoted_signal_date": item.get("promoted_signal_date"),
+                "promoted_grade": item.get("promoted_grade"),
+                "promoted_score": item.get("promoted_score"),
+                "days_to_promotion": item.get("days_to_promotion"),
+                "return_5d": item.get("return_5d"),
+                "outcome_label": item.get("outcome_label"),
+            }
+            for item in examples
+        ],
     }
 
 

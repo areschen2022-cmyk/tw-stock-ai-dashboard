@@ -185,6 +185,10 @@ def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path
     assert summary["postmortem"]["success_cases"][0]["stock_id"] == "2408"
     assert summary["postmortem"]["failure_cases"][0]["stock_id"] == "2344"
     assert summary["postmortem"]["missed_cases"][0]["stock_id"] == "2317"
+    assert summary["postmortem"]["failure_attribution"]["sample"] == 1
+    failure_labels = {row["label"] for row in summary["postmortem"]["failure_attribution"]["rows"]}
+    assert "停損觸發" in failure_labels
+    assert "進場後轉弱" in failure_labels
     assert summary["learning_center"]["success_factors"]
     assert summary["learning_center"]["failure_factors"]
     assert any(row["label"] == "高分失敗" for row in summary["learning_center"]["failure_factors"])

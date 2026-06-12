@@ -201,6 +201,8 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
             StockScore("2344", 70, "WAIT", price, 0, 0, 0, 0, 0),
             day0 + timedelta(days=index),
         )
+    promoted = StockScore("2408", 91, "BUY_WATCH", 102, 0, 0, 0, 0, 0)
+    store.save_watch_candidates([promoted], day0 + timedelta(days=2), {"2408": "??蝘?"})
 
     store.update_potential_forward_returns(day0 + timedelta(days=5))
     summary = store.potential_radar_summary(day0 + timedelta(days=5))
@@ -218,6 +220,11 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert summary["items"][0]["stock_type_label"] in {"成長確認型", "景氣反轉型"}
     assert summary["items"][0]["position_hint_label"] in {"正常部位", "半部位"}
     assert summary["stage_stats"]
+    assert summary["promotion_funnel"]["promoted"] == 1
+    assert summary["promotion_funnel"]["examples"][0]["stock_id"] == "2408"
+    assert summary["promotion_funnel"]["examples"][0]["days_to_promotion"] == 2
+    by_stock = {item["stock_id"]: item for item in summary["items"]}
+    assert by_stock["2408"]["promotion_label"] == "已轉強"
     assert summary["strong_factors"]
     assert summary["weak_factors"]
     assert summary["factor_notes"]
