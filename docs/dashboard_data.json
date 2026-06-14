@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-12",
-  "generated_at": "2026-06-14T18:58:54+08:00",
+  "generated_at": "2026-06-14T18:34:43+08:00",
   "generated_date": "2026-06-14",
   "market": {
     "summary": "健康：指數維持在主要均線上方｜加權+2.36%｜半導體+3.11%｜金融+0.56%｜航運+1.59%｜生技+1.87%",
@@ -101,7 +101,7 @@
       "financial_revaluation": 14,
       "materials_recovery": 12,
       "passive_components": 1,
-      "low_orbit_satellite": 44,
+      "low_orbit_satellite": 45,
       "quartz_frequency_control": 0,
       "network_optical_communication": 24,
       "defense_policy": 2
@@ -201,7 +201,7 @@
       ]
     },
     "quality": {
-      "ai_server": "AI high：標題明確提到AI伺服器、資料中心及台股公司",
+      "ai_server": "AI high：標題提及AI伺服器、工業電腦、貿聯等台股相關",
       "cooling_power": "低：僅單一產業關鍵字",
       "silicon_photonics": "高：新聞含股票代號或公司名",
       "advanced_packaging": "AI high：標題明確提及台積電、CoWoS、FOPLP等台股相關題材",
@@ -214,7 +214,7 @@
       "edge_ai_device": "高：新聞含股票代號或公司名",
       "financial_revaluation": "高：新聞含股票代號或公司名",
       "passive_components": "低：僅單一產業關鍵字",
-      "low_orbit_satellite": "AI high：標題提及低軌衛星、SpaceX及台股公司宣德",
+      "low_orbit_satellite": "AI high：標題提及中華立鼎、宣德等台股公司及低軌衛星",
       "defense_policy": "中：多則產業關鍵字命中"
     },
     "catalyst_confidence": {
@@ -469,11 +469,11 @@
         ]
       },
       "low_orbit_satellite": {
-        "today": 44,
+        "today": 45,
         "avg_3d": 37.7,
         "trend": "升溫↑",
         "history": [
-          44,
+          45,
           57,
           28,
           28,
@@ -806,19 +806,18 @@
   },
   "source_status": {
     "label": "正常",
-    "api": 3,
-    "cache": 4551,
+    "api": 22,
+    "cache": 4414,
     "quota": 0,
     "error": 0,
     "empty": 2,
-    "fallback": 4,
+    "fallback": 8,
     "events": [
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
         "data_id": "TAIEX",
-        "period": "2025-12",
-        "reason": "html"
+        "period": "2025-12"
       },
       {
         "type": "fallback",
@@ -830,14 +829,31 @@
         "type": "empty",
         "dataset": "STOCK_DAY",
         "data_id": "6980",
-        "period": "2025-12",
-        "reason": "html"
+        "period": "2025-12"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
         "data_id": "6980",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "fallback",
+        "dataset": "institutional",
+        "data_id": "1785",
+        "reason": "cold_history_short"
+      },
+      {
+        "type": "fallback",
+        "dataset": "margin",
+        "data_id": "1785",
+        "reason": "cold_history_short"
+      },
+      {
+        "type": "fallback",
+        "dataset": "revenue",
+        "data_id": "1785",
+        "reason": "cold_history_short"
       },
       {
         "type": "empty",
@@ -849,8 +865,8 @@
     ],
     "fallback_status": {
       "label": "正常",
-      "api": 0,
-      "cache": 4006,
+      "api": 8,
+      "cache": 3956,
       "quota": 0,
       "error": 0,
       "empty": 1,
@@ -994,7 +1010,7 @@
     "schedule_label": "未記錄",
     "data_source_label": "部分限流",
     "news_label": "部分失敗",
-    "generated_at": "2026-06-14T18:58:54+08:00",
+    "generated_at": "2026-06-14T18:34:43+08:00",
     "generated_date": "2026-06-14",
     "data_date": "2026-06-12",
     "website_schedule": "04:30 / 05:00",
@@ -1002,7 +1018,7 @@
     "provider_label": "正常",
     "news_sources": 10,
     "news_failed": 2,
-    "github_run_id": "27496655743",
+    "github_run_id": "27496095081",
     "github_event": "push",
     "scheduler": "push",
     "scheduled_task": "dashboard",
@@ -2270,19 +2286,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+          "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
           "model_reviews": [
             {
               "stock_id": "8112",
               "action": "可追",
               "confidence": 0.8,
-              "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+              "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+        "ai_reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
         "decision_light": "green",
         "decision_light_label": "綠燈可盯",
         "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -2353,19 +2369,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+          "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
           "model_reviews": [
             {
               "stock_id": "4958",
               "action": "可追",
               "confidence": 0.8,
-              "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+              "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+        "ai_reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
         "decision_light": "green",
         "decision_light_label": "綠燈可盯",
         "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -2503,19 +2519,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+          "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
           "model_reviews": [
             {
               "stock_id": "2344",
               "action": "可追",
               "confidence": 0.75,
-              "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+              "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+        "ai_reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
         "decision_light": "green",
         "decision_light_label": "綠燈可盯",
         "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -2787,37 +2803,23 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 116,
+    "recovered_fetches": 120,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 116 次"
+      "已由備援/補抓補回 120 次"
     ],
     "event_summary": {
       "empty": 3,
-      "fallback": 2
+      "fallback": 5
     },
     "details": [
       {
         "type": "empty",
         "dataset": "STOCK_DAY",
-        "data_id": "TAIEX",
-        "period": "2025-12",
-        "reason": "html"
-      },
-      {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "TAIEX",
-        "period": "",
-        "reason": "twse_month_missing"
-      },
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
         "data_id": "6980",
         "period": "2025-12",
-        "reason": "html"
+        "reason": ""
       },
       {
         "type": "fallback",
@@ -2825,6 +2827,27 @@
         "data_id": "6980",
         "period": "",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "fallback",
+        "dataset": "institutional",
+        "data_id": "1785",
+        "period": "",
+        "reason": "cold_history_short"
+      },
+      {
+        "type": "fallback",
+        "dataset": "margin",
+        "data_id": "1785",
+        "period": "",
+        "reason": "cold_history_short"
+      },
+      {
+        "type": "fallback",
+        "dataset": "revenue",
+        "data_id": "1785",
+        "period": "",
+        "reason": "cold_history_short"
       },
       {
         "type": "empty",
@@ -2838,32 +2861,39 @@
       "label": "clean",
       "retryable": 0,
       "blocked": 0,
-      "recovered": 5,
+      "recovered": 6,
       "items": [
         {
           "dataset": "STOCK_DAY",
-          "data_id": "TAIEX",
+          "data_id": "6980",
           "period": "2025-12",
           "type": "empty",
           "next_step": "recovered_by_fallback"
         },
         {
           "dataset": "stock_prices",
-          "data_id": "TAIEX",
+          "data_id": "6980",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
         },
         {
-          "dataset": "STOCK_DAY",
-          "data_id": "6980",
-          "period": "2025-12",
-          "type": "empty",
+          "dataset": "institutional",
+          "data_id": "1785",
+          "period": "",
+          "type": "fallback",
           "next_step": "recovered_by_fallback"
         },
         {
-          "dataset": "stock_prices",
-          "data_id": "6980",
+          "dataset": "margin",
+          "data_id": "1785",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "revenue",
+          "data_id": "1785",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
@@ -3267,13 +3297,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+        "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
         "model_reviews": [
           {
             "stock_id": "8112",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+            "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -3297,7 +3327,7 @@
       "action_context_reason": "符合強度與操作條件",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+      "ai_reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
       "decision_light": "green",
       "decision_light_label": "綠燈可盯",
       "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -3489,13 +3519,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+        "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
         "model_reviews": [
           {
             "stock_id": "4958",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+            "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
             "model": "deepseek-chat"
           }
         ]
@@ -3519,7 +3549,7 @@
       "action_context_reason": "符合強度與操作條件",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+      "ai_reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
       "decision_light": "green",
       "decision_light_label": "綠燈可盯",
       "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -3605,13 +3635,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+        "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
         "model_reviews": [
           {
             "stock_id": "2344",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+            "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -3635,7 +3665,7 @@
       "action_context_reason": "符合強度與操作條件",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+      "ai_reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
       "decision_light": "green",
       "decision_light_label": "綠燈可盯",
       "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -8162,6 +8192,78 @@
       "stability_reason": "近期尚無連續推薦紀錄。"
     },
     {
+      "stock_id": "1785",
+      "name": "光洋科",
+      "score": 48,
+      "grade": "-",
+      "label": "AVOID",
+      "label_text": "避開",
+      "price": 141.5,
+      "technical": "成交量明顯放大",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 95.5%",
+      "risk": "價格貼近 MA20，追價空間較有限",
+      "opportunity": "尚無明顯異常訊號",
+      "technical_score": 6,
+      "chip_score": 8,
+      "fundamental_score": 14,
+      "risk_score": 15,
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（142.97）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 131.50",
+      "stop_price": 131.5,
+      "entry_limit_price": 145.75,
+      "themes": [],
+      "theme_tiers": [],
+      "entry_decision": "避免",
+      "entry_checklist": [
+        "分數未達進場觀察門檻，不列入今日進場"
+      ],
+      "overseas_adjustment": 5,
+      "opportunity_score": 0,
+      "warnings": [],
+      "trigger_tags": [
+        "投信買超",
+        "營收加速",
+        "美股映射"
+      ],
+      "pattern_tags": [],
+      "pattern_risk_tags": [],
+      "atr_pct": 7.19,
+      "trigger_summary": "投信買超 + 營收加速 + 美股映射",
+      "decision_reason": "投信買超 + 營收加速 + 美股映射；成交量明顯放大；投信近 3 日買超；最新月營收年增 95.5%",
+      "retail_signal": {},
+      "selection_quality_adjustment": 0,
+      "selection_quality_notes": [],
+      "ai_review": null,
+      "ai_label": "未複核",
+      "exit_plan": {
+        "plan_type": "高波動控倉",
+        "hard_stop": "跌破 131.50 退出，不攤平",
+        "take_profit_1": 160.0,
+        "take_profit_2": 174.25,
+        "risk_per_share": 14.25,
+        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
+        "checklist": [
+          "跌破 131.50 退出，不攤平",
+          "達第一段停利可先減碼 1/3 到 1/2",
+          "達第二段停利後改用移動停利保護",
+          "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
+        ]
+      },
+      "action_context": "未列入今日操作",
+      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "retail_context": "散戶：無明顯背離",
+      "retail_context_reason": "",
+      "ai_reason": "",
+      "decision_light": "red",
+      "decision_light_label": "紅燈控風險",
+      "decision_light_reason": "危險名單或操作結論偏保守",
+      "stability": {},
+      "stability_label": "新進名單",
+      "stability_reason": "近期尚無連續推薦紀錄。"
+    },
+    {
       "stock_id": "3583",
       "name": "辛耘",
       "score": 47,
@@ -9021,78 +9123,6 @@
       },
       "action_context": "未列入今日操作",
       "action_context_reason": "危險名單，先避開；未複核",
-      "retail_context": "散戶：無明顯背離",
-      "retail_context_reason": "",
-      "ai_reason": "",
-      "decision_light": "red",
-      "decision_light_label": "紅燈控風險",
-      "decision_light_reason": "危險名單或操作結論偏保守",
-      "stability": {},
-      "stability_label": "新進名單",
-      "stability_reason": "近期尚無連續推薦紀錄。"
-    },
-    {
-      "stock_id": "1785",
-      "name": "光洋科",
-      "score": 42,
-      "grade": "-",
-      "label": "AVOID",
-      "label_text": "避開",
-      "price": 141.5,
-      "technical": "技術面中性",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 95.5%",
-      "risk": "價格貼近 MA20，追價空間較有限",
-      "opportunity": "尚無明顯異常訊號",
-      "technical_score": 0,
-      "chip_score": 8,
-      "fundamental_score": 14,
-      "risk_score": 15,
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（142.97）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 136.60",
-      "stop_price": 136.6,
-      "entry_limit_price": 145.75,
-      "themes": [],
-      "theme_tiers": [],
-      "entry_decision": "避免",
-      "entry_checklist": [
-        "分數未達進場觀察門檻，不列入今日進場"
-      ],
-      "overseas_adjustment": 5,
-      "opportunity_score": 0,
-      "warnings": [],
-      "trigger_tags": [
-        "投信買超",
-        "營收加速",
-        "美股映射"
-      ],
-      "pattern_tags": [],
-      "pattern_risk_tags": [],
-      "atr_pct": 7.07,
-      "trigger_summary": "投信買超 + 營收加速 + 美股映射",
-      "decision_reason": "投信買超 + 營收加速 + 美股映射；技術面中性；投信近 3 日買超；最新月營收年增 95.5%",
-      "retail_signal": {},
-      "selection_quality_adjustment": 0,
-      "selection_quality_notes": [],
-      "ai_review": null,
-      "ai_label": "未複核",
-      "exit_plan": {
-        "plan_type": "高波動控倉",
-        "hard_stop": "跌破 136.60 退出，不攤平",
-        "take_profit_1": 154.9,
-        "take_profit_2": 164.05,
-        "risk_per_share": 9.15,
-        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
-        "checklist": [
-          "跌破 136.60 退出，不攤平",
-          "達第一段停利可先減碼 1/3 到 1/2",
-          "達第二段停利後改用移動停利保護",
-          "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
-        ]
-      },
-      "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11863,13 +11893,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+        "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
         "model_reviews": [
           {
             "stock_id": "8112",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+            "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -11886,13 +11916,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "AI伺服器題材強，但股價淨值比極高(20.9x)，追高風險大，建議拉回再進。",
+        "reason": "股價淨值比極高20.9倍為主要風險，雖有AI伺服器題材，建議等拉回再介入。",
         "model_reviews": [
           {
             "stock_id": "2059",
             "action": "等拉回",
             "confidence": 0.7,
-            "reason": "AI伺服器題材強，但股價淨值比極高(20.9x)，追高風險大，建議拉回再進。",
+            "reason": "股價淨值比極高20.9倍為主要風險，雖有AI伺服器題材，建議等拉回再介入。",
             "model": "deepseek-chat"
           }
         ]
@@ -11909,13 +11939,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+        "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
         "model_reviews": [
           {
             "stock_id": "4958",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+            "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
             "model": "deepseek-chat"
           }
         ]
@@ -11932,13 +11962,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+        "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
         "model_reviews": [
           {
             "stock_id": "2344",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+            "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -11980,13 +12010,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+        "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
         "model_reviews": [
           {
             "stock_id": "8112",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "外資買超，技術突破，營收月增53.8%，無明顯風險。",
+            "reason": "外資買超，技術突破，營收月增53.8%強勁，無明顯風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -12003,13 +12033,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+        "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
         "model_reviews": [
           {
             "stock_id": "4958",
             "action": "可追",
             "confidence": 0.8,
-            "reason": "投信買超，營收年增37.4%，技術突破，風險可接受。",
+            "reason": "投信買超，營收年增37.4%加速，技術突破，風險可接受。",
             "model": "deepseek-chat"
           }
         ]
@@ -12026,13 +12056,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+        "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
         "model_reviews": [
           {
             "stock_id": "2344",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "記憶體題材升溫，法人買超，技術偏多，營收月增3.9%略低但可接受。",
+            "reason": "記憶體題材升溫，法人買超，技術偏多，但營收月增僅3.9%動能較弱，仍可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -13368,7 +13398,7 @@
         "dataset": "STOCK_DAY",
         "data_id": "6980",
         "period": "2025-12",
-        "reason": "html",
+        "reason": "",
         "status": "recovered",
         "attempts": 1,
         "first_seen_at": "2026-06-12T04:32:41+08:00",
@@ -13380,7 +13410,7 @@
         "dataset": "STOCK_DAY",
         "data_id": "TAIEX",
         "period": "2025-12",
-        "reason": "html",
+        "reason": "fetch_failed",
         "status": "recovered",
         "attempts": 1,
         "first_seen_at": "2026-06-11T16:01:58+08:00",
@@ -13532,14 +13562,14 @@
     "attempted": []
   },
   "traceability": {
-    "generated_at": "2026-06-14T18:58:57+08:00",
+    "generated_at": "2026-06-14T18:34:47+08:00",
     "steps": [
       {
         "key": "source",
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 3 | 快取 4551 | 限流 0"
+        "note": "API 22 | 快取 4414 | 限流 0"
       },
       {
         "key": "score",
@@ -13628,7 +13658,7 @@
     "history": [
       {
         "run_date": "2026-06-12",
-        "generated_at": "2026-06-14T18:58:57+08:00",
+        "generated_at": "2026-06-14T18:34:47+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -13684,7 +13714,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 3 | 快取 4551 | 限流 0"
+            "note": "API 22 | 快取 4414 | 限流 0"
           },
           {
             "key": "score",
