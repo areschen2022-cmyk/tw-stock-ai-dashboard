@@ -1,12 +1,12 @@
 {
   "as_of": "2026-06-12",
-  "generated_at": "2026-06-14T18:34:47+08:00",
-  "dashboard_generated_at": "2026-06-14T18:34:43+08:00",
+  "generated_at": "2026-06-15T04:31:43+08:00",
+  "dashboard_generated_at": "2026-06-15T04:31:40+08:00",
   "source_status": {
     "label": "正常",
-    "api": 22,
-    "cache": 4414,
-    "fallback": 8,
+    "api": 19,
+    "cache": 3744,
+    "fallback": 14,
     "quota": 0,
     "error": 0,
     "empty": 2,
@@ -81,15 +81,15 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 120,
+    "recovered_fetches": 126,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 120 次"
+      "已由備援/補抓補回 126 次"
     ],
     "event_summary": {
-      "empty": 3,
-      "fallback": 5
+      "fallback": 8,
+      "empty": 2
     },
     "details": [
       {
@@ -109,21 +109,21 @@
       {
         "type": "fallback",
         "dataset": "institutional",
-        "data_id": "1785",
+        "data_id": "2359",
         "period": "",
         "reason": "cold_history_short"
       },
       {
         "type": "fallback",
         "dataset": "margin",
-        "data_id": "1785",
+        "data_id": "2359",
         "period": "",
         "reason": "cold_history_short"
       },
       {
         "type": "fallback",
         "dataset": "revenue",
-        "data_id": "1785",
+        "data_id": "2359",
         "period": "",
         "reason": "cold_history_short"
       },
@@ -157,21 +157,21 @@
         },
         {
           "dataset": "institutional",
-          "data_id": "1785",
+          "data_id": "2359",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
         },
         {
           "dataset": "margin",
-          "data_id": "1785",
+          "data_id": "2359",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
         },
         {
           "dataset": "revenue",
-          "data_id": "1785",
+          "data_id": "2359",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
@@ -371,18 +371,18 @@
     "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。"
   },
   "bundle_coverage": {
-    "stocks": 100,
+    "stocks": 85,
     "datasets": {
       "prices": {
         "minimum": 20,
         "missing": [],
-        "count": 100,
+        "count": 85,
         "coverage_pct": 100.0
       },
       "institutional": {
         "minimum": 1,
         "missing": [],
-        "count": 100,
+        "count": 85,
         "coverage_pct": 100.0
       },
       "margin": {
@@ -390,19 +390,19 @@
         "missing": [
           "6980"
         ],
-        "count": 99,
-        "coverage_pct": 99.0
+        "count": 84,
+        "coverage_pct": 98.8
       },
       "revenue": {
         "minimum": 1,
         "missing": [],
-        "count": 100,
+        "count": 85,
         "coverage_pct": 100.0
       },
       "revenue_15m": {
         "minimum": 15,
         "missing": [],
-        "count": 100,
+        "count": 85,
         "coverage_pct": 100.0
       }
     },
@@ -412,10 +412,10 @@
     "enabled": true,
     "mode": "daily_layered",
     "target_total_listed": 1056,
-    "selected_count": 100,
-    "coverage_pct": 9.5,
+    "selected_count": 85,
+    "coverage_pct": 8.0,
     "core_count": 10,
-    "active_theme_count": 65,
+    "active_theme_count": 50,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
     "market_universe_available": 1968,
@@ -423,11 +423,11 @@
     "weekly_market_limit": 60,
     "weekly_full_scan_weekday": 0,
     "active_themes": [
-      "advanced_packaging",
       "low_orbit_satellite",
-      "ai_server",
       "silicon_photonics",
-      "memory"
+      "network_optical_communication",
+      "advanced_packaging",
+      "optics_lens"
     ]
   },
   "retry": {
@@ -613,20 +613,20 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 22 | 快取 4414 | 限流 0"
+        "note": "API 19 | 快取 3744 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
-        "value": "100/100 檔",
+        "value": "85/85 檔",
         "note": "S+ 0 | S 4 | A 5"
       },
       {
         "key": "watch",
         "label": "進場追蹤",
         "status": "ok",
-        "value": "470 筆",
+        "value": "465 筆",
         "note": "完成 328 | 5日勝率 51.5%"
       },
       {
@@ -659,14 +659,14 @@
       }
     ],
     "summary": {
-      "scanned": 100,
-      "valid": 100,
-      "watch_signals": 470,
+      "scanned": 85,
+      "valid": 85,
+      "watch_signals": 465,
       "watch_completed": 328,
       "potential_signals": 76,
       "potential_completed": 19,
       "data_coverage": {
-        "bundle_stocks": 100,
+        "bundle_stocks": 85,
         "all_critical_complete": false,
         "datasets": {
           "prices": {
@@ -678,7 +678,7 @@
             "missing_count": 0
           },
           "margin": {
-            "coverage_pct": 99.0,
+            "coverage_pct": 98.8,
             "missing_count": 1
           },
           "revenue": {
@@ -693,9 +693,9 @@
       },
       "universe": {
         "mode": "daily_layered",
-        "selected_count": 100,
+        "selected_count": 85,
         "target_total_listed": 1056,
-        "coverage_pct": 9.5,
+        "coverage_pct": 8.0,
         "market_universe_available": 1968
       }
     },
@@ -705,7 +705,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=22; cache=4414; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=19; cache=3744; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -720,7 +720,7 @@
     "history": [
       {
         "run_date": "2026-06-12",
-        "generated_at": "2026-06-14T18:34:47+08:00",
+        "generated_at": "2026-06-15T04:31:43+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -730,14 +730,14 @@
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
-          "scanned": 100,
-          "valid": 100,
-          "watch_signals": 470,
+          "scanned": 85,
+          "valid": 85,
+          "watch_signals": 465,
           "watch_completed": 328,
           "potential_signals": 76,
           "potential_completed": 19,
           "data_coverage": {
-            "bundle_stocks": 100,
+            "bundle_stocks": 85,
             "all_critical_complete": false,
             "datasets": {
               "prices": {
@@ -749,7 +749,7 @@
                 "missing_count": 0
               },
               "margin": {
-                "coverage_pct": 99.0,
+                "coverage_pct": 98.8,
                 "missing_count": 1
               },
               "revenue": {
@@ -764,9 +764,9 @@
           },
           "universe": {
             "mode": "daily_layered",
-            "selected_count": 100,
+            "selected_count": 85,
             "target_total_listed": 1056,
-            "coverage_pct": 9.5,
+            "coverage_pct": 8.0,
             "market_universe_available": 1968
           }
         },
@@ -776,20 +776,20 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 22 | 快取 4414 | 限流 0"
+            "note": "API 19 | 快取 3744 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
-            "value": "100/100 檔",
+            "value": "85/85 檔",
             "note": "S+ 0 | S 4 | A 5"
           },
           {
             "key": "watch",
             "label": "進場追蹤",
             "status": "ok",
-            "value": "470 筆",
+            "value": "465 筆",
             "note": "完成 328 | 5日勝率 51.5%"
           },
           {
@@ -1232,7 +1232,7 @@
   },
   "performance": {
     "stats": {
-      "signals": 470,
+      "signals": 465,
       "completed": 328,
       "win_rate_5d": 51.52439024390244,
       "avg_return_5d": 2.0584975804394436,
@@ -1248,7 +1248,7 @@
       "avg_return_5d": -10.36836627568313,
       "avg_return_10d": -7.949790794979079,
       "big_winner_count": 0,
-      "false_positive_count": 14
+      "false_positive_count": 12
     }
   },
   "note": "Internal diagnostics only. It contains no secrets and is not linked from the dashboard UI."
