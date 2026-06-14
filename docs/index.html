@@ -7,13 +7,20 @@
   <style>
     :root { color-scheme: light; --ink:#172033; --muted:#64748b; --line:#d6deea; --bg:#eef3f8; --panel:#fff; --panel2:#f8fafc; --good:#0f7b4f; --warn:#9a6700; --bad:#b42318; --terminal:#0b1220; --terminal2:#111827; --blue:#0b4a8b; --soft:#f8fafc; --shadow:0 10px 28px rgba(15,23,42,.08); --shadow-sm:0 2px 8px rgba(15,23,42,.06); }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:#eef3f8; line-height:1.45; }
-    header { padding:18px 24px 14px; border-bottom:1px solid rgba(255,255,255,.08); background:#0b1220; color:#fff; box-shadow:0 14px 30px rgba(15,23,42,.18); }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#e8eef6 0,#f3f6fa 220px,#eef3f8 100%); line-height:1.45; }
+    header { padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.08); background:linear-gradient(120deg,#07111f 0,#0b1220 62%,#10233b 100%); color:#fff; box-shadow:0 14px 30px rgba(15,23,42,.18); }
     h1 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
     .sub { color:#cbd5e1; font-size:14px; }
     main { padding:16px 22px 36px; max-width:1660px; margin:auto; }
+    .jump-nav { display:flex; gap:6px; flex-wrap:wrap; margin:-6px 0 14px; }
+    .jump-nav a { display:inline-flex; align-items:center; min-height:30px; padding:5px 10px; border:1px solid #cfd7e6; border-radius:999px; background:rgba(255,255,255,.86); color:#0b4a8b; text-decoration:none; font-size:12px; font-weight:800; box-shadow:0 1px 3px rgba(15,23,42,.05); }
+    .jump-nav a:hover { background:#fff; border-color:#93b4d8; }
     .metrics { display:grid; grid-template-columns: repeat(5, minmax(112px,1fr)); gap:8px; margin-bottom:10px; }
     .metric { background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid var(--line); border-top:3px solid #dbeafe; border-radius:10px; padding:10px 12px; min-height:64px; box-shadow:var(--shadow-sm); }
+    .metric.is-good { border-top-color:#86efac; }
+    .metric.is-warn { border-top-color:#facc15; }
+    .metric.is-bad { border-top-color:#fda4af; }
     .metric b { display:block; font-size:clamp(17px, 4vw, 21px); margin-bottom:2px; overflow-wrap:anywhere; }
     .metric span { color:var(--muted); font-size:13px; }
     .dashboard-layout { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(360px,.65fr); gap:14px; margin-bottom:16px; align-items:start; }
@@ -41,10 +48,14 @@
     .trace-day.ok { color:var(--good); border-color:#abefc6; }
     .trace-day.warn { color:var(--warn); border-color:#f6d365; }
     .trace-day.bad { color:var(--bad); border-color:#fecdd6; }
-    .action-panel { border:1px solid #b7e4cf; border-top:4px solid var(--good); padding:16px; box-shadow:0 12px 30px rgba(15,118,73,.08); }
-    .action-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,.48fr); gap:10px; align-items:start; margin-bottom:10px; }
-    .action-title h2 { font-size:18px; margin-bottom:4px; }
+    .action-panel { border:1px solid #b7e4cf; border-top:4px solid var(--good); padding:16px; box-shadow:0 12px 30px rgba(15,118,73,.08); scroll-margin-top:82px; }
+    .action-head { display:grid; grid-template-columns:minmax(300px,.86fr) minmax(320px,.64fr); gap:14px; align-items:start; margin-bottom:10px; }
+    .action-title h2 { font-size:19px; margin-bottom:4px; }
     .action-title .line { margin:0; }
+    .decision-brief { display:grid; gap:8px; margin-top:12px; }
+    .brief-row { display:grid; grid-template-columns:104px minmax(0,1fr); gap:10px; align-items:start; border:1px solid #dfe7f1; border-radius:10px; background:#fff; padding:9px 10px; }
+    .brief-row b { color:#0b4a8b; font-size:13px; }
+    .brief-row span { color:#334155; font-size:13px; }
     .action-overview { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 10px; }
     .action-chip { display:inline-flex; align-items:center; min-height:32px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; font-weight:800; }
     .action-chip.good { color:var(--good); border-color:#abefc6; background:#f0fdf4; }
@@ -59,7 +70,7 @@
     }
     #actionLists > .line.good { background:#f0fdf4; border:1px solid #abefc6; }
     #actionLists > .line.warn { background:#fffbeb; border:1px solid #f6d365; }
-    .decision-summary-compact { border:1px solid var(--line); border-radius:10px; padding:10px; background:#fbfcfe; }
+    .decision-summary-compact { border:1px solid var(--line); border-radius:12px; padding:10px; background:#fbfcfe; box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
     .decision-summary-compact .temperature-card { margin-bottom:7px; }
     .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
     .decision-pill { border:1px solid var(--line); border-radius:10px; padding:8px 9px; background:#fff; min-height:56px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
@@ -104,19 +115,20 @@
     .decision-exit span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
     .decision-exit b { font-size:14px; }
     .decision-reason { color:var(--muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .risk-panel { border:1px solid #fecdd6; border-top:4px solid var(--bad); }
+    .risk-panel { border:1px solid #fecdd6; border-top:4px solid var(--bad); scroll-margin-top:82px; }
     .risk-panel #exitRisks { max-height:280px; overflow:auto; padding-right:4px; scrollbar-width:thin; }
     .wide-panel { grid-column:1 / -1; }
     details.panel h2 { font-size:14px; margin:12px 0 6px; }
     h2 { font-size:15px; margin:0 0 8px; }
     .line { color:var(--muted); margin:4px 0; font-size:13px; line-height:1.45; }
-    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; padding:10px; background:rgba(255,255,255,.9); border:1px solid var(--line); border-radius:12px; position:sticky; top:58px; z-index:12; backdrop-filter:blur(10px); box-shadow:var(--shadow-sm); }
+    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; padding:10px; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:12px; position:sticky; top:58px; z-index:12; backdrop-filter:blur(10px); box-shadow:var(--shadow-sm); scroll-margin-top:82px; }
     .nav-tabs { display:flex; gap:8px; margin:0 0 16px; flex-wrap:wrap; position:sticky; top:0; z-index:20; padding:10px 0; background:rgba(238,243,248,.94); backdrop-filter:blur(10px); border-bottom:1px solid rgba(208,213,221,.75); }
     .nav-tab { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:8px 15px; border:1px solid #cfd7e6; border-radius:8px; background:var(--panel); color:#0b4a8b; text-decoration:none; font-weight:800; box-shadow:var(--shadow-sm); }
     .nav-tab.active { background:var(--terminal); color:white; border-color:var(--terminal); }
     input, select { border:1px solid var(--line); border-radius:8px; padding:9px 10px; background:white; min-height:40px; }
     input { min-width:260px; flex:1; }
     table { width:100%; border-collapse:separate; border-spacing:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm); }
+    .table-shell { scroll-margin-top:128px; }
     .chart-wrap { height:96px; margin-top:6px; }
     th, td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
     th { background:#eef3f8; font-size:12px; color:#475467; position:sticky; top:112px; z-index:8; }
@@ -166,9 +178,9 @@
     .mini-detail summary { cursor:pointer; color:#0b4a8b; font-size:13px; font-weight:700; }
     .row-detail summary { cursor:pointer; color:#0b4a8b; font-size:12px; font-weight:700; }
     .row-detail[open] { margin-top:4px; }
-    .stock-drawer-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.34); opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:80; }
+    .stock-drawer-backdrop { position:fixed; inset:0; background:linear-gradient(90deg,rgba(15,23,42,.18),rgba(15,23,42,.05) 52%,rgba(15,23,42,.1)); opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:80; }
     .stock-drawer-backdrop.open { opacity:1; pointer-events:auto; }
-    .stock-drawer { position:fixed; top:0; right:0; width:min(460px,100%); height:100dvh; background:#fff; border-left:1px solid var(--line); box-shadow:-18px 0 38px rgba(15,23,42,.2); transform:translateX(104%); transition:transform .2s ease; z-index:81; overflow:auto; }
+    .stock-drawer { position:fixed; top:0; right:0; width:min(520px,100%); height:100dvh; background:#fff; border-left:1px solid var(--line); box-shadow:-18px 0 38px rgba(15,23,42,.2); transform:translateX(104%); transition:transform .2s ease; z-index:81; overflow:auto; }
     .stock-drawer.open { transform:translateX(0); }
     .drawer-head { position:sticky; top:0; background:#fff; border-bottom:1px solid var(--line); padding:14px 16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; z-index:1; }
     .drawer-title { font-size:20px; font-weight:900; line-height:1.2; }
@@ -203,6 +215,8 @@
       .risk-panel #exitRisks { max-height:none; }
       .theme-panel #themes { max-height:none; }
       .toolbar { align-items:stretch; }
+      .jump-nav { position:sticky; top:0; z-index:18; padding:6px 0; background:rgba(238,243,248,.94); backdrop-filter:blur(10px); }
+      .jump-nav a { flex:1 1 auto; justify-content:center; }
       input, select { width:100%; min-width:0; }
       table, thead, tbody, tr, td { display:block; width:100%; }
       thead { display:none; }
@@ -228,14 +242,22 @@
       <a class="nav-tab" href="potential.html">潛力雷達</a>
       <a class="nav-tab" href="weekly.html">每週總覽</a>
     </nav>
+    <nav class="jump-nav" aria-label="今日監控區段">
+      <a href="#today-action">決策</a>
+      <a href="#risk-watch">風險</a>
+      <a href="#table-tools">篩選</a>
+      <a href="#stock-table">股票列表</a>
+      <a href="#health-check">資料健康</a>
+    </nav>
     <div class="metrics" id="metrics"></div>
     <div class="dashboard-layout">
       <div class="main-stack">
-        <section class="action-panel">
+        <section class="action-panel" id="today-action">
           <div class="action-head">
             <div class="action-title">
               <h2>今日操作結論</h2>
               <div class="line">先看燈號與可追/等拉回，再用個股卡片確認進場上限、停損與開盤量能。</div>
+              <div id="decisionBrief" class="decision-brief"></div>
             </div>
             <div id="decisionSummary" class="decision-summary-compact"></div>
           </div>
@@ -247,7 +269,7 @@
         </div>
       </div>
       <div class="side-stack">
-        <section class="risk-panel"><h2>危險名單</h2><div id="exitRisks"></div></section>
+        <section class="risk-panel" id="risk-watch"><h2>危險名單</h2><div id="exitRisks"></div></section>
         <section><h2>異常提醒</h2><div id="alerts"></div></section>
       </div>
       <div class="detail-grid">
@@ -259,7 +281,7 @@
           <summary>美國政策雷達</summary>
           <div id="usPolicyRadar"></div>
         </details>
-        <details class="panel wide-panel">
+        <details class="panel wide-panel" id="health-check">
           <summary>資料鏈檢查</summary>
           <div class="section-note">確認資料源、評分、追蹤、回測、潛力雷達與頁面輸出都有串接。</div>
           <div id="traceability"></div>
@@ -277,11 +299,11 @@
         </details>
       </div>
     </div>
-    <div class="toolbar">
+    <div class="toolbar" id="table-tools">
       <input id="search" placeholder="搜尋股票、題材、訊號..." />
       <select id="grade"><option value="">全部強度</option><option>S+</option><option>S</option><option>A</option><option>B</option><option>C</option><option value="-">資料不足</option></select>
     </div>
-    <table>
+    <table id="stock-table" class="table-shell">
       <thead><tr><th>強度</th><th>股票</th><th>分數</th><th>原因標籤</th><th>題材</th><th>四面向</th><th>操作</th><th>進場/停損</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
@@ -14613,12 +14635,12 @@
       const actionLists = data.action_lists || {};
       const actionSummary = actionLists.summary || {};
       document.querySelector("#metrics").innerHTML = [
-        ["有效標的", data.summary.valid],
-        ["S+/S 強度", actionSummary.strong ?? ((data.summary.s_plus_grade || 0) + (data.summary.s_grade || 0))],
-        ["可追", actionSummary.chase ?? 0],
-        ["等拉回", actionSummary.pullback ?? 0],
-        ["風險", actionSummary.risk ?? 0]
-      ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
+        ["有效標的", data.summary.valid, ""],
+        ["S+/S 強度", actionSummary.strong ?? ((data.summary.s_plus_grade || 0) + (data.summary.s_grade || 0)), "is-good"],
+        ["可追", actionSummary.chase ?? 0, "is-good"],
+        ["等拉回", actionSummary.pullback ?? 0, "is-warn"],
+        ["風險", actionSummary.risk ?? 0, "is-bad"]
+      ].map(([k,v,c]) => `<div class="metric ${c}"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
       function marketTemperature() {
         const retail = data.retail_divergence || {};
@@ -14649,6 +14671,8 @@
       }[decision.posture] || "精選觀察";
       const decisionTopTheme = themeName(decision.top_theme);
       const temp = marketTemperature();
+      const topChase = (actionLists.chase || []).slice(0, 3).map(row => `${row.stock_id} ${row.name}`).join("、") || "今日暫無";
+      const topRisk = (actionLists.risk || []).slice(0, 2).map(row => `${row.stock_id} ${row.name}`).join("、") || "目前無紅黃警戒";
       document.querySelector("#decisionSummary").innerHTML = `
         <div class="temperature-card ${temp.cls}">
           <b>${esc(temp.label)}</b>
@@ -14663,6 +14687,10 @@
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
         <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>`;
+      document.querySelector("#decisionBrief").innerHTML = `
+        <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
+        <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
+        <div class="brief-row"><b>避開風險</b><span>${esc(topRisk)}</span></div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
