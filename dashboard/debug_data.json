@@ -1,11 +1,11 @@
 {
   "as_of": "2026-06-18",
-  "generated_at": "2026-06-18T20:45:43+08:00",
-  "dashboard_generated_at": "2026-06-18T20:45:43+08:00",
+  "generated_at": "2026-06-18T20:49:43+08:00",
+  "dashboard_generated_at": "2026-06-18T20:49:40+08:00",
   "source_status": {
     "label": "正常",
-    "api": 3,
-    "cache": 3531,
+    "api": 35,
+    "cache": 3505,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -62,7 +62,7 @@
     },
     "market_snapshots": {
       "overseas_public_market": {
-        "date": "2026-06-17",
+        "date": "2026-06-18",
         "valid": true,
         "rows": 13,
         "source": "Yahoo Finance chart API"
@@ -78,7 +78,7 @@
   "data_quality": {
     "label": "high",
     "label_text": "高",
-    "score": 90,
+    "score": 100,
     "source_score": 100,
     "coverage": 100.0,
     "recovered_fetches": 113,
@@ -573,20 +573,20 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 3 | 快取 3531 | 限流 0"
+        "note": "API 35 | 快取 3505 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
         "value": "78/78 檔",
-        "note": "S+ 0 | S 0 | A 2"
+        "note": "S+ 0 | S 4 | A 8"
       },
       {
         "key": "watch",
         "label": "進場追蹤",
         "status": "ok",
-        "value": "477 筆",
+        "value": "487 筆",
         "note": "完成 303 | 5日勝率 53.5%"
       },
       {
@@ -599,9 +599,9 @@
       {
         "key": "ai",
         "label": "AI 複核",
-        "status": "warn",
-        "value": "未啟用",
-        "note": "模型 0/1 | 同意門檻 1"
+        "status": "ok",
+        "value": "穩定",
+        "note": "模型 1/1 | 同意門檻 1"
       },
       {
         "key": "retry",
@@ -621,7 +621,7 @@
     "summary": {
       "scanned": 78,
       "valid": 78,
-      "watch_signals": 477,
+      "watch_signals": 487,
       "watch_completed": 303,
       "potential_signals": 123,
       "potential_completed": 40,
@@ -665,16 +665,8 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=3; cache=3531; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=35; cache=3505; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
-      },
-      {
-        "key": "ai",
-        "status": "warn",
-        "label": "AI 複核",
-        "reason": "AI 複核模型未完全穩定或成功數不足。",
-        "evidence": "successful=0; requested=1; failed=0; timed_out=0",
-        "next_action": "確認 DeepSeek/OpenRouter Secret、模型名稱、timeout 與回傳 JSON 格式。"
       },
       {
         "key": "retry",
@@ -688,19 +680,19 @@
     "history": [
       {
         "run_date": "2026-06-18",
-        "generated_at": "2026-06-18T20:45:43+08:00",
+        "generated_at": "2026-06-18T20:49:43+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
-        "ai_status": "warn",
+        "ai_status": "ok",
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
           "scanned": 78,
           "valid": 78,
-          "watch_signals": 477,
+          "watch_signals": 487,
           "watch_completed": 303,
           "potential_signals": 123,
           "potential_completed": 40,
@@ -744,20 +736,20 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 3 | 快取 3531 | 限流 0"
+            "note": "API 35 | 快取 3505 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
             "value": "78/78 檔",
-            "note": "S+ 0 | S 0 | A 2"
+            "note": "S+ 0 | S 4 | A 8"
           },
           {
             "key": "watch",
             "label": "進場追蹤",
             "status": "ok",
-            "value": "477 筆",
+            "value": "487 筆",
             "note": "完成 303 | 5日勝率 53.5%"
           },
           {
@@ -770,9 +762,9 @@
           {
             "key": "ai",
             "label": "AI 複核",
-            "status": "warn",
-            "value": "未啟用",
-            "note": "模型 0/1 | 同意門檻 1"
+            "status": "ok",
+            "value": "穩定",
+            "note": "模型 1/1 | 同意門檻 1"
           },
           {
             "key": "retry",
@@ -1598,23 +1590,25 @@
   },
   "ai": {
     "health": {
-      "label": "未啟用",
-      "score": 0,
+      "label": "穩定",
+      "score": 100,
       "requested": 1,
-      "success": 0,
+      "success": 1,
       "failed": 0,
       "timed_out": 0,
-      "available_ratio": 0,
-      "timeout_ratio": 0
+      "available_ratio": 1.0,
+      "timeout_ratio": 0.0
     },
     "requested_models": 1,
-    "successful_models": 0,
+    "successful_models": 1,
     "failed_model_names": [],
-    "success_model_names": []
+    "success_model_names": [
+      "deepseek-chat"
+    ]
   },
   "performance": {
     "stats": {
-      "signals": 477,
+      "signals": 487,
       "completed": 303,
       "win_rate_5d": 53.46534653465347,
       "avg_return_5d": 2.340097812993938,
@@ -1627,8 +1621,8 @@
       "completed": 40,
       "pending": 83,
       "win_rate_5d": 32.5,
-      "avg_return_5d": -1.8677631989443726,
-      "avg_return_10d": -6.73875030940233,
+      "avg_return_5d": -1.8677631989443733,
+      "avg_return_10d": -6.738750309402331,
       "big_winner_count": 10,
       "false_positive_count": 26
     }
