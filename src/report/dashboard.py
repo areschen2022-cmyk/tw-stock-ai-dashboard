@@ -2661,11 +2661,12 @@ def _potential_html() -> str:
         ${factors ? `<div class="factor-list">${factors}</div>` : ""}`;
     }
     function signalRow(row) {
-      return `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}</td><td data-label="5日">${pct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${pct(row.return_10d)}</div>` : ""}</td><td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div>${tags(row)}</div></td></tr>`;
+      const repeat = Number(row.occurrence_count || 1) > 1 ? `<div class="small">近30日出現 ${esc(row.occurrence_count)} 次，僅顯示代表訊號</div>` : "";
+      return `<tr><td data-label="股票">${stock(row)}${repeat}</td><td data-label="階段">${stageTag(row)}</td><td data-label="5日">${pct(row.return_5d)}${row.return_10d != null ? `<div class="small">10日 ${pct(row.return_10d)}</div>` : ""}</td><td data-label="原因">${esc(row.outcome_reason || row.reason || "")}<div>${tags(row)}</div></td></tr>`;
     }
     function promotionRow(row) {
       return `<tr>
-        <td data-label="股票">${stock(row)}</td>
+        <td data-label="股票">${stock(row)}${Number(row.occurrence_count || 1) > 1 ? `<div class="small">近30日出現 ${esc(row.occurrence_count)} 次</div>` : ""}</td>
         <td data-label="潛力階段">${esc(row.stage_label || "觀察")}<div class="small">${esc(row.signal_date || "")}</div></td>
         <td data-label="轉強日">${esc(row.promoted_signal_date || "—")}${row.days_to_promotion != null ? `<div class="small">${esc(row.days_to_promotion)} 天</div>` : ""}</td>
         <td data-label="強度">${esc(row.promoted_grade || "—")}${row.promoted_score != null ? `<div class="small">${esc(row.promoted_score)}/100</div>` : ""}</td>
@@ -2696,7 +2697,7 @@ def _potential_html() -> str:
       ].join("");
       document.querySelector("#promotionRows").innerHTML = (funnel.examples || []).length ? funnel.examples.map(promotionRow).join("") : `<tr><td data-label="提前轉強" colspan="5">尚無潛力股轉強紀錄</td></tr>`;
       const potentialRows = (radar.pending_candidates || []).length ? radar.pending_candidates : (learning.potential_candidates || []);
-      document.querySelector("#candidates").innerHTML = potentialRows.length ? potentialRows.slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="研究快篩">${researchCell(row)}</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由"><b>${esc(row.grade)}｜${esc(row.total_score)}/100</b><div class="small">${esc(row.reason || "")}</div>${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
+      document.querySelector("#candidates").innerHTML = potentialRows.length ? potentialRows.slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}${Number(row.occurrence_count || 1) > 1 ? `<div class="small">近30日出現 ${esc(row.occurrence_count)} 次</div>` : ""}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="研究快篩">${researchCell(row)}</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由"><b>${esc(row.grade)}｜${esc(row.total_score)}/100</b><div class="small">${esc(row.reason || "")}</div>${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       document.querySelector("#factorStats").innerHTML = (radar.factor_stats || []).length ? radar.factor_stats.map(row => `<tr><td data-label="因素">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="成功/失敗">${esc(row.success_count || 0)} / ${esc(row.failure_count || 0)}</td></tr>`).join("") : `<tr><td data-label="因素" colspan="6">因素樣本仍在累積中</td></tr>`;
       document.querySelector("#factorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
       document.querySelector("#successRows").innerHTML = (radar.success_cases || []).length ? radar.success_cases.map(signalRow).join("") : `<tr><td data-label="命中樣本" colspan="4">尚無已驗證命中樣本</td></tr>`;

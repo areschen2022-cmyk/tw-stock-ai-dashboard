@@ -228,3 +228,48 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert summary["strong_factors"]
     assert summary["weak_factors"]
     assert summary["factor_notes"]
+
+
+def test_potential_radar_summary_deduplicates_display_cases(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 6, 1)
+    day1 = date(2026, 6, 2)
+
+    for day in [day0, day1]:
+        store.save_daily_score(
+            StockScore("2059", 84, "BUY_WATCH", 100.0, 0, 0, 0, 0, 0),
+            day,
+        )
+        store.save_potential_radar(
+            [
+                {
+                    "signal_date": day.isoformat(),
+                    "stock_id": "2059",
+                    "name": "川湖",
+                    "grade": "A",
+                    "total_score": 84,
+                    "potential_score": 9,
+                    "action": "等拉回",
+                    "reason": "潛力分 9",
+                    "tags": ["K線轉強:突破整理"],
+                    "themes": ["AI伺服器"],
+                    "entry_price": 100.0,
+                    "stage": "early_turn",
+                    "stage_label": "轉強初動",
+                }
+            ],
+            day,
+        )
+
+    for index, price in enumerate([103, 106, 109, 112, 115, 118], start=1):
+        store.save_daily_score(
+            StockScore("2059", 90, "BUY_WATCH", price, 0, 0, 0, 0, 0),
+            day1 + timedelta(days=index),
+        )
+
+    store.update_potential_forward_returns(day1 + timedelta(days=6))
+    summary = store.potential_radar_summary(day1 + timedelta(days=6))
+
+    assert [item["stock_id"] for item in summary["success_cases"]].count("2059") == 1
+    assert summary["success_cases"][0]["occurrence_count"] == 2
+    assert [item["stock_id"] for item in summary["promotion_funnel"]["examples"]].count("2059") <= 1

@@ -112,12 +112,23 @@ themes:
 
   passive_components:
     stage: "景氣循環"
-    stage_reason: "MLCC、電阻、電容與電感受 AI、車用、電源與通訊庫存循環影響。"
-    lead_lag: "龍頭報價與稼動率先行，通路與二線廠補漲。"
+    stage_reason: "被動元件由陶瓷粉末、金屬電極等材料供給，中游製成 MLCC、電阻、電感與電容，下游連動 AI 伺服器、車用、電源、通訊與消費電子。"
+    lead_lag: "MLCC/電阻龍頭報價與稼動率先行，電感/電容與通路庫存回補跟隨；若下游 AI、車用、電源需求同步升溫，二線廠才容易補漲。"
     role_rules:
-      upstream: ["MLCC", "resistor", "capacitor", "inductor", "component"]
-      midstream: ["distributor"]
-      downstream: ["automotive", "server", "power"]
+      upstream: ["ceramic powder", "electrode", "powder", "material", "metal", "paste"]
+      midstream: ["MLCC", "resistor", "capacitor", "inductor", "component"]
+      downstream: ["automotive", "server", "power", "communication", "consumer"]
+      distributor: ["distributor", "channel"]
+    stocks:
+      "2327": {layer: midstream, beneficiary_order: 1, chain_role: "MLCC/晶片電阻龍頭", lead_lag: "leader"}
+      "2492": {layer: midstream, beneficiary_order: 1, chain_role: "MLCC/晶片電阻"}
+      "3026": {layer: midstream, beneficiary_order: 2, chain_role: "MLCC"}
+      "2456": {layer: midstream, beneficiary_order: 2, chain_role: "電感/磁性元件"}
+      "6173": {layer: midstream, beneficiary_order: 2, chain_role: "MLCC/被動元件"}
+      "2472": {layer: midstream, beneficiary_order: 2, chain_role: "鋁質電解電容"}
+      "8042": {layer: midstream, beneficiary_order: 2, chain_role: "電容"}
+      "3090": {layer: distributor, beneficiary_order: 3, chain_role: "被動元件通路"}
+      "8043": {layer: distributor, beneficiary_order: 3, chain_role: "被動元件通路"}
 
   optoelectronics_panel:
     stage: "報價/需求循環"

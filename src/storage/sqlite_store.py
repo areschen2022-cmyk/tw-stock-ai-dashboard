@@ -1366,6 +1366,35 @@ class SQLiteStore:
         for item in items:
             counts[item["outcome_category"]] = counts.get(item["outcome_category"], 0) + 1
         factor_stats = _potential_factor_stats(items)
+        occurrence_counts = _potential_occurrence_counts(items)
+        success_cases = _unique_potential_items(
+            success,
+            occurrence_counts,
+            key_func=lambda item: (
+                float(item["return_10d"] if item["return_10d"] is not None else item["return_5d"] or 0),
+                float(item["return_5d"] or 0),
+            ),
+            reverse=True,
+            limit=8,
+        )
+        failure_cases = _unique_potential_items(
+            failure,
+            occurrence_counts,
+            key_func=lambda item: float(item["return_5d"] or 0),
+            reverse=False,
+            limit=8,
+        )
+        pending_candidates = _unique_potential_items(
+            pending,
+            occurrence_counts,
+            key_func=lambda item: (
+                item.get("signal_date") or "",
+                int(item.get("potential_score") or 0),
+                int(item.get("total_score") or 0),
+            ),
+            reverse=True,
+            limit=8,
+        )
         return {
             "stats": {
                 "signals": len(items),
@@ -1378,19 +1407,12 @@ class SQLiteStore:
                 "false_positive_count": counts.get("potential_false_positive", 0),
             },
             "counts": [{"category": key, "count": value} for key, value in sorted(counts.items())],
-            "success_cases": sorted(
-                success,
-                key=lambda item: (
-                    float(item["return_10d"] if item["return_10d"] is not None else item["return_5d"] or 0),
-                    float(item["return_5d"] or 0),
-                ),
-                reverse=True,
-            )[:8],
-            "failure_cases": sorted(failure, key=lambda item: float(item["return_5d"] or 0))[:8],
-            "pending_candidates": pending[:8],
+            "success_cases": success_cases,
+            "failure_cases": failure_cases,
+            "pending_candidates": pending_candidates,
             "factor_stats": factor_stats,
             "stage_stats": _potential_stage_stats(items),
-            "promotion_funnel": _potential_promotion_funnel(items),
+            "promotion_funnel": _potential_promotion_funnel(items, occurrence_counts),
             "strong_factors": _rank_potential_factors(factor_stats, reverse=True),
             "weak_factors": _rank_potential_factors(factor_stats, reverse=False),
             "factor_notes": _potential_factor_notes(factor_stats),
@@ -2547,7 +2569,42 @@ def _annotate_potential_promotions(conn: sqlite3.Connection, items: list[dict], 
             item["promotion_label"] = "尚未轉強"
 
 
-def _potential_promotion_funnel(items: list[dict]) -> dict:
+def _potential_occurrence_counts(items: list[dict]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        stock_id = str(item.get("stock_id") or "")
+        if stock_id:
+            counts[stock_id] = counts.get(stock_id, 0) + 1
+    return counts
+
+
+def _with_potential_occurrence(item: dict, occurrence_counts: dict[str, int]) -> dict:
+    copied = dict(item)
+    copied["occurrence_count"] = occurrence_counts.get(str(item.get("stock_id") or ""), 1)
+    return copied
+
+
+def _unique_potential_items(
+    items: list[dict],
+    occurrence_counts: dict[str, int],
+    *,
+    key_func,
+    reverse: bool,
+    limit: int,
+) -> list[dict]:
+    selected: dict[str, dict] = {}
+    for item in sorted(items, key=key_func, reverse=reverse):
+        stock_id = str(item.get("stock_id") or "")
+        if not stock_id or stock_id in selected:
+            continue
+        selected[stock_id] = _with_potential_occurrence(item, occurrence_counts)
+        if len(selected) >= limit:
+            break
+    return list(selected.values())
+
+
+def _potential_promotion_funnel(items: list[dict], occurrence_counts: dict[str, int] | None = None) -> dict:
+    occurrence_counts = occurrence_counts or _potential_occurrence_counts(items)
     promoted = [item for item in items if item.get("promoted_signal_date")]
     completed = [item for item in items if item.get("return_5d") is not None]
     promoted_completed = [item for item in promoted if item.get("return_5d") is not None]
@@ -2559,14 +2616,16 @@ def _potential_promotion_funnel(items: list[dict]) -> dict:
         item for item in promoted_completed
         if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
     ]
-    examples = sorted(
+    examples = _unique_potential_items(
         promoted,
-        key=lambda item: (
+        occurrence_counts,
+        key_func=lambda item: (
             float(item.get("return_5d") if item.get("return_5d") is not None else -999),
             -(int(item.get("days_to_promotion") or 99)),
         ),
         reverse=True,
-    )[:8]
+        limit=8,
+    )
     return {
         "signals": len(items),
         "promoted": len(promoted),
@@ -2588,6 +2647,7 @@ def _potential_promotion_funnel(items: list[dict]) -> dict:
                 "days_to_promotion": item.get("days_to_promotion"),
                 "return_5d": item.get("return_5d"),
                 "outcome_label": item.get("outcome_label"),
+                "occurrence_count": item.get("occurrence_count", 1),
             }
             for item in examples
         ],

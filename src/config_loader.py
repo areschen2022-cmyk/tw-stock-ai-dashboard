@@ -16,6 +16,7 @@ CHAIN_LAYER_LABELS = {
     "midstream": "中游",
     "downstream": "下游",
     "infrastructure": "基礎設施",
+    "distributor": "通路",
     "service": "服務/應用",
     "unknown": "未分類",
 }
