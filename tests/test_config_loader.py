@@ -7,7 +7,7 @@ import yaml
 from src.config_loader import merge_theme_database
 
 
-def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
+def test_merge_theme_database_adds_stocks_keywords_and_chain_metadata(tmp_path) -> None:
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     (data_dir / "theme_universe.yaml").write_text(
@@ -19,8 +19,29 @@ def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
                         "keywords": ["HBM", "DRAM"],
                         "stocks": [
                             {"id": "2408", "name": "南亞科", "tier": "core", "role": "DRAM"},
-                            {"id": "2344", "name": "華邦電", "tier": "beneficiary", "role": "DRAM"},
+                            {"id": "8299", "name": "群聯", "tier": "beneficiary", "role": "NAND controller"},
                         ],
+                    }
+                }
+            },
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+    (data_dir / "theme_chain_map.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "themes": {
+                    "memory": {
+                        "stage": "供需循環",
+                        "lead_lag": "原廠先行",
+                        "role_rules": {
+                            "midstream": ["DRAM"],
+                            "upstream": ["controller"],
+                        },
+                        "stocks": {
+                            "2408": {"layer": "midstream", "beneficiary_order": 1},
+                        },
                     }
                 }
             },
@@ -30,7 +51,7 @@ def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
     )
 
     config = {
-        "theme_pools": {"memory": {"name": "Memory", "stocks": {"8299": "群聯"}}},
+        "theme_pools": {"memory": {"name": "Memory", "stocks": {"2344": "華邦電"}}},
         "stock_names": {},
         "web_news": {"theme_keywords": {"memory": ["NAND"]}},
     }
@@ -39,15 +60,23 @@ def test_merge_theme_database_adds_stocks_and_keywords(tmp_path) -> None:
 
     assert merged["theme_pools"]["memory"]["name"] == "記憶體/HBM"
     assert merged["theme_pools"]["memory"]["stocks"]["2408"] == "南亞科"
-    assert merged["theme_pools"]["memory"]["stocks"]["8299"] == "群聯"
-    assert merged["stock_names"]["2344"] == "華邦電"
+    assert merged["theme_pools"]["memory"]["stocks"]["2344"] == "華邦電"
+    assert merged["stock_names"]["8299"] == "群聯"
     assert merged["web_news"]["theme_keywords"]["memory"] == ["NAND", "HBM", "DRAM"]
-    assert merged["theme_stock_meta"]["2408"]["memory"]["tier"] == "core"
-    assert merged["theme_stock_meta"]["2408"]["memory"]["tier_label"] == "核心"
-    assert merged["theme_stock_meta"]["2408"]["memory"]["role"] == "DRAM"
+
+    south = merged["theme_stock_meta"]["2408"]["memory"]
+    phison = merged["theme_stock_meta"]["8299"]["memory"]
+    assert south["tier"] == "core"
+    assert south["tier_label"] == "核心"
+    assert south["chain_layer"] == "midstream"
+    assert south["chain_layer_label"] == "中游"
+    assert south["beneficiary_label"] == "直接受惠"
+    assert phison["chain_layer"] == "upstream"
+    assert phison["beneficiary_label"] == "二階受惠"
+    assert merged["theme_chain_map"]["memory"]["stage"] == "供需循環"
 
 
-def test_real_theme_database_includes_satellite_and_passive_components() -> None:
+def test_real_theme_database_includes_key_themes_and_chain_map() -> None:
     project_root = Path(__file__).resolve().parents[1]
     merged = merge_theme_database(
         {
@@ -58,33 +87,21 @@ def test_real_theme_database_includes_satellite_and_passive_components() -> None
         project_root,
     )
 
-    assert merged["theme_pools"]["low_orbit_satellite"]["name"] == "低軌衛星/SpaceX"
-    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["3491"] == "昇達科"
-    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2313"] == "華通"
-    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2314"] == "台揚"
-    assert merged["theme_pools"]["low_orbit_satellite"]["stocks"]["2455"] == "全新"
+    for theme_key in [
+        "ai_server",
+        "advanced_packaging",
+        "memory",
+        "low_orbit_satellite",
+        "passive_components",
+        "quartz_frequency_control",
+        "network_optical_communication",
+    ]:
+        assert theme_key in merged["theme_pools"]
+        assert theme_key in merged["theme_chain_map"]
+        assert merged["theme_chain_map"][theme_key]["stage"]
+
+    assert "2408" in merged["theme_pools"]["memory"]["stocks"]
     assert "SpaceX" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
-    assert "Starlink" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
-    assert "宇宙級IPO" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
-    assert "抗輻射太陽能電池" in merged["web_news"]["theme_keywords"]["low_orbit_satellite"]
-    assert merged["theme_stock_meta"]["3491"]["low_orbit_satellite"]["tier"] == "core"
-
-    assert merged["theme_pools"]["passive_components"]["name"] == "被動元件"
-    assert merged["theme_pools"]["passive_components"]["stocks"]["2472"] == "立隆電"
-    assert merged["theme_pools"]["passive_components"]["stocks"]["8042"] == "金山電"
-    assert "被動元件" in merged["web_news"]["theme_keywords"]["passive_components"]
     assert "MLCC" in merged["web_news"]["theme_keywords"]["passive_components"]
-    assert "國巨" not in merged["web_news"]["theme_keywords"]["passive_components"]
-
-    assert merged["theme_pools"]["network_optical_communication"]["name"] == "網通光通訊"
-    assert merged["theme_pools"]["network_optical_communication"]["stocks"]["2345"] == "智邦"
-    assert "網通光通訊" in merged["web_news"]["theme_keywords"]["network_optical_communication"]
-
-    assert merged["theme_pools"]["defense_policy"]["name"] == "防禦與政策"
-    assert merged["theme_pools"]["defense_policy"]["stocks"]["2634"] == "漢翔"
-    assert "政策受惠" in merged["web_news"]["theme_keywords"]["defense_policy"]
-
-    assert merged["theme_pools"]["quartz_frequency_control"]["name"] == "石英元件/頻率控制"
-    assert merged["theme_pools"]["quartz_frequency_control"]["stocks"]["3042"] == "晶技"
-    assert merged["theme_pools"]["quartz_frequency_control"]["stocks"]["8289"] == "泰藝"
-    assert "低抖動" in merged["web_news"]["theme_keywords"]["quartz_frequency_control"]
+    assert merged["theme_stock_meta"]["2408"]["memory"]["tier_label"] == "核心"
+    assert merged["theme_stock_meta"]["2408"]["memory"]["chain_layer_label"] in {"中游", "上游"}

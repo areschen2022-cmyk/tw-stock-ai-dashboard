@@ -1,0 +1,182 @@
+version: 1
+notes: "Industry-chain metadata for theme-aware Taiwan stock screening. This file enriches theme_universe without changing scoring formulas."
+themes:
+  ai_server:
+    stage: "需求擴散"
+    stage_reason: "雲端資本支出先帶動伺服器 ODM，再擴散到散熱、電源、PCB/CCL、連接器。"
+    lead_lag: "ODM 與關鍵零組件通常領先，二階材料與設備跟隨。"
+    role_rules:
+      upstream: ["thermal", "power", "motherboard", "chassis", "PCB", "CCL", "connector"]
+      midstream: ["ODM", "server", "system assembly", "cloud server"]
+      downstream: ["brand", "cloud", "CSP"]
+    stocks:
+      "2382": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "3231": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "6669": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "3324": {layer: upstream, beneficiary_order: 2}
+      "3017": {layer: upstream, beneficiary_order: 2}
+      "2308": {layer: upstream, beneficiary_order: 2}
+
+  advanced_packaging:
+    stage: "產能瓶頸"
+    stage_reason: "CoWoS 產能與先進封裝設備是 AI 晶片放量的限制因子。"
+    lead_lag: "晶圓代工與封測先行，探針卡、測試座、設備材料跟隨。"
+    role_rules:
+      upstream: ["equipment", "probe", "socket", "IP", "wafer-level", "material"]
+      midstream: ["foundry", "CoWoS", "OSAT", "testing"]
+      downstream: ["HPC", "AI chip"]
+    stocks:
+      "2330": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "3711": {layer: midstream, beneficiary_order: 1}
+      "6510": {layer: upstream, beneficiary_order: 2}
+      "6515": {layer: upstream, beneficiary_order: 2}
+
+  memory:
+    stage: "供需循環"
+    stage_reason: "AI Server/HBM 先拉動 DRAM 與 NAND，再擴散到模組、控制 IC、封測。"
+    lead_lag: "原廠報價與庫存先行，模組與封測通常跟隨。"
+    role_rules:
+      upstream: ["controller", "IC", "module", "packaging", "testing", "foundry"]
+      midstream: ["DRAM", "Flash", "NAND", "HBM"]
+      downstream: ["server", "consumer", "storage"]
+    stocks:
+      "2408": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "2344": {layer: midstream, beneficiary_order: 1, lead_lag: "leader"}
+      "8299": {layer: upstream, beneficiary_order: 2}
+      "3260": {layer: upstream, beneficiary_order: 3}
+
+  silicon_photonics:
+    stage: "技術升級"
+    stage_reason: "資料中心高速傳輸推升光收發、光元件、矽光子與 CPO 需求。"
+    lead_lag: "光收發與關鍵元件先行，通訊設備與材料跟隨。"
+    role_rules:
+      upstream: ["fiber", "component", "module"]
+      midstream: ["transceiver", "optical communication", "CPO"]
+      downstream: ["data center", "network"]
+
+  network_optical_communication:
+    stage: "資料中心升速"
+    stage_reason: "800G/1.6T、交換器與光通訊升級受 AI 資料中心需求推動。"
+    lead_lag: "交換器、光收發與光元件同步觀察。"
+    role_rules:
+      upstream: ["component", "fiber", "module"]
+      midstream: ["transceiver", "switch", "network", "communication equipment"]
+      downstream: ["data center", "telecom"]
+    stocks:
+      "4979": {layer: midstream, beneficiary_order: 1}
+      "4977": {layer: midstream, beneficiary_order: 1}
+      "2345": {layer: midstream, beneficiary_order: 2}
+
+  cooling_power:
+    stage: "規格升級"
+    stage_reason: "高功耗 AI 機櫃推升液冷、風扇、散熱模組與電源規格。"
+    lead_lag: "液冷/散熱設計案先行，量產出貨與營收落後確認。"
+    role_rules:
+      upstream: ["thermal", "fan", "module", "mechanical", "power"]
+      midstream: ["system", "rack", "CDU"]
+      downstream: ["server", "data center"]
+
+  energy_grid:
+    stage: "基建投資"
+    stage_reason: "AI 資料中心用電、電網升級與儲能投資帶動重電與電力設備。"
+    lead_lag: "政策標案與在手訂單先行，營收認列時間較長。"
+    role_rules:
+      infrastructure: ["power equipment", "transformer", "wire", "cable", "grid", "solar"]
+      midstream: ["motor", "equipment"]
+      downstream: ["utility", "data center"]
+
+  low_orbit_satellite:
+    stage: "事件催化"
+    stage_reason: "SpaceX/Starlink、衛星發射與地面終端需求推動 RF、PCB、CCL、天線與電源。"
+    lead_lag: "RF/PCB/CCL 供應鏈先反應，通訊設備與太陽能模組屬二階擴散。"
+    role_rules:
+      upstream: ["PCB", "CCL", "RF", "GaAs", "antenna", "quartz", "power", "solar"]
+      midstream: ["satellite terminal", "communication module", "equipment", "baseband"]
+      downstream: ["operator", "Starlink", "Kuiper"]
+    stocks:
+      "3491": {layer: upstream, beneficiary_order: 1, lead_lag: "leader"}
+      "2313": {layer: upstream, beneficiary_order: 1}
+      "2383": {layer: upstream, beneficiary_order: 1}
+      "6285": {layer: midstream, beneficiary_order: 2}
+      "6442": {layer: upstream, beneficiary_order: 3}
+      "8289": {layer: upstream, beneficiary_order: 3}
+
+  quartz_frequency_control:
+    stage: "隱形零組件"
+    stage_reason: "石英元件與頻控元件受通訊、衛星、AI 高速傳輸與車用電子需求帶動。"
+    lead_lag: "通常落後主題股，但在供需吃緊時容易補漲。"
+    role_rules:
+      upstream: ["quartz", "crystal", "oscillator", "frequency", "SAW", "Timing", "Clock"]
+      midstream: ["module", "component"]
+      downstream: ["communication", "satellite", "automotive"]
+
+  passive_components:
+    stage: "景氣循環"
+    stage_reason: "MLCC、電阻、電容與電感受 AI、車用、電源與通訊庫存循環影響。"
+    lead_lag: "龍頭報價與稼動率先行，通路與二線廠補漲。"
+    role_rules:
+      upstream: ["MLCC", "resistor", "capacitor", "inductor", "component"]
+      midstream: ["distributor"]
+      downstream: ["automotive", "server", "power"]
+
+  optoelectronics_panel:
+    stage: "報價/需求循環"
+    stage_reason: "面板、電子紙、Mini/Micro LED 與顯示模組受價格與終端需求影響。"
+    lead_lag: "報價與稼動率先行，模組廠通常跟隨。"
+    role_rules:
+      upstream: ["LED", "module"]
+      midstream: ["panel", "display", "e-paper"]
+      downstream: ["TV", "monitor", "device"]
+
+  optics_lens:
+    stage: "應用升級"
+    stage_reason: "AI 視覺、AR/VR、車用與手機鏡頭需求帶動光學鏡頭與模組。"
+    lead_lag: "客戶新機與車用案量先行，營收較晚確認。"
+    role_rules:
+      upstream: ["lens", "module"]
+      midstream: ["AI vision", "optical"]
+      downstream: ["phone", "AR", "VR", "automotive"]
+
+  robotics:
+    stage: "實體 AI 落地"
+    stage_reason: "機器人與自動化從感測、視覺、傳動到工業電腦逐層擴散。"
+    lead_lag: "精密傳動與視覺元件先行，整機與工業電腦跟隨。"
+    role_rules:
+      upstream: ["linear motion", "machine vision", "sensor"]
+      midstream: ["automation", "industrial computer"]
+      downstream: ["robot", "factory"]
+
+  edge_ai_device:
+    stage: "終端換機"
+    stage_reason: "AI PC、工業電腦與邊緣 AI 受終端換機與 NPU 滲透率推動。"
+    lead_lag: "品牌與工業電腦較早反應，ODM 出貨確認落後。"
+    role_rules:
+      upstream: ["NPU", "component"]
+      midstream: ["brand", "ODM", "industrial computer"]
+      downstream: ["PC", "device", "agent"]
+
+  defense_policy:
+    stage: "政策預算"
+    stage_reason: "國防、無人載具、航太與公共建設受政策預算與標案節奏推動。"
+    lead_lag: "政策新聞先行，標案/訂單與營收確認較慢。"
+    role_rules:
+      upstream: ["electronics", "material", "motor"]
+      midstream: ["aerospace", "defense", "embedded", "engineering"]
+      downstream: ["policy", "public construction"]
+
+  financial_revaluation:
+    stage: "資產重評"
+    stage_reason: "利率、壽險淨值、股債評價與併購事件影響金融股重估。"
+    lead_lag: "利率與債券價格先行，月營收與獲利後續確認。"
+    role_rules:
+      midstream: ["financial holding", "banking", "insurance", "securities", "M&A"]
+      downstream: ["ETF", "wealth"]
+
+  materials_recovery:
+    stage: "低基期復甦"
+    stage_reason: "塑化、鋼鐵、水泥、玻璃與玻纖受報價、庫存與景氣循環影響。"
+    lead_lag: "商品報價與庫存變化先行，營收與毛利率後續確認。"
+    role_rules:
+      upstream: ["plastic", "steel", "cement", "glass", "fiberglass", "copper"]
+      midstream: ["electronic materials"]
+      downstream: ["construction", "electronics"]

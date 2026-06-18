@@ -55,6 +55,64 @@ def _first(reasons: list[str]) -> str:
     return reasons[0] if reasons else "無明顯訊號"
 
 
+def _theme_chain_details(stock_id: str, themes: list[str], config: dict) -> list[dict]:
+    stock_meta = (config.get("theme_stock_meta") or {}).get(str(stock_id), {}) or {}
+    wanted = set(themes or [])
+    details = []
+    for theme_key, meta in stock_meta.items():
+        theme_name = meta.get("theme_name", theme_key)
+        if wanted and theme_key not in wanted and theme_name not in wanted:
+            continue
+        details.append(
+            {
+                "theme_key": theme_key,
+                "theme_name": theme_name,
+                "tier": meta.get("tier", ""),
+                "tier_label": meta.get("tier_label", ""),
+                "role": meta.get("role", ""),
+                "chain_layer": meta.get("chain_layer", "unknown"),
+                "chain_layer_label": meta.get("chain_layer_label", "未分類"),
+                "beneficiary_order": meta.get("beneficiary_order"),
+                "beneficiary_label": meta.get("beneficiary_label", ""),
+                "chain_role": meta.get("chain_role") or meta.get("role", ""),
+                "lead_lag": meta.get("lead_lag", ""),
+            }
+        )
+    return sorted(
+        details,
+        key=lambda item: (
+            item.get("beneficiary_order") or 9,
+            str(item.get("theme_name") or ""),
+            str(item.get("chain_layer") or ""),
+        ),
+    )
+
+
+def _chain_summary(details: list[dict], limit: int = 2) -> list[str]:
+    summary = []
+    for item in details[:limit]:
+        theme = item.get("theme_name") or item.get("theme_key") or "題材"
+        layer = item.get("chain_layer_label") or "未分類"
+        beneficiary = item.get("beneficiary_label") or item.get("tier_label") or ""
+        role = item.get("chain_role") or ""
+        role_text = f"｜{role}" if role else ""
+        summary.append(f"{theme}：{layer}/{beneficiary}{role_text}")
+    return summary
+
+
+def _theme_chain_payload(config: dict) -> dict:
+    theme_pools = config.get("theme_pools", {}) or {}
+    payload = {}
+    for key, chain in (config.get("theme_chain_map", {}) or {}).items():
+        payload[key] = {
+            "name": theme_pools.get(key, {}).get("name", key),
+            "stage": chain.get("stage", ""),
+            "stage_reason": chain.get("stage_reason", ""),
+            "lead_lag": chain.get("lead_lag", ""),
+        }
+    return payload
+
+
 def _decision_reason(item: StockScore) -> str:
     parts = [item.trigger_summary]
     for key in ("technical", "chip", "fundamental", "risk", "opportunity"):
@@ -650,6 +708,7 @@ def build_dashboard_payload(
     rows = []
     for item in sorted(scores, key=lambda score: score.total_score, reverse=True):
         ai_review = ai_reviews.get(item.stock_id)
+        theme_chain = _theme_chain_details(item.stock_id, item.themes, config)
         row = {
             "stock_id": item.stock_id,
             "name": stock_names.get(item.stock_id, "名稱未設定"),
@@ -674,6 +733,8 @@ def build_dashboard_payload(
             "entry_limit_price": item.entry_limit_price,
             "themes": item.themes,
             "theme_tiers": item.theme_tiers,
+            "theme_chain": theme_chain,
+            "chain_summary": _chain_summary(theme_chain),
             "entry_decision": item.entry_decision,
             "entry_checklist": item.entry_checklist,
             "overseas_adjustment": item.overseas_adjustment,
@@ -752,6 +813,7 @@ def build_dashboard_payload(
                 "us_events": [],
             },
             "discovery": theme_signal.discovered_themes if theme_signal else [],
+            "chain_map": _theme_chain_payload(config),
         },
         "source_status": source_status or {"label": "未知"},
         "health": health,
@@ -1430,6 +1492,13 @@ def _html() -> str:
     .grade-- { color:#667085; background:#f2f4f7; }
     .small { color:var(--muted); font-size:12px; margin-top:3px; }
     .themes { color:#175cd3; }
+    .chain-line { color:#475467; font-size:11px; line-height:1.35; margin-top:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .chain-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+    .chain-tag { display:inline-flex; align-items:center; max-width:100%; min-height:24px; padding:3px 8px; border-radius:999px; background:#f8fafc; border:1px solid #dbe4ef; color:#344054; font-size:11px; font-weight:700; white-space:nowrap; }
+    .chain-heat-list { display:grid; gap:6px; margin-top:6px; }
+    .chain-heat-item { border:1px solid #e6edf5; border-radius:8px; padding:7px 8px; background:#fbfcfe; }
+    .chain-heat-item b { color:#0b4a8b; font-size:12px; margin-right:6px; }
+    .chain-heat-item span { color:#9a6700; font-size:12px; font-weight:800; white-space:nowrap; }
     a.stock-link { color:#0b4a8b; text-decoration:none; }
     a.stock-link:hover { text-decoration:underline; }
     .detail-button { appearance:none; border:1px solid #cfd7e6; background:#fff; color:#0b4a8b; border-radius:6px; min-height:28px; padding:4px 8px; font-size:12px; font-weight:800; cursor:pointer; }
@@ -1634,6 +1703,18 @@ def _html() -> str:
       if (!items || !items.length) return '<div class="small">無資料</div>';
       return items.slice(0, 6).map(item => `<div class="small">- ${esc(item)}</div>`).join("");
     }
+    function chainTags(items) {
+      if (!items || !items.length) return '<div class="small">產業鏈位置尚未標記</div>';
+      return `<div class="chain-tags">${items.slice(0, 5).map(item => `
+        <span class="chain-tag" title="${esc(item.chain_role || item.role || "")}">
+          ${esc(item.theme_name || item.theme_key)}｜${esc(item.chain_layer_label || "未分類")}｜${esc(item.beneficiary_label || item.tier_label || "")}
+        </span>`).join("")}</div>`;
+    }
+    function chainSummary(row) {
+      const summary = row.chain_summary || [];
+      if (summary.length) return summary.slice(0, 2).map(item => `<div class="chain-line">${esc(item)}</div>`).join("");
+      return "";
+    }
     function openStockDrawer(row) {
       if (!row) return;
       const drawer = document.querySelector("#stockDrawer");
@@ -1655,7 +1736,7 @@ def _html() -> str:
           <div class="small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
           ${(exitPlan.checklist || []).map(item => `<div class="small">□ ${esc(item)}</div>`).join("")}
         </div>
-        <div class="drawer-section"><b>題材</b><div class="themes">${esc((row.theme_tiers || []).join(" / ") || (row.themes || []).join(" / ") || "-")}</div></div>
+        <div class="drawer-section"><b>題材</b><div class="themes">${esc((row.theme_tiers || []).join(" / ") || (row.themes || []).join(" / ") || "-")}</div>${chainTags(row.theme_chain || [])}</div>
         <div class="drawer-section"><b>原因標籤</b><div class="tags">${renderTags(row.trigger_tags || [])}</div></div>
         <div class="drawer-section"><b>開盤檢查</b>${detailList(row.entry_checklist || [])}</div>
         <div class="drawer-section"><b>技術 / 籌碼 / 基本 / 風險</b>
@@ -2087,11 +2168,28 @@ def _html() -> str:
             </div>
           </details>`
         : "";
+      const chainMap = data.themes.chain_map || {};
+      const chainHeatHtml = allThemeEntries.length
+        ? `<details class="mini-detail" open>
+            <summary>產業鏈熱區</summary>
+            <div class="chain-heat-list">
+              ${allThemeEntries.slice(0, 5).map(([key]) => {
+                const item = chainMap[key] || {};
+                return `<div class="chain-heat-item">
+                  <b>${esc(data.themes.names[key] || key)}</b>
+                  <span>${esc(item.stage || "階段待標記")}</span>
+                  <div class="small">${esc(item.lead_lag || item.stage_reason || "尚未建立上下游節奏說明")}</div>
+                </div>`;
+              }).join("")}
+            </div>
+          </details>`
+        : "";
       document.querySelector("#themes").innerHTML = `
         <div class="line">熱門：${esc(data.themes.summary)}</div>
         <div class="line">政策：${esc(data.themes.policy?.summary || "未偵測到明顯政策訊號")}</div>
         <div class="chart-wrap"><canvas id="themeHistoryChart" aria-label="題材熱度歷史圖"></canvas></div>
         ${themeTableHtml}
+        ${chainHeatHtml}
         ${discoveryHtml}
         <details class="mini-detail">
           <summary>新聞來源摘要</summary>
@@ -2169,7 +2267,7 @@ def _html() -> str:
           <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "AI 未複核")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
-          <td data-label="題材" class="themes">${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</td>
+          <td data-label="題材" class="themes"><div>${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</div>${chainSummary(r)}</td>
           <td data-label="四面向">
             <div class="small">${esc(r.trigger_summary || "綜合訊號")}</div>
             <details class="row-detail">
