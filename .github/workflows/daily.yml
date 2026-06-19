@@ -140,6 +140,9 @@ jobs:
       - name: Run post-update self check
         run: python scripts/post_update_check.py
 
+      - name: Export learning outcomes to knowledge hub if available
+        run: python scripts/export_learning_to_knowledge_hub.py --skip-missing
+
       - name: Commit and push dashboard
         run: |
           git fetch origin main
