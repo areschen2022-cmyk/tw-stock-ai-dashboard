@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -42,23 +43,48 @@ def main() -> int:
     args = parse_args()
     config = merge_theme_database(load_yaml(args.config), ROOT)
     as_of = datetime.strptime(args.as_of_date, "%Y-%m-%d").date() if args.as_of_date else date.today()
+    store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
+    run_id = os.getenv("GITHUB_RUN_ID", "")
 
     try:
         rows = load_tdcc_csv(Path(args.csv_path)) if args.csv_path else TdccClient().fetch_holding_rows()
     except Exception as exc:
         logging.warning("TDCC retail divergence update skipped: %s", exc)
+        if not args.dry_run:
+            store.record_data_update(
+                "tdcc_retail_holders",
+                as_of,
+                status="failed",
+                message=str(exc),
+                run_id=run_id,
+            )
         return 0
     if not rows:
         logging.warning("TDCC retail divergence update skipped: empty CSV")
+        if not args.dry_run:
+            store.record_data_update(
+                "tdcc_retail_holders",
+                as_of,
+                status="skipped",
+                message="empty CSV",
+                run_id=run_id,
+            )
         return 0
 
     stock_names = _stock_universe(config)
     provider = TwseClient(fallback=FinMindClient())
-    store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
     grouped = retail_holder_counts(rows, retail_levels={1, 2, 3})
     dates = sorted(value for value in grouped if value <= as_of)
     if not dates:
         logging.warning("TDCC retail divergence update skipped: no usable weekly snapshot")
+        if not args.dry_run:
+            store.record_data_update(
+                "tdcc_retail_holders",
+                as_of,
+                status="skipped",
+                message="no usable weekly snapshot",
+                run_id=run_id,
+            )
         return 0
     week_date = dates[-1]
     current_counts = grouped[week_date]
@@ -77,6 +103,15 @@ def main() -> int:
         store.save_retail_holder_snapshot(current_counts, week_date, stock_names)
         if signals:
             store.save_retail_holder_signals(signals, week_date)
+        store.record_data_update(
+            "tdcc_retail_holders",
+            as_of,
+            status="ok",
+            row_count=len(current_counts),
+            source_date=week_date,
+            message=f"{len(signals)} divergence signals; previous={previous_date.isoformat() if previous_date else '-'}",
+            run_id=run_id,
+        )
     return 0
 
 

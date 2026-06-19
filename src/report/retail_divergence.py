@@ -7,8 +7,8 @@ from typing import Iterable
 
 SIGNAL_CLEAN = "籌碼轉乾淨"
 SIGNAL_OVERHEATED = "散戶過熱"
-SIGNAL_CLEAN_WATCH = "觀察-籌碼轉乾淨"
-SIGNAL_OVERHEATED_WATCH = "觀察-散戶過熱"
+SIGNAL_CLEAN_WATCH = "觀察籌碼轉乾淨"
+SIGNAL_OVERHEATED_WATCH = "觀察散戶過熱"
 SIGNAL_NEUTRAL = "中性"
 
 
@@ -34,18 +34,18 @@ def classify_retail_divergence(
     """
     t = thresholds or RetailDivergenceThresholds()
     if holder_change_pct is None or price_change_pct is None:
-        return SIGNAL_NEUTRAL, "集保戶或價格資料不足"
+        return SIGNAL_NEUTRAL, "持股人數或股價資料不足"
     if volume is None or volume < t.min_volume:
-        return SIGNAL_NEUTRAL, f"成交量低於 {int(t.min_volume)} 張，暫不判讀"
+        return SIGNAL_NEUTRAL, f"成交量低於 {int(t.min_volume)} 張，訊號參考性不足"
 
     if holder_change_pct <= -t.holder_change_pct and price_change_pct >= -t.price_flat_pct:
-        return SIGNAL_CLEAN, "散戶人數下降但股價未弱，籌碼可能轉乾淨"
+        return SIGNAL_CLEAN, "散戶人數下降且股價未弱，籌碼較乾淨"
     if holder_change_pct >= t.holder_change_pct and price_change_pct <= t.price_flat_pct:
-        return SIGNAL_OVERHEATED, "散戶人數上升但股價未強，留意籌碼倒貨風險"
+        return SIGNAL_OVERHEATED, "散戶人數增加但股價漲不動，需防範籌碼過熱"
     if holder_change_pct <= -t.watch_holder_change_pct and price_change_pct >= -t.price_flat_pct:
         return SIGNAL_CLEAN_WATCH, "散戶人數小幅下降且股價未弱，列入籌碼轉乾淨觀察"
     if holder_change_pct >= t.watch_holder_change_pct and price_change_pct <= t.price_flat_pct:
-        return SIGNAL_OVERHEATED_WATCH, "散戶人數小幅上升但股價未強，列入散戶過熱觀察"
+        return SIGNAL_OVERHEATED_WATCH, "散戶人數小幅增加且股價未強，列入散戶過熱觀察"
     return SIGNAL_NEUTRAL, "未出現明顯散戶背離"
 
 
@@ -93,7 +93,7 @@ def summarize_retail_divergence(records: Iterable[dict], max_items: int = 10) ->
         "overheated": overheated[:max_items],
         "watch_clean": watch_clean[:max_items],
         "watch_overheated": watch_overheated[:max_items],
-        "note": "散戶背離為週資料觀察，不直接等於買賣訊號；需搭配價格、量能與法人籌碼確認。",
+        "note": "週資料用來判斷籌碼是否轉乾淨或過熱；仍需搭配價格、成交量與每日操作結論。",
     }
 
 
@@ -105,7 +105,7 @@ def empty_retail_divergence(as_of: date | None = None) -> dict:
         "overheated": [],
         "watch_clean": [],
         "watch_overheated": [],
-        "note": "尚未累積集保戶週資料；上線後每週用來觀察籌碼是否轉乾淨或散戶過熱。",
+        "note": "尚未取得集保股權分散週資料；每日選股仍可運作，但缺少散戶背離輔助。",
     }
 
 

@@ -339,6 +339,21 @@ class SQLiteStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS data_update_log (
+                    update_date TEXT NOT NULL,
+                    dataset TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    row_count INTEGER NOT NULL DEFAULT 0,
+                    source_date TEXT NOT NULL DEFAULT '',
+                    message TEXT NOT NULL DEFAULT '',
+                    run_id TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (update_date, dataset)
+                )
+                """
+            )
 
     def save_traceability_run(self, traceability: dict, run_date: date) -> None:
         steps = list(traceability.get("steps") or [])
@@ -485,6 +500,64 @@ class SQLiteStore:
                 ),
             )
 
+    def record_data_update(
+        self,
+        dataset: str,
+        update_date: date,
+        *,
+        status: str,
+        row_count: int = 0,
+        source_date: date | str | None = None,
+        message: str = "",
+        run_id: str = "",
+    ) -> None:
+        if isinstance(source_date, date):
+            source_date_text = source_date.isoformat()
+        else:
+            source_date_text = str(source_date or "")
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO data_update_log
+                    (update_date, dataset, status, row_count, source_date, message, run_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    update_date.isoformat(),
+                    str(dataset),
+                    str(status),
+                    int(row_count or 0),
+                    source_date_text,
+                    str(message or "")[:500],
+                    str(run_id or ""),
+                ),
+            )
+
+    def latest_data_updates(self, limit: int = 20) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT update_date, dataset, status, row_count, source_date, message, run_id, created_at
+                FROM data_update_log
+                ORDER BY update_date DESC, created_at DESC
+                LIMIT ?
+                """,
+                (int(limit),),
+            ).fetchall()
+        return [
+            {
+                "update_date": row[0],
+                "dataset": row[1],
+                "status": row[2],
+                "row_count": row[3],
+                "source_date": row[4],
+                "message": row[5],
+                "run_id": row[6],
+                "created_at": row[7],
+            }
+            for row in rows
+        ]
+
     def save_retail_holder_signals(self, signals: list[dict], week_date: date) -> None:
         with self._connect() as conn:
             conn.execute("DELETE FROM retail_holder_signals WHERE week_date = ?", (week_date.isoformat(),))
@@ -572,8 +645,8 @@ class SQLiteStore:
                     CASE signal
                         WHEN '籌碼轉乾淨' THEN 0
                         WHEN '散戶過熱' THEN 1
-                        WHEN '觀察-籌碼轉乾淨' THEN 2
-                        WHEN '觀察-散戶過熱' THEN 3
+                        WHEN '觀察籌碼轉乾淨' THEN 2
+                        WHEN '觀察散戶過熱' THEN 3
                         ELSE 4
                     END,
                     ABS(COALESCE(holder_change_pct, 0)) DESC,

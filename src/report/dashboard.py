@@ -1293,6 +1293,7 @@ def build_weekly_overview_payload(
     performance_payload: dict,
     theme_history: dict[str, list[dict]],
     institutional_summary: dict,
+    data_updates: list[dict] | None = None,
 ) -> dict:
     themes = dashboard_payload.get("themes", {})
     theme_names = themes.get("names", {})
@@ -1323,6 +1324,7 @@ def build_weekly_overview_payload(
         "overseas": dashboard_payload.get("overseas", {}),
         "retail_divergence": dashboard_payload.get("retail_divergence", {}),
         "institutional": institutional_summary,
+        "data_updates": data_updates or [],
         "themes": theme_rows[:12],
         "performance": {
             "stats": performance_payload.get("stats", {}),

@@ -29,3 +29,33 @@ def test_delivery_log_records_once(tmp_path) -> None:
         ).fetchall()
 
     assert rows == [("run-1",)]
+
+
+def test_data_update_log_records_latest_status(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    update_date = date(2026, 6, 19)
+
+    store.record_data_update(
+        "tdcc_retail_holders",
+        update_date,
+        status="failed",
+        message="timeout",
+        run_id="run-1",
+    )
+    store.record_data_update(
+        "tdcc_retail_holders",
+        update_date,
+        status="ok",
+        row_count=3992,
+        source_date=date(2026, 6, 18),
+        message="3 divergence signals",
+        run_id="run-2",
+    )
+
+    updates = store.latest_data_updates(limit=5)
+
+    assert updates[0]["dataset"] == "tdcc_retail_holders"
+    assert updates[0]["status"] == "ok"
+    assert updates[0]["row_count"] == 3992
+    assert updates[0]["source_date"] == "2026-06-18"
+    assert updates[0]["run_id"] == "run-2"

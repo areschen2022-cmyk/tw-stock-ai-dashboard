@@ -491,6 +491,15 @@ def main() -> int:
         results.append(score)
         store.save_daily_score(score, as_of)
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
+    store.record_data_update(
+        "institutional_flow",
+        as_of,
+        status="ok",
+        row_count=len(results),
+        source_date=as_of,
+        message=f"{len(results)} stocks scanned for institutional flow",
+        run_id=os.getenv("GITHUB_RUN_ID", ""),
+    )
     store.prune_daily_scores(as_of, [score.stock_id for score in results])
 
     source_status = provider.source_status()
@@ -636,6 +645,7 @@ def main() -> int:
             performance_payload,
             theme_history_payload,
             store.weekly_institutional_summary(as_of, config.get("stock_names", {}), days=7),
+            store.latest_data_updates(limit=30),
         ),
         ROOT / "dashboard",
     )
