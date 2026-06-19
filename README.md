@@ -46,3 +46,25 @@ Validate stored signal data and forward-return backtests:
 ```powershell
 python scripts/backtest_quality_check.py --days 365
 ```
+
+## Trading Knowledge Hub Export
+
+Learning outcomes can be exported to the shared local knowledge hub at:
+
+```text
+C:\Users\User\trading_knowledge_hub\data\knowledge.jsonl
+```
+
+Manual export:
+
+```powershell
+.\scripts\run_knowledge_hub_export.bat
+```
+
+Install or refresh the Windows scheduled task:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install_knowledge_hub_export_task.ps1
+```
+
+The task name is `tw-stock-ai-knowledge-hub-export`. It runs daily at 08:45, pulls the latest GitHub dashboard state when possible, and upserts performance attribution into the knowledge hub.
