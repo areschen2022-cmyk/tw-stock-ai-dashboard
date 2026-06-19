@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-06-19T14:02:07+08:00",
+  "status": "ok",
+  "counts": {
+    "critical": 0,
+    "warning": 0,
+    "info": 2
+  },
+  "context": {
+    "as_of": "2026-06-18",
+    "weekly_as_of": "2026-06-18",
+    "rows": 99,
+    "valid": 99,
+    "chase": 1,
+    "pullback": 4,
+    "data_updates": [
+      {
+        "update_date": "2026-06-19",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 3992,
+        "source_date": "2026-06-18",
+        "message": "3 divergence signals; previous=2026-06-12",
+        "run_id": "",
+        "created_at": "2026-06-19 04:44:53"
+      },
+      {
+        "update_date": "2026-06-18",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 99,
+        "source_date": "2026-06-18",
+        "message": "99 stocks scanned for institutional flow",
+        "run_id": "",
+        "created_at": "2026-06-19 04:45:48"
+      }
+    ]
+  },
+  "database": {
+    "daily_scores": 99,
+    "traceability_runs": 1,
+    "institutional_update_rows": 1,
+    "recent_tdcc_update_rows": 1
+  },
+  "issues": [
+    {
+      "severity": "info",
+      "area": "ai",
+      "message": "AI council health: 未啟用",
+      "suggestion": "Keep AI as a secondary review signal and verify DEEPSEEK_API_KEY/OpenRouter settings."
+    },
+    {
+      "severity": "info",
+      "area": "traceability",
+      "message": "Traceability diagnosis contains 3 item(s)",
+      "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
+    }
+  ],
+  "next_optimizations": [
+    "Stabilize AI review by using one paid primary model plus a cheap backup model."
+  ],
+  "note": "Internal post-update check. Not linked from the main dashboard UI."
+}
