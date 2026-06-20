@@ -288,12 +288,12 @@
   "days": 30,
   "stats": {
     "signals": 523,
-    "completed": 316,
-    "win_rate_5d": 54.43037974683544,
-    "avg_return_5d": 2.6121715498813938,
+    "completed": 317,
+    "win_rate_5d": 54.25867507886435,
+    "avg_return_5d": 2.578426193626315,
     "avg_return_10d": null,
-    "stop_hit_rate": 22.698072805139187,
-    "a_win_rate_5d": 53.086419753086425
+    "stop_hit_rate": 22.97872340425532,
+    "a_win_rate_5d": 52.4390243902439
   },
   "theme_stats": [
     {
@@ -334,7 +334,7 @@
     },
     {
       "label": "AI電力/重電/電網",
-      "signals": 25,
+      "signals": 23,
       "completed": 18,
       "win_rate_5d": 55.55555555555556,
       "avg_return_5d": 1.6377975632173356,
@@ -349,6 +349,15 @@
       "avg_return_5d": -1.850470373332797,
       "avg_return_10d": null,
       "stop_hit_rate": 27.27272727272727
+    },
+    {
+      "label": "原物料/低基期傳產",
+      "signals": 8,
+      "completed": 4,
+      "win_rate_5d": 75.0,
+      "avg_return_5d": 11.394774748296326,
+      "avg_return_10d": null,
+      "stop_hit_rate": 40.0
     },
     {
       "label": "被動元件",
@@ -396,15 +405,6 @@
       "stop_hit_rate": 16.666666666666664
     },
     {
-      "label": "原物料/低基期傳產",
-      "signals": 5,
-      "completed": 4,
-      "win_rate_5d": 75.0,
-      "avg_return_5d": 11.394774748296326,
-      "avg_return_10d": null,
-      "stop_hit_rate": 40.0
-    },
-    {
       "label": "電力能源/重電",
       "signals": 4,
       "completed": 1,
@@ -426,7 +426,7 @@
   "top_themes": [
     {
       "label": "原物料/低基期傳產",
-      "signals": 5,
+      "signals": 8,
       "completed": 4,
       "win_rate_5d": 75.0,
       "avg_return_5d": 11.394774748296326,
@@ -473,25 +473,25 @@
   "action_stats": [
     {
       "label": "只觀察",
-      "signals": 224,
+      "signals": 221,
       "completed": 121,
       "win_rate_5d": 55.371900826446286,
       "avg_return_5d": 3.0002969543407474,
       "avg_return_10d": null,
-      "stop_hit_rate": 24.742268041237114
+      "stop_hit_rate": 24.489795918367346
     },
     {
       "label": "可追蹤突破",
-      "signals": 199,
-      "completed": 136,
-      "win_rate_5d": 55.14705882352941,
-      "avg_return_5d": 2.046365052912354,
+      "signals": 200,
+      "completed": 137,
+      "win_rate_5d": 54.74452554744526,
+      "avg_return_5d": 1.9724127066649744,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.22222222222222
+      "stop_hit_rate": 18.23204419889503
     },
     {
       "label": "等拉回",
-      "signals": 94,
+      "signals": 96,
       "completed": 54,
       "win_rate_5d": 55.55555555555556,
       "avg_return_5d": 3.8603628989481376,
@@ -876,25 +876,32 @@
   },
   "data_quality": {
     "signals": 523,
-    "completed_5d": 316,
+    "completed_5d": 317,
     "pending_5d": 149,
-    "data_missing_5d": 58,
-    "completion_rate_5d": 60.42065009560229,
-    "entry_trigger_known": 467,
-    "entry_trigger_rate": 64.66809421841542,
-    "stop_known": 467,
-    "stop_hit_rate": 22.698072805139187,
+    "data_missing_5d": 57,
+    "completion_rate_5d": 60.61185468451242,
+    "entry_trigger_known": 470,
+    "entry_trigger_rate": 64.68085106382979,
+    "stop_known": 470,
+    "stop_hit_rate": 22.97872340425532,
     "status_counts": {
-      "completed_5d": 316,
+      "completed_5d": 317,
       "pending_5d": 149,
-      "data_missing": 58
+      "data_missing": 57
     },
     "pending_examples": [
       {
         "signal_date": "2026-06-19",
         "stock_id": "1301",
         "name": "台塑",
-        "grade": "S",
+        "grade": "S+",
+        "action": "可追蹤突破"
+      },
+      {
+        "signal_date": "2026-06-19",
+        "stock_id": "3450",
+        "name": "聯鈞",
+        "grade": "S+",
         "action": "可追蹤突破"
       },
       {
@@ -936,13 +943,6 @@
         "signal_date": "2026-06-19",
         "stock_id": "2337",
         "name": "旺宏",
-        "grade": "S",
-        "action": "可追蹤突破"
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "3711",
-        "name": "日月光投控",
         "grade": "S",
         "action": "可追蹤突破"
       }
@@ -1018,46 +1018,46 @@
     },
     {
       "label": "65-74",
-      "signals": 237,
+      "signals": 235,
       "completed": 130,
       "win_rate_5d": 55.38461538461539,
       "avg_return_5d": 2.9570814681114093,
       "avg_return_10d": null,
-      "stop_hit_rate": 26.570048309178745
+      "stop_hit_rate": 26.31578947368421
     },
     {
       "label": "75-84",
-      "signals": 144,
-      "completed": 81,
-      "win_rate_5d": 53.086419753086425,
-      "avg_return_5d": 2.0187153703164,
+      "signals": 145,
+      "completed": 82,
+      "win_rate_5d": 52.4390243902439,
+      "avg_return_5d": 1.8954980318615817,
       "avg_return_10d": null,
       "stop_hit_rate": 23.076923076923077
     },
     {
       "label": "85-94",
-      "signals": 82,
+      "signals": 81,
       "completed": 53,
       "win_rate_5d": 56.60377358490566,
       "avg_return_5d": 3.351278689992319,
       "avg_return_10d": null,
-      "stop_hit_rate": 15.068493150684931
+      "stop_hit_rate": 17.80821917808219
     },
     {
       "label": "95-100",
-      "signals": 60,
+      "signals": 62,
       "completed": 52,
       "win_rate_5d": 51.92307692307693,
       "avg_return_5d": 1.9209981412080026,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.543859649122805
+      "stop_hit_rate": 17.24137931034483
     }
   ],
   "entry_analysis": {
     "triggered": {
-      "count": 195,
-      "win_rate_5d": 40.51282051282051,
-      "avg_return_5d": -2.3871768814108423
+      "count": 196,
+      "win_rate_5d": 40.30612244897959,
+      "avg_return_5d": -2.4162479502963934
     },
     "not_triggered": {
       "count": 121,
@@ -1068,7 +1068,7 @@
   "signal_lab": [
     {
       "grade": "S+",
-      "signals": 60,
+      "signals": 62,
       "completed_3d": 56,
       "completed_5d": 52,
       "completed_10d": 0,
@@ -1081,46 +1081,46 @@
     },
     {
       "grade": "S",
-      "signals": 82,
-      "completed_3d": 60,
+      "signals": 81,
+      "completed_3d": 61,
       "completed_5d": 53,
       "completed_10d": 0,
-      "win_rate_3d": 55.00000000000001,
+      "win_rate_3d": 54.09836065573771,
       "win_rate_5d": 56.60377358490566,
       "win_rate_10d": null,
-      "avg_return_3d": 4.2746940708039,
+      "avg_return_3d": 4.019475569693674,
       "avg_return_5d": 3.351278689992319,
       "avg_return_10d": null
     },
     {
       "grade": "A",
-      "signals": 144,
+      "signals": 145,
       "completed_3d": 100,
-      "completed_5d": 81,
+      "completed_5d": 82,
       "completed_10d": 0,
       "win_rate_3d": 59.0,
-      "win_rate_5d": 53.086419753086425,
+      "win_rate_5d": 52.4390243902439,
       "win_rate_10d": null,
       "avg_return_3d": 2.6107480722426777,
-      "avg_return_5d": 2.0187153703164,
+      "avg_return_5d": 1.8954980318615817,
       "avg_return_10d": null
     },
     {
       "grade": "B",
-      "signals": 237,
-      "completed_3d": 161,
+      "signals": 235,
+      "completed_3d": 162,
       "completed_5d": 130,
       "completed_10d": 0,
-      "win_rate_3d": 57.7639751552795,
+      "win_rate_3d": 58.0246913580247,
       "win_rate_5d": 55.38461538461539,
       "win_rate_10d": null,
-      "avg_return_3d": 2.8245960821386404,
+      "avg_return_3d": 2.8777766137863834,
       "avg_return_5d": 2.9570814681114093,
       "avg_return_10d": null
     }
   ],
   "postmortem": {
-    "sample": 316,
+    "sample": 317,
     "counts": [
       {
         "category": "big_winner",
@@ -1141,9 +1141,9 @@
       {
         "category": "false_positive",
         "label": "假訊號",
-        "count": 40,
-        "completed": 40,
-        "avg_return_5d": -8.068744295239846,
+        "count": 41,
+        "completed": 41,
+        "avg_return_5d": -8.06914337055055,
         "avg_return_10d": null
       },
       {
@@ -1173,7 +1173,7 @@
       {
         "category": "pending",
         "label": "等待驗證",
-        "count": 207,
+        "count": 206,
         "completed": 0,
         "avg_return_5d": null,
         "avg_return_10d": null
@@ -1697,13 +1697,13 @@
       }
     ],
     "failure_attribution": {
-      "sample": 136,
+      "sample": 137,
       "rows": [
         {
           "label": "題材失靈",
-          "count": 131,
-          "avg_return_5d": -8.501684296941423,
-          "stop_hit_rate": 69.46564885496184,
+          "count": 132,
+          "avg_return_5d": -8.49852840365383,
+          "stop_hit_rate": 68.93939393939394,
           "examples": [
             {
               "stock_id": "4908",
@@ -1725,9 +1725,9 @@
         },
         {
           "label": "進場後轉弱",
-          "count": 116,
-          "avg_return_5d": -9.525092857346962,
-          "stop_hit_rate": 65.51724137931035,
+          "count": 117,
+          "avg_return_5d": -9.51278528064296,
+          "stop_hit_rate": 64.95726495726495,
           "examples": [
             {
               "stock_id": "4908",
@@ -1797,7 +1797,7 @@
         }
       ],
       "notes": [
-        "目前最大失敗來源是「題材失靈」，共 131 筆。",
+        "目前最大失敗來源是「題材失靈」，共 132 筆。",
         "失敗歸因只用於調整風控與追價條件，不會直接覆蓋核心分數。"
       ]
     },
@@ -1808,7 +1808,7 @@
     ]
   },
   "learning_center": {
-    "sample": 316,
+    "sample": 317,
     "success_factors": [
       {
         "label": "進場觸發後上漲",
@@ -1859,10 +1859,10 @@
       },
       {
         "label": "進場觸發後下跌",
-        "count": 123,
-        "completed": 123,
-        "win_rate_5d": 5.691056910569105,
-        "avg_return_5d": -8.497662262360784,
+        "count": 124,
+        "completed": 124,
+        "win_rate_5d": 5.64516129032258,
+        "avg_return_5d": -8.49433519881738,
         "avg_return_10d": null,
         "reason": "進場條件觸發但後續轉弱，代表確認條件可能不足。"
       },
@@ -2078,11 +2078,11 @@
       },
       {
         "category": "potential_pending",
-        "count": 89
+        "count": 90
       },
       {
         "category": "potential_success",
-        "count": 5
+        "count": 4
       }
     ],
     "success_cases": [
@@ -2661,7 +2661,7 @@
         "promoted_score": 77,
         "days_to_promotion": 8,
         "promotion_label": "已轉強",
-        "occurrence_count": 3
+        "occurrence_count": 2
       },
       {
         "signal_date": "2026-06-05",
@@ -3107,6 +3107,116 @@
     "pending_candidates": [
       {
         "signal_date": "2026-06-19",
+        "stock_id": "1303",
+        "name": "南亞",
+        "grade": "A",
+        "total_score": 77,
+        "action": "等拉回",
+        "potential_score": 13,
+        "reason": "強勢等拉回｜潛力分 13：K線轉強:突破整理 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數已成形；尚未過熱",
+        "tags": [
+          "K線轉強:突破整理",
+          "題材升溫:原物料/低基期傳產",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數已成形",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:景氣反轉型",
+          "部位:半部位"
+        ],
+        "themes": [
+          "原物料/低基期傳產"
+        ],
+        "entry_price": 139.0,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 9,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": true,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "cyclical_recovery",
+        "stock_type_label": "景氣反轉型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強",
+        "occurrence_count": 5
+      },
+      {
+        "signal_date": "2026-06-19",
         "stock_id": "5274",
         "name": "信驊",
         "grade": "A",
@@ -3323,6 +3433,115 @@
       },
       {
         "signal_date": "2026-06-19",
+        "stock_id": "2002",
+        "name": "中鋼",
+        "grade": "B",
+        "total_score": 66,
+        "action": "量價不確認取消",
+        "potential_score": 10,
+        "reason": "低位醞釀｜潛力分 10：K線轉強:放量長紅 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數醞釀中；尚未過熱",
+        "tags": [
+          "K線轉強:放量長紅",
+          "題材升溫:原物料/低基期傳產",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:景氣反轉型",
+          "部位:正常部位"
+        ],
+        "themes": [
+          "原物料/低基期傳產"
+        ],
+        "entry_price": 19.1,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 7,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": false,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "cyclical_recovery",
+        "stock_type_label": "景氣反轉型",
+        "position_hint": "normal",
+        "position_hint_label": "正常部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強",
+        "occurrence_count": 2
+      },
+      {
+        "signal_date": "2026-06-19",
         "stock_id": "2409",
         "name": "友達",
         "grade": "S",
@@ -3537,6 +3756,112 @@
       },
       {
         "signal_date": "2026-06-19",
+        "stock_id": "3090",
+        "name": "日電貿",
+        "grade": "A",
+        "total_score": 77,
+        "action": "等拉回",
+        "potential_score": 9,
+        "reason": "強勢等拉回｜潛力分 9：法人開始同步 + 量價開始轉強 + 分數已成形 + 強勢但等拉回 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "法人開始同步",
+          "量價開始轉強",
+          "分數已成形",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:轉機確認型",
+          "部位:半部位"
+        ],
+        "themes": [],
+        "entry_price": 332.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 8,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": false,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": true,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "turnaround_confirmed",
+        "stock_type_label": "轉機確認型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強",
+        "occurrence_count": 2
+      },
+      {
+        "signal_date": "2026-06-19",
         "stock_id": "2330",
         "name": "台積電",
         "grade": "A",
@@ -3642,325 +3967,6 @@
         "days_to_promotion": null,
         "promotion_label": "尚未轉強",
         "occurrence_count": 1
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "2492",
-        "name": "華新科",
-        "grade": "B",
-        "total_score": 74,
-        "action": "量價不確認取消",
-        "potential_score": 8,
-        "reason": "低位醞釀｜潛力分 8：K線轉強:突破整理 + 法人開始同步 + 量價開始轉強 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "K線轉強:突破整理",
-          "法人開始同步",
-          "量價開始轉強",
-          "分數醞釀中",
-          "尚未過熱強度",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:半部位"
-        ],
-        "themes": [],
-        "entry_price": 561.0,
-        "stage": "low_base",
-        "stage_label": "低位醞釀",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 7,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": false,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強",
-        "occurrence_count": 2
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "1303",
-        "name": "南亞",
-        "grade": "B",
-        "total_score": 71,
-        "action": "量價不確認取消",
-        "potential_score": 8,
-        "reason": "低位醞釀｜潛力分 8：K線轉強:突破整理 + 法人開始同步 + 量價開始轉強 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
-        "tags": [
-          "K線轉強:突破整理",
-          "法人開始同步",
-          "量價開始轉強",
-          "分數醞釀中",
-          "尚未過熱強度",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:半部位"
-        ],
-        "themes": [],
-        "entry_price": 139.0,
-        "stage": "low_base",
-        "stage_label": "低位醞釀",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 7,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": false,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強",
-        "occurrence_count": 5
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "1301",
-        "name": "台塑",
-        "grade": "S",
-        "total_score": 92,
-        "action": "開盤確認",
-        "potential_score": 7,
-        "reason": "轉強初動｜潛力分 7：K線轉強:放量長紅 + 法人開始同步 + 量價開始轉強 + 分數已成形 + 強度中高；追高風險：強勢放量後需等拉回",
-        "tags": [
-          "K線轉強:放量長紅",
-          "法人開始同步",
-          "量價開始轉強",
-          "分數已成形",
-          "強度中高",
-          "追高風險：強勢放量後需等拉回",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:正常部位"
-        ],
-        "themes": [],
-        "entry_price": 51.7,
-        "stage": "early_turn",
-        "stage_label": "轉強初動",
-        "chase_risk": "medium",
-        "chase_risk_label": "追高風險：強勢放量後需等拉回",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "normal",
-        "position_hint_label": "正常部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強",
-        "occurrence_count": 2
       }
     ],
     "factor_stats": [
@@ -3969,7 +3975,7 @@
         "signals": 125,
         "completed": 39,
         "pending": 86,
-        "success_count": 18,
+        "success_count": 17,
         "failure_count": 21,
         "win_rate_5d": 43.58974358974359,
         "avg_return_5d": 1.978399516035111,
@@ -3977,10 +3983,10 @@
       },
       {
         "label": "題材觀察",
-        "signals": 65,
+        "signals": 68,
         "completed": 37,
-        "pending": 28,
-        "success_count": 12,
+        "pending": 31,
+        "success_count": 11,
         "failure_count": 25,
         "win_rate_5d": 29.72972972972973,
         "avg_return_5d": -2.411049415402311,
@@ -3988,10 +3994,10 @@
       },
       {
         "label": "尚未過熱強度",
-        "signals": 103,
+        "signals": 104,
         "completed": 34,
-        "pending": 69,
-        "success_count": 15,
+        "pending": 70,
+        "success_count": 14,
         "failure_count": 19,
         "win_rate_5d": 41.17647058823529,
         "avg_return_5d": 1.249662244930099,
@@ -3999,10 +4005,10 @@
       },
       {
         "label": "分數已成形",
-        "signals": 99,
+        "signals": 97,
         "completed": 32,
-        "pending": 67,
-        "success_count": 14,
+        "pending": 65,
+        "success_count": 13,
         "failure_count": 18,
         "win_rate_5d": 40.625,
         "avg_return_5d": 1.4860249823040845,
@@ -4010,10 +4016,10 @@
       },
       {
         "label": "題材升溫",
-        "signals": 55,
+        "signals": 58,
         "completed": 32,
-        "pending": 23,
-        "success_count": 11,
+        "pending": 26,
+        "success_count": 10,
         "failure_count": 21,
         "win_rate_5d": 31.25,
         "avg_return_5d": -2.0924896900503938,
@@ -4021,10 +4027,10 @@
       },
       {
         "label": "追高檢查:尚未過熱",
-        "signals": 111,
+        "signals": 112,
         "completed": 29,
-        "pending": 82,
-        "success_count": 17,
+        "pending": 83,
+        "success_count": 16,
         "failure_count": 12,
         "win_rate_5d": 58.620689655172406,
         "avg_return_5d": 6.89536550306183,
@@ -4043,9 +4049,9 @@
       },
       {
         "label": "潛力階段:轉強初動",
-        "signals": 54,
+        "signals": 51,
         "completed": 18,
-        "pending": 36,
+        "pending": 33,
         "success_count": 6,
         "failure_count": 12,
         "win_rate_5d": 27.77777777777778,
@@ -4057,7 +4063,7 @@
         "signals": 150,
         "completed": 16,
         "pending": 134,
-        "success_count": 12,
+        "success_count": 10,
         "failure_count": 4,
         "win_rate_5d": 75.0,
         "avg_return_5d": 14.745400770818012,
@@ -4065,9 +4071,9 @@
       },
       {
         "label": "K線轉強",
-        "signals": 58,
+        "signals": 60,
         "completed": 15,
-        "pending": 43,
+        "pending": 45,
         "success_count": 6,
         "failure_count": 9,
         "win_rate_5d": 40.0,
@@ -4076,10 +4082,10 @@
       },
       {
         "label": "潛力階段:強勢等拉回",
-        "signals": 46,
+        "signals": 47,
         "completed": 15,
-        "pending": 31,
-        "success_count": 8,
+        "pending": 32,
+        "success_count": 7,
         "failure_count": 7,
         "win_rate_5d": 53.333333333333336,
         "avg_return_5d": 6.956332710764627,
@@ -4087,10 +4093,10 @@
       },
       {
         "label": "強勢但等拉回",
-        "signals": 46,
+        "signals": 47,
         "completed": 15,
-        "pending": 31,
-        "success_count": 8,
+        "pending": 32,
+        "success_count": 7,
         "failure_count": 7,
         "win_rate_5d": 53.333333333333336,
         "avg_return_5d": 6.956332710764627,
@@ -4098,9 +4104,9 @@
       },
       {
         "label": "分數醞釀中",
-        "signals": 36,
+        "signals": 38,
         "completed": 14,
-        "pending": 22,
+        "pending": 24,
         "success_count": 5,
         "failure_count": 9,
         "win_rate_5d": 35.714285714285715,
@@ -4109,9 +4115,9 @@
       },
       {
         "label": "潛力階段:低位醞釀",
-        "signals": 35,
+        "signals": 37,
         "completed": 13,
-        "pending": 22,
+        "pending": 24,
         "success_count": 5,
         "failure_count": 8,
         "win_rate_5d": 38.46153846153847,
@@ -4123,7 +4129,7 @@
         "signals": 52,
         "completed": 12,
         "pending": 40,
-        "success_count": 8,
+        "success_count": 6,
         "failure_count": 4,
         "win_rate_5d": 66.66666666666666,
         "avg_return_5d": 13.081526382415511,
@@ -4153,9 +4159,9 @@
       },
       {
         "label": "強度中高",
-        "signals": 29,
+        "signals": 28,
         "completed": 9,
-        "pending": 20,
+        "pending": 19,
         "success_count": 4,
         "failure_count": 5,
         "win_rate_5d": 44.44444444444444,
@@ -4175,9 +4181,9 @@
       },
       {
         "label": "轉機確認型",
-        "signals": 112,
+        "signals": 106,
         "completed": 6,
-        "pending": 106,
+        "pending": 100,
         "success_count": 6,
         "failure_count": 0,
         "win_rate_5d": 100.0,
@@ -4200,7 +4206,7 @@
         "signals": 14,
         "completed": 4,
         "pending": 10,
-        "success_count": 4,
+        "success_count": 2,
         "failure_count": 0,
         "win_rate_5d": 100.0,
         "avg_return_5d": 25.58946400969211,
@@ -4219,9 +4225,9 @@
       },
       {
         "label": "K線風險",
-        "signals": 4,
+        "signals": 3,
         "completed": 3,
-        "pending": 1,
+        "pending": 0,
         "success_count": 0,
         "failure_count": 3,
         "win_rate_5d": 0.0,
@@ -4230,9 +4236,9 @@
       },
       {
         "label": "二階受惠型",
-        "signals": 8,
+        "signals": 10,
         "completed": 2,
-        "pending": 6,
+        "pending": 8,
         "success_count": 0,
         "failure_count": 2,
         "win_rate_5d": 0.0,
@@ -4274,9 +4280,20 @@
       },
       {
         "label": "追高風險",
-        "signals": 6,
+        "signals": 4,
         "completed": 0,
-        "pending": 6,
+        "pending": 4,
+        "success_count": 0,
+        "failure_count": 0,
+        "win_rate_5d": null,
+        "avg_return_5d": null,
+        "avg_return_10d": null
+      },
+      {
+        "label": "景氣反轉型",
+        "signals": 4,
+        "completed": 0,
+        "pending": 4,
         "success_count": 0,
         "failure_count": 0,
         "win_rate_5d": null,
@@ -4287,27 +4304,27 @@
     "stage_stats": [
       {
         "label": "轉強初動",
-        "signals": 54,
+        "signals": 51,
         "completed": 18,
-        "pending": 36,
+        "pending": 33,
         "success_count": 6,
         "win_rate_5d": 27.77777777777778,
         "avg_return_5d": -3.9834564963710886
       },
       {
         "label": "強勢等拉回",
-        "signals": 46,
+        "signals": 47,
         "completed": 15,
-        "pending": 31,
-        "success_count": 8,
+        "pending": 32,
+        "success_count": 7,
         "win_rate_5d": 53.333333333333336,
         "avg_return_5d": 6.956332710764627
       },
       {
         "label": "低位醞釀",
-        "signals": 35,
+        "signals": 37,
         "completed": 13,
-        "pending": 22,
+        "pending": 24,
         "success_count": 5,
         "win_rate_5d": 38.46153846153847,
         "avg_return_5d": -1.5380319675872323
@@ -4315,13 +4332,13 @@
     ],
     "promotion_funnel": {
       "signals": 135,
-      "promoted": 67,
+      "promoted": 69,
       "completed": 46,
-      "big_winners": 19,
-      "promoted_winners": 17,
-      "conversion_rate": 49.629629629629626,
+      "big_winners": 18,
+      "promoted_winners": 16,
+      "conversion_rate": 51.11111111111111,
       "promoted_win_rate_5d": 55.172413793103445,
-      "avg_days_to_promotion": 2.7611940298507465,
+      "avg_days_to_promotion": 2.8260869565217392,
       "examples": [
         {
           "signal_date": "2026-06-10",
@@ -4399,7 +4416,7 @@
           "days_to_promotion": 8,
           "return_5d": 17.675544794188863,
           "outcome_label": "提前命中",
-          "occurrence_count": 3
+          "occurrence_count": 2
         },
         {
           "signal_date": "2026-06-12",
@@ -4411,7 +4428,7 @@
           "promoted_score": 80,
           "days_to_promotion": 3,
           "return_5d": 4.554455445544554,
-          "outcome_label": "方向正確",
+          "outcome_label": "觀察中",
           "occurrence_count": 2
         },
         {
@@ -4435,7 +4452,7 @@
         "signals": 14,
         "completed": 4,
         "pending": 10,
-        "success_count": 4,
+        "success_count": 2,
         "failure_count": 0,
         "win_rate_5d": 100.0,
         "avg_return_5d": 25.58946400969211,
@@ -4443,9 +4460,9 @@
       },
       {
         "label": "轉機確認型",
-        "signals": 112,
+        "signals": 106,
         "completed": 6,
-        "pending": 106,
+        "pending": 100,
         "success_count": 6,
         "failure_count": 0,
         "win_rate_5d": 100.0,
@@ -4479,7 +4496,7 @@
         "signals": 150,
         "completed": 16,
         "pending": 134,
-        "success_count": 12,
+        "success_count": 10,
         "failure_count": 4,
         "win_rate_5d": 75.0,
         "avg_return_5d": 14.745400770818012,
@@ -4490,7 +4507,7 @@
         "signals": 52,
         "completed": 12,
         "pending": 40,
-        "success_count": 8,
+        "success_count": 6,
         "failure_count": 4,
         "win_rate_5d": 66.66666666666666,
         "avg_return_5d": 13.081526382415511,
@@ -4511,9 +4528,9 @@
       },
       {
         "label": "K線風險",
-        "signals": 4,
+        "signals": 3,
         "completed": 3,
-        "pending": 1,
+        "pending": 0,
         "success_count": 0,
         "failure_count": 3,
         "win_rate_5d": 0.0,
@@ -4533,9 +4550,9 @@
       },
       {
         "label": "潛力階段:轉強初動",
-        "signals": 54,
+        "signals": 51,
         "completed": 18,
-        "pending": 36,
+        "pending": 33,
         "success_count": 6,
         "failure_count": 12,
         "win_rate_5d": 27.77777777777778,
@@ -4555,9 +4572,9 @@
       },
       {
         "label": "分數醞釀中",
-        "signals": 36,
+        "signals": 38,
         "completed": 14,
-        "pending": 22,
+        "pending": 24,
         "success_count": 5,
         "failure_count": 9,
         "win_rate_5d": 35.714285714285715,
@@ -4570,112 +4587,6 @@
       "目前需小心因素：非過熱強度，完成 2 筆，5日平均 -18.5%，勝率 0.0%。"
     ],
     "items": [
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "1301",
-        "name": "台塑",
-        "grade": "S",
-        "total_score": 92,
-        "action": "開盤確認",
-        "potential_score": 7,
-        "reason": "轉強初動｜潛力分 7：K線轉強:放量長紅 + 法人開始同步 + 量價開始轉強 + 分數已成形 + 強度中高；追高風險：強勢放量後需等拉回",
-        "tags": [
-          "K線轉強:放量長紅",
-          "法人開始同步",
-          "量價開始轉強",
-          "分數已成形",
-          "強度中高",
-          "追高風險：強勢放量後需等拉回",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:正常部位"
-        ],
-        "themes": [],
-        "entry_price": 51.7,
-        "stage": "early_turn",
-        "stage_label": "轉強初動",
-        "chase_risk": "medium",
-        "chase_risk_label": "追高風險：強勢放量後需等拉回",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "normal",
-        "position_hint_label": "正常部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
-      },
       {
         "signal_date": "2026-06-19",
         "stock_id": "2409",
@@ -4887,214 +4798,6 @@
       },
       {
         "signal_date": "2026-06-19",
-        "stock_id": "3008",
-        "name": "大立光",
-        "grade": "A",
-        "total_score": 81,
-        "action": "開盤確認",
-        "potential_score": 7,
-        "reason": "轉強初動｜潛力分 7：法人開始同步 + 量價開始轉強 + 分數已成形 + 尚未過熱強度 + 快篩:順風研究；尚未過熱",
-        "tags": [
-          "法人開始同步",
-          "量價開始轉強",
-          "分數已成形",
-          "尚未過熱強度",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:半部位"
-        ],
-        "themes": [],
-        "entry_price": 5195.0,
-        "stage": "early_turn",
-        "stage_label": "轉強初動",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "2383",
-        "name": "台光電",
-        "grade": "A",
-        "total_score": 81,
-        "action": "開盤確認",
-        "potential_score": 7,
-        "reason": "轉強初動｜潛力分 7：法人開始同步 + 量價開始轉強 + 分數已成形 + 尚未過熱強度 + 快篩:順風研究；尚未過熱",
-        "tags": [
-          "法人開始同步",
-          "量價開始轉強",
-          "分數已成形",
-          "尚未過熱強度",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:半部位"
-        ],
-        "themes": [],
-        "entry_price": 5600.0,
-        "stage": "early_turn",
-        "stage_label": "轉強初動",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
-      },
-      {
-        "signal_date": "2026-06-19",
         "stock_id": "6510",
         "name": "精測",
         "grade": "A",
@@ -5188,112 +4891,6 @@
         "stock_type_label": "成長確認型",
         "position_hint": "half",
         "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "6488",
-        "name": "環球晶",
-        "grade": "A",
-        "total_score": 79,
-        "action": "等拉回",
-        "potential_score": 7,
-        "reason": "強勢等拉回｜潛力分 7：K線風險:高位上影線 + 法人開始同步 + 量價開始轉強 + 分數已成形 + 強勢但等拉回；尚未過熱",
-        "tags": [
-          "K線風險:高位上影線",
-          "法人開始同步",
-          "量價開始轉強",
-          "分數已成形",
-          "強勢但等拉回",
-          "尚未過熱強度",
-          "快篩:順風研究",
-          "類型:轉機確認型",
-          "部位:小部位"
-        ],
-        "themes": [],
-        "entry_price": 1110.0,
-        "stage": "pullback_watch",
-        "stage_label": "強勢等拉回",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 7,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "有明確題材或供應鏈位置"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶結構",
-            "passed": false,
-            "reason": "散戶籌碼沒有過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能確認",
-            "passed": true,
-            "reason": "量價有初步確認"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": false,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "small",
-        "position_hint_label": "小部位",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -5522,6 +5119,220 @@
       },
       {
         "signal_date": "2026-06-19",
+        "stock_id": "3090",
+        "name": "日電貿",
+        "grade": "A",
+        "total_score": 77,
+        "action": "等拉回",
+        "potential_score": 9,
+        "reason": "強勢等拉回｜潛力分 9：法人開始同步 + 量價開始轉強 + 分數已成形 + 強勢但等拉回 + 尚未過熱強度；尚未過熱",
+        "tags": [
+          "法人開始同步",
+          "量價開始轉強",
+          "分數已成形",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:轉機確認型",
+          "部位:半部位"
+        ],
+        "themes": [],
+        "entry_price": 332.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 8,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": false,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": true,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "turnaround_confirmed",
+        "stock_type_label": "轉機確認型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
+      {
+        "signal_date": "2026-06-19",
+        "stock_id": "1303",
+        "name": "南亞",
+        "grade": "A",
+        "total_score": 77,
+        "action": "等拉回",
+        "potential_score": 13,
+        "reason": "強勢等拉回｜潛力分 13：K線轉強:突破整理 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數已成形；尚未過熱",
+        "tags": [
+          "K線轉強:突破整理",
+          "題材升溫:原物料/低基期傳產",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數已成形",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:景氣反轉型",
+          "部位:半部位"
+        ],
+        "themes": [
+          "原物料/低基期傳產"
+        ],
+        "entry_price": 139.0,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 9,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": true,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "cyclical_recovery",
+        "stock_type_label": "景氣反轉型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
+      {
+        "signal_date": "2026-06-19",
         "stock_id": "2330",
         "name": "台積電",
         "grade": "A",
@@ -5734,10 +5545,118 @@
       },
       {
         "signal_date": "2026-06-19",
-        "stock_id": "1303",
-        "name": "南亞",
+        "stock_id": "3131",
+        "name": "弘塑",
         "grade": "B",
-        "total_score": 71,
+        "total_score": 73,
+        "action": "量價不確認取消",
+        "potential_score": 9,
+        "reason": "低位醞釀｜潛力分 9：K線轉強:放量長紅 + 題材升溫:先進封裝/CoWoS + 法人開始同步 + 量價開始轉強 + 分數醞釀中；尚未過熱",
+        "tags": [
+          "K線轉強:放量長紅",
+          "題材升溫:先進封裝/CoWoS",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:二階受惠型",
+          "部位:半部位"
+        ],
+        "themes": [
+          "先進封裝/CoWoS"
+        ],
+        "entry_price": 3520.0,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 8,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": false,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": true,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "tier2_beneficiary",
+        "stock_type_label": "二階受惠型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
+      {
+        "signal_date": "2026-06-19",
+        "stock_id": "2472",
+        "name": "立隆電",
+        "grade": "B",
+        "total_score": 66,
         "action": "量價不確認取消",
         "potential_score": 8,
         "reason": "低位醞釀｜潛力分 8：K線轉強:突破整理 + 法人開始同步 + 量價開始轉強 + 分數醞釀中 + 尚未過熱強度；尚未過熱",
@@ -5749,10 +5668,10 @@
           "尚未過熱強度",
           "快篩:順風研究",
           "類型:轉機確認型",
-          "部位:半部位"
+          "部位:小部位"
         ],
         "themes": [],
-        "entry_price": 139.0,
+        "entry_price": 402.0,
         "stage": "low_base",
         "stage_label": "低位醞釀",
         "chase_risk": "low",
@@ -5823,8 +5742,116 @@
         ],
         "stock_type": "turnaround_confirmed",
         "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
+        "position_hint": "small",
+        "position_hint_label": "小部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
+      {
+        "signal_date": "2026-06-19",
+        "stock_id": "2002",
+        "name": "中鋼",
+        "grade": "B",
+        "total_score": 66,
+        "action": "量價不確認取消",
+        "potential_score": 10,
+        "reason": "低位醞釀｜潛力分 10：K線轉強:放量長紅 + 題材升溫:原物料/低基期傳產 + 法人開始同步 + 量價開始轉強 + 分數醞釀中；尚未過熱",
+        "tags": [
+          "K線轉強:放量長紅",
+          "題材升溫:原物料/低基期傳產",
+          "法人開始同步",
+          "量價開始轉強",
+          "分數醞釀中",
+          "尚未過熱強度",
+          "快篩:順風研究",
+          "類型:景氣反轉型",
+          "部位:正常部位"
+        ],
+        "themes": [
+          "原物料/低基期傳產"
+        ],
+        "entry_price": 19.1,
+        "stage": "low_base",
+        "stage_label": "低位醞釀",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 7,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": false,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "有明確題材或供應鏈位置"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶結構",
+            "passed": false,
+            "reason": "散戶籌碼沒有過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能確認",
+            "passed": true,
+            "reason": "量價有初步確認"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "cyclical_recovery",
+        "stock_type_label": "景氣反轉型",
+        "position_hint": "normal",
+        "position_hint_label": "正常部位",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -5937,8 +5964,8 @@
         "outcome_label": "觀察中",
         "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
         "promoted_signal_date": "2026-06-19",
-        "promoted_grade": "S",
-        "promoted_score": 92,
+        "promoted_grade": "S+",
+        "promoted_score": 98,
         "days_to_promotion": 1,
         "promotion_label": "已轉強"
       },
@@ -8782,11 +8809,11 @@
         "outcome_category": "potential_pending",
         "outcome_label": "觀察中",
         "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
+        "promoted_signal_date": "2026-06-19",
+        "promoted_grade": "A",
+        "promoted_score": 77,
+        "days_to_promotion": 3,
+        "promotion_label": "已轉強"
       },
       {
         "signal_date": "2026-06-16",
@@ -9728,7 +9755,7 @@
         "stock_type_label": "轉機確認型",
         "position_hint": "small",
         "position_hint_label": "小部位",
-        "return_3d": null,
+        "return_3d": -11.293634496919918,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "potential_pending",
@@ -11324,9 +11351,9 @@
         "return_3d": 2.7722772277227725,
         "return_5d": 4.554455445544554,
         "return_10d": null,
-        "outcome_category": "potential_success",
-        "outcome_label": "方向正確",
-        "outcome_reason": "5 日後為正報酬，早期觀察有效。",
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
         "promoted_signal_date": "2026-06-15",
         "promoted_grade": "A",
         "promoted_score": 80,
@@ -11955,11 +11982,11 @@
         "outcome_category": "potential_pending",
         "outcome_label": "觀察中",
         "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
+        "promoted_signal_date": "2026-06-19",
+        "promoted_grade": "A",
+        "promoted_score": 77,
+        "days_to_promotion": 7,
+        "promotion_label": "已轉強"
       },
       {
         "signal_date": "2026-06-12",
@@ -15483,14 +15510,16 @@
         "name": "晶技",
         "level": "紅色警戒",
         "risk_score": 12,
-        "current_score": null,
-        "previous_score": null,
-        "entry_price": null,
+        "current_score": 69,
+        "previous_score": 50,
+        "entry_price": 216.0,
         "reasons": [
-          "散戶人數增加但股價不漲",
-          "籌碼過熱疑似倒貨"
+          "法人賣、融資增、股價轉弱",
+          "外資 5 日合計賣超",
+          "跌破 MA5",
+          "跌破 MA10"
         ],
-        "action": "準備減碼或暫停追高；跌破停損不硬凹",
+        "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
         "return_5d": null,
         "outcome": null
@@ -15509,6 +15538,26 @@
           "外資 5 日合計賣超",
           "法人賣壓偏高 7.9%",
           "跌破 MA5"
+        ],
+        "action": "準備減碼或停利，跌破停損不硬凹",
+        "return_3d": null,
+        "return_5d": null,
+        "outcome": null
+      },
+      {
+        "signal_date": "2026-06-19",
+        "stock_id": "6244",
+        "name": "茂迪",
+        "level": "紅色警戒",
+        "risk_score": 10,
+        "current_score": 31,
+        "previous_score": 36,
+        "entry_price": 28.45,
+        "reasons": [
+          "外資近 3 日偏賣",
+          "法人賣超占成交量 13.8%",
+          "跌破 MA5",
+          "跌破 MA10"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -15557,26 +15606,6 @@
       },
       {
         "signal_date": "2026-06-19",
-        "stock_id": "6282",
-        "name": "康舒",
-        "level": "紅色警戒",
-        "risk_score": 9,
-        "current_score": 36,
-        "previous_score": 31,
-        "entry_price": 58.1,
-        "reasons": [
-          "外資連 3 日賣超",
-          "投信近 3 日偏賣",
-          "外資 5 日合計賣超",
-          "法人賣超占成交量 12.2%"
-        ],
-        "action": "準備減碼或停利，跌破停損不硬凹",
-        "return_3d": null,
-        "return_5d": null,
-        "outcome": null
-      },
-      {
-        "signal_date": "2026-06-19",
         "stock_id": "2317",
         "name": "鴻海",
         "level": "紅色警戒",
@@ -15609,26 +15638,6 @@
           "外資 5 日合計賣超",
           "法人賣超占成交量 17.7%",
           "跌破 MA10"
-        ],
-        "action": "準備減碼或停利，跌破停損不硬凹",
-        "return_3d": null,
-        "return_5d": null,
-        "outcome": null
-      },
-      {
-        "signal_date": "2026-06-19",
-        "stock_id": "2308",
-        "name": "台達電",
-        "level": "紅色警戒",
-        "risk_score": 9,
-        "current_score": 51,
-        "previous_score": 45,
-        "entry_price": 2150.0,
-        "reasons": [
-          "投信連 3 日賣超",
-          "外資 5 日合計賣超",
-          "法人賣壓偏高 5.0%",
-          "跌破 MA5"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -15810,15 +15819,35 @@
         "return_3d": null,
         "return_5d": null,
         "outcome": null
+      },
+      {
+        "signal_date": "2026-06-18",
+        "stock_id": "6443",
+        "name": "元晶",
+        "level": "紅色警戒",
+        "risk_score": 9,
+        "current_score": 26,
+        "previous_score": 27,
+        "entry_price": 39.35,
+        "reasons": [
+          "外資連 3 日賣超",
+          "外資 5 日合計賣超",
+          "法人賣超占成交量 18.9%",
+          "跌破 MA5"
+        ],
+        "action": "準備減碼或停利，跌破停損不硬凹",
+        "return_3d": null,
+        "return_5d": null,
+        "outcome": "pending"
       }
     ],
     "stats": {
-      "signals": 131,
-      "completed": 8,
-      "true_warning_rate_5d": 12.5,
-      "avg_return_5d": 6.41812011665041,
+      "signals": 130,
+      "completed": 9,
+      "true_warning_rate_5d": 11.11111111111111,
+      "avg_return_5d": 8.211623762402196,
       "true_warnings": 1,
-      "false_warnings": 7
+      "false_warnings": 8
     },
     "true_warnings": [
       {
@@ -15843,6 +15872,24 @@
       }
     ],
     "false_warnings": [
+      {
+        "signal_date": "2026-06-12",
+        "stock_id": "3450",
+        "name": "聯鈞",
+        "level": "紅色警戒",
+        "risk_score": 12,
+        "current_score": null,
+        "previous_score": null,
+        "entry_price": 461.0,
+        "reasons": [
+          "散戶人數增加但股價不漲",
+          "籌碼過熱疑似倒貨"
+        ],
+        "action": "準備減碼或暫停追高；跌破停損不硬凹",
+        "return_3d": 8.351409978308027,
+        "return_5d": 22.559652928416483,
+        "outcome": "false_warning"
+      },
       {
         "signal_date": "2026-06-12",
         "stock_id": "3189",
@@ -15974,12 +16021,12 @@
     ]
   },
   "backtest_insights": {
-    "sample": 316,
+    "sample": 317,
     "best_segments": [
       {
         "group": "theme",
         "label": "原物料/低基期傳產",
-        "signals": 5,
+        "signals": 8,
         "completed": 4,
         "win_rate_5d": 75.0,
         "avg_return_5d": 11.394774748296326,
@@ -16015,7 +16062,7 @@
       {
         "group": "action",
         "label": "等拉回",
-        "signals": 94,
+        "signals": 96,
         "completed": 54,
         "win_rate_5d": 55.55555555555556,
         "avg_return_5d": 3.8603628989481376,
@@ -16080,15 +16127,33 @@
         "review_date": "2026-06-19",
         "stock_id": "1301",
         "name": "台塑",
-        "score": 92,
-        "grade": "S",
+        "score": 98,
+        "grade": "S+",
         "consensus_action": "可追",
-        "confidence": 0.75,
+        "confidence": 0.85,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "外資買超、技術突破、營收月增驚人，但月增率異常高需確認是否為一次性因素。",
+        "reason": "原物料題材強、外資買超、技術突破且營收暴增，風險可控，可積極追蹤。",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "status": "進行中"
+      },
+      {
+        "review_date": "2026-06-19",
+        "stock_id": "3450",
+        "name": "聯鈞",
+        "score": 95,
+        "grade": "S+",
+        "consensus_action": "只觀察",
+        "confidence": 0.6,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 0,
+        "is_ai_pick": false,
+        "reason": "雖有法人買超與營收成長，但本益比高達168倍，估值風險大，建議觀察。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -16100,13 +16165,13 @@
         "name": "高力",
         "score": 90,
         "grade": "S",
-        "consensus_action": "等拉回",
-        "confidence": 0.6,
+        "consensus_action": "只觀察",
+        "confidence": 0.55,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "營收成長但本益比高達113倍，追高風險大，建議拉回再布局。",
+        "reason": "營收成長但本益比113倍偏高，估值壓力大，建議觀察。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -16124,7 +16189,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、營收年增730%強勁，技術突破，成長動能明確。",
+        "reason": "法人共振、技術突破、營收年增730%，海外順風，風險可接受，可追。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -16142,25 +16207,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、營收年增182%，技術突破，半導體景氣復甦受益。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
-      {
-        "review_date": "2026-06-19",
-        "stock_id": "2409",
-        "name": "友達",
-        "score": 89,
-        "grade": "S",
-        "consensus_action": "等拉回",
-        "confidence": 0.6,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 0,
-        "is_ai_pick": false,
-        "reason": "外資買超、技術突破，但本益比88倍偏高，面板產業競爭激烈，宜等拉回。",
+        "reason": "法人買超、技術突破、營收年增182%，海外順風，風險可控，可追。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -16467,7 +16514,7 @@
         "pick_agreement_count": 0,
         "is_ai_pick": false,
         "reason": "營收成長溫和，雖有法人與技術面支持，但缺乏強勢題材，建議拉回再布局。",
-        "return_3d": null,
+        "return_3d": -11.293634496919918,
         "return_5d": null,
         "return_10d": null,
         "status": "進行中"
@@ -16648,9 +16695,9 @@
         "is_ai_pick": false,
         "reason": "法人共振且營收成長，但散戶過熱可能引發短線波動，建議等拉回再布局。",
         "return_3d": 3.6170212765957444,
-        "return_5d": null,
+        "return_5d": -8.085106382978724,
         "return_10d": null,
-        "status": "進行中"
+        "status": "已完成"
       },
       {
         "review_date": "2026-06-11",
@@ -17348,15 +17395,15 @@
       },
       {
         "action": "等拉回",
-        "signals": 24,
-        "completed": 15,
-        "win_rate_5d": 53.333333333333336,
-        "avg_return_5d": 3.054540279083059,
+        "signals": 22,
+        "completed": 16,
+        "win_rate_5d": 50.0,
+        "avg_return_5d": 2.3583123627041975,
         "avg_return_10d": null
       },
       {
         "action": "只觀察",
-        "signals": 7,
+        "signals": 9,
         "completed": 2,
         "win_rate_5d": 0.0,
         "avg_return_5d": -18.933354258213008,
@@ -17373,9 +17420,9 @@
     ],
     "stats": {
       "signals": 70,
-      "completed": 39,
-      "win_rate_5d": 56.41025641025641,
-      "avg_return_5d": 4.343789112211362
+      "completed": 40,
+      "win_rate_5d": 55.00000000000001,
+      "avg_return_5d": 4.03306672483161
     }
   },
   "signal_attribution": {
@@ -17384,13 +17431,13 @@
         "key": "watch",
         "label": "今日操作訊號",
         "signals": 523,
-        "completed": 316,
-        "win_rate_5d": 54.43037974683544,
-        "avg_return_5d": 2.6121715498813938,
+        "completed": 317,
+        "win_rate_5d": 54.25867507886435,
+        "avg_return_5d": 2.578426193626315,
         "avg_return_10d": null,
         "success_count": 172,
-        "failure_count": 144,
-        "pending_count": 207,
+        "failure_count": 145,
+        "pending_count": 206,
         "note": "正式列入買進觀察後的 3/5/10 日驗證。"
       },
       {
@@ -17410,13 +17457,13 @@
         "key": "ai_council",
         "label": "AI 複核同意",
         "signals": 70,
-        "completed": 39,
-        "win_rate_5d": 56.41025641025641,
-        "avg_return_5d": 4.343789112211362,
+        "completed": 40,
+        "win_rate_5d": 55.00000000000001,
+        "avg_return_5d": 4.03306672483161,
         "avg_return_10d": null,
         "success_count": 0,
         "failure_count": 0,
-        "pending_count": 31,
+        "pending_count": 30,
         "note": "AI 只作為複核層，勝率用來評估是否值得採信。"
       }
     ],
@@ -17441,7 +17488,7 @@
       },
       {
         "label": "題材:原物料/低基期傳產",
-        "signals": 8,
+        "signals": 13,
         "completed": 6,
         "win_rate_5d": 83.33333333333334,
         "avg_return_5d": 17.041903076162853,
@@ -17513,7 +17560,7 @@
       },
       {
         "label": "進場條件未觸發",
-        "signals": 165,
+        "signals": 166,
         "completed": 121,
         "win_rate_5d": 76.85950413223141,
         "avg_return_5d": 10.668972740806897,
@@ -17541,7 +17588,7 @@
     },
     "weak_factor": {
       "label": "進場條件未觸發",
-      "signals": 165,
+      "signals": 166,
       "completed": 121,
       "win_rate_5d": 76.85950413223141,
       "avg_return_5d": 10.668972740806897,
@@ -17556,12 +17603,12 @@
   "selection_quality": {
     "sample_label": "可校準",
     "sample_note": "樣本已足夠做門檻與權重校準，但仍建議人工確認。",
-    "completed_5d": 316,
-    "win_rate_5d": 54.43037974683544,
-    "avg_return_5d": 2.6121715498813938,
+    "completed_5d": 317,
+    "win_rate_5d": 54.25867507886435,
+    "avg_return_5d": 2.578426193626315,
     "best_grade": {
       "label": "S",
-      "signals": 82,
+      "signals": 81,
       "completed": 53,
       "win_rate_5d": 56.60377358490566,
       "avg_return_5d": 3.351278689992319,
@@ -17569,35 +17616,35 @@
       "stop_hit_rate": null
     },
     "weak_grade": {
-      "label": "S+",
-      "signals": 60,
-      "completed": 52,
-      "win_rate_5d": 51.92307692307693,
-      "avg_return_5d": 1.9209981412080026,
+      "label": "A",
+      "signals": 145,
+      "completed": 82,
+      "win_rate_5d": 52.4390243902439,
+      "avg_return_5d": 1.8954980318615817,
       "avg_return_10d": null,
       "stop_hit_rate": null
     },
     "best_score_band": {
       "label": "85-94",
-      "signals": 82,
+      "signals": 81,
       "completed": 53,
       "win_rate_5d": 56.60377358490566,
       "avg_return_5d": 3.351278689992319,
       "avg_return_10d": null,
-      "stop_hit_rate": 15.068493150684931
+      "stop_hit_rate": 17.80821917808219
     },
     "weak_score_band": {
-      "label": "95-100",
-      "signals": 60,
-      "completed": 52,
-      "win_rate_5d": 51.92307692307693,
-      "avg_return_5d": 1.9209981412080026,
+      "label": "75-84",
+      "signals": 145,
+      "completed": 82,
+      "win_rate_5d": 52.4390243902439,
+      "avg_return_5d": 1.8954980318615817,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.543859649122805
+      "stop_hit_rate": 23.076923076923077
     },
     "best_theme": {
       "label": "原物料/低基期傳產",
-      "signals": 5,
+      "signals": 8,
       "completed": 4,
       "win_rate_5d": 75.0,
       "avg_return_5d": 11.394774748296326,
@@ -17615,7 +17662,7 @@
     },
     "best_action": {
       "label": "等拉回",
-      "signals": 94,
+      "signals": 96,
       "completed": 54,
       "win_rate_5d": 55.55555555555556,
       "avg_return_5d": 3.8603628989481376,
@@ -17633,9 +17680,9 @@
     },
     "ai": {
       "signals": 70,
-      "completed": 39,
-      "win_rate_5d": 56.41025641025641,
-      "avg_return_5d": 4.343789112211362,
+      "completed": 40,
+      "win_rate_5d": 55.00000000000001,
+      "avg_return_5d": 4.03306672483161,
       "sample_label": "可初判"
     }
   },
@@ -17687,15 +17734,6 @@
     },
     {
       "priority": "加權觀察",
-      "group": "操作",
-      "label": "可追蹤突破",
-      "completed": 136,
-      "win_rate_5d": 55.14705882352941,
-      "avg_return_5d": 2.046365052912354,
-      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
-    },
-    {
-      "priority": "加權觀察",
       "group": "強度",
       "label": "B",
       "completed": 130,
@@ -17711,6 +17749,15 @@
       "win_rate_5d": 55.371900826446286,
       "avg_return_5d": 3.0002969543407474,
       "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
+    },
+    {
+      "priority": "加權觀察",
+      "group": "題材",
+      "label": "AI伺服器",
+      "completed": 107,
+      "win_rate_5d": 55.140186915887845,
+      "avg_return_5d": 2.745490579937346,
+      "reason": "5日平均報酬與勝率都高於目前基準，可列入加權候選。"
     }
   ],
   "adaptive_feedback": [
@@ -17718,8 +17765,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "題材失靈",
-      "sample": 131,
-      "avg_return_5d": -8.501684296941423,
+      "sample": 132,
+      "avg_return_5d": -8.49852840365383,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -17727,8 +17774,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "進場後轉弱",
-      "sample": 116,
-      "avg_return_5d": -9.525092857346962,
+      "sample": 117,
+      "avg_return_5d": -9.51278528064296,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -17792,9 +17839,35 @@
       "signal_date": "2026-06-19",
       "stock_id": "1301",
       "name": "台塑",
-      "grade": "S",
-      "total_score": 92,
+      "grade": "S+",
+      "total_score": 98,
       "entry_price": 51.7,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "可追蹤突破",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
+      "stock_id": "3450",
+      "name": "聯鈞",
+      "grade": "S+",
+      "total_score": 95,
+      "entry_price": 565.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -18110,30 +18183,6 @@
     },
     {
       "signal_date": "2026-06-19",
-      "stock_id": "6488",
-      "name": "環球晶",
-      "grade": "A",
-      "total_score": 79,
-      "entry_price": 1110.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "等拉回",
-      "themes": [],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
       "stock_id": "5274",
       "name": "信驊",
       "grade": "A",
@@ -18196,6 +18245,56 @@
       "stop_hit": null,
       "action": "等拉回",
       "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
+      "stock_id": "3090",
+      "name": "日電貿",
+      "grade": "A",
+      "total_score": 77,
+      "entry_price": 332.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
+      "stock_id": "1303",
+      "name": "南亞",
+      "grade": "A",
+      "total_score": 77,
+      "entry_price": 139.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
       "status_code": "pending_5d",
       "status_label": "pending",
       "status": "進行中",
@@ -18282,35 +18381,11 @@
     },
     {
       "signal_date": "2026-06-19",
-      "stock_id": "1303",
-      "name": "南亞",
+      "stock_id": "3131",
+      "name": "弘塑",
       "grade": "B",
-      "total_score": 71,
-      "entry_price": 139.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
-      "stock_id": "1590",
-      "name": "亞德客-KY",
-      "grade": "B",
-      "total_score": 70,
-      "entry_price": 1380.0,
+      "total_score": 73,
+      "entry_price": 3520.0,
       "entry_triggered": null,
       "return_3d": null,
       "return_5d": null,
@@ -18318,7 +18393,7 @@
       "stop_hit": null,
       "action": "只觀察",
       "themes": [
-        "AI電力/重電/電網"
+        "先進封裝/CoWoS"
       ],
       "status_code": "pending_5d",
       "status_label": "pending",
@@ -18356,6 +18431,30 @@
     },
     {
       "signal_date": "2026-06-19",
+      "stock_id": "3042",
+      "name": "晶技",
+      "grade": "B",
+      "total_score": 69,
+      "entry_price": 216.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
       "stock_id": "1513",
       "name": "中興電",
       "grade": "B",
@@ -18368,7 +18467,6 @@
       "stop_hit": null,
       "action": "只觀察",
       "themes": [
-        "AI電力/重電/電網",
         "電力能源/重電"
       ],
       "status_code": "pending_5d",
@@ -18409,80 +18507,6 @@
     },
     {
       "signal_date": "2026-06-19",
-      "stock_id": "3131",
-      "name": "弘塑",
-      "grade": "B",
-      "total_score": 67,
-      "entry_price": 3520.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
-      "stock_id": "8299",
-      "name": "群聯",
-      "grade": "B",
-      "total_score": 66,
-      "entry_price": 2530.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
-      "stock_id": "6182",
-      "name": "合晶",
-      "grade": "B",
-      "total_score": 66,
-      "entry_price": 120.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
       "stock_id": "2882",
       "name": "國泰金",
       "grade": "B",
@@ -18495,6 +18519,56 @@
       "stop_hit": null,
       "action": "只觀察",
       "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
+      "stock_id": "2472",
+      "name": "立隆電",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 402.0,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-06-19",
+      "stock_id": "2002",
+      "name": "中鋼",
+      "grade": "B",
+      "total_score": 66,
+      "entry_price": 19.1,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "只觀察",
+      "themes": [
+        "原物料/低基期傳產"
+      ],
       "status_code": "pending_5d",
       "status_label": "pending",
       "status": "進行中",
@@ -18521,30 +18595,6 @@
       "themes": [
         "先進封裝/CoWoS"
       ],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-06-19",
-      "stock_id": "3105",
-      "name": "穩懋",
-      "grade": "B",
-      "total_score": 65,
-      "entry_price": 528.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [],
       "status_code": "pending_5d",
       "status_label": "pending",
       "status": "進行中",
@@ -18640,11 +18690,11 @@
       "grade": "S+",
       "total_score": 95,
       "entry_price": 565.0,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [
         "矽光子/CPO"
@@ -19062,11 +19112,11 @@
       "grade": "B",
       "total_score": 73,
       "entry_price": 332.5,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [],
       "status_code": "pending_5d",
@@ -19732,7 +19782,7 @@
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": false,
+      "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
       "status_code": "pending_5d",
@@ -19947,7 +19997,7 @@
       "total_score": 74,
       "entry_price": 507.0,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": 11.439842209072978,
       "return_5d": null,
       "return_10d": null,
       "stop_hit": false,
@@ -20353,10 +20403,10 @@
       "total_score": 88,
       "entry_price": 243.5,
       "entry_triggered": true,
-      "return_3d": null,
+      "return_3d": -11.293634496919918,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": false,
+      "stop_hit": true,
       "action": "可追蹤突破",
       "themes": [],
       "status_code": "pending_5d",
@@ -20798,11 +20848,11 @@
       "grade": "B",
       "total_score": 74,
       "entry_price": 386.0,
-      "entry_triggered": null,
+      "entry_triggered": false,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "只觀察",
       "themes": [],
       "status_code": "pending_5d",
@@ -22070,19 +22120,20 @@
       "entry_price": 235.0,
       "entry_triggered": true,
       "return_3d": 3.6170212765957444,
-      "return_5d": null,
+      "return_5d": -8.085106382978724,
       "return_10d": null,
       "stop_hit": false,
       "action": "可追蹤突破",
       "themes": [],
-      "status_code": "data_missing",
-      "status_label": "data_missing",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "status_code": "completed_5d",
+      "status_label": "completed",
+      "status": "已完成",
+      "outcome_category": "false_positive",
+      "outcome_label": "失敗：假訊號",
+      "outcome_reason": "訊號後 5 日報酬為負，需要檢查是否追高、題材退潮或籌碼轉弱。",
       "lesson_tags": [
-        "等待驗證"
+        "進場觸發",
+        "失敗樣本"
       ]
     },
     {
