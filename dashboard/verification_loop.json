@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-06-20T21:19:07+08:00",
+  "status": "ok",
+  "checks": {
+    "compile": {
+      "command": [
+        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "compileall",
+        "src",
+        "tests",
+        "main.py",
+        "scripts"
+      ],
+      "started_at": "2026-06-20T21:18:54+08:00",
+      "ended_at": "2026-06-20T21:18:54+08:00",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_tail": "Listing 'src'...\nListing 'src\\\\ai'...\nListing 'src\\\\backtest'...\nListing 'src\\\\data_provider'...\nListing 'src\\\\indicators'...\nListing 'src\\\\intraday'...\nListing 'src\\\\news'...\nListing 'src\\\\notifier'...\nListing 'src\\\\report'...\nListing 'src\\\\scoring'...\nListing 'src\\\\storage'...\nListing 'tests'...\nListing 'scripts'...\n",
+      "stderr_tail": ""
+    },
+    "tests": {
+      "command": [
+        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "started_at": "2026-06-20T21:18:54+08:00",
+      "ended_at": "2026-06-20T21:19:07+08:00",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_tail": "........................................................................ [ 53%]\n...............................................................          [100%]\n135 passed in 11.22s\n",
+      "stderr_tail": ""
+    },
+    "post_update": {
+      "command": [
+        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "scripts/post_update_check.py"
+      ],
+      "started_at": "2026-06-20T21:19:07+08:00",
+      "ended_at": "2026-06-20T21:19:07+08:00",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_tail": "post-update-check status=ok critical=0 warning=0 output=C:\\Users\\User\\Documents\\Codex\\2026-05-11\\files-mentioned-by-the-user-taiwan\\tw-stock-ai\\dashboard\\post_update_check.json\n[info] traceability: Traceability diagnosis contains 2 item(s)\n",
+      "stderr_tail": ""
+    },
+    "dashboard_sync": {
+      "ok": true,
+      "missing": [],
+      "mismatches": []
+    },
+    "freshness": {
+      "ok": true,
+      "as_of": "2026-06-19",
+      "post_update_status": "ok",
+      "post_update_counts": {
+        "critical": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "knowledge_hub": {
+      "ok": true,
+      "command": [
+        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "scripts/export_learning_to_knowledge_hub.py",
+        "--skip-missing"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "knowledge export exported=24 inserted=0 updated=24 total=37 output=C:\\Users\\User\\trading_knowledge_hub\\data\\knowledge.jsonl\n",
+      "stderr_tail": ""
+    }
+  },
+  "next_actions": [
+    "Next optimization: feed knowledge-hub findings back into candidate scoring as internal-only context."
+  ]
+}
