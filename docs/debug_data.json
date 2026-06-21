@@ -1,11 +1,11 @@
 {
   "as_of": "2026-06-19",
-  "generated_at": "2026-06-22T04:33:25+08:00",
-  "dashboard_generated_at": "2026-06-22T04:33:21+08:00",
+  "generated_at": "2026-06-22T05:02:48+08:00",
+  "dashboard_generated_at": "2026-06-22T05:02:45+08:00",
   "source_status": {
     "label": "正常",
-    "api": 14,
-    "cache": 3929,
+    "api": 3,
+    "cache": 3950,
     "fallback": 5,
     "quota": 0,
     "error": 0,
@@ -88,17 +88,10 @@
       "已由備援/補抓補回 119 次"
     ],
     "event_summary": {
-      "empty": 3,
+      "empty": 4,
       "fallback": 3
     },
     "details": [
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "TAIEX",
-        "period": "2025-12",
-        "reason": ""
-      },
       {
         "type": "fallback",
         "dataset": "stock_prices",
@@ -133,6 +126,13 @@
         "data_id": "6980",
         "period": "2025-12-01",
         "reason": ""
+      },
+      {
+        "type": "empty",
+        "dataset": "TaiwanStockMonthRevenue",
+        "data_id": "7769",
+        "period": "2024-06-01",
+        "reason": ""
       }
     ],
     "recovery_status": {
@@ -141,13 +141,6 @@
       "blocked": 0,
       "recovered": 6,
       "items": [
-        {
-          "dataset": "STOCK_DAY",
-          "data_id": "TAIEX",
-          "period": "2025-12",
-          "type": "empty",
-          "next_step": "recovered_by_fallback"
-        },
         {
           "dataset": "stock_prices",
           "data_id": "TAIEX",
@@ -180,6 +173,13 @@
           "dataset": "TaiwanStockMarginPurchaseShortSale",
           "data_id": "6980",
           "period": "2025-12-01",
+          "type": "empty",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "TaiwanStockMonthRevenue",
+          "data_id": "7769",
+          "period": "2024-06-01",
           "type": "empty",
           "next_step": "recovered_by_fallback"
         }
@@ -633,7 +633,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 14 | 快取 3929 | 限流 0"
+        "note": "API 3 | 快取 3950 | 限流 0"
       },
       {
         "key": "score",
@@ -725,7 +725,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=14; cache=3929; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3950; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -740,7 +740,7 @@
     "history": [
       {
         "run_date": "2026-06-19",
-        "generated_at": "2026-06-22T04:33:25+08:00",
+        "generated_at": "2026-06-22T05:02:48+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -796,7 +796,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 14 | 快取 3929 | 限流 0"
+            "note": "API 3 | 快取 3950 | 限流 0"
           },
           {
             "key": "score",
