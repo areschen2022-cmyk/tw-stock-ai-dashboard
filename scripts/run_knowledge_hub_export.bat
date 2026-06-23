@@ -3,7 +3,7 @@ setlocal
 
 set "ROOT=%~dp0.."
 set "PY=C:\Users\User\AppData\Local\Programs\Python\Python312\python.exe"
-set "HUB_FILE=C:\Users\User\trading_knowledge_hub\data\knowledge.jsonl"
+set "HUB_FILE=C:\Users\User\trading_knowledge_hub\data\knowledge_points.jsonl"
 
 if not exist "%PY%" set "PY=python"
 

@@ -1,10 +1,10 @@
 """
-決策前讀回 Trading Knowledge Hub 的台股相關知識，避免重複犯錯。
-鏡像自 MT5 mt5_deepseek_demo_stack/trading_hub_context.py，domain 改為 taiwan_stock。
+Read validated Taiwan-stock knowledge from Trading Knowledge Hub and write a
+compact local context file for the scoring/reporting pipeline.
 
-用法：
-    python scripts/trading_hub_context.py            # 產生並印出 context
-    from scripts.trading_hub_context import load_context   # 決策流程中讀取
+Usage:
+    python scripts/trading_hub_context.py
+    from scripts.trading_hub_context import load_context
 """
 from __future__ import annotations
 
@@ -15,11 +15,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_HUB_ROOT = Path("C:/Users/User/trading_knowledge_hub")
 CONTEXT_FILE = ROOT / "data" / "trading_hub_context.json"
 DOMAIN = "taiwan_stock"
-# 自身 domain 取已驗證等級；general 取跨域通用規則
 DOMAIN_STATUSES = {"adopted", "live_supported", "backtest_supported"}
 GENERAL_STATUSES = {"adopted", "live_supported"}
 
@@ -39,15 +39,15 @@ def load_hub_rows(hub_root: Path = DEFAULT_HUB_ROOT) -> list[dict[str, Any]]:
         rows.extend(list_knowledge(domain=DOMAIN, status=status))
     for status in sorted(GENERAL_STATUSES):
         rows.extend(list_knowledge(domain="general", status=status))
-    # 去重（同 id 只留一筆）後依信心排序
+
     seen: set[str] = set()
     unique = []
-    for r in rows:
-        rid = str(r.get("id"))
-        if rid in seen:
+    for row in rows:
+        row_id = str(row.get("id"))
+        if row_id in seen:
             continue
-        seen.add(rid)
-        unique.append(r)
+        seen.add(row_id)
+        unique.append(row)
     unique.sort(key=lambda item: (-float(item.get("confidence") or 0), str(item.get("topic"))))
     return unique
 
@@ -56,16 +56,26 @@ def build_context(hub_root: Path = DEFAULT_HUB_ROOT, limit: int = 40) -> dict[st
     rows = load_hub_rows(hub_root)
     compact = [
         {
-            "id": it.get("id"), "topic": it.get("topic"), "claim": it.get("claim"),
-            "domain": it.get("domain"), "status": it.get("status"),
-            "confidence": it.get("confidence"), "evidence": it.get("evidence"),
-            "source_ref": it.get("source_ref"), "tags": it.get("tags") or [],
+            "id": item.get("id"),
+            "topic": item.get("topic"),
+            "claim": item.get("claim"),
+            "domain": item.get("domain"),
+            "status": item.get("status"),
+            "confidence": item.get("confidence"),
+            "evidence": item.get("evidence"),
+            "source_ref": item.get("source_ref"),
+            "tags": item.get("tags") or [],
         }
-        for it in rows[:limit]
+        for item in rows[:limit]
     ]
     context = {
-        "ok": True, "generated_at": now_local(), "hub_root": str(hub_root),
-        "domain": DOMAIN, "count": len(rows), "used_count": len(compact), "rows": compact,
+        "ok": True,
+        "generated_at": now_local(),
+        "hub_root": str(hub_root),
+        "domain": DOMAIN,
+        "count": len(rows),
+        "used_count": len(compact),
+        "rows": compact,
     }
     CONTEXT_FILE.parent.mkdir(parents=True, exist_ok=True)
     CONTEXT_FILE.write_text(json.dumps(context, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
@@ -73,7 +83,6 @@ def build_context(hub_root: Path = DEFAULT_HUB_ROOT, limit: int = 40) -> dict[st
 
 
 def load_context() -> dict[str, Any]:
-    """決策流程呼叫此函式取得 Hub 知識（無檔時回傳空 rows，不拋例外）。"""
     if not CONTEXT_FILE.exists():
         return {"ok": False, "error": "context not generated", "rows": []}
     try:
@@ -88,7 +97,7 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=40)
     args = parser.parse_args()
     try:
-        sys.stdout.reconfigure(encoding="utf-8")  # 避免 Windows cp950 主控台印中文/≥ 報錯
+        sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
     context = build_context(Path(args.hub_root), args.limit)

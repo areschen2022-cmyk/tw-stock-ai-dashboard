@@ -11,12 +11,12 @@ def _performance_payload() -> dict:
         "signal_attribution": {
             "factor_rows": [
                 {
-                    "label": "題材:AI伺服器",
+                    "label": "題材升溫：AI伺服器",
                     "signals": 12,
                     "completed": 6,
                     "win_rate_5d": 66.7,
                     "avg_return_5d": 3.2,
-                    "sample_label": "累積中",
+                    "sample_label": "有效樣本",
                 }
             ]
         },
@@ -24,22 +24,22 @@ def _performance_payload() -> dict:
             "failure_attribution": {
                 "rows": [
                     {
-                        "label": "題材過熱",
+                        "label": "追高過熱",
                         "count": 3,
                         "avg_return_5d": -4.5,
                         "stop_hit_rate": 33.3,
-                        "lesson": "題材過熱時降低追價權重。",
+                        "lesson": "過熱後續航不足，應等開盤量價確認。",
                     }
                 ]
             }
         },
         "adaptive_feedback": [
             {
-                "target": "題材:AI伺服器",
-                "action": "保留但等待量價確認",
+                "target": "題材升溫：AI伺服器",
+                "action": "保留加權但提高開盤確認門檻",
                 "sample": 6,
                 "avg_return_5d": 3.2,
-                "reason": "樣本顯示題材有效但仍需控風險。",
+                "reason": "樣本仍少，但早期表現偏正向。",
             }
         ],
     }
@@ -50,13 +50,15 @@ def test_build_knowledge_points_from_performance_payload() -> None:
 
     assert len(points) == 3
     assert all(point["domain"] == "taiwan_stock" for point in points)
-    assert any(point["topic"].startswith("台股因素成效") for point in points)
-    assert any("失敗歸因" in point["topic"] for point in points)
+    assert any(point["topic"].startswith("台股訊號因素：") for point in points)
+    assert any("台股失敗歸因：" in point["topic"] for point in points)
+    assert any("台股回測回饋：" in point["topic"] for point in points)
     assert all(point["id"].startswith("kp_") for point in points)
+    assert all("�" not in json.dumps(point, ensure_ascii=False) for point in points)
 
 
 def test_upsert_jsonl_updates_existing_id(tmp_path) -> None:
-    path = tmp_path / "knowledge.jsonl"
+    path = tmp_path / "knowledge_points.jsonl"
     points = build_knowledge_points(_performance_payload())
 
     first = upsert_jsonl(path, points)
