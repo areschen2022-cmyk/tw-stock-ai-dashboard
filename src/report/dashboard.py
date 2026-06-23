@@ -1138,6 +1138,9 @@ def _quant_ui_css() -> str:
       color:#334155 !important;
       font-weight:900;
       letter-spacing:0;
+      position:static !important;
+      top:auto !important;
+      z-index:auto !important;
     }
     td {
       background:#fff;
@@ -1154,6 +1157,44 @@ def _quant_ui_css() -> str:
       border-radius:16px !important;
       background:rgba(255,255,255,.88) !important;
       backdrop-filter:blur(16px);
+    }
+    .theme-panel #themes,
+    .theme-table-wrap {
+      max-height:none !important;
+      overflow:visible !important;
+      padding-right:0 !important;
+    }
+    .theme-panel .chart-wrap {
+      height:clamp(140px,18vw,220px) !important;
+      min-height:140px;
+    }
+    .theme-panel canvas {
+      max-width:100%;
+    }
+    .page-potential main,
+    .page-weekly main,
+    .page-performance main {
+      max-width:1440px;
+    }
+    .page-potential .grid {
+      grid-template-columns:minmax(0,1.08fr) minmax(360px,.72fr) !important;
+      gap:16px !important;
+    }
+    .page-potential section {
+      border-radius:18px !important;
+    }
+    .page-potential .stage {
+      min-width:84px;
+      min-height:28px;
+      justify-content:center;
+      font-weight:900;
+    }
+    .page-potential .metric {
+      min-height:88px;
+    }
+    .page-potential td,
+    .page-potential th {
+      line-height:1.5;
     }
     .jump-nav a, .detail-button {
       min-height:36px;
@@ -1172,6 +1213,7 @@ def _quant_ui_css() -> str:
       header, main { max-width:100%; }
       .side-stack { top:auto; }
       .nav-tabs { border-radius:14px; }
+      .page-potential .grid { grid-template-columns:1fr !important; }
     }
     @media (max-width:720px) {
       body {
@@ -1834,7 +1876,7 @@ def _html() -> str:
     }
   </style>
 </head>
-<body>
+<body class="page-dashboard">
   <header>
     <h1>台股 AI 開盤前監控</h1>
     <div class="sub" id="subtitle">載入中...</div>
@@ -2669,7 +2711,7 @@ def _weekly_html() -> str:
     }
   </style>
 </head>
-<body>
+<body class="page-weekly">
   <header>
     <h1>台股 AI 每週總覽</h1>
     <div class="sub" id="subtitle">載入中...</div>
@@ -2843,7 +2885,7 @@ def _potential_html() -> str:
     }
   </style>
 </head>
-<body>
+<body class="page-potential">
   <header>
     <h1>台股 AI 潛力雷達</h1>
     <div class="sub" id="subtitle">載入中...</div>
@@ -3026,7 +3068,7 @@ def _performance_html() -> str:
     }
   </style>
 </head>
-<body>
+<body class="page-performance">
   <header>
     <h1>台股 AI 訊號成效追蹤</h1>
     <div class="sub" id="subtitle">載入中...</div>
