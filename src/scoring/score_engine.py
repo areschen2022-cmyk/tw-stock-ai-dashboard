@@ -47,6 +47,8 @@ class StockScore:
     retail_signal: dict[str, Any] = field(default_factory=dict)
     selection_quality_adjustment: int = 0
     selection_quality_notes: list[str] = field(default_factory=list)
+    knowledge_adjustment: dict[str, Any] = field(default_factory=dict)
+    knowledge_notes: list[str] = field(default_factory=list)
 
     @property
     def trigger_summary(self) -> str:

@@ -41,6 +41,7 @@ from src.report.monitoring import detect_alerts
 from src.report.potential_radar import build_potential_radar_candidates
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
+from src.scoring.knowledge_adjustment import apply_knowledge_adjustment, load_knowledge_context
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
 
@@ -390,6 +391,13 @@ def main() -> int:
         logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
         return 0
     engine = ScoreEngine(config)
+    knowledge_context = load_knowledge_context(ROOT)
+    if knowledge_context.get("rows"):
+        logging.info(
+            "Trading knowledge context loaded from %s (%s rows)",
+            knowledge_context.get("source", "unknown"),
+            len(knowledge_context.get("rows") or []),
+        )
     retail_rows = store.latest_retail_holder_signals(limit=200)
     retail_map = {str(row.get("stock_id")): row for row in retail_rows}
 
@@ -488,6 +496,7 @@ def main() -> int:
             theme_details=stock_theme_details.get(stock_id, []),
             config=config,
         )
+        apply_knowledge_adjustment(score, knowledge_context)
         results.append(score)
         store.save_daily_score(score, as_of)
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
