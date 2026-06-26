@@ -537,7 +537,9 @@ def main() -> int:
     store.save_exit_risks(exit_risks, as_of)
     store.update_exit_risk_forward_returns(as_of)
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
+    store.save_knowledge_adjustments(results, as_of, config.get("stock_names", {}))
     store.update_forward_returns(as_of)
+    store.update_knowledge_forward_returns(as_of)
 
     report = build_report(
         results,
@@ -631,6 +633,7 @@ def main() -> int:
         as_of,
     )
     store.update_potential_forward_returns(as_of)
+    store.update_knowledge_forward_returns(as_of)
     performance_payload = store.performance_summary(as_of, days=30)
     traceability_payload = build_traceability_summary(dashboard_payload, performance_payload)
     traceability_record = dict(traceability_payload)

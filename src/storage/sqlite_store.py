@@ -91,6 +91,33 @@ class SQLiteStore:
                     conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
             conn.execute(
                 """
+                CREATE TABLE IF NOT EXISTS knowledge_adjustment_signals (
+                    signal_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    total_score INTEGER,
+                    grade TEXT,
+                    label TEXT,
+                    entry_price REAL,
+                    source TEXT NOT NULL DEFAULT '',
+                    original_action TEXT NOT NULL DEFAULT '',
+                    adjusted_action TEXT NOT NULL DEFAULT '',
+                    negative_matches_json TEXT NOT NULL DEFAULT '[]',
+                    positive_matches_json TEXT NOT NULL DEFAULT '[]',
+                    notes_json TEXT NOT NULL DEFAULT '[]',
+                    return_3d REAL,
+                    return_5d REAL,
+                    return_10d REAL,
+                    outcome_category TEXT,
+                    outcome_label TEXT,
+                    outcome_reason TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (signal_date, stock_id)
+                )
+                """
+            )
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS potential_radar_signals (
                     signal_date TEXT NOT NULL,
                     stock_id TEXT NOT NULL,
@@ -914,6 +941,41 @@ class SQLiteStore:
                     ),
                 )
 
+    def save_knowledge_adjustments(self, scores: list[StockScore], as_of: date, stock_names: dict[str, str]) -> None:
+        records = [
+            score
+            for score in scores
+            if score.knowledge_adjustment and (score.knowledge_notes or score.knowledge_adjustment.get("negative_matches") or score.knowledge_adjustment.get("positive_matches"))
+        ]
+        with self._connect() as conn:
+            conn.execute("DELETE FROM knowledge_adjustment_signals WHERE signal_date = ?", (as_of.isoformat(),))
+            for score in records:
+                adjustment = score.knowledge_adjustment or {}
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO knowledge_adjustment_signals (
+                        signal_date, stock_id, name, total_score, grade, label, entry_price,
+                        source, original_action, adjusted_action,
+                        negative_matches_json, positive_matches_json, notes_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        as_of.isoformat(),
+                        score.stock_id,
+                        stock_names.get(score.stock_id, ""),
+                        score.total_score,
+                        _grade(score.total_score),
+                        score.label,
+                        score.price,
+                        str(adjustment.get("source") or ""),
+                        str(adjustment.get("original_action") or ""),
+                        str(adjustment.get("adjusted_action") or score.action or ""),
+                        json.dumps(adjustment.get("negative_matches") or [], ensure_ascii=False),
+                        json.dumps(adjustment.get("positive_matches") or [], ensure_ascii=False),
+                        json.dumps(score.knowledge_notes or [], ensure_ascii=False),
+                    ),
+                )
+
     def save_exit_risks(self, risks: list[dict], as_of: date) -> None:
         with self._connect() as conn:
             conn.execute("DELETE FROM exit_risk_signals WHERE signal_date = ?", (as_of.isoformat(),))
@@ -1072,6 +1134,78 @@ class SQLiteStore:
                 conn.execute(
                     """
                     UPDATE potential_radar_signals
+                    SET entry_price = COALESCE(entry_price, ?),
+                        return_3d = COALESCE(?, return_3d),
+                        return_5d = COALESCE(?, return_5d),
+                        return_10d = COALESCE(?, return_10d),
+                        outcome_category = ?,
+                        outcome_label = ?,
+                        outcome_reason = ?
+                    WHERE signal_date = ? AND stock_id = ?
+                    """,
+                    (
+                        base_entry,
+                        return_3d,
+                        return_5d,
+                        return_10d,
+                        outcome["category"],
+                        outcome["label"],
+                        outcome["reason"],
+                        signal_date,
+                        stock_id,
+                    ),
+                )
+
+    def update_knowledge_forward_returns(self, as_of: date) -> None:
+        with self._connect() as conn:
+            signals = conn.execute(
+                """
+                SELECT signal_date, stock_id, entry_price, original_action, adjusted_action,
+                       negative_matches_json, positive_matches_json
+                FROM knowledge_adjustment_signals
+                WHERE signal_date < ?
+                  AND (return_5d IS NULL OR return_10d IS NULL)
+                """,
+                (as_of.isoformat(),),
+            ).fetchall()
+            for signal_date, stock_id, entry_price, original_action, adjusted_action, negative_json, positive_json in signals:
+                base_entry = entry_price
+                if base_entry is None:
+                    base = conn.execute(
+                        """
+                        SELECT price FROM daily_scores
+                        WHERE as_of_date = ? AND stock_id = ? AND price IS NOT NULL
+                        """,
+                        (signal_date, stock_id),
+                    ).fetchone()
+                    if not base:
+                        continue
+                    base_entry = float(base[0])
+                future_rows = conn.execute(
+                    """
+                    SELECT as_of_date, price
+                    FROM daily_scores
+                    WHERE stock_id = ? AND as_of_date > ? AND as_of_date <= ? AND price IS NOT NULL
+                    ORDER BY as_of_date
+                    """,
+                    (stock_id, signal_date, (date.fromisoformat(signal_date) + timedelta(days=21)).isoformat()),
+                ).fetchall()
+                if not future_rows:
+                    continue
+                prices = [float(row[1]) for row in future_rows]
+                return_3d = _pct_return(prices[2] if len(prices) >= 3 else None, base_entry)
+                return_5d = _pct_return(prices[4] if len(prices) >= 5 else None, base_entry)
+                return_10d = _pct_return(prices[9] if len(prices) >= 10 else None, base_entry)
+                outcome = _knowledge_outcome(
+                    return_5d,
+                    original_action=str(original_action or ""),
+                    adjusted_action=str(adjusted_action or ""),
+                    negative_matches=_json_list(negative_json),
+                    positive_matches=_json_list(positive_json),
+                )
+                conn.execute(
+                    """
+                    UPDATE knowledge_adjustment_signals
                     SET entry_price = COALESCE(entry_price, ?),
                         return_3d = COALESCE(?, return_3d),
                         return_5d = COALESCE(?, return_5d),
@@ -1326,6 +1460,7 @@ class SQLiteStore:
         backtest_insights = _backtest_insights(items)
         potential_radar = self.potential_radar_summary(as_of, days=days)
         exit_risk = self.exit_risk_summary(as_of, days=days)
+        knowledge_adjustment = self.knowledge_adjustment_summary(as_of, days=days)
         signal_lab = grade_return_summary(items)
         postmortem = _postmortem_summary(items)
         learning_center = _learning_center_summary(items)
@@ -1355,6 +1490,7 @@ class SQLiteStore:
             "learning_center": learning_center,
             "potential_radar": potential_radar,
             "exit_risk": exit_risk,
+            "knowledge_adjustment": knowledge_adjustment,
             "backtest_insights": backtest_insights,
             "ai_council": ai_council,
             "signal_attribution": signal_attribution,
@@ -1539,6 +1675,67 @@ class SQLiteStore:
             },
             "true_warnings": sorted(true_warnings, key=lambda item: float(item.get("return_5d") or 0))[:8],
             "false_warnings": sorted(false_warnings, key=lambda item: float(item.get("return_5d") or 0), reverse=True)[:8],
+        }
+
+    def knowledge_adjustment_summary(self, as_of: date, days: int = 30) -> dict:
+        since = as_of - timedelta(days=days)
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT signal_date, stock_id, name, total_score, grade, label, entry_price,
+                       source, original_action, adjusted_action,
+                       negative_matches_json, positive_matches_json, notes_json,
+                       return_3d, return_5d, return_10d,
+                       outcome_category, outcome_label, outcome_reason
+                FROM knowledge_adjustment_signals
+                WHERE signal_date >= ?
+                ORDER BY signal_date DESC, total_score DESC
+                """,
+                (since.isoformat(),),
+            ).fetchall()
+        items = [
+            {
+                "signal_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "total_score": row[3],
+                "grade": row[4],
+                "label": row[5],
+                "entry_price": row[6],
+                "source": row[7],
+                "original_action": row[8],
+                "adjusted_action": row[9],
+                "negative_matches": _json_list(row[10]),
+                "positive_matches": _json_list(row[11]),
+                "notes": _json_list(row[12]),
+                "return_3d": row[13],
+                "return_5d": row[14],
+                "return_10d": row[15],
+                "outcome_category": row[16],
+                "outcome_label": row[17],
+                "outcome_reason": row[18],
+            }
+            for row in rows
+        ]
+        completed = [item for item in items if item.get("return_5d") is not None]
+        downgraded = [item for item in items if item.get("original_action") != item.get("adjusted_action")]
+        completed_downgraded = [item for item in downgraded if item.get("return_5d") is not None]
+        positive = [item for item in items if item.get("positive_matches")]
+        completed_positive = [item for item in positive if item.get("return_5d") is not None]
+        return {
+            "signals": len(items),
+            "completed": len(completed),
+            "downgraded": len(downgraded),
+            "downgraded_completed": len(completed_downgraded),
+            "protected_count": sum(1 for item in completed_downgraded if float(item.get("return_5d") or 0) <= 0),
+            "protection_rate_5d": _rate([float(item.get("return_5d") or 0) <= 0 for item in completed_downgraded]),
+            "positive_completed": len(completed_positive),
+            "positive_win_rate_5d": _rate([float(item.get("return_5d") or 0) > 0 for item in completed_positive]),
+            "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+            "avg_return_10d": _avg([item.get("return_10d") for item in completed if item.get("return_10d") is not None]),
+            "items": items,
+            "status": "sample_accumulating" if len(completed) < 20 else "calibratable",
+            "note": "智慧庫介入成效目前先內部記錄；完成樣本達 20 筆以上再用於調整門檻。",
         }
 
     def ai_council_summary(self, as_of: date, days: int = 30) -> dict:
@@ -2992,6 +3189,59 @@ def _potential_outcome(return_5d: float | None, return_10d: float | None, tags: 
         "category": "potential_false_positive",
         "label": "假訊號",
         "reason": _potential_failure_reason(tags or []),
+    }
+
+
+def _knowledge_outcome(
+    return_5d: float | None,
+    *,
+    original_action: str,
+    adjusted_action: str,
+    negative_matches: list[str],
+    positive_matches: list[str],
+) -> dict:
+    if return_5d is None:
+        return {
+            "category": "knowledge_pending",
+            "label": "累積中",
+            "reason": "尚未累積 5 日結果，先保留追蹤。",
+        }
+    ret5 = float(return_5d)
+    was_downgraded = bool(original_action and adjusted_action and original_action != adjusted_action)
+    if was_downgraded:
+        if ret5 <= 0:
+            return {
+                "category": "knowledge_protected",
+                "label": "避雷有效",
+                "reason": "智慧庫降級後 5 日未上漲，代表保守處理可能避開風險。",
+            }
+        return {
+            "category": "knowledge_too_conservative",
+            "label": "保守過頭",
+            "reason": "智慧庫降級後 5 日仍上漲，需檢查是否過度保守。",
+        }
+    if positive_matches:
+        if ret5 > 0:
+            return {
+                "category": "knowledge_positive_valid",
+                "label": "正向有效",
+                "reason": "智慧庫正向經驗命中後 5 日上漲，可繼續累積樣本。",
+            }
+        return {
+            "category": "knowledge_positive_failed",
+            "label": "正向失效",
+            "reason": "智慧庫正向經驗命中後 5 日未上漲，需降低採信度。",
+        }
+    if negative_matches:
+        return {
+            "category": "knowledge_warning_observed",
+            "label": "風險已觀察",
+            "reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。",
+        }
+    return {
+        "category": "knowledge_observed",
+        "label": "已觀察",
+        "reason": "智慧庫有介入紀錄，等待更多樣本校準。",
     }
 
 

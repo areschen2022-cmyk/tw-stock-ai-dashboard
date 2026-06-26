@@ -197,6 +197,39 @@ def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     assert summary["postmortem"]["counts"][0]["category"] == "big_winner"
 
 
+def test_knowledge_adjustment_summary_tracks_intervention_outcomes(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+
+    signal = _score("2408", 88, price=100.0)
+    signal.action = "WAIT"
+    signal.knowledge_adjustment = {
+        "source": "test-hub",
+        "original_action": "BUY",
+        "adjusted_action": "WAIT",
+        "negative_matches": [{"topic": "crowded failure"}],
+        "positive_matches": [],
+    }
+    signal.knowledge_notes = ["knowledge warning matched"]
+
+    store.save_daily_score(signal, day0)
+    store.save_knowledge_adjustments([signal], day0, {"2408": "Nanya"})
+    for index, price in enumerate([99.0, 98.0, 97.0, 96.0, 94.0], start=1):
+        store.save_daily_score(_score("2408", 70, price=price), day0 + timedelta(days=index))
+
+    store.update_knowledge_forward_returns(day0 + timedelta(days=5))
+    summary = store.knowledge_adjustment_summary(day0 + timedelta(days=5), days=30)
+
+    assert summary["signals"] == 1
+    assert summary["completed"] == 1
+    assert summary["downgraded"] == 1
+    assert summary["protected_count"] == 1
+    assert summary["protection_rate_5d"] == 100
+    assert summary["status"] == "sample_accumulating"
+    assert summary["items"][0]["return_5d"] == -6
+    assert summary["items"][0]["outcome_category"] == "knowledge_protected"
+
+
 def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)
