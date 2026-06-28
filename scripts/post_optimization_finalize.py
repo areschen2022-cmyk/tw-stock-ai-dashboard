@@ -217,6 +217,19 @@ def main() -> int:
     print(f"post-optimization-finalize status={report['status']} output={output}")
     for name, check in report["checks"].items():
         print(f"[{'ok' if check.get('ok') else 'bad'}] {name}")
+        if not check.get("ok"):
+            stdout_tail = str(check.get("stdout_tail") or "").strip()
+            stderr_tail = str(check.get("stderr_tail") or "").strip()
+            if stdout_tail:
+                print(f"--- {name} stdout tail ---")
+                print(stdout_tail[-2000:])
+            if stderr_tail:
+                print(f"--- {name} stderr tail ---")
+                print(stderr_tail[-2000:])
+            hits = check.get("hits") or []
+            if hits:
+                print(f"--- {name} hits ---")
+                print(json.dumps(hits[:10], ensure_ascii=False, indent=2))
     return 0 if report["status"] == "ok" else 1
 
 

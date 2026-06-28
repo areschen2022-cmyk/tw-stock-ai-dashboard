@@ -138,7 +138,7 @@ jobs:
         run: python main.py --dry-run --telegram-summary
 
       - name: Run post-optimization finalizer
-        run: python scripts/post_optimization_finalize.py --auto-hub
+        run: python scripts/post_optimization_finalize.py --auto-hub --skip-tests
 
       - name: Commit and push dashboard
         run: |

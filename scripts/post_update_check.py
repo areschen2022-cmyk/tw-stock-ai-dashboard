@@ -274,7 +274,8 @@ def _check_database(root: Path, as_of: str, issues: list[dict]) -> dict:
             SELECT COUNT(*)
             FROM data_update_log
             WHERE dataset = 'tdcc_retail_holders'
-              AND julianday(?) - julianday(source_date) <= 10
+              AND status = 'ok'
+              AND julianday(?) - julianday(update_date) <= 10
             """,
             (datetime.now(TAIPEI).date().isoformat(),),
         )
