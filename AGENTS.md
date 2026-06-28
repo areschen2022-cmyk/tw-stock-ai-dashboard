@@ -2,6 +2,24 @@
 
 本檔把專案常用技能固定成可檢查的流程，避免每次都靠臨時記憶。所有輸出僅供研究追蹤，不構成投資建議。
 
+## Required Post-Optimization Finalization
+
+每次完成任何會影響程式、網站、排程、資料、報表、選股邏輯或智慧庫的優化後，必須執行：
+
+```powershell
+.\scripts\post_optimization_finalize.bat
+```
+
+此流程會依序檢查：
+- Python 語法與 import。
+- pytest。
+- dashboard/post_update_check.json。
+- 亂碼與錯誤編碼掃描。
+- 交易智慧庫匯出。
+- verification_loop。
+
+若 `dashboard/post_optimization_finalize.json` 顯示 `status=bad`，先修正再回報；不要只靠單一測試或口頭判斷。
+
 ## Daily Taiwan Stock Monitor
 
 用途：檢查每日網站更新、Telegram 推播、資料品質與排程健康。

@@ -52,7 +52,7 @@ python scripts/backtest_quality_check.py --days 365
 Learning outcomes can be exported to the shared local knowledge hub at:
 
 ```text
-C:\Users\User\trading_knowledge_hub\data\knowledge.jsonl
+C:\Users\User\trading_knowledge_hub\data\knowledge_points.jsonl
 ```
 
 Manual export:
@@ -68,3 +68,19 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install_knowledge_hub_export_
 ```
 
 The task name is `tw-stock-ai-knowledge-hub-export`. It runs daily at 08:45, pulls the latest GitHub dashboard state when possible, and upserts performance attribution into the knowledge hub.
+
+## Post-Optimization Finalize
+
+After every code, dashboard, scoring, data-source, or automation optimization, run the standard finalizer before reporting completion:
+
+```powershell
+.\scripts\post_optimization_finalize.bat
+```
+
+The finalizer runs Python compile checks, pytest, dashboard self-checks, a mojibake scan, knowledge-hub export, and the verification loop. It writes the audit report to:
+
+```text
+dashboard/post_optimization_finalize.json
+```
+
+If this script reports `bad`, fix the listed issue first and rerun it before pushing or declaring the update complete.

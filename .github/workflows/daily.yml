@@ -137,14 +137,8 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: python main.py --dry-run --telegram-summary
 
-      - name: Run post-update self check
-        run: python scripts/post_update_check.py
-
-      - name: Export learning outcomes to knowledge hub if available
-        run: python scripts/export_learning_to_knowledge_hub.py --skip-missing
-
-      - name: Run verification loop
-        run: python scripts/verification_loop.py --skip-dashboard-sync
+      - name: Run post-optimization finalizer
+        run: python scripts/post_optimization_finalize.py --auto-hub
 
       - name: Commit and push dashboard
         run: |
