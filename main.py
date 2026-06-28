@@ -20,6 +20,7 @@ from src.data_provider.twse_client import TwseClient
 from src.indicators.market import sector_context
 from src.indicators.overseas import analyze_overseas_sentiment
 from src.indicators.opportunity import opportunity_score
+from src.notifier.policy import notification_limits, notification_severity, report_mode, should_send
 from src.notifier.telegram import TelegramNotifier
 from src.news.web_theme import fetch_theme_signal
 from src.report.dashboard import (
@@ -662,7 +663,9 @@ def main() -> int:
         ROOT / "dashboard",
     )
     telegram_message = report
-    if args.telegram_summary:
+    notify_severity = notification_severity(dashboard_payload, alerts=alerts, exit_risks=exit_risks)
+    limits = notification_limits(config)
+    if report_mode(config, force_brief=args.telegram_summary) == "brief":
         s = dashboard_payload["summary"]
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
@@ -676,7 +679,7 @@ def main() -> int:
                 for row in rows[:limit]
             ) or empty
 
-        must_watch_text = _compact_list(action_lists.get("chase", []), "▸ 今日暫無可追清單", limit=3)
+        must_watch_text = _compact_list(action_lists.get("chase", []), "▸ 今日暫無可追清單", limit=limits["max_pick_items"])
         ai_summary = action_lists.get("summary", {})
         ai_review_text = (
             f"AI 複核：同意 {ai_summary.get('ai_agree', 0)}｜"
@@ -684,10 +687,10 @@ def main() -> int:
             f"不建議 {ai_summary.get('ai_avoid', 0)}｜"
             f"已複核 {ai_summary.get('ai_reviewed', 0)}"
         )
-        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[:2]) or "✅ 無重大異常"
+        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[: limits["max_alert_items"]]) or "✅ 無重大異常"
         exit_text = "\n".join(
             f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:1])}"
-            for item in exit_risks[:2]
+            for item in exit_risks[: limits["max_exit_items"]]
         ) or "▸ 無紅黃警戒"
         health = dashboard_payload.get("health", {})
         schedule_delay = health.get("schedule_delay_minutes")
@@ -720,6 +723,9 @@ def main() -> int:
                 "⚠️ 僅供研究追蹤，不是投資建議。",
             ]
         )
+    if not should_send(config, notify_severity):
+        logging.info("Telegram morning report severity=%s below configured threshold; skipping.", notify_severity)
+        return 0
     if not dry_run and store.has_delivered_today("telegram", delivery_date, "morning_report"):
         logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
         return 0
