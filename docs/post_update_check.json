@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-29T08:46:29+08:00",
+  "generated_at": "2026-06-30T04:32:18+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,13 +7,33 @@
     "info": 1
   },
   "context": {
-    "as_of": "2026-06-26",
-    "weekly_as_of": "2026-06-26",
-    "rows": 78,
-    "valid": 78,
-    "chase": 0,
+    "as_of": "2026-06-29",
+    "weekly_as_of": "2026-06-29",
+    "rows": 127,
+    "valid": 127,
+    "chase": 2,
     "pullback": 5,
     "data_updates": [
+      {
+        "update_date": "2026-06-29",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 127,
+        "source_date": "2026-06-29",
+        "message": "127 stocks scanned for institutional flow",
+        "run_id": "28400652796",
+        "created_at": "2026-06-29 20:32:12"
+      },
+      {
+        "update_date": "2026-06-29",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 3999,
+        "source_date": "2026-06-26",
+        "message": "50 divergence signals; previous=2026-06-18",
+        "run_id": "28400652796",
+        "created_at": "2026-06-29 20:31:21"
+      },
       {
         "update_date": "2026-06-26",
         "dataset": "institutional_flow",
@@ -93,31 +113,11 @@
         "message": "134 stocks scanned for institutional flow",
         "run_id": "27990740307",
         "created_at": "2026-06-22 23:22:00"
-      },
-      {
-        "update_date": "2026-06-22",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3992,
-        "source_date": "2026-06-18",
-        "message": "32 divergence signals; previous=2026-06-12",
-        "run_id": "27989035856",
-        "created_at": "2026-06-22 22:44:45"
-      },
-      {
-        "update_date": "2026-06-21",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3992,
-        "source_date": "2026-06-18",
-        "message": "32 divergence signals; previous=2026-06-12",
-        "run_id": "27919020354",
-        "created_at": "2026-06-21 22:09:50"
       }
     ]
   },
   "database": {
-    "daily_scores": 78,
+    "daily_scores": 127,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 6
@@ -131,7 +131,7 @@
     }
   ],
   "next_optimizations": [
-    "Tune action thresholds only after checking whether zero chase candidates repeats for several days."
+    "Next: compare decision-card outcomes by reason tag to identify which signals deserve more weight."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
 }
