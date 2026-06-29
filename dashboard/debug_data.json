@@ -1,12 +1,12 @@
 {
   "as_of": "2026-06-29",
-  "generated_at": "2026-06-30T04:32:17+08:00",
-  "dashboard_generated_at": "2026-06-30T04:32:13+08:00",
+  "generated_at": "2026-06-30T05:02:32+08:00",
+  "dashboard_generated_at": "2026-06-30T05:02:28+08:00",
   "source_status": {
     "label": "正常",
-    "api": 67,
-    "cache": 5568,
-    "fallback": 17,
+    "api": 3,
+    "cache": 5828,
+    "fallback": 3,
     "quota": 0,
     "error": 0,
     "empty": 1,
@@ -81,49 +81,42 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 132,
+    "recovered_fetches": 118,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 132 次"
+      "已由備援/補抓補回 118 次"
     ],
     "event_summary": {
-      "fallback": 9,
-      "empty": 1
+      "empty": 3,
+      "fallback": 3
     },
     "details": [
       {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "TAIEX",
+        "period": "2025-12",
+        "reason": "html"
+      },
+      {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "TAIEX",
+        "period": "",
+        "reason": "twse_month_missing"
+      },
+      {
         "type": "fallback",
         "dataset": "institutional",
-        "data_id": "6191",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "margin",
-        "data_id": "8110",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "margin",
-        "data_id": "6191",
+        "data_id": "6446",
         "period": "",
         "reason": "cold_history_short"
       },
       {
         "type": "fallback",
         "dataset": "revenue",
-        "data_id": "8110",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "revenue",
-        "data_id": "6191",
+        "data_id": "7769",
         "period": "",
         "reason": "cold_history_short"
       },
@@ -133,54 +126,61 @@
         "data_id": "6446",
         "period": "2025-12-01",
         "reason": ""
+      },
+      {
+        "type": "empty",
+        "dataset": "TaiwanStockMonthRevenue",
+        "data_id": "7769",
+        "period": "2024-06-01",
+        "reason": ""
       }
     ],
     "recovery_status": {
-      "label": "retry_ready",
-      "retryable": 1,
+      "label": "clean",
+      "retryable": 0,
       "blocked": 0,
-      "recovered": 5,
+      "recovered": 6,
       "items": [
+        {
+          "dataset": "STOCK_DAY",
+          "data_id": "TAIEX",
+          "period": "2025-12",
+          "type": "empty",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "TAIEX",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "institutional",
+          "data_id": "6446",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "revenue",
+          "data_id": "7769",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
         {
           "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
           "data_id": "6446",
           "period": "2025-12-01",
           "type": "empty",
-          "next_step": "retry_range"
-        },
-        {
-          "dataset": "institutional",
-          "data_id": "6191",
-          "period": "",
-          "type": "fallback",
           "next_step": "recovered_by_fallback"
         },
         {
-          "dataset": "margin",
-          "data_id": "8110",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "margin",
-          "data_id": "6191",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "revenue",
-          "data_id": "8110",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "revenue",
-          "data_id": "6191",
-          "period": "",
-          "type": "fallback",
+          "dataset": "TaiwanStockMonthRevenue",
+          "data_id": "7769",
+          "period": "2024-06-01",
+          "type": "empty",
           "next_step": "recovered_by_fallback"
         }
       ]
@@ -356,6 +356,15 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
+        "status": "pending",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 1,
+        "last_attempt_at": "2026-06-30T05:02:32+08:00",
+        "first_seen_at": "2026-06-30T04:32:17+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
         "status": "failed",
         "dataset": "tpex_margin",
         "reason": "fetch_failed",
@@ -363,15 +372,6 @@
         "last_attempt_at": "2026-06-30T04:32:17+08:00",
         "first_seen_at": "2026-06-29T08:06:45+08:00",
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-30T04:32:17+08:00",
-        "first_seen_at": "2026-06-30T04:32:17+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
         "status": "pending",
@@ -549,6 +549,15 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
+        "status": "pending",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 1,
+        "last_attempt_at": "2026-06-30T05:02:32+08:00",
+        "first_seen_at": "2026-06-30T04:32:17+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
         "status": "failed",
         "dataset": "tpex_margin",
         "reason": "fetch_failed",
@@ -556,15 +565,6 @@
         "last_attempt_at": "2026-06-30T04:32:17+08:00",
         "first_seen_at": "2026-06-29T08:06:45+08:00",
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-30T04:32:17+08:00",
-        "first_seen_at": "2026-06-30T04:32:17+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
         "status": "pending",
@@ -617,6 +617,18 @@
     ],
     "recent_items": [
       {
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "data_id": "6446",
+        "period": "2025-12-01",
+        "reason": "",
+        "status": "pending",
+        "attempts": 2,
+        "first_seen_at": "2026-06-30T04:32:17+08:00",
+        "last_attempt_at": "2026-06-30T05:02:32+08:00",
+        "last_error": "unsupported_dataset",
+        "recovered_at": null
+      },
+      {
         "dataset": "tpex_margin",
         "data_id": "all",
         "period": "",
@@ -624,18 +636,6 @@
         "status": "failed",
         "attempts": 3,
         "first_seen_at": "2026-06-29T08:06:45+08:00",
-        "last_attempt_at": "2026-06-30T04:32:17+08:00",
-        "last_error": "unsupported_dataset",
-        "recovered_at": null
-      },
-      {
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "data_id": "6446",
-        "period": "2025-12-01",
-        "reason": "",
-        "status": "pending",
-        "attempts": 1,
-        "first_seen_at": "2026-06-30T04:32:17+08:00",
         "last_attempt_at": "2026-06-30T04:32:17+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
@@ -721,7 +721,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 67 | 快取 5568 | 限流 0"
+        "note": "API 3 | 快取 5828 | 限流 0"
       },
       {
         "key": "score",
@@ -813,7 +813,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=67; cache=5568; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=5828; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -828,7 +828,7 @@
     "history": [
       {
         "run_date": "2026-06-29",
-        "generated_at": "2026-06-30T04:32:17+08:00",
+        "generated_at": "2026-06-30T05:02:32+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -884,7 +884,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 67 | 快取 5568 | 限流 0"
+            "note": "API 3 | 快取 5828 | 限流 0"
           },
           {
             "key": "score",
