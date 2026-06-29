@@ -18,10 +18,10 @@ def test_build_backtest_review_extracts_core_sections():
                 {"label": "95-100", "signals": 6, "completed": 3, "avg_return_5d": -1.0},
             ],
             "action_stats": [
-                {"action": "開盤確認", "signals": 5, "completed": 3, "avg_return_5d": 1.5}
+                {"action": "可追蹤突破", "signals": 5, "completed": 3, "avg_return_5d": 1.5}
             ],
-            "calibration_advice": [{"priority": "觀察", "group": "強度", "label": "S+"}],
-            "adaptive_feedback": [{"source": "失敗歸因", "target": "追高", "action": "降低權重"}],
+            "calibration_advice": [{"priority": "檢討", "group": "分數區間", "label": "S+"}],
+            "adaptive_feedback": [{"source": "失敗歸因", "target": "追高", "action": "降級觀察"}],
         }
     )
 
@@ -33,3 +33,4 @@ def test_build_backtest_review_extracts_core_sections():
     assert review["weak"]["score_band"]["label"] == "95-100"
     assert review["review_actions"][0]["label"] == "S+"
     assert review["adaptive_feedback"][0]["target"] == "追高"
+    assert review["why_win_rate_not_higher"]["root_causes"]

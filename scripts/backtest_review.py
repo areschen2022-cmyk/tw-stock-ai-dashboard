@@ -46,6 +46,85 @@ def _row_summary(row: dict | None, label_key: str = "label") -> dict:
     }
 
 
+def _qualified_weak_segments(rows: list[dict], min_completed: int = 10) -> list[dict]:
+    output = []
+    for row in rows:
+        completed = int(_num(row.get("completed")))
+        avg_return = row.get("avg_return_5d")
+        win_rate = row.get("win_rate_5d")
+        stop_hit = row.get("stop_hit_rate")
+        if completed < min_completed:
+            continue
+        weak_return = avg_return is not None and _num(avg_return) < 0
+        weak_win = win_rate is not None and _num(win_rate) < 42
+        high_stop = stop_hit is not None and _num(stop_hit) >= 45
+        if weak_return or weak_win or high_stop:
+            output.append(row)
+    return output
+
+
+def _why_win_rate_not_higher(
+    *,
+    stats: dict,
+    score_bands: list[dict],
+    theme_stats: list[dict],
+    action_stats: list[dict],
+    weak_segments: list[dict],
+    postmortem: dict,
+) -> dict:
+    overall_win = _num(stats.get("win_rate_5d"))
+    overall_avg = _num(stats.get("avg_return_5d"))
+    notes: list[str] = []
+
+    weak_score = _first(score_bands, "avg_return_5d", reverse=False)
+    if weak_score and _num(weak_score.get("completed")) >= 20:
+        notes.append(
+            f"{weak_score.get('label')} 分區拖累："
+            f"完成 {int(_num(weak_score.get('completed')))} 筆，"
+            f"5日勝率 {_num(weak_score.get('win_rate_5d')):.1f}%，"
+            f"平均 {_num(weak_score.get('avg_return_5d')):.1f}%。"
+        )
+
+    weak_theme = _first(theme_stats, "avg_return_5d", reverse=False)
+    if weak_theme and _num(weak_theme.get("completed")) >= 10:
+        notes.append(
+            f"弱題材集中：{weak_theme.get('label') or weak_theme.get('theme')} "
+            f"5日平均 {_num(weak_theme.get('avg_return_5d')):.1f}%，"
+            f"停損率 {_num(weak_theme.get('stop_hit_rate')):.1f}%。"
+        )
+
+    weak_action = _first(action_stats, "avg_return_5d", reverse=False)
+    if weak_action and _num(weak_action.get("completed")) >= 5:
+        notes.append(
+            f"操作型態拖累：{weak_action.get('label') or weak_action.get('action')} "
+            f"5日平均 {_num(weak_action.get('avg_return_5d')):.1f}%。"
+        )
+
+    failure_rows = ((postmortem.get("failure_attribution") or {}).get("rows") or [])
+    if failure_rows:
+        top_failure = failure_rows[0]
+        notes.append(
+            f"主要失敗歸因：{top_failure.get('label')} "
+            f"{top_failure.get('count')} 筆，"
+            f"5日平均 {_num(top_failure.get('avg_return_5d')):.1f}%。"
+        )
+
+    if not notes:
+        if overall_win < 50 or overall_avg < 0:
+            notes.append("近期整體勝率或平均報酬偏弱，但尚未形成足夠集中的可歸因區塊。")
+        else:
+            notes.append("近期勝率不高但平均報酬仍為正，代表少數強勢股彌補部分失敗訊號。")
+
+    return {
+        "headline": (
+            f"近期 5 日勝率 {overall_win:.1f}%，平均報酬 {overall_avg:.1f}%；"
+            "需降低高分追價與弱題材追高。"
+        ),
+        "root_causes": notes[:6],
+        "guard_segments": _qualified_weak_segments(weak_segments)[:8],
+    }
+
+
 def build_review(performance: dict) -> dict:
     stats = performance.get("stats") or {}
     quality = performance.get("data_quality") or {}
@@ -73,7 +152,7 @@ def build_review(performance: dict) -> dict:
     risk_level = "normal"
     if completed < 30:
         risk_level = "sample_too_small"
-    elif win_rate < 45 or avg_return < 0:
+    elif win_rate < 50 or avg_return < 0:
         risk_level = "needs_review"
     elif win_rate >= 52 and avg_return > 0:
         risk_level = "constructive"
@@ -115,6 +194,14 @@ def build_review(performance: dict) -> dict:
             "failure_factors": (learning.get("failure_factors") or [])[:8],
             "notes": learning.get("notes") or [],
         },
+        "why_win_rate_not_higher": _why_win_rate_not_higher(
+            stats=stats,
+            score_bands=score_bands,
+            theme_stats=theme_stats,
+            action_stats=action_stats,
+            weak_segments=weak_segments,
+            postmortem=postmortem,
+        ),
         "review_actions": calibration[:8],
         "adaptive_feedback": adaptive[:8],
         "quality_gates": {

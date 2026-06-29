@@ -42,6 +42,7 @@ from src.report.monitoring import detect_alerts
 from src.report.potential_radar import build_potential_radar_candidates
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
+from src.scoring.backtest_guard import apply_backtest_guard, load_backtest_guard
 from src.scoring.knowledge_adjustment import apply_knowledge_adjustment, load_knowledge_context
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -57,6 +58,16 @@ def attach_delivery_status(payload: dict, store: SQLiteStore, delivery_date: dat
     payload.setdefault("health", {})["report_date"] = delivery_date.isoformat()
     payload.setdefault("health", {})["telegram_delivery"] = status
     return status
+
+
+def load_optional_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def parse_args() -> argparse.Namespace:
@@ -399,6 +410,13 @@ def main() -> int:
             knowledge_context.get("source", "unknown"),
             len(knowledge_context.get("rows") or []),
         )
+    backtest_guard = load_backtest_guard(ROOT)
+    if backtest_guard.get("active"):
+        logging.info(
+            "Backtest guard active from %s (%s weak segments)",
+            backtest_guard.get("as_of", "unknown"),
+            len(backtest_guard.get("segments") or []),
+        )
     retail_rows = store.latest_retail_holder_signals(limit=200)
     retail_map = {str(row.get("stock_id")): row for row in retail_rows}
 
@@ -498,6 +516,7 @@ def main() -> int:
             config=config,
         )
         apply_knowledge_adjustment(score, knowledge_context)
+        apply_backtest_guard(score, backtest_guard)
         results.append(score)
         store.save_daily_score(score, as_of)
         store.save_institutional_flow(stock_id, bundle.get("institutional"))
@@ -565,6 +584,9 @@ def main() -> int:
         exit_risks,
         retail_divergence=retail_divergence,
     )
+    us_stock_context = load_optional_json(ROOT / "data" / "us_stock_context.json")
+    if us_stock_context:
+        dashboard_payload["us_stock_context"] = us_stock_context
     attach_delivery_status(dashboard_payload, store, delivery_date)
     ai_status = {}
     ai_reviews = run_ai_council(
