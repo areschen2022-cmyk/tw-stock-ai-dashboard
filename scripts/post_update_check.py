@@ -19,6 +19,7 @@ REQUIRED_DASHBOARD_FILES = [
     "weekly.html",
     "weekly_data.json",
     "debug_data.json",
+    "backtest_review.json",
 ]
 
 
@@ -101,6 +102,7 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     performance = payloads.get("performance_data.json") or {}
     potential = payloads.get("potential_data.json") or {}
     debug = payloads.get("debug_data.json") or {}
+    backtest_review = payloads.get("backtest_review.json") or {}
 
     as_of = str(dashboard.get("as_of") or "")
     weekly_as_of = str(weekly.get("as_of") or "")
@@ -120,6 +122,26 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
                 "weekly",
                 f"weekly_data.as_of({weekly_as_of}) differs from dashboard.as_of({as_of})",
                 "Confirm weekly overview is written after the current run date is resolved.",
+            )
+        )
+
+    review_as_of = str(backtest_review.get("as_of") or "")
+    if as_of and review_as_of and as_of != review_as_of:
+        issues.append(
+            _issue(
+                "warning",
+                "backtest_review",
+                f"backtest_review.as_of({review_as_of}) differs from dashboard.as_of({as_of})",
+                "Run scripts/backtest_review.py after performance_data.json is generated.",
+            )
+        )
+    if backtest_review and backtest_review.get("status") != "ok":
+        issues.append(
+            _issue(
+                "warning",
+                "backtest_review",
+                f"Backtest review status is {backtest_review.get('status')}",
+                "Open dashboard/backtest_review.json and inspect review_actions/adaptive_feedback.",
             )
         )
 

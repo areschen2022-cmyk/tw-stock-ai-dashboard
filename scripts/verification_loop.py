@@ -63,6 +63,7 @@ def _check_dashboard_sync(root: Path) -> dict:
         "weekly_data.json",
         "theme_history.json",
         "debug_data.json",
+        "backtest_review.json",
         "post_update_check.json",
     ]
     mismatches = []

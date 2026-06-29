@@ -1,0 +1,35 @@
+from scripts.backtest_review import build_review
+
+
+def test_build_backtest_review_extracts_core_sections():
+    review = build_review(
+        {
+            "as_of": "2026-06-26",
+            "stats": {
+                "signals": 10,
+                "completed": 6,
+                "win_rate_5d": 66.7,
+                "avg_return_5d": 2.1,
+                "stop_hit_rate": 10.0,
+            },
+            "data_quality": {"completion_rate_5d": 60.0},
+            "score_bands": [
+                {"label": "85-94", "signals": 4, "completed": 3, "avg_return_5d": 3.0},
+                {"label": "95-100", "signals": 6, "completed": 3, "avg_return_5d": -1.0},
+            ],
+            "action_stats": [
+                {"action": "開盤確認", "signals": 5, "completed": 3, "avg_return_5d": 1.5}
+            ],
+            "calibration_advice": [{"priority": "觀察", "group": "強度", "label": "S+"}],
+            "adaptive_feedback": [{"source": "失敗歸因", "target": "追高", "action": "降低權重"}],
+        }
+    )
+
+    assert review["as_of"] == "2026-06-26"
+    assert review["status"] == "ok"
+    assert review["risk_level"] == "sample_too_small"
+    assert review["summary"]["signals"] == 10
+    assert review["best"]["score_band"]["label"] == "85-94"
+    assert review["weak"]["score_band"]["label"] == "95-100"
+    assert review["review_actions"][0]["label"] == "S+"
+    assert review["adaptive_feedback"][0]["target"] == "追高"
