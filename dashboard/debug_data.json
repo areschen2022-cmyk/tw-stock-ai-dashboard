@@ -1,11 +1,11 @@
 {
   "as_of": "2026-06-30",
-  "generated_at": "2026-07-01T05:02:38+08:00",
-  "dashboard_generated_at": "2026-07-01T05:02:32+08:00",
+  "generated_at": "2026-07-01T05:57:07+08:00",
+  "dashboard_generated_at": "2026-07-01T05:57:04+08:00",
   "source_status": {
     "label": "正常",
-    "api": 11,
-    "cache": 3544,
+    "api": 3,
+    "cache": 3597,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -185,10 +185,10 @@
   "data_source_health": {
     "label": "可用但待補",
     "blocking_count": 0,
-    "historical_failed_count": 16,
-    "failed_recovered_ratio": 0.1212,
-    "pending_count": 19,
-    "failed_count": 16,
+    "historical_failed_count": 22,
+    "failed_recovered_ratio": 0.1594,
+    "pending_count": 13,
+    "failed_count": 22,
     "recovered_count": 116,
     "effective_error": 0,
     "effective_empty": 0,
@@ -246,15 +246,6 @@
     },
     "retry_diagnosis": [
       {
-        "status": "pending",
-        "dataset": "TaiwanStockDividend",
-        "reason": "",
-        "count": 12,
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
-        "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
         "status": "failed",
         "dataset": "TaiwanStockMonthRevenue",
         "reason": "",
@@ -262,6 +253,24 @@
         "last_attempt_at": "2026-06-24T07:21:51+08:00",
         "first_seen_at": "2026-06-24T05:58:57+08:00",
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
+      },
+      {
+        "status": "failed",
+        "dataset": "TaiwanStockDividend",
+        "reason": "",
+        "count": 7,
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
+        "first_seen_at": "2026-07-01T04:33:26+08:00",
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockDividend",
+        "reason": "",
+        "count": 6,
+        "last_attempt_at": "2026-06-03T23:41:26+08:00",
+        "first_seen_at": "2026-06-03T19:23:15+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
         "status": "pending",
@@ -343,15 +352,6 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "failed",
-        "dataset": "TaiwanStockDividend",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-03T06:39:05+08:00",
-        "first_seen_at": "2026-06-03T04:39:14+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       }
     ],
     "recovered_by_dataset": [
@@ -428,23 +428,14 @@
   },
   "retry": {
     "status_counts": {
-      "failed": 16,
-      "pending": 19,
+      "failed": 22,
+      "pending": 13,
       "recovered": 116
     },
-    "pending": 19,
-    "failed": 16,
+    "pending": 13,
+    "failed": 22,
     "recovered": 116,
     "diagnosis": [
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockDividend",
-        "reason": "",
-        "count": 12,
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
-        "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
       {
         "status": "failed",
         "dataset": "TaiwanStockMonthRevenue",
@@ -453,6 +444,24 @@
         "last_attempt_at": "2026-06-24T07:21:51+08:00",
         "first_seen_at": "2026-06-24T05:58:57+08:00",
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
+      },
+      {
+        "status": "failed",
+        "dataset": "TaiwanStockDividend",
+        "reason": "",
+        "count": 7,
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
+        "first_seen_at": "2026-07-01T04:33:26+08:00",
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockDividend",
+        "reason": "",
+        "count": 6,
+        "last_attempt_at": "2026-06-03T23:41:26+08:00",
+        "first_seen_at": "2026-06-03T19:23:15+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
         "status": "pending",
@@ -534,15 +543,6 @@
         "last_attempt_at": "2026-06-04T06:40:59+08:00",
         "first_seen_at": "2026-06-04T04:37:03+08:00",
         "suggestion": "逾時類：保留重試，若連續失敗再降低批次大小。"
-      },
-      {
-        "status": "failed",
-        "dataset": "TaiwanStockDividend",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-03T06:39:05+08:00",
-        "first_seen_at": "2026-06-03T04:39:14+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       }
     ],
     "recovered_by_dataset": [
@@ -563,10 +563,10 @@
         "data_id": "2454",
         "period": "2026-02-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -575,10 +575,10 @@
         "data_id": "3711",
         "period": "2026-01-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -587,10 +587,10 @@
         "data_id": "2382",
         "period": "2026-01-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -599,10 +599,10 @@
         "data_id": "2882",
         "period": "2026-01-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -611,10 +611,10 @@
         "data_id": "2881",
         "period": "2026-01-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -623,10 +623,10 @@
         "data_id": "1301",
         "period": "2026-01-01",
         "reason": "",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:02:38+08:00",
+        "last_attempt_at": "2026-07-01T05:57:07+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -663,7 +663,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 11 | 快取 3544 | 限流 0"
+        "note": "API 3 | 快取 3597 | 限流 0"
       },
       {
         "key": "score",
@@ -697,8 +697,8 @@
         "key": "retry",
         "label": "補抓佇列",
         "status": "warn",
-        "value": "待補 19",
-        "note": "已補 116 | 失敗 16"
+        "value": "待補 13",
+        "note": "已補 116 | 失敗 22"
       },
       {
         "key": "pages",
@@ -755,7 +755,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=11; cache=3544; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3597; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -763,14 +763,14 @@
         "status": "warn",
         "label": "補抓佇列",
         "reason": "補抓佇列仍有待補或失敗紀錄。",
-        "evidence": "pending=38; recovered=232; failed=32",
+        "evidence": "pending=26; recovered=232; failed=44",
         "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。"
       }
     ],
     "history": [
       {
         "run_date": "2026-06-30",
-        "generated_at": "2026-07-01T05:02:38+08:00",
+        "generated_at": "2026-07-01T05:57:07+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -826,7 +826,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 11 | 快取 3544 | 限流 0"
+            "note": "API 3 | 快取 3597 | 限流 0"
           },
           {
             "key": "score",
@@ -860,8 +860,8 @@
             "key": "retry",
             "label": "補抓佇列",
             "status": "warn",
-            "value": "待補 19",
-            "note": "已補 116 | 失敗 16"
+            "value": "待補 13",
+            "note": "已補 116 | 失敗 22"
           },
           {
             "key": "pages",
