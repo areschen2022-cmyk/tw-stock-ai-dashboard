@@ -1,7 +1,7 @@
 {
   "as_of": "2026-07-01",
-  "generated_at": "2026-07-02T06:02:17+08:00",
-  "dashboard_generated_at": "2026-07-02T06:02:14+08:00",
+  "generated_at": "2026-07-02T06:17:09+08:00",
+  "dashboard_generated_at": "2026-07-02T06:17:05+08:00",
   "source_status": {
     "label": "正常",
     "api": 3,
@@ -213,10 +213,10 @@
   "data_source_health": {
     "label": "可用但待補",
     "blocking_count": 0,
-    "historical_failed_count": 23,
-    "failed_recovered_ratio": 0.1655,
-    "pending_count": 13,
-    "failed_count": 23,
+    "historical_failed_count": 22,
+    "failed_recovered_ratio": 0.1594,
+    "pending_count": 14,
+    "failed_count": 22,
     "recovered_count": 116,
     "effective_error": 0,
     "effective_empty": 0,
@@ -301,15 +301,6 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
-        "status": "failed",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 3,
-        "last_attempt_at": "2026-07-02T06:02:17+08:00",
-        "first_seen_at": "2026-07-02T04:32:51+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
-      },
-      {
         "status": "pending",
         "dataset": "TaiwanStockMarginPurchaseShortSale",
         "reason": "",
@@ -317,6 +308,24 @@
         "last_attempt_at": "2026-06-23T06:23:24+08:00",
         "first_seen_at": "2026-06-23T04:34:13+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-07-02T06:02:17+08:00",
+        "first_seen_at": "2026-07-02T04:32:51+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "failed",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-06-28T19:01:50+08:00",
+        "first_seen_at": "2026-06-26T11:24:33+08:00",
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "failed",
@@ -334,15 +343,6 @@
         "count": 2,
         "last_attempt_at": "2026-06-23T06:45:32+08:00",
         "first_seen_at": "2026-06-23T05:03:07+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-30T05:53:37+08:00",
-        "first_seen_at": "2026-06-30T04:32:17+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
@@ -456,12 +456,12 @@
   },
   "retry": {
     "status_counts": {
-      "failed": 23,
-      "pending": 13,
+      "failed": 22,
+      "pending": 14,
       "recovered": 116
     },
-    "pending": 13,
-    "failed": 23,
+    "pending": 14,
+    "failed": 22,
     "recovered": 116,
     "diagnosis": [
       {
@@ -492,15 +492,6 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
-        "status": "failed",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 3,
-        "last_attempt_at": "2026-07-02T06:02:17+08:00",
-        "first_seen_at": "2026-07-02T04:32:51+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
-      },
-      {
         "status": "pending",
         "dataset": "TaiwanStockMarginPurchaseShortSale",
         "reason": "",
@@ -508,6 +499,24 @@
         "last_attempt_at": "2026-06-23T06:23:24+08:00",
         "first_seen_at": "2026-06-23T04:34:13+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "pending",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-07-02T06:02:17+08:00",
+        "first_seen_at": "2026-07-02T04:32:51+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
+        "status": "failed",
+        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+        "reason": "",
+        "count": 2,
+        "last_attempt_at": "2026-06-28T19:01:50+08:00",
+        "first_seen_at": "2026-06-26T11:24:33+08:00",
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "failed",
@@ -525,15 +534,6 @@
         "count": 2,
         "last_attempt_at": "2026-06-23T06:45:32+08:00",
         "first_seen_at": "2026-06-23T05:03:07+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "pending",
-        "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-30T05:53:37+08:00",
-        "first_seen_at": "2026-06-30T04:32:17+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
@@ -591,7 +591,7 @@
         "data_id": "6446",
         "period": "2026-01-01",
         "reason": "",
-        "status": "failed",
+        "status": "pending",
         "attempts": 3,
         "first_seen_at": "2026-07-02T04:32:51+08:00",
         "last_attempt_at": "2026-07-02T06:02:17+08:00",
@@ -698,13 +698,13 @@
         "label": "每日評分",
         "status": "ok",
         "value": "83/83 檔",
-        "note": "S+ 1 | S 4 | A 7"
+        "note": "S+ 1 | S 4 | A 6"
       },
       {
         "key": "watch",
         "label": "進場追蹤",
         "status": "ok",
-        "value": "512 筆",
+        "value": "511 筆",
         "note": "完成 297 | 5日勝率 44.1%"
       },
       {
@@ -725,8 +725,8 @@
         "key": "retry",
         "label": "補抓佇列",
         "status": "warn",
-        "value": "待補 13",
-        "note": "已補 116 | 失敗 23"
+        "value": "待補 14",
+        "note": "已補 116 | 失敗 22"
       },
       {
         "key": "pages",
@@ -739,7 +739,7 @@
     "summary": {
       "scanned": 83,
       "valid": 83,
-      "watch_signals": 512,
+      "watch_signals": 511,
       "watch_completed": 297,
       "potential_signals": 216,
       "potential_completed": 111,
@@ -791,14 +791,14 @@
         "status": "warn",
         "label": "補抓佇列",
         "reason": "補抓佇列仍有待補或失敗紀錄。",
-        "evidence": "pending=26; recovered=232; failed=46",
+        "evidence": "pending=28; recovered=232; failed=44",
         "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。"
       }
     ],
     "history": [
       {
         "run_date": "2026-07-01",
-        "generated_at": "2026-07-02T06:02:17+08:00",
+        "generated_at": "2026-07-02T06:17:09+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -810,7 +810,7 @@
         "summary": {
           "scanned": 83,
           "valid": 83,
-          "watch_signals": 512,
+          "watch_signals": 511,
           "watch_completed": 297,
           "potential_signals": 216,
           "potential_completed": 111,
@@ -861,13 +861,13 @@
             "label": "每日評分",
             "status": "ok",
             "value": "83/83 檔",
-            "note": "S+ 1 | S 4 | A 7"
+            "note": "S+ 1 | S 4 | A 6"
           },
           {
             "key": "watch",
             "label": "進場追蹤",
             "status": "ok",
-            "value": "512 筆",
+            "value": "511 筆",
             "note": "完成 297 | 5日勝率 44.1%"
           },
           {
@@ -888,8 +888,8 @@
             "key": "retry",
             "label": "補抓佇列",
             "status": "warn",
-            "value": "待補 13",
-            "note": "已補 116 | 失敗 23"
+            "value": "待補 14",
+            "note": "已補 116 | 失敗 22"
           },
           {
             "key": "pages",
@@ -2274,7 +2274,7 @@
   },
   "performance": {
     "stats": {
-      "signals": 512,
+      "signals": 511,
       "completed": 297,
       "win_rate_5d": 44.107744107744104,
       "avg_return_5d": -0.06116700566660494,
