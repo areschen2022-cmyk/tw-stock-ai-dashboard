@@ -1,14 +1,14 @@
 {
   "as_of": "2026-07-02",
-  "generated_at": "2026-07-03T04:32:54+08:00",
-  "dashboard_generated_at": "2026-07-03T04:32:50+08:00",
+  "generated_at": "2026-07-03T05:02:26+08:00",
+  "dashboard_generated_at": "2026-07-03T05:02:23+08:00",
   "source_status": {
-    "label": "部分限流",
-    "api": 29,
-    "cache": 3473,
+    "label": "正常",
+    "api": 4,
+    "cache": 3567,
     "fallback": 2,
     "quota": 0,
-    "error": 1,
+    "error": 0,
     "empty": 1,
     "official_snapshots": {
       "tpex_quotes": {
@@ -36,9 +36,9 @@
         "source": "official"
       },
       "revenue_tpex": {
-        "date": "",
-        "valid": false,
-        "rows": 0,
+        "date": "2026-05-01",
+        "valid": true,
+        "rows": 890,
         "source": "official"
       },
       "revenue_emerging": {
@@ -85,13 +85,11 @@
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "官方快照未通過日期/內容檢查 1 項",
       "已由備援/補抓補回 118 次"
     ],
     "event_summary": {
       "empty": 1,
-      "fallback": 2,
-      "error": 1
+      "fallback": 2
     },
     "details": [
       {
@@ -109,13 +107,6 @@
         "reason": "twse_month_missing"
       },
       {
-        "type": "error",
-        "dataset": "mopsfin_t187ap05_O",
-        "data_id": "all",
-        "period": "",
-        "reason": "fetch_failed"
-      },
-      {
         "type": "fallback",
         "dataset": "revenue",
         "data_id": "7769",
@@ -124,18 +115,11 @@
       }
     ],
     "recovery_status": {
-      "label": "retry_ready",
-      "retryable": 1,
+      "label": "clean",
+      "retryable": 0,
       "blocked": 0,
       "recovered": 3,
       "items": [
-        {
-          "dataset": "mopsfin_t187ap05_O",
-          "data_id": "all",
-          "period": "",
-          "type": "error",
-          "next_step": "retry_range"
-        },
         {
           "dataset": "STOCK_DAY",
           "data_id": "TAIEX",
@@ -185,9 +169,9 @@
         "source": "official"
       },
       "revenue_tpex": {
-        "date": "",
-        "valid": false,
-        "rows": 0,
+        "date": "2026-05-01",
+        "valid": true,
+        "rows": 890,
         "source": "official"
       },
       "revenue_emerging": {
@@ -209,12 +193,12 @@
         "source": "official"
       }
     },
-    "official_valid": 7,
-    "official_invalid": 1
+    "official_valid": 8,
+    "official_invalid": 0
   },
   "data_source_health": {
-    "label": "需檢查",
-    "blocking_count": 1,
+    "label": "可用但待補",
+    "blocking_count": 0,
     "historical_failed_count": 22,
     "failed_recovered_ratio": 0.1594,
     "pending_count": 15,
@@ -222,8 +206,8 @@
     "recovered_count": 116,
     "effective_error": 0,
     "effective_empty": 0,
-    "official_valid": 7,
-    "official_invalid": 1,
+    "official_valid": 8,
+    "official_invalid": 0,
     "official_snapshots": {
       "tpex_quotes": {
         "date": "2026-07-02",
@@ -250,9 +234,9 @@
         "source": "official"
       },
       "revenue_tpex": {
-        "date": "",
-        "valid": false,
-        "rows": 0,
+        "date": "2026-05-01",
+        "valid": true,
+        "rows": 890,
         "source": "official"
       },
       "revenue_emerging": {
@@ -352,7 +336,7 @@
         "dataset": "mopsfin_t187ap05_O",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-03T04:32:54+08:00",
+        "last_attempt_at": "2026-07-03T05:02:26+08:00",
         "first_seen_at": "2026-07-03T04:32:54+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
@@ -545,7 +529,7 @@
         "dataset": "mopsfin_t187ap05_O",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-03T04:32:54+08:00",
+        "last_attempt_at": "2026-07-03T05:02:26+08:00",
         "first_seen_at": "2026-07-03T04:32:54+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
@@ -596,9 +580,9 @@
         "period": "",
         "reason": "fetch_failed",
         "status": "pending",
-        "attempts": 1,
+        "attempts": 2,
         "first_seen_at": "2026-07-03T04:32:54+08:00",
-        "last_attempt_at": "2026-07-03T04:32:54+08:00",
+        "last_attempt_at": "2026-07-03T05:02:26+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -693,9 +677,9 @@
       {
         "key": "source",
         "label": "資料源",
-        "status": "bad",
-        "value": "部分限流",
-        "note": "API 29 | 快取 3473 | 限流 0"
+        "status": "warn",
+        "value": "正常",
+        "note": "API 4 | 快取 3567 | 限流 0"
       },
       {
         "key": "score",
@@ -784,10 +768,10 @@
     "diagnosis": [
       {
         "key": "source",
-        "status": "bad",
+        "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=部分限流; quality=high; api=29; cache=3473; quota=0; error=1",
+        "evidence": "source=正常; quality=high; api=4; cache=3567; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -802,9 +786,9 @@
     "history": [
       {
         "run_date": "2026-07-02",
-        "generated_at": "2026-07-03T04:32:54+08:00",
-        "overall_status": "bad",
-        "source_status": "bad",
+        "generated_at": "2026-07-03T05:02:26+08:00",
+        "overall_status": "warn",
+        "source_status": "warn",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
@@ -856,9 +840,9 @@
           {
             "key": "source",
             "label": "資料源",
-            "status": "bad",
-            "value": "部分限流",
-            "note": "API 29 | 快取 3473 | 限流 0"
+            "status": "warn",
+            "value": "正常",
+            "note": "API 4 | 快取 3567 | 限流 0"
           },
           {
             "key": "score",
