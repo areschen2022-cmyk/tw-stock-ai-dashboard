@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T06:17:10+08:00",
+  "generated_at": "2026-07-03T04:32:55+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,13 +7,33 @@
     "info": 1
   },
   "context": {
-    "as_of": "2026-07-01",
-    "weekly_as_of": "2026-07-01",
+    "as_of": "2026-07-02",
+    "weekly_as_of": "2026-07-02",
     "rows": 83,
     "valid": 83,
-    "chase": 5,
+    "chase": 2,
     "pullback": 5,
     "data_updates": [
+      {
+        "update_date": "2026-07-02",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 83,
+        "source_date": "2026-07-02",
+        "message": "83 stocks scanned for institutional flow",
+        "run_id": "28619621307",
+        "created_at": "2026-07-02 20:32:49"
+      },
+      {
+        "update_date": "2026-07-02",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=30)",
+        "run_id": "28619621307",
+        "created_at": "2026-07-02 20:31:56"
+      },
       {
         "update_date": "2026-07-01",
         "dataset": "institutional_flow",
@@ -21,8 +41,8 @@
         "row_count": 83,
         "source_date": "2026-07-01",
         "message": "83 stocks scanned for institutional flow",
-        "run_id": "28551264054",
-        "created_at": "2026-07-01 22:17:05"
+        "run_id": "28554267263",
+        "created_at": "2026-07-01 23:21:50"
       },
       {
         "update_date": "2026-07-01",
@@ -93,26 +113,6 @@
         "message": "53 stocks scanned for institutional flow",
         "run_id": "28214952168",
         "created_at": "2026-06-26 03:24:29"
-      },
-      {
-        "update_date": "2026-06-25",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3992,
-        "source_date": "2026-06-18",
-        "message": "32 divergence signals; previous=2026-06-12",
-        "run_id": "28204006995",
-        "created_at": "2026-06-25 22:19:27"
-      },
-      {
-        "update_date": "2026-06-24",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 84,
-        "source_date": "2026-06-24",
-        "message": "84 stocks scanned for institutional flow",
-        "run_id": "28135960812",
-        "created_at": "2026-06-24 23:21:40"
       }
     ]
   },
@@ -120,7 +120,7 @@
     "daily_scores": 83,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 7
+    "recent_tdcc_update_rows": 6
   },
   "issues": [
     {
