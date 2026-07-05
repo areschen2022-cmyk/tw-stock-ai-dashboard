@@ -806,11 +806,13 @@ def build_dashboard_payload(
                 "theme_boosts": theme_signal.policy.theme_boosts,
                 "matched_headlines": theme_signal.policy.matched_headlines,
                 "us_events": theme_signal.policy.us_events,
+                "tw_events": getattr(theme_signal.policy, "tw_events", []),
             } if theme_signal and theme_signal.policy else {
                 "summary": "未納入",
                 "theme_boosts": {},
                 "matched_headlines": {},
                 "us_events": [],
+                "tw_events": [],
             },
             "discovery": theme_signal.discovered_themes if theme_signal else [],
             "chain_map": _theme_chain_payload(config),

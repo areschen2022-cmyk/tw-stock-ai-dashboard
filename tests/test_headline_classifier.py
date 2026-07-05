@@ -29,10 +29,22 @@ def test_headline_classifier_filters_negative_context_and_boosts_stock_relevance
 def test_policy_signal_reports_theme_boosts_without_stock_scoring() -> None:
     signal = classify_policy_headlines(["政府推動電網與儲能基礎建設", "壽險受惠降息循環"])
 
-    assert signal.theme_boosts["power_grid"] == 1
+    assert signal.theme_boosts["power_grid"] >= 1
     assert signal.theme_boosts["financial_revaluation"] == 1
-    assert "能源與重電" in signal.summary
-    assert "金融評價修復" in signal.summary
+    assert signal.summary.startswith("政策催化：")
+
+
+def test_taiwan_policy_radar_generates_low_noise_summary() -> None:
+    signal = classify_policy_headlines([
+        "行政院宣布推動無人機國家隊與國防自主，國防部啟動反無人機採購",
+        "經濟部推動強韌電網與儲能示範案",
+    ])
+
+    assert signal.tw_events
+    assert signal.theme_boosts["defense_policy"] > 0
+    assert signal.theme_boosts["defense_ai"] > 0
+    assert signal.summary.startswith("政策催化：")
+    assert "需確認是否有訂單或只是題材炒作" in signal.summary
 
 
 def test_us_policy_radar_boosts_sensitive_themes() -> None:

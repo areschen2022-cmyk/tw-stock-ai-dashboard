@@ -1,13 +1,9 @@
 name: Deploy GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "docs/**"
-      - "dashboard/**"
-      - ".github/workflows/pages.yml"
+  # Manual fallback only. The main daily workflow already deploys GitHub Pages
+  # after updating dashboard/docs. Running this workflow on every push can
+  # create duplicate Pages deployments for the same commit.
   workflow_dispatch:
 
 permissions:
