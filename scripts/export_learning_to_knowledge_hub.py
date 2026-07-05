@@ -192,6 +192,44 @@ def build_knowledge_points(performance: dict) -> list[dict]:
             )
         )
 
+    current_backtest = performance.get("current_selection_backtest") or {}
+    for section, polarity in [("strong_references", "正向"), ("weak_references", "偏弱")]:
+        for row in (current_backtest.get(section) or [])[:8]:
+            profile = row.get("historical_profile") or {}
+            completed = _int(profile.get("completed"))
+            if completed <= 0:
+                continue
+            name = _text(row.get("name"), "")
+            stock_id = _text(row.get("stock_id"), "")
+            action = _text(row.get("action"), "")
+            grade = _text(row.get("grade"), "")
+            avg_return = profile.get("avg_return_5d")
+            win_rate = profile.get("win_rate_5d")
+            theme_tags = [_text(theme, "") for theme in (row.get("themes") or []) if theme]
+            topic_label = f"{stock_id} {name}".strip() or "候選股"
+            claim = (
+                f"{topic_label} 的今日條件歷史參考為{polarity}："
+                f"{completed} 筆樣本，5 日平均報酬 {_fmt_pct(avg_return)}，"
+                f"5 日勝率 {_fmt_pct(win_rate)}。"
+            )
+            evidence = (
+                f"grade={grade}, action={action}, match_type={profile.get('match_type')}, "
+                f"same_profile_completed={profile.get('same_profile_completed')}, "
+                f"interpretation={row.get('interpretation', '')}"
+            )
+            points.append(
+                _knowledge(
+                    topic=f"今日候選股同條件回測：{topic_label}",
+                    claim=claim,
+                    evidence=evidence,
+                    tags=["今日候選股", "同條件回測", polarity, grade, action, *theme_tags],
+                    completed=completed,
+                    avg_return_5d=avg_return,
+                    win_rate_5d=win_rate,
+                    source_ref=source_ref,
+                )
+            )
+
     return _dedupe_by_id(points)
 
 

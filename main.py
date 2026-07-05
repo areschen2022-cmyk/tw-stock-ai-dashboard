@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 from src.ai.model_council import run_ai_council, select_ai_picks
+from src.backtest.current_selection import build_current_selection_backtest, write_current_selection_backtest
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
@@ -658,6 +659,15 @@ def main() -> int:
     store.update_potential_forward_returns(as_of)
     store.update_knowledge_forward_returns(as_of)
     performance_payload = store.performance_summary(as_of, days=30)
+    current_selection_backtest = build_current_selection_backtest(dashboard_payload, performance_payload)
+    dashboard_payload["current_selection_backtest"] = {
+        "candidate_count": current_selection_backtest.get("candidate_count", 0),
+        "referenceable_count": current_selection_backtest.get("referenceable_count", 0),
+        "strong_reference_count": current_selection_backtest.get("strong_reference_count", 0),
+        "weak_reference_count": current_selection_backtest.get("weak_reference_count", 0),
+        "summary": current_selection_backtest.get("summary", {}),
+    }
+    performance_payload["current_selection_backtest"] = current_selection_backtest
     traceability_payload = build_traceability_summary(dashboard_payload, performance_payload)
     traceability_record = dict(traceability_payload)
     traceability_record["diagnosis"] = build_traceability_diagnosis(traceability_payload, dashboard_payload)
@@ -667,6 +677,7 @@ def main() -> int:
     write_dashboard(dashboard_payload, ROOT / "dashboard")
     write_performance(performance_payload, ROOT / "dashboard")
     write_potential(performance_payload, ROOT / "dashboard")
+    write_current_selection_backtest(current_selection_backtest, ROOT / "dashboard")
     write_debug(build_debug_payload(dashboard_payload, performance_payload), ROOT / "dashboard")
     theme_history_payload = store.all_theme_history(list(config.get("theme_pools", {}).keys()), days=30)
     write_theme_history(
