@@ -90,6 +90,27 @@ def retail_holder_counts(
     return grouped
 
 
+def big_holder_ratios(
+    rows: Iterable[TdccHoldingRow],
+    *,
+    big_holder_levels: set[int] | None = None,
+) -> dict[date, dict[str, float]]:
+    """Return TDCC large-holder ownership ratio by stock.
+
+    TDCC holding ranges differ slightly by source naming, so callers can override
+    the level set. The default uses the high-end levels that normally correspond
+    to holders above roughly 1,000 lots.
+    """
+    levels = big_holder_levels or {15, 16, 17}
+    grouped: dict[date, dict[str, float]] = {}
+    for row in rows:
+        if row.holding_level not in levels or row.ratio_pct is None:
+            continue
+        grouped.setdefault(row.data_date, {})
+        grouped[row.data_date][row.stock_id] = grouped[row.data_date].get(row.stock_id, 0.0) + float(row.ratio_pct)
+    return grouped
+
+
 def _decode_csv(content: bytes | str) -> str:
     if isinstance(content, str):
         return content

@@ -141,6 +141,16 @@ class SQLiteStore:
                     stock_type_label TEXT,
                     position_hint TEXT,
                     position_hint_label TEXT,
+                    lifecycle_stage TEXT,
+                    lifecycle_stage_label TEXT,
+                    lifecycle_reason TEXT,
+                    smart_money TEXT,
+                    smart_money_label TEXT,
+                    smart_money_reason TEXT,
+                    smart_money_score INTEGER,
+                    branch_zscore_proxy REAL,
+                    institutional_follow INTEGER,
+                    signal_combo TEXT,
                     return_3d REAL,
                     return_5d REAL,
                     return_10d REAL,
@@ -170,6 +180,16 @@ class SQLiteStore:
                 ("stock_type_label", "TEXT"),
                 ("position_hint", "TEXT"),
                 ("position_hint_label", "TEXT"),
+                ("lifecycle_stage", "TEXT"),
+                ("lifecycle_stage_label", "TEXT"),
+                ("lifecycle_reason", "TEXT"),
+                ("smart_money", "TEXT"),
+                ("smart_money_label", "TEXT"),
+                ("smart_money_reason", "TEXT"),
+                ("smart_money_score", "INTEGER"),
+                ("branch_zscore_proxy", "REAL"),
+                ("institutional_follow", "INTEGER"),
+                ("signal_combo", "TEXT"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -363,6 +383,39 @@ class SQLiteStore:
                     holder_count INTEGER NOT NULL,
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (week_date, stock_id)
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS tdcc_holder_metrics (
+                    week_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    retail_holders INTEGER,
+                    retail_holder_change INTEGER,
+                    retail_holder_change_pct REAL,
+                    big_holder_pct REAL,
+                    big_holder_change_pct REAL,
+                    source TEXT NOT NULL DEFAULT 'tdcc',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (week_date, stock_id)
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS block_trade_anomalies (
+                    trade_date TEXT NOT NULL,
+                    stock_id TEXT NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    block_value REAL,
+                    zscore REAL,
+                    signal TEXT NOT NULL DEFAULT '',
+                    source TEXT NOT NULL DEFAULT '',
+                    reason TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (trade_date, stock_id)
                 )
                 """
             )
@@ -941,6 +994,117 @@ class SQLiteStore:
                     ),
                 )
 
+    def save_tdcc_holder_metrics(self, metrics: list[dict], week_date: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM tdcc_holder_metrics WHERE week_date = ?", (week_date.isoformat(),))
+            for item in metrics:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO tdcc_holder_metrics (
+                        week_date, stock_id, name, retail_holders,
+                        retail_holder_change, retail_holder_change_pct,
+                        big_holder_pct, big_holder_change_pct, source
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        week_date.isoformat(),
+                        str(item.get("stock_id") or ""),
+                        str(item.get("name") or ""),
+                        item.get("retail_holders"),
+                        item.get("retail_holder_change"),
+                        item.get("retail_holder_change_pct"),
+                        item.get("big_holder_pct"),
+                        item.get("big_holder_change_pct"),
+                        str(item.get("source") or "tdcc"),
+                    ),
+                )
+
+    def latest_tdcc_holder_metrics(self, week_date: date | None = None, limit: int = 200) -> list[dict]:
+        with self._connect() as conn:
+            target = week_date.isoformat() if week_date else conn.execute(
+                "SELECT MAX(week_date) FROM tdcc_holder_metrics"
+            ).fetchone()[0]
+            if not target:
+                return []
+            rows = conn.execute(
+                """
+                SELECT week_date, stock_id, name, retail_holders, retail_holder_change,
+                       retail_holder_change_pct, big_holder_pct, big_holder_change_pct, source
+                FROM tdcc_holder_metrics
+                WHERE week_date = ?
+                ORDER BY COALESCE(big_holder_change_pct, 0) DESC, COALESCE(big_holder_pct, 0) DESC
+                LIMIT ?
+                """,
+                (target, limit),
+            ).fetchall()
+        return [
+            {
+                "week_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "retail_holders": row[3],
+                "retail_holder_change": row[4],
+                "retail_holder_change_pct": row[5],
+                "big_holder_pct": row[6],
+                "big_holder_change_pct": row[7],
+                "source": row[8],
+            }
+            for row in rows
+        ]
+
+    def save_block_trade_anomalies(self, anomalies: list[dict], trade_date: date) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM block_trade_anomalies WHERE trade_date = ?", (trade_date.isoformat(),))
+            for item in anomalies:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO block_trade_anomalies (
+                        trade_date, stock_id, name, block_value, zscore, signal, source, reason
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        trade_date.isoformat(),
+                        str(item.get("stock_id") or ""),
+                        str(item.get("name") or ""),
+                        item.get("block_value"),
+                        item.get("zscore"),
+                        str(item.get("signal") or ""),
+                        str(item.get("source") or ""),
+                        str(item.get("reason") or ""),
+                    ),
+                )
+
+    def latest_block_trade_anomalies(self, trade_date: date | None = None, limit: int = 50) -> list[dict]:
+        with self._connect() as conn:
+            target = trade_date.isoformat() if trade_date else conn.execute(
+                "SELECT MAX(trade_date) FROM block_trade_anomalies"
+            ).fetchone()[0]
+            if not target:
+                return []
+            rows = conn.execute(
+                """
+                SELECT trade_date, stock_id, name, block_value, zscore, signal, source, reason
+                FROM block_trade_anomalies
+                WHERE trade_date = ?
+                ORDER BY COALESCE(zscore, 0) DESC, COALESCE(block_value, 0) DESC
+                LIMIT ?
+                """,
+                (target, limit),
+            ).fetchall()
+        return [
+            {
+                "trade_date": row[0],
+                "stock_id": row[1],
+                "name": row[2],
+                "block_value": row[3],
+                "zscore": row[4],
+                "signal": row[5],
+                "source": row[6],
+                "reason": row[7],
+            }
+            for row in rows
+        ]
+
     def save_knowledge_adjustments(self, scores: list[StockScore], as_of: date, stock_names: dict[str, str]) -> None:
         records = [
             score
@@ -1062,8 +1226,10 @@ class SQLiteStore:
                         reason, tags_json, themes_json, entry_price, stage, stage_label,
                         chase_risk, chase_risk_label, research_score, research_label,
                         research_factors_json, stock_type, stock_type_label, position_hint,
-                        position_hint_label
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        position_hint_label, lifecycle_stage, lifecycle_stage_label,
+                        lifecycle_reason, smart_money, smart_money_label, smart_money_reason,
+                        smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -1088,6 +1254,16 @@ class SQLiteStore:
                         item.get("stock_type_label"),
                         item.get("position_hint"),
                         item.get("position_hint_label"),
+                        item.get("lifecycle_stage"),
+                        item.get("lifecycle_stage_label"),
+                        item.get("lifecycle_reason"),
+                        item.get("smart_money"),
+                        item.get("smart_money_label"),
+                        item.get("smart_money_reason"),
+                        item.get("smart_money_score"),
+                        item.get("branch_zscore_proxy"),
+                        1 if item.get("institutional_follow") else 0,
+                        item.get("signal_combo"),
                     ),
                 )
 
@@ -1517,7 +1693,10 @@ class SQLiteStore:
                        research_score, research_label, research_factors_json,
                        stock_type, stock_type_label, position_hint, position_hint_label,
                        return_3d, return_5d, return_10d,
-                       outcome_category, outcome_label, outcome_reason
+                       outcome_category, outcome_label, outcome_reason,
+                       lifecycle_stage, lifecycle_stage_label, lifecycle_reason,
+                       smart_money, smart_money_label, smart_money_reason,
+                       smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo
                 FROM potential_radar_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -1560,6 +1739,16 @@ class SQLiteStore:
                     "outcome_category": category,
                     "outcome_label": label,
                     "outcome_reason": reason,
+                    "lifecycle_stage": row[28] or "",
+                    "lifecycle_stage_label": row[29] or "",
+                    "lifecycle_reason": row[30] or "",
+                    "smart_money": row[31] or "",
+                    "smart_money_label": row[32] or "",
+                    "smart_money_reason": row[33] or "",
+                    "smart_money_score": row[34],
+                    "branch_zscore_proxy": row[35],
+                    "institutional_follow": bool(row[36]) if row[36] is not None else False,
+                    "signal_combo": row[37] or "",
                 }
             )
         with self._connect() as conn:
@@ -1621,6 +1810,9 @@ class SQLiteStore:
             "pending_candidates": pending_candidates,
             "factor_stats": factor_stats,
             "stage_stats": _potential_stage_stats(items),
+            "lifecycle_stats": _potential_bucket_stats(items, "lifecycle_stage_label", "生命週期待標記"),
+            "smart_money_stats": _potential_bucket_stats(items, "smart_money_label", "資金待確認"),
+            "combo_stats": _potential_bucket_stats(items, "signal_combo", "未分類", limit=12),
             "promotion_funnel": _potential_promotion_funnel(items, occurrence_counts),
             "strong_factors": _rank_potential_factors(factor_stats, reverse=True),
             "weak_factors": _rank_potential_factors(factor_stats, reverse=False),
@@ -3011,6 +3203,36 @@ def _potential_stage_stats(items: list[dict]) -> list[dict]:
     return rows
 
 
+def _potential_bucket_stats(items: list[dict], field: str, fallback: str, limit: int = 8) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        label = str(item.get(field) or fallback)
+        buckets.setdefault(label, []).append(item)
+    rows = []
+    for label, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        success = [
+            item for item in completed
+            if item.get("outcome_category") in {"potential_big_winner", "potential_success"}
+        ]
+        failure = [item for item in completed if item.get("outcome_category") == "potential_false_positive"]
+        rows.append(
+            {
+                "label": label,
+                "signals": len(bucket),
+                "completed": len(completed),
+                "pending": len([item for item in bucket if item.get("return_5d") is None]),
+                "success_count": len(success),
+                "failure_count": len(failure),
+                "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "avg_return_10d": _avg([item.get("return_10d") for item in completed if item.get("return_10d") is not None]),
+            }
+        )
+    rows.sort(key=lambda row: (int(row["completed"]), int(row["signals"]), str(row["label"])), reverse=True)
+    return rows[:limit]
+
+
 def _potential_factor_label(tag: str) -> str:
     if "籌碼轉乾淨" in tag or "散戶減少" in tag:
         return "散戶減少/籌碼轉乾淨"
@@ -3046,6 +3268,14 @@ def _potential_factor_label(tag: str) -> str:
         return tag.split(":", 1)[1] if ":" in tag else tag
     if tag.startswith("階段:"):
         return tag.replace("階段:", "", 1)
+    if tag.startswith("生命週期:"):
+        return tag.replace("生命週期:", "", 1)
+    if tag.startswith("資金節奏:"):
+        return tag.replace("資金節奏:", "", 1)
+    if tag.startswith("組合:"):
+        return tag.replace("組合:", "", 1)
+    if tag in {"主力先行", "法人同步"}:
+        return tag
     return tag[:24] if tag else ""
 
 

@@ -35,11 +35,22 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         if points < 5:
             continue
         stage = _stage(row, score, grade, tags, chase_risk["level"])
+        lifecycle = _lifecycle_stage(row, score, grade, tags, chase_risk["level"])
+        smart_money = _smart_money_signal(row, score, grade, tags, chase_risk["level"])
+        if smart_money["key"] == "lead":
+            points += 2
+            tags.append("主力先行")
+        elif smart_money["key"] == "sync":
+            tags.append("法人同步")
         research = _research_filter(row, score, grade, tags, chase_risk["level"])
         stock_type = _stock_type(row, score, grade, tags, stage["key"])
         position = _position_hint(row, chase_risk["level"])
+        combo = _signal_combo(lifecycle["label"], smart_money["label"], tags)
         tags.extend(
             [
+                f"生命週期:{lifecycle['label']}",
+                f"資金節奏:{smart_money['label']}",
+                f"組合:{combo}",
                 f"快篩:{research['label']}",
                 f"類型:{stock_type['label']}",
                 f"部位:{position['label']}",
@@ -71,7 +82,17 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
                 "stock_type_label": stock_type["label"],
                 "position_hint": position["key"],
                 "position_hint_label": position["label"],
-                "tags": _dedupe(tags)[:10],
+                "lifecycle_stage": lifecycle["key"],
+                "lifecycle_stage_label": lifecycle["label"],
+                "lifecycle_reason": lifecycle["reason"],
+                "smart_money": smart_money["key"],
+                "smart_money_label": smart_money["label"],
+                "smart_money_reason": smart_money["reason"],
+                "smart_money_score": smart_money["score"],
+                "branch_zscore_proxy": smart_money["zscore"],
+                "institutional_follow": smart_money["institutional_follow"],
+                "signal_combo": combo,
+                "tags": _dedupe(tags)[:12],
                 "reason": _reason(points, tags, stage["label"], chase_risk["label"]),
             }
         )
@@ -263,6 +284,87 @@ def _stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_r
     if chase_risk == "medium":
         return {"key": "wait_cooldown", "label": "降溫觀察"}
     return {"key": "low_base", "label": "低位醞釀"}
+
+
+def _lifecycle_stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, str]:
+    """Classify signal age without changing buy decisions.
+
+    The label is for tracking whether a radar idea was found early, while it was
+    already maturing, or after it became crowded/extended.
+    """
+    text = _text(
+        row.get("trigger_summary"),
+        row.get("technical"),
+        row.get("risk"),
+        *(row.get("trigger_tags") or []),
+        *tags,
+    )
+    if chase_risk == "high" or score >= 94 or grade == "S+" or _has_any(text, ["過熱", "追高", "20日高", "漲停"]):
+        return {"key": "extended", "label": "過熱/延伸", "reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。"}
+    if score >= 80 or grade in {"A", "S"} or _has_any(text, ["突破", "站上", "法人", "外資"]):
+        return {"key": "maturing", "label": "成熟", "reason": "訊號已成形，需等待開盤價量或回測驗證。"}
+    return {"key": "fresh", "label": "初動", "reason": "題材或籌碼開始靠攏，但分數尚未完全反映。"}
+
+
+def _smart_money_signal(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, Any]:
+    text = _text(
+        row.get("trigger_summary"),
+        row.get("chip"),
+        row.get("technical"),
+        row.get("retail_context"),
+        row.get("retail_context_reason"),
+        *(row.get("trigger_tags") or []),
+        *tags,
+    )
+    opportunity = _int(row.get("opportunity_score"))
+    chip = _int(row.get("chip_score"))
+    technical = _int(row.get("technical_score"))
+    zscore = round(min(4.5, max(0.0, opportunity / 4 + max(0, technical - 10) / 12 + max(0, chip) / 18)), 2)
+    institutional_follow = _has_any(text, ["外資", "投信", "法人買", "法人共振", "外資買超", "投信買超"]) or chip >= 14
+    retail_clean = _has_any(text, ["散戶減少", "籌碼轉乾淨", "觀察轉乾淨"])
+    price_ready = _has_any(text, ["突破", "站上", "整理", "放量", "量增"])
+
+    if zscore >= 2.4 and not institutional_follow and chase_risk != "high":
+        return {
+            "key": "lead",
+            "label": "主力先行",
+            "score": int(round(zscore * 20 + (10 if retail_clean else 0))),
+            "zscore": zscore,
+            "institutional_follow": False,
+            "reason": "量價或籌碼先動，但法人尚未明確追上；適合列為提前觀察。",
+        }
+    if institutional_follow and (price_ready or score >= 80):
+        return {
+            "key": "sync",
+            "label": "法人同步",
+            "score": int(round(zscore * 15 + 20)),
+            "zscore": zscore,
+            "institutional_follow": True,
+            "reason": "法人訊號已跟上，較偏確認型訊號。",
+        }
+    return {
+        "key": "none",
+        "label": "資金待確認",
+        "score": int(round(zscore * 10)),
+        "zscore": zscore,
+        "institutional_follow": bool(institutional_follow),
+        "reason": "尚未看出主力先行或法人同步，維持觀察。",
+    }
+
+
+def _signal_combo(lifecycle_label: str, smart_money_label: str, tags: list[str]) -> str:
+    factors: list[str] = []
+    if any("題材升溫" in tag for tag in tags):
+        factors.append("題材")
+    if any("籌碼轉乾淨" in tag or "散戶減少" in tag for tag in tags):
+        factors.append("散戶")
+    if any("K線轉強" in tag for tag in tags):
+        factors.append("K線")
+    if smart_money_label in {"主力先行", "法人同步"}:
+        factors.append(smart_money_label)
+    if not factors:
+        factors.append("一般")
+    return f"{lifecycle_label}|" + "+".join(_dedupe(factors)[:4])
 
 
 def _chase_risk(row: dict[str, Any], score: int, grade: str) -> dict[str, str]:
