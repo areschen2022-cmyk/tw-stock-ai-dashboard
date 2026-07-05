@@ -1,10 +1,10 @@
 {
   "as_of": "2026-07-03",
-  "generated_at": "2026-07-05T22:22:25+08:00",
+  "generated_at": "2026-07-05T22:28:02+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 317,
-  "candidate_count": 8,
-  "referenceable_count": 6,
+  "candidate_count": 9,
+  "referenceable_count": 7,
   "strong_reference_count": 3,
   "weak_reference_count": 1,
   "method": {
@@ -13,7 +13,7 @@
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": 1.07,
+    "avg_reference_return_5d": 1.11,
     "avg_reference_win_rate_5d": 49.2,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
@@ -340,33 +340,36 @@
     {
       "stock_id": "2345",
       "name": "智邦",
-      "score": 81,
-      "grade": "A",
+      "score": 85,
+      "grade": "S",
       "action": "可追蹤突破",
       "entry_decision": "開盤確認",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "網通光通訊"
+      ],
       "trigger_tags": [
+        "題材強共振",
         "法人共振",
         "技術突破",
         "營收加速",
         "高位上影線"
       ],
       "historical_profile": {
-        "completed": 158,
-        "win_rate_5d": 48.10126582278481,
-        "avg_return_5d": 1.0,
-        "stop_hit_rate": 27.21518987341772,
+        "completed": 95,
+        "win_rate_5d": 49.473684210526315,
+        "avg_return_5d": 1.65,
+        "stop_hit_rate": 17.894736842105264,
         "confidence": "可參考",
         "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 95,
-          "win_rate_5d": 48.421052631578945,
-          "avg_return_5d": 0.96,
-          "stop_hit_rate": 32.631578947368425,
+          "completed": 40,
+          "win_rate_5d": 45.0,
+          "avg_return_5d": 0.77,
+          "stop_hit_rate": 25.0,
           "confidence": "可參考"
         },
         "action": {
@@ -590,6 +593,58 @@
         }
       },
       "interpretation": "同條件歷史偏正向，可列入優先觀察。"
+    },
+    {
+      "stock_id": "3596",
+      "name": "智易",
+      "score": 67,
+      "grade": "B",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "red",
+      "themes": [
+        "網通光通訊"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術突破",
+        "散戶過熱",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 220,
+        "win_rate_5d": 48.18181818181818,
+        "avg_return_5d": 0.71,
+        "stop_hit_rate": 34.54545454545455,
+        "confidence": "可參考",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 157,
+          "win_rate_5d": 46.496815286624205,
+          "avg_return_5d": 0.48,
+          "stop_hit_rate": 33.75796178343949,
+          "confidence": "可參考"
+        },
+        "action": {
+          "completed": 69,
+          "win_rate_5d": 53.62318840579711,
+          "avg_return_5d": 1.47,
+          "stop_hit_rate": 36.231884057971016,
+          "confidence": "可參考"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "樣本不足"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
     },
     {
       "stock_id": "2449",
