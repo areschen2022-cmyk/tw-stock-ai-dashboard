@@ -2924,6 +2924,21 @@ def _potential_html() -> str:
         </section>
       </div>
       <div class="stack">
+        <section>
+          <h2>生命週期</h2>
+          <div class="note">初動、成熟、過熱延伸分開驗證，避免把強度誤當成進場點。</div>
+          <table><thead><tr><th>類型</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th></tr></thead><tbody id="lifecycleStats"></tbody></table>
+        </section>
+        <section>
+          <h2>資金節奏</h2>
+          <div class="note">追蹤主力先行、法人同步是否真的比一般訊號有效。</div>
+          <table><thead><tr><th>節奏</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th></tr></thead><tbody id="smartMoneyStats"></tbody></table>
+        </section>
+        <section>
+          <h2>組合勝率</h2>
+          <div class="note">把題材、散戶、K 線、資金節奏合併回測；樣本不足時只當觀察。</div>
+          <table><thead><tr><th>組合</th><th>訊號</th><th>完成</th><th>5日勝率</th><th>5日平均</th></tr></thead><tbody id="comboStats"></tbody></table>
+        </section>
         <section><h2>命中樣本</h2><table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="successRows"></tbody></table></section>
         <section><h2>失敗樣本</h2><table><thead><tr><th>股票</th><th class="stage-col">階段</th><th>5日</th><th>原因</th></tr></thead><tbody id="failureRows"></tbody></table></section>
       </div>
@@ -2963,6 +2978,11 @@ def _potential_html() -> str:
         <td data-label="5日">${pct(row.return_5d)}</td>
       </tr>`;
     }
+    function compactStatsRows(rows, emptyLabel) {
+      return (rows || []).length
+        ? rows.map(row => `<tr><td data-label="類型">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td></tr>`).join("")
+        : `<tr><td data-label="統計" colspan="5">${esc(emptyLabel)}</td></tr>`;
+    }
     function render() {
       const radar = data.potential_radar || {};
       const learning = data.learning_center || {};
@@ -2990,6 +3010,9 @@ def _potential_html() -> str:
       document.querySelector("#candidates").innerHTML = potentialRows.length ? potentialRows.slice(0, 12).map(row => `<tr><td data-label="股票">${stock(row)}${Number(row.occurrence_count || 1) > 1 ? `<div class="small">近30日出現 ${esc(row.occurrence_count)} 次</div>` : ""}</td><td data-label="階段">${stageTag(row)}<div class="small">${esc(row.signal_date || "")}</div></td><td data-label="研究快篩">${researchCell(row)}</td><td data-label="3日">${pct(row.return_3d)}</td><td data-label="理由"><b>${esc(row.grade)}｜${esc(row.total_score)}/100</b><div class="small">${esc(row.reason || "")}</div>${row.chase_risk_label ? `<div class="small">追高檢查：${esc(row.chase_risk_label)}</div>` : ""}<div>${tags(row)}</div></td></tr>`).join("") : `<tr><td data-label="潛力觀察" colspan="5">目前沒有符合條件的潛力觀察</td></tr>`;
       document.querySelector("#factorStats").innerHTML = (radar.factor_stats || []).length ? radar.factor_stats.map(row => `<tr><td data-label="因素">${esc(row.label)}</td><td data-label="訊號">${esc(row.signals)}</td><td data-label="完成">${esc(row.completed)}</td><td data-label="5日勝率">${neutralPct(row.win_rate_5d)}</td><td data-label="5日平均">${pct(row.avg_return_5d)}</td><td data-label="成功/失敗">${esc(row.success_count || 0)} / ${esc(row.failure_count || 0)}</td></tr>`).join("") : `<tr><td data-label="因素" colspan="6">因素樣本仍在累積中</td></tr>`;
       document.querySelector("#factorNotes").innerHTML = (radar.factor_notes || []).map(note => `- ${esc(note)}`).join("<br>");
+      document.querySelector("#lifecycleStats").innerHTML = compactStatsRows(radar.lifecycle_stats, "生命週期樣本仍在累積中");
+      document.querySelector("#smartMoneyStats").innerHTML = compactStatsRows(radar.smart_money_stats, "資金節奏樣本仍在累積中");
+      document.querySelector("#comboStats").innerHTML = compactStatsRows(radar.combo_stats, "訊號組合樣本仍在累積中");
       document.querySelector("#successRows").innerHTML = (radar.success_cases || []).length ? radar.success_cases.map(signalRow).join("") : `<tr><td data-label="命中樣本" colspan="4">尚無已驗證命中樣本</td></tr>`;
       document.querySelector("#failureRows").innerHTML = (radar.failure_cases || []).length ? radar.failure_cases.map(signalRow).join("") : `<tr><td data-label="失敗樣本" colspan="4">尚無已驗證失敗樣本</td></tr>`;
     }
