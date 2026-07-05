@@ -1,4 +1,4 @@
-name: Taiwan Stock AI Daily
+﻿name: Taiwan Stock AI Daily
 
 on:
   push:
@@ -220,7 +220,25 @@ jobs:
       - name: Deploy GitHub Pages
         if: env.SKIP_PAGES_DEPLOY != 'true'
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v5
+
+      - name: Wait before Pages retry
+        if: env.SKIP_PAGES_DEPLOY != 'true' && steps.deployment.outcome == 'failure'
+        run: sleep 60
+
+      - name: Retry GitHub Pages deploy
+        if: env.SKIP_PAGES_DEPLOY != 'true' && steps.deployment.outcome == 'failure'
+        id: deployment_retry
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+
+      - name: Fail if Pages deployment failed
+        if: >-
+          env.SKIP_PAGES_DEPLOY != 'true' &&
+          steps.deployment.outcome == 'failure' &&
+          steps.deployment_retry.outcome == 'failure'
+        run: exit 1
 
       - name: Notify dashboard failure
         if: failure()
@@ -359,10 +377,10 @@ jobs:
             <head>
               <meta charset="utf-8">
               <meta http-equiv="refresh" content="0; url=dashboard/">
-              <title>台股 AI 開盤前監控</title>
+              <title>?啗 AI ????/title>
             </head>
             <body>
-              <a href="dashboard/">前往台股 AI 開盤前監控</a>
+              <a href="dashboard/">???啗 AI ????/a>
             </body>
           </html>
           HTML
