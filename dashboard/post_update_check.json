@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T10:59:01+08:00",
+  "generated_at": "2026-07-07T04:32:23+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,13 +7,33 @@
     "info": 1
   },
   "context": {
-    "as_of": "2026-07-03",
-    "weekly_as_of": "2026-07-03",
-    "rows": 89,
-    "valid": 89,
-    "chase": 1,
+    "as_of": "2026-07-06",
+    "weekly_as_of": "2026-07-06",
+    "rows": 131,
+    "valid": 131,
+    "chase": 5,
     "pullback": 5,
     "data_updates": [
+      {
+        "update_date": "2026-07-06",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 131,
+        "source_date": "2026-07-06",
+        "message": "131 stocks scanned for institutional flow",
+        "run_id": "28821189835",
+        "created_at": "2026-07-06 20:32:18"
+      },
+      {
+        "update_date": "2026-07-06",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=30)",
+        "run_id": "28821189835",
+        "created_at": "2026-07-06 20:31:18"
+      },
       {
         "update_date": "2026-07-05",
         "dataset": "tdcc_retail_holders",
@@ -93,31 +113,11 @@
         "message": "50 divergence signals; previous=2026-06-18",
         "run_id": "28479251910",
         "created_at": "2026-06-30 22:14:30"
-      },
-      {
-        "update_date": "2026-06-29",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 127,
-        "source_date": "2026-06-29",
-        "message": "127 stocks scanned for institutional flow",
-        "run_id": "28409167626",
-        "created_at": "2026-06-29 23:21:57"
-      },
-      {
-        "update_date": "2026-06-29",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3999,
-        "source_date": "2026-06-26",
-        "message": "50 divergence signals; previous=2026-06-18",
-        "run_id": "28405781795",
-        "created_at": "2026-06-29 22:07:12"
       }
     ]
   },
   "database": {
-    "daily_scores": 89,
+    "daily_scores": 131,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 4
