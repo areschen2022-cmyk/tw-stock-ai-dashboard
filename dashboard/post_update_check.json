@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-06T05:57:50+08:00",
+  "generated_at": "2026-07-06T10:54:17+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
     "warning": 0,
-    "info": 1
+    "info": 2
   },
   "context": {
     "as_of": "2026-07-03",
     "weekly_as_of": "2026-07-03",
-    "rows": 86,
-    "valid": 86,
-    "chase": 1,
-    "pullback": 5,
+    "rows": 89,
+    "valid": 89,
+    "chase": 2,
+    "pullback": 1,
     "data_updates": [
       {
         "update_date": "2026-07-05",
@@ -28,11 +28,11 @@
         "update_date": "2026-07-03",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 86,
+        "row_count": 89,
         "source_date": "2026-07-03",
-        "message": "86 stocks scanned for institutional flow",
-        "run_id": "28756206130",
-        "created_at": "2026-07-05 21:57:45"
+        "message": "89 stocks scanned for institutional flow",
+        "run_id": "",
+        "created_at": "2026-07-06 02:53:46"
       },
       {
         "update_date": "2026-07-02",
@@ -117,7 +117,7 @@
     ]
   },
   "database": {
-    "daily_scores": 86,
+    "daily_scores": 89,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 4
@@ -125,13 +125,19 @@
   "issues": [
     {
       "severity": "info",
+      "area": "ai",
+      "message": "AI council health: 未啟用",
+      "suggestion": "Keep AI as a secondary review signal and verify DEEPSEEK_API_KEY/OpenRouter settings."
+    },
+    {
+      "severity": "info",
       "area": "traceability",
-      "message": "Traceability diagnosis contains 2 item(s)",
+      "message": "Traceability diagnosis contains 3 item(s)",
       "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
     }
   ],
   "next_optimizations": [
-    "Next: compare decision-card outcomes by reason tag to identify which signals deserve more weight."
+    "Stabilize AI review by using one paid primary model plus a cheap backup model."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
 }
