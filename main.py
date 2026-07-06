@@ -12,7 +12,11 @@ from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 from src.ai.model_council import run_ai_council, select_ai_picks
-from src.backtest.current_selection import build_current_selection_backtest, write_current_selection_backtest
+from src.backtest.current_selection import (
+    apply_current_selection_context,
+    build_current_selection_backtest,
+    write_current_selection_backtest,
+)
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
 from src.data_provider.mock_data import MockDataProvider
@@ -668,6 +672,7 @@ def main() -> int:
         "summary": current_selection_backtest.get("summary", {}),
     }
     performance_payload["current_selection_backtest"] = current_selection_backtest
+    apply_current_selection_context(dashboard_payload, current_selection_backtest)
     traceability_payload = build_traceability_summary(dashboard_payload, performance_payload)
     traceability_record = dict(traceability_payload)
     traceability_record["diagnosis"] = build_traceability_diagnosis(traceability_payload, dashboard_payload)

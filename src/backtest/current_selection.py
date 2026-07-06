@@ -27,7 +27,11 @@ def build_current_selection_backtest(dashboard_payload: dict, performance_payloa
     candidates = [_candidate_row(row, history) for row in rows if _is_candidate(row)]
     candidates.sort(key=lambda row: (_action_priority(row), row.get("score", 0)), reverse=True)
 
-    referenceable = [row for row in candidates if (row.get("historical_profile") or {}).get("completed", 0) >= MIN_REFERENCE_SAMPLE]
+    referenceable = [
+        row
+        for row in candidates
+        if (row.get("historical_profile") or {}).get("completed", 0) >= MIN_REFERENCE_SAMPLE
+    ]
     weak = [
         row
         for row in referenceable
@@ -68,6 +72,53 @@ def write_current_selection_backtest(payload: dict, output_dir: Path) -> None:
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def apply_current_selection_context(dashboard_payload: dict, current_backtest: dict) -> None:
+    """Feed same-condition history back into the current dashboard decision layer.
+
+    The adjustment is deliberately conservative:
+    - Strong historical references only add context.
+    - Weak historical references can downgrade a green/chase candidate to yellow
+      confirmation, but they do not hide the stock or alter the numeric score.
+    """
+
+    candidates = {str(row.get("stock_id") or ""): row for row in current_backtest.get("candidates") or []}
+    weak_ids = {str(row.get("stock_id") or "") for row in current_backtest.get("weak_references") or []}
+    strong_ids = {str(row.get("stock_id") or "") for row in current_backtest.get("strong_references") or []}
+
+    for row in dashboard_payload.get("rows") or []:
+        stock_id = str(row.get("stock_id") or "")
+        candidate = candidates.get(stock_id)
+        if not candidate:
+            continue
+        profile = candidate.get("historical_profile") or {}
+        row["historical_reference"] = {
+            "label": _reference_label(candidate),
+            "completed": profile.get("completed", 0),
+            "win_rate_5d": profile.get("win_rate_5d"),
+            "avg_return_5d": profile.get("avg_return_5d"),
+            "confidence": profile.get("confidence"),
+            "interpretation": candidate.get("interpretation"),
+        }
+        if stock_id in weak_ids:
+            row["action_context_reason"] = _append_note(
+                row.get("action_context_reason"),
+                "同條件歷史偏弱，先降低追價衝動",
+            )
+            row["decision_light"] = "yellow"
+            row["decision_light_label"] = "黃燈等確認"
+            row["decision_light_reason"] = _append_note(
+                row.get("decision_light_reason"),
+                "同條件歷史偏弱",
+            )
+        elif stock_id in strong_ids:
+            row["action_context_reason"] = _append_note(
+                row.get("action_context_reason"),
+                "同條件歷史偏正向",
+            )
+
+    _rebalance_action_lists(dashboard_payload, candidates, weak_ids, strong_ids)
 
 
 def _candidate_row(row: dict, history: list[dict]) -> dict:
@@ -115,8 +166,9 @@ def _is_candidate(row: dict) -> bool:
     grade = str(row.get("grade") or "")
     decision = str(row.get("entry_decision") or row.get("action") or "")
     light = str(row.get("decision_light") or "")
+    actionable = {"開盤確認", "等拉回", "可追蹤突破", "可追"}
     return grade in {"S+", "S", "A", "B"} and (
-        light in {"green", "yellow"} or decision in {"開盤確認", "等拉回", "可追蹤突破"}
+        light in {"green", "yellow"} or any(label in decision for label in actionable)
     )
 
 
@@ -127,6 +179,50 @@ def _action_priority(row: dict) -> int:
     if "等拉回" in decision:
         return 2
     return 1
+
+
+def _rebalance_action_lists(
+    dashboard_payload: dict,
+    candidates: dict[str, dict],
+    weak_ids: set[str],
+    strong_ids: set[str],
+) -> None:
+    action_lists = dashboard_payload.get("action_lists") or {}
+    chase = list(action_lists.get("chase") or [])
+    pullback = list(action_lists.get("pullback") or [])
+
+    moved_to_pullback = []
+    kept_chase = []
+    for item in chase:
+        stock_id = str(item.get("stock_id") or "")
+        if stock_id in weak_ids:
+            item = dict(item)
+            item["decision_light"] = "yellow"
+            item["decision_light_label"] = "黃燈等確認"
+            item["decision_light_reason"] = _append_note(item.get("decision_light_reason"), "同條件歷史偏弱")
+            item["action_context"] = "同條件偏弱，等確認"
+            item["action_context_reason"] = _append_note(item.get("action_context_reason"), "先不追價")
+            moved_to_pullback.append(item)
+        else:
+            kept_chase.append(item)
+
+    def sort_key(item: dict) -> tuple[int, int, float, int]:
+        stock_id = str(item.get("stock_id") or "")
+        profile = (candidates.get(stock_id) or {}).get("historical_profile") or {}
+        return (
+            1 if stock_id in strong_ids else 0,
+            0 if stock_id in weak_ids else 1,
+            _num(profile.get("avg_return_5d")),
+            int(item.get("score") or 0),
+        )
+
+    action_lists["chase"] = sorted(kept_chase, key=sort_key, reverse=True)[:5]
+    action_lists["pullback"] = sorted([*moved_to_pullback, *pullback], key=sort_key, reverse=True)[:5]
+    summary = action_lists.setdefault("summary", {})
+    summary["chase"] = len(action_lists["chase"])
+    summary["pullback"] = len(action_lists["pullback"])
+    summary["historical_strong"] = len(strong_ids)
+    summary["historical_weak"] = len(weak_ids)
 
 
 def _theme_overlap(left: list[str], right: list[str]) -> bool:
@@ -175,22 +271,45 @@ def _summary(rows: list[dict]) -> dict:
 def _interpret(profile: dict) -> str:
     completed = int(profile.get("completed") or 0)
     if completed < MIN_REFERENCE_SAMPLE:
-        return "歷史樣本不足，只能先記錄追蹤。"
+        return "樣本不足，不直接影響決策；只作追蹤參考。"
     avg_return = _num(profile.get("avg_return_5d"))
     win_rate = _num(profile.get("win_rate_5d"))
     if avg_return > 1 and win_rate >= 50:
-        return "同條件歷史偏正向，可列入優先觀察。"
+        return "同條件歷史偏正向，可以保留在優先觀察名單。"
     if avg_return < 0 or win_rate < 42:
-        return "同條件歷史偏弱，需降低追價衝動。"
+        return "同條件歷史偏弱，避免開盤直接追價。"
     return "同條件歷史中性，仍以開盤價量確認為準。"
+
+
+def _reference_label(candidate: dict) -> str:
+    profile = candidate.get("historical_profile") or {}
+    completed = int(profile.get("completed") or 0)
+    if completed < MIN_REFERENCE_SAMPLE:
+        return "樣本不足"
+    avg_return = _num(profile.get("avg_return_5d"))
+    win_rate = _num(profile.get("win_rate_5d"))
+    if avg_return > 1 and win_rate >= 50:
+        return "同條件偏強"
+    if avg_return < 0 or win_rate < 42:
+        return "同條件偏弱"
+    return "同條件中性"
+
+
+def _append_note(text: object, note: str) -> str:
+    base = str(text or "").strip()
+    if not base:
+        return note
+    if note in base:
+        return base
+    return f"{base}；{note}"
 
 
 def _confidence_label(completed: int) -> str:
     if completed >= 30:
-        return "可參考"
+        return "高"
     if completed >= MIN_REFERENCE_SAMPLE:
-        return "樣本普通"
-    return "樣本不足"
+        return "中"
+    return "低"
 
 
 def _pct(count: int, total: int) -> float | None:
