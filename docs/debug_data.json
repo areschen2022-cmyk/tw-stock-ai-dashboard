@@ -1,11 +1,11 @@
 {
   "as_of": "2026-07-07",
-  "generated_at": "2026-07-08T05:56:20+08:00",
-  "dashboard_generated_at": "2026-07-08T05:56:17+08:00",
+  "generated_at": "2026-07-08T06:09:59+08:00",
+  "dashboard_generated_at": "2026-07-08T06:09:56+08:00",
   "source_status": {
     "label": "正常",
-    "api": 4,
-    "cache": 3592,
+    "api": 3,
+    "cache": 3593,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -185,10 +185,10 @@
   "data_source_health": {
     "label": "可用但待補",
     "blocking_count": 0,
-    "historical_failed_count": 19,
-    "failed_recovered_ratio": 0.1407,
-    "pending_count": 20,
-    "failed_count": 19,
+    "historical_failed_count": 20,
+    "failed_recovered_ratio": 0.1471,
+    "pending_count": 19,
+    "failed_count": 20,
     "recovered_count": 116,
     "effective_error": 0,
     "effective_empty": 0,
@@ -318,13 +318,13 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
-        "status": "pending",
+        "status": "failed",
         "dataset": "T86",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-08T05:56:20+08:00",
+        "last_attempt_at": "2026-07-08T06:09:59+08:00",
         "first_seen_at": "2026-07-08T05:01:47+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "failed",
@@ -428,12 +428,12 @@
   },
   "retry": {
     "status_counts": {
-      "failed": 19,
-      "pending": 20,
+      "failed": 20,
+      "pending": 19,
       "recovered": 116
     },
-    "pending": 20,
-    "failed": 19,
+    "pending": 19,
+    "failed": 20,
     "recovered": 116,
     "diagnosis": [
       {
@@ -509,13 +509,13 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
-        "status": "pending",
+        "status": "failed",
         "dataset": "T86",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-08T05:56:20+08:00",
+        "last_attempt_at": "2026-07-08T06:09:59+08:00",
         "first_seen_at": "2026-07-08T05:01:47+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "failed",
@@ -563,10 +563,10 @@
         "data_id": "all",
         "period": "",
         "reason": "fetch_failed",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-08T05:01:47+08:00",
-        "last_attempt_at": "2026-07-08T05:56:20+08:00",
+        "last_attempt_at": "2026-07-08T06:09:59+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -663,7 +663,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 4 | 快取 3592 | 限流 0"
+        "note": "API 3 | 快取 3593 | 限流 0"
       },
       {
         "key": "score",
@@ -697,8 +697,8 @@
         "key": "retry",
         "label": "補抓佇列",
         "status": "warn",
-        "value": "待補 20",
-        "note": "已補 116 | 失敗 19"
+        "value": "待補 19",
+        "note": "已補 116 | 失敗 20"
       },
       {
         "key": "pages",
@@ -755,7 +755,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=4; cache=3592; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3593; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -763,14 +763,14 @@
         "status": "warn",
         "label": "補抓佇列",
         "reason": "補抓佇列仍有待補或失敗紀錄。",
-        "evidence": "pending=40; recovered=232; failed=38",
+        "evidence": "pending=38; recovered=232; failed=40",
         "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。"
       }
     ],
     "history": [
       {
         "run_date": "2026-07-07",
-        "generated_at": "2026-07-08T05:56:20+08:00",
+        "generated_at": "2026-07-08T06:09:59+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -826,7 +826,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 4 | 快取 3592 | 限流 0"
+            "note": "API 3 | 快取 3593 | 限流 0"
           },
           {
             "key": "score",
@@ -860,8 +860,8 @@
             "key": "retry",
             "label": "補抓佇列",
             "status": "warn",
-            "value": "待補 20",
-            "note": "已補 116 | 失敗 19"
+            "value": "待補 19",
+            "note": "已補 116 | 失敗 20"
           },
           {
             "key": "pages",
