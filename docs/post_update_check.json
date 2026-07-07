@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T06:11:31+08:00",
+  "generated_at": "2026-07-08T04:32:10+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,13 +7,33 @@
     "info": 1
   },
   "context": {
-    "as_of": "2026-07-06",
-    "weekly_as_of": "2026-07-06",
-    "rows": 131,
-    "valid": 131,
+    "as_of": "2026-07-07",
+    "weekly_as_of": "2026-07-07",
+    "rows": 81,
+    "valid": 81,
     "chase": 5,
-    "pullback": 5,
+    "pullback": 3,
     "data_updates": [
+      {
+        "update_date": "2026-07-07",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 81,
+        "source_date": "2026-07-07",
+        "message": "81 stocks scanned for institutional flow",
+        "run_id": "28896569413",
+        "created_at": "2026-07-07 20:32:05"
+      },
+      {
+        "update_date": "2026-07-07",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=30)",
+        "run_id": "28896569413",
+        "created_at": "2026-07-07 20:31:20"
+      },
       {
         "update_date": "2026-07-06",
         "dataset": "institutional_flow",
@@ -21,8 +41,8 @@
         "row_count": 131,
         "source_date": "2026-07-06",
         "message": "131 stocks scanned for institutional flow",
-        "run_id": "28826660473",
-        "created_at": "2026-07-06 22:11:25"
+        "run_id": "28829976386",
+        "created_at": "2026-07-06 23:21:18"
       },
       {
         "update_date": "2026-07-06",
@@ -93,31 +113,11 @@
         "message": "50 divergence signals; previous=2026-06-18",
         "run_id": "28551264054",
         "created_at": "2026-07-01 22:16:34"
-      },
-      {
-        "update_date": "2026-06-30",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 78,
-        "source_date": "2026-06-30",
-        "message": "78 stocks scanned for institutional flow",
-        "run_id": "28482252510",
-        "created_at": "2026-06-30 23:21:51"
-      },
-      {
-        "update_date": "2026-06-30",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3999,
-        "source_date": "2026-06-26",
-        "message": "50 divergence signals; previous=2026-06-18",
-        "run_id": "28479251910",
-        "created_at": "2026-06-30 22:14:30"
       }
     ]
   },
   "database": {
-    "daily_scores": 131,
+    "daily_scores": 81,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 5
