@@ -1,6 +1,6 @@
 {
   "as_of": "2026-07-07",
-  "generated_at": "2026-07-08T04:32:06+08:00",
+  "generated_at": "2026-07-08T05:01:43+08:00",
   "generated_date": "2026-07-08",
   "market": {
     "summary": "健康：指數維持在主要均線上方｜加權-0.48%｜半導體+0.11%｜金融+1.09%｜航運+0.28%｜生技+2.07%",
@@ -24,43 +24,43 @@
     "sector_impacts": [
       {
         "symbol": "RKLB",
-        "change_pct": -10.39853158941546,
+        "change_pct": -10.398531589434556,
         "sector": "低軌衛星/SpaceX",
         "stocks": "3491,2313,2383,6285,3138"
       },
       {
         "symbol": "ASTS",
-        "change_pct": -7.973710756254282,
+        "change_pct": -7.973710756165097,
         "sector": "低軌衛星/SpaceX/光通訊光模組",
         "stocks": "3491,3105,6271,6285,6442"
       },
       {
         "symbol": "COHR",
-        "change_pct": -6.425381751525283,
+        "change_pct": -6.425381751520298,
         "sector": "光通訊光模組",
         "stocks": "6442,3014,4979"
       },
       {
         "symbol": "GLW",
-        "change_pct": -4.835727937048562,
+        "change_pct": -4.835727937075596,
         "sector": "光通訊光模組",
         "stocks": "6442,4979,3163"
       },
       {
         "symbol": "MU",
-        "change_pct": -4.708808846629853,
+        "change_pct": -4.708808846631129,
         "sector": "記憶體/HBM",
         "stocks": "2408,2344,2337,5483"
       },
       {
         "symbol": "LITE",
-        "change_pct": -4.422567775106834,
+        "change_pct": -4.4225677751111085,
         "sector": "光通訊光模組",
         "stocks": "6442,4979,3163"
       },
       {
         "symbol": "NVDA",
-        "change_pct": 0.7056965494693257,
+        "change_pct": 0.7056965494572021,
         "sector": "CPO封裝/未分類",
         "stocks": "2330,2454,3711"
       }
@@ -201,9 +201,9 @@
       ]
     },
     "quality": {
-      "ai_server": "AI high：廣達營收創高，AI伺服器為動能",
+      "ai_server": "AI high：廣達營收創高，明確提及AI伺服器動能",
       "silicon_photonics": "高：新聞含股票代號或公司名",
-      "advanced_packaging": "AI high：標題明確提及台股封測廠與訂單",
+      "advanced_packaging": "AI high：標題明確提及台股封測廠超豐及日月光",
       "robotics": "低：僅單一產業關鍵字",
       "power_grid": "中：多則產業關鍵字命中",
       "defense_ai": "中：多則產業關鍵字命中",
@@ -215,7 +215,7 @@
       "materials_recovery": "低：僅單一產業關鍵字",
       "passive_components": "低：僅單一產業關鍵字",
       "network_optical_communication": "高：新聞含股票代號或公司名",
-      "defense_policy": "AI high：八貫營收創高，軍工題材明確"
+      "defense_policy": "AI high：八貫營收創高，屬軍工概念股"
     },
     "catalyst_confidence": {
       "ai_server": {
@@ -273,9 +273,9 @@
         "evidence_count": 1
       },
       "optics_lens": {
-        "grade": "C",
-        "label": "市場傳聞",
-        "reason": "含傳聞或 sources say 類訊號，需等正式確認",
+        "grade": "B",
+        "label": "高可信報導",
+        "reason": "可信媒體或多源報導，仍需追蹤正式文件",
         "evidence_count": 9
       },
       "edge_ai_device": {
@@ -933,11 +933,11 @@
     }
   },
   "source_status": {
-    "label": "正常",
-    "api": 28,
-    "cache": 3501,
+    "label": "部分限流",
+    "api": 3,
+    "cache": 3592,
     "quota": 0,
-    "error": 0,
+    "error": 1,
     "empty": 1,
     "fallback": 1,
     "events": [
@@ -945,19 +945,26 @@
         "type": "empty",
         "dataset": "STOCK_DAY",
         "data_id": "TAIEX",
-        "period": "2026-01"
+        "period": "2026-01",
+        "reason": "html"
       },
       {
         "type": "fallback",
         "dataset": "stock_prices",
         "data_id": "TAIEX",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "error",
+        "dataset": "T86",
+        "data_id": "all",
+        "reason": "fetch_failed"
       }
     ],
     "fallback_status": {
       "label": "正常",
-      "api": 2,
-      "cache": 3116,
+      "api": 0,
+      "cache": 3118,
       "quota": 0,
       "error": 0,
       "empty": 0,
@@ -1091,21 +1098,21 @@
     "schedule_label": "正常",
     "data_source_label": "部分限流",
     "news_label": "部分失敗",
-    "generated_at": "2026-07-08T04:32:06+08:00",
+    "generated_at": "2026-07-08T05:01:43+08:00",
     "generated_date": "2026-07-08",
     "data_date": "2026-07-07",
     "website_schedule": "04:30 / 05:00",
     "telegram_schedule": "07:20 / 07:35 / 07:50 / 08:05",
-    "provider_label": "正常",
+    "provider_label": "部分限流",
     "news_sources": 15,
     "news_failed": 2,
-    "github_run_id": "28896569413",
+    "github_run_id": "28898331672",
     "github_event": "workflow_dispatch",
     "scheduler": "cloudflare-worker",
     "scheduled_task": "dashboard",
-    "scheduled_cron": "30 20 * * SUN-THU",
-    "scheduled_target_taipei": "2026-07-08T04:30:16+08:00",
-    "schedule_delay_minutes": 1.8,
+    "scheduled_cron": "0 21 * * SUN-THU",
+    "scheduled_target_taipei": "2026-07-08T05:00:16+08:00",
+    "schedule_delay_minutes": 1.5,
     "report_date": "2026-07-08",
     "telegram_delivery": {
       "channel": "telegram",
@@ -1117,11 +1124,11 @@
     }
   },
   "alerts": [
+    "資料源提醒：部分限流，分數需保守解讀",
     "海外偏空：Nasdaq -1.16%；S&P500 -0.45%；SOX 半導體 -4.65%；TSM ADR -4.25%；台指期夜盤 202607 +0.99%",
     "題材升溫：先進封裝/CoWoS(59則)、AI伺服器(升溫↑)、防禦與政策(急升🔥)、AI國防/軍工(急升🔥)、網通光通訊(升溫↑)",
     "題材急升 AI國防/軍工：今日27則（3日均14.0則）",
-    "題材急升 防禦與政策：今日30則（3日均14.0則）",
-    "題材急升 邊緣AI/AI PC：今日3則（3日均1.3則）"
+    "題材急升 防禦與政策：今日30則（3日均14.0則）"
   ],
   "watch_reviews": [
     {
@@ -2685,19 +2692,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+          "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
           "model_reviews": [
             {
               "stock_id": "1717",
               "action": "可追",
               "confidence": 0.75,
-              "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+              "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+        "ai_reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
         "decision_light": "green",
         "decision_light_label": "綠燈可盯",
         "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -2775,19 +2782,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+          "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
           "model_reviews": [
             {
               "stock_id": "2634",
               "action": "可追",
               "confidence": 0.7,
-              "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+              "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+        "ai_reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等確認",
         "decision_light_reason": "K線風險：放量不漲",
@@ -2860,19 +2867,19 @@
           "agreement_count": 1,
           "pick_agreement_count": 1,
           "is_ai_pick": true,
-          "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+          "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
           "model_reviews": [
             {
               "stock_id": "2345",
               "action": "可追",
               "confidence": 0.7,
-              "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+              "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
               "model": "deepseek-chat"
             }
           ]
         },
         "ai_label": "AI 同意",
-        "ai_reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+        "ai_reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
         "decision_light": "green",
         "decision_light_label": "綠燈可盯",
         "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -3295,7 +3302,8 @@
     ],
     "event_summary": {
       "empty": 1,
-      "fallback": 1
+      "fallback": 1,
+      "error": 1
     },
     "details": [
       {
@@ -3303,7 +3311,7 @@
         "dataset": "STOCK_DAY",
         "data_id": "TAIEX",
         "period": "2026-01",
-        "reason": ""
+        "reason": "html"
       },
       {
         "type": "fallback",
@@ -3311,14 +3319,28 @@
         "data_id": "TAIEX",
         "period": "",
         "reason": "twse_month_missing"
+      },
+      {
+        "type": "error",
+        "dataset": "T86",
+        "data_id": "all",
+        "period": "",
+        "reason": "fetch_failed"
       }
     ],
     "recovery_status": {
-      "label": "clean",
-      "retryable": 0,
+      "label": "retry_ready",
+      "retryable": 1,
       "blocked": 0,
       "recovered": 2,
       "items": [
+        {
+          "dataset": "T86",
+          "data_id": "all",
+          "period": "",
+          "type": "error",
+          "next_step": "retry_range"
+        },
         {
           "dataset": "STOCK_DAY",
           "data_id": "TAIEX",
@@ -3393,7 +3415,7 @@
     "blocking_count": 1,
     "historical_failed_count": 19,
     "failed_recovered_ratio": 0.1407,
-    "pending_count": 19,
+    "pending_count": 20,
     "failed_count": 19,
     "recovered_count": 116,
     "effective_error": 0,
@@ -3524,6 +3546,15 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
+        "status": "pending",
+        "dataset": "T86",
+        "reason": "fetch_failed",
+        "count": 1,
+        "last_attempt_at": "2026-07-08T05:01:47+08:00",
+        "first_seen_at": "2026-07-08T05:01:47+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
         "status": "failed",
         "dataset": "mopsfin_t187ap05_O",
         "reason": "fetch_failed",
@@ -3549,15 +3580,6 @@
         "last_attempt_at": "2026-06-25T05:56:37+08:00",
         "first_seen_at": "2026-06-25T04:35:26+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "failed",
-        "dataset": "TaiwanStockPrice",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-25T04:35:26+08:00",
-        "first_seen_at": "2026-06-24T06:10:29+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       }
     ],
     "recovered_by_dataset": [
@@ -3664,13 +3686,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+        "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "1717",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+            "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -3694,7 +3716,7 @@
       "action_context_reason": "符合強度與操作條件；同條件歷史偏正向",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+      "ai_reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
       "decision_light": "green",
       "decision_light_label": "綠燈可盯",
       "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -3812,13 +3834,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+        "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "2634",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+            "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -3842,7 +3864,7 @@
       "action_context_reason": "符合強度與操作條件；同條件歷史偏正向",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+      "ai_reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
       "decision_light": "yellow",
       "decision_light_label": "黃燈等確認",
       "decision_light_reason": "K線風險：放量不漲",
@@ -4230,13 +4252,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+        "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
         "model_reviews": [
           {
             "stock_id": "2345",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+            "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -4260,7 +4282,7 @@
       "action_context_reason": "符合強度與操作條件；同條件歷史偏正向",
       "retail_context": "散戶：籌碼轉乾淨",
       "retail_context_reason": "散戶人數下降且股價未弱，籌碼較乾淨",
-      "ai_reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+      "ai_reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
       "decision_light": "green",
       "decision_light_label": "綠燈可盯",
       "decision_light_reason": "列入可追且 AI 同意，仍需開盤價量確認",
@@ -12318,13 +12340,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+        "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "1717",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+            "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -12341,13 +12363,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+        "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "2634",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+            "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -12359,18 +12381,18 @@
         "score": 88,
         "grade": "S",
         "consensus_action": "等拉回",
-        "confidence": 0.65,
+        "confidence": 0.8,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振、營收加速，但系統建議等拉回，回測保護，建議等待拉回。",
+        "reason": "法人共振、營收加速，但系統建議等拉回，歷史勝率65.5%支持等拉回策略。",
         "model_reviews": [
           {
             "stock_id": "2395",
             "action": "等拉回",
-            "confidence": 0.65,
-            "reason": "法人共振、營收加速，但系統建議等拉回，回測保護，建議等待拉回。",
+            "confidence": 0.8,
+            "reason": "法人共振、營收加速，但系統建議等拉回，歷史勝率65.5%支持等拉回策略。",
             "model": "deepseek-chat"
           }
         ]
@@ -12382,18 +12404,18 @@
         "score": 87,
         "grade": "S",
         "consensus_action": "等拉回",
-        "confidence": 0.6,
+        "confidence": 0.75,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "營收強勁但股價淨值比極高，高位陰包陽，系統建議等拉回，建議等待拉回。",
+        "reason": "營收強勁但股價淨值比極高，高位陰包陽風險，系統建議等拉回，歷史勝率65.5%支持。",
         "model_reviews": [
           {
             "stock_id": "3017",
             "action": "等拉回",
-            "confidence": 0.6,
-            "reason": "營收強勁但股價淨值比極高，高位陰包陽，系統建議等拉回，建議等待拉回。",
+            "confidence": 0.75,
+            "reason": "營收強勁但股價淨值比極高，高位陰包陽風險，系統建議等拉回，歷史勝率65.5%支持。",
             "model": "deepseek-chat"
           }
         ]
@@ -12410,13 +12432,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+        "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
         "model_reviews": [
           {
             "stock_id": "2345",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+            "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -12435,13 +12457,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+        "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "1717",
             "action": "可追",
             "confidence": 0.75,
-            "reason": "法人共振、技術突破、營收加速，風險可接受，建議可追蹤突破。",
+            "reason": "法人共振、技術突破、營收加速，風險可接受，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -12458,13 +12480,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+        "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
         "model_reviews": [
           {
             "stock_id": "2634",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "題材強共振、外資買超、技術突破，但放量不漲需留意，建議可追蹤突破。",
+            "reason": "題材強、外資買超、技術突破，但放量不漲需留意，系統歷史勝率61.5%支持可追。",
             "model": "deepseek-chat"
           }
         ]
@@ -12481,13 +12503,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 1,
         "is_ai_pick": true,
-        "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+        "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
         "model_reviews": [
           {
             "stock_id": "2345",
             "action": "可追",
             "confidence": 0.7,
-            "reason": "法人共振、營收加速，股價淨值比極高但系統建議可追蹤突破，建議可追。",
+            "reason": "法人共振、營收加速，但股價淨值比極高，系統歷史勝率61.5%支持可追，需注意高估值風險。",
             "model": "deepseek-chat"
           }
         ]
@@ -13782,13 +13804,25 @@
   "data_retry": {
     "status_counts": {
       "failed": 19,
-      "pending": 19,
+      "pending": 20,
       "recovered": 116
     },
-    "pending": 19,
+    "pending": 20,
     "failed": 19,
     "recovered": 116,
     "items": [
+      {
+        "dataset": "T86",
+        "data_id": "all",
+        "period": "",
+        "reason": "fetch_failed",
+        "status": "pending",
+        "attempts": 1,
+        "first_seen_at": "2026-07-08T05:01:47+08:00",
+        "last_attempt_at": "2026-07-08T05:01:47+08:00",
+        "last_error": "unsupported_dataset",
+        "recovered_at": null
+      },
       {
         "dataset": "TaiwanStockDividend",
         "data_id": "2317",
@@ -13864,18 +13898,6 @@
       {
         "dataset": "TaiwanStockDividend",
         "data_id": "2882",
-        "period": "2026-01-01",
-        "reason": "",
-        "status": "pending",
-        "attempts": 3,
-        "first_seen_at": "2026-07-01T04:33:26+08:00",
-        "last_attempt_at": "2026-07-01T05:57:07+08:00",
-        "last_error": "unsupported_dataset",
-        "recovered_at": null
-      },
-      {
-        "dataset": "TaiwanStockDividend",
-        "data_id": "2881",
         "period": "2026-01-01",
         "reason": "",
         "status": "pending",
@@ -13960,6 +13982,15 @@
         "suggestion": "待補類：由每日補抓佇列自動重試。"
       },
       {
+        "status": "pending",
+        "dataset": "T86",
+        "reason": "fetch_failed",
+        "count": 1,
+        "last_attempt_at": "2026-07-08T05:01:47+08:00",
+        "first_seen_at": "2026-07-08T05:01:47+08:00",
+        "suggestion": "待補類：由每日補抓佇列自動重試。"
+      },
+      {
         "status": "failed",
         "dataset": "mopsfin_t187ap05_O",
         "reason": "fetch_failed",
@@ -13985,15 +14016,6 @@
         "last_attempt_at": "2026-06-25T05:56:37+08:00",
         "first_seen_at": "2026-06-25T04:35:26+08:00",
         "suggestion": "待補類：由每日補抓佇列自動重試。"
-      },
-      {
-        "status": "failed",
-        "dataset": "TaiwanStockPrice",
-        "reason": "",
-        "count": 1,
-        "last_attempt_at": "2026-06-25T04:35:26+08:00",
-        "first_seen_at": "2026-06-24T06:10:29+08:00",
-        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       }
     ],
     "recovered_by_dataset": [
@@ -14008,7 +14030,21 @@
         "last_recovered_at": "2026-05-24T15:22:25+08:00"
       }
     ],
-    "attempted": []
+    "attempted": [
+      {
+        "dataset": "T86",
+        "data_id": "all",
+        "period": "",
+        "reason": "fetch_failed",
+        "status": "pending",
+        "attempts": 0,
+        "first_seen_at": "2026-07-08T05:01:47+08:00",
+        "last_attempt_at": null,
+        "last_error": "unsupported_dataset",
+        "recovered_at": null,
+        "ok": false
+      }
+    ]
   },
   "current_selection_backtest": {
     "candidate_count": 11,
@@ -14022,14 +14058,14 @@
     }
   },
   "traceability": {
-    "generated_at": "2026-07-08T04:32:09+08:00",
+    "generated_at": "2026-07-08T05:01:47+08:00",
     "steps": [
       {
         "key": "source",
         "label": "資料源",
         "status": "bad",
-        "value": "正常",
-        "note": "API 28 | 快取 3501 | 限流 0"
+        "value": "部分限流",
+        "note": "API 3 | 快取 3592 | 限流 0"
       },
       {
         "key": "score",
@@ -14063,7 +14099,7 @@
         "key": "retry",
         "label": "補抓佇列",
         "status": "warn",
-        "value": "待補 19",
+        "value": "待補 20",
         "note": "已補 116 | 失敗 19"
       },
       {
@@ -14118,7 +14154,7 @@
     "history": [
       {
         "run_date": "2026-07-07",
-        "generated_at": "2026-07-08T04:32:09+08:00",
+        "generated_at": "2026-07-08T05:01:47+08:00",
         "overall_status": "bad",
         "source_status": "bad",
         "score_status": "ok",
@@ -14173,8 +14209,8 @@
             "key": "source",
             "label": "資料源",
             "status": "bad",
-            "value": "正常",
-            "note": "API 28 | 快取 3501 | 限流 0"
+            "value": "部分限流",
+            "note": "API 3 | 快取 3592 | 限流 0"
           },
           {
             "key": "score",
@@ -14208,7 +14244,7 @@
             "key": "retry",
             "label": "補抓佇列",
             "status": "warn",
-            "value": "待補 19",
+            "value": "待補 20",
             "note": "已補 116 | 失敗 19"
           },
           {
