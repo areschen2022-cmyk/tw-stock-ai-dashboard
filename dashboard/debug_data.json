@@ -1,12 +1,12 @@
 {
   "as_of": "2026-07-08",
-  "generated_at": "2026-07-09T04:33:51+08:00",
-  "dashboard_generated_at": "2026-07-09T04:33:48+08:00",
+  "generated_at": "2026-07-09T05:02:59+08:00",
+  "dashboard_generated_at": "2026-07-09T05:02:55+08:00",
   "source_status": {
     "label": "正常",
-    "api": 36,
-    "cache": 3644,
-    "fallback": 4,
+    "api": 3,
+    "cache": 3723,
+    "fallback": 1,
     "quota": 0,
     "error": 0,
     "empty": 1,
@@ -81,15 +81,15 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 120,
+    "recovered_fetches": 117,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 120 次"
+      "已由備援/補抓補回 117 次"
     ],
     "event_summary": {
       "empty": 1,
-      "fallback": 4
+      "fallback": 1
     },
     "details": [
       {
@@ -105,34 +105,13 @@
         "data_id": "TAIEX",
         "period": "",
         "reason": "twse_month_missing"
-      },
-      {
-        "type": "fallback",
-        "dataset": "institutional",
-        "data_id": "1409",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "margin",
-        "data_id": "1409",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "revenue",
-        "data_id": "1409",
-        "period": "",
-        "reason": "cold_history_short"
       }
     ],
     "recovery_status": {
       "label": "clean",
       "retryable": 0,
       "blocked": 0,
-      "recovered": 5,
+      "recovered": 2,
       "items": [
         {
           "dataset": "STOCK_DAY",
@@ -144,27 +123,6 @@
         {
           "dataset": "stock_prices",
           "data_id": "TAIEX",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "institutional",
-          "data_id": "1409",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "margin",
-          "data_id": "1409",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "revenue",
-          "data_id": "1409",
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
@@ -705,7 +663,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 36 | 快取 3644 | 限流 0"
+        "note": "API 3 | 快取 3723 | 限流 0"
       },
       {
         "key": "score",
@@ -797,7 +755,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=36; cache=3644; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3723; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -812,7 +770,7 @@
     "history": [
       {
         "run_date": "2026-07-08",
-        "generated_at": "2026-07-09T04:33:51+08:00",
+        "generated_at": "2026-07-09T05:02:58+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -868,7 +826,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 36 | 快取 3644 | 限流 0"
+            "note": "API 3 | 快取 3723 | 限流 0"
           },
           {
             "key": "score",
