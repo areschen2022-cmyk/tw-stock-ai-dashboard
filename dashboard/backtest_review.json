@@ -1,17 +1,17 @@
 {
   "as_of": "2026-07-09",
-  "generated_at": "2026-07-10T05:59:06+08:00",
+  "generated_at": "2026-07-10T06:18:37+08:00",
   "status": "ok",
   "risk_level": "normal",
   "summary": {
-    "signals": 565,
-    "completed": 344,
-    "win_rate_5d": 50.872093023255815,
-    "avg_return_5d": 1.3685920885354101,
-    "stop_hit_rate": 26.418786692759294,
-    "data_completion_rate_5d": 60.88495575221239,
+    "signals": 566,
+    "completed": 345,
+    "win_rate_5d": 50.72463768115942,
+    "avg_return_5d": 1.3639173281506694,
+    "stop_hit_rate": 26.614481409001954,
+    "data_completion_rate_5d": 60.95406360424028,
     "ai_win_rate_5d": 58.82352941176471,
-    "potential_win_rate_5d": 53.02013422818792
+    "potential_win_rate_5d": 52.666666666666664
   },
   "best": {
     "score_band": {
@@ -24,11 +24,11 @@
     },
     "theme": {
       "label": "原物料/低基期傳產",
-      "signals": 8,
+      "signals": 9,
       "completed": 5,
       "win_rate_5d": 100.0,
       "avg_return_5d": 16.740059440588293,
-      "stop_hit_rate": 0.0
+      "stop_hit_rate": 12.5
     },
     "action": {
       "label": "可追蹤突破",
@@ -44,11 +44,11 @@
       {
         "group": "theme",
         "label": "原物料/低基期傳產",
-        "signals": 8,
+        "signals": 9,
         "completed": 5,
         "win_rate_5d": 100.0,
         "avg_return_5d": 16.740059440588293,
-        "stop_hit_rate": 0.0
+        "stop_hit_rate": 12.5
       },
       {
         "group": "theme",
@@ -107,7 +107,7 @@
     },
     "action": {
       "label": "避免追高",
-      "signals": 11,
+      "signals": 12,
       "completed": 6,
       "win_rate_5d": 50.0,
       "avg_return_5d": 0.2685620286034696,
@@ -165,9 +165,9 @@
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 151,
-        "avg_return_5d": -7.688610458484249,
-        "stop_hit_rate": 52.980132450331126,
+        "count": 152,
+        "avg_return_5d": -7.639634075495539,
+        "stop_hit_rate": 52.63157894736842,
         "examples": [
           {
             "stock_id": "3189",
@@ -189,9 +189,9 @@
       },
       {
         "label": "題材失靈",
-        "count": 135,
-        "avg_return_5d": -6.293038516038038,
-        "stop_hit_rate": 47.40740740740741,
+        "count": 136,
+        "avg_return_5d": -6.2485617640392315,
+        "stop_hit_rate": 47.05882352941176,
         "examples": [
           {
             "stock_id": "3189",
@@ -321,10 +321,10 @@
       },
       {
         "label": "進場觸發後下跌",
-        "count": 162,
-        "completed": 162,
-        "win_rate_5d": 6.790123456790123,
-        "avg_return_5d": -6.937450905930983,
+        "count": 163,
+        "completed": 163,
+        "win_rate_5d": 6.748466257668712,
+        "avg_return_5d": -6.896388018435701,
         "avg_return_10d": null,
         "reason": "進場條件觸發但後續轉弱，代表確認條件可能不足。"
       },
@@ -354,11 +354,11 @@
     ]
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 50.9%，平均報酬 1.4%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 50.7%，平均報酬 1.4%；需降低高分追價與弱題材追高。",
     "root_causes": [
       "85-94 分區拖累：完成 41 筆，5日勝率 43.9%，平均 0.3%。",
       "操作型態拖累：避免追高 5日平均 0.3%。",
-      "主要失敗歸因：進場後轉弱 151 筆，5日平均 -7.7%。"
+      "主要失敗歸因：進場後轉弱 152 筆，5日平均 -7.6%。"
     ],
     "guard_segments": [
       {
@@ -469,8 +469,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "進場後轉弱",
-      "sample": 151,
-      "avg_return_5d": -7.688610458484249,
+      "sample": 152,
+      "avg_return_5d": -7.639634075495539,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -478,8 +478,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "題材失靈",
-      "sample": 135,
-      "avg_return_5d": -6.293038516038038,
+      "sample": 136,
+      "avg_return_5d": -6.2485617640392315,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -532,8 +532,8 @@
       "priority": "medium",
       "source": "潛力雷達",
       "target": "低位醞釀",
-      "sample": 37,
-      "avg_return_5d": 3.1197855927656732,
+      "sample": 38,
+      "avg_return_5d": 3.031259649687623,
       "action": "保留潛力雷達條件",
       "reason": "此階段已有正報酬樣本，可繼續累積。"
     }
