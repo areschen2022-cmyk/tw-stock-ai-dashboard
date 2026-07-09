@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T06:04:06+08:00",
+  "generated_at": "2026-07-10T04:33:25+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,22 +7,42 @@
     "info": 1
   },
   "context": {
-    "as_of": "2026-07-08",
-    "weekly_as_of": "2026-07-08",
+    "as_of": "2026-07-09",
+    "weekly_as_of": "2026-07-09",
     "rows": 84,
     "valid": 84,
-    "chase": 1,
-    "pullback": 2,
+    "chase": 0,
+    "pullback": 4,
     "data_updates": [
+      {
+        "update_date": "2026-07-09",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 84,
+        "source_date": "2026-07-09",
+        "message": "84 stocks scanned for institutional flow",
+        "run_id": "29048134754",
+        "created_at": "2026-07-09 20:33:18"
+      },
+      {
+        "update_date": "2026-07-09",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 4001,
+        "source_date": "2026-07-03",
+        "message": "36 divergence signals; previous=2026-06-26",
+        "run_id": "29048134754",
+        "created_at": "2026-07-09 20:32:24"
+      },
       {
         "update_date": "2026-07-08",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 84,
+        "row_count": 94,
         "source_date": "2026-07-08",
-        "message": "84 stocks scanned for institutional flow",
-        "run_id": "28978785143",
-        "created_at": "2026-07-08 22:04:01"
+        "message": "94 stocks scanned for institutional flow",
+        "run_id": "28982488184",
+        "created_at": "2026-07-08 23:21:26"
       },
       {
         "update_date": "2026-07-08",
@@ -93,26 +113,6 @@
         "message": "89 stocks scanned for institutional flow",
         "run_id": "28764765107",
         "created_at": "2026-07-06 02:58:55"
-      },
-      {
-        "update_date": "2026-07-02",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 82,
-        "source_date": "2026-07-02",
-        "message": "82 stocks scanned for institutional flow",
-        "run_id": "28627759231",
-        "created_at": "2026-07-02 23:21:47"
-      },
-      {
-        "update_date": "2026-07-02",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 3999,
-        "source_date": "2026-06-26",
-        "message": "50 divergence signals; previous=2026-06-18",
-        "run_id": "28624379773",
-        "created_at": "2026-07-02 22:04:25"
       }
     ]
   },
@@ -131,7 +131,7 @@
     }
   ],
   "next_optimizations": [
-    "Next: compare decision-card outcomes by reason tag to identify which signals deserve more weight."
+    "Tune action thresholds only after checking whether zero chase candidates repeats for several days."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
 }
