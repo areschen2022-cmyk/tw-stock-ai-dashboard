@@ -1,10 +1,10 @@
 {
   "as_of": "2026-07-09",
-  "generated_at": "2026-07-10T06:18:36+08:00",
+  "generated_at": "2026-07-10T07:21:32+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 345,
-  "candidate_count": 6,
-  "referenceable_count": 6,
+  "candidate_count": 7,
+  "referenceable_count": 7,
   "strong_reference_count": 3,
   "weak_reference_count": 0,
   "method": {
@@ -13,8 +13,8 @@
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": 0.99,
-    "avg_reference_win_rate_5d": 51.4,
+    "avg_reference_return_5d": 1.0,
+    "avg_reference_win_rate_5d": 51.0,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
   "strong_references": [
@@ -366,6 +366,58 @@
         }
       },
       "interpretation": "同條件歷史偏正向，可以保留在優先觀察名單。"
+    },
+    {
+      "stock_id": "6414",
+      "name": "樺漢",
+      "score": 73,
+      "grade": "B",
+      "action": "只觀察",
+      "entry_decision": "量價不確認取消",
+      "decision_light": "yellow",
+      "themes": [
+        "防禦與政策"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "外資買超",
+        "技術突破",
+        "突破整理",
+        "高位上影線"
+      ],
+      "historical_profile": {
+        "completed": 178,
+        "win_rate_5d": 48.87640449438202,
+        "avg_return_5d": 1.03,
+        "stop_hit_rate": 30.89887640449438,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 167,
+          "win_rate_5d": 50.29940119760479,
+          "avg_return_5d": 1.16,
+          "stop_hit_rate": 29.34131736526946,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 160,
+          "win_rate_5d": 47.5,
+          "avg_return_5d": 0.97,
+          "stop_hit_rate": 30.625000000000004,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
     },
     {
       "stock_id": "3706",
