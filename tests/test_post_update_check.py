@@ -13,7 +13,9 @@ def _write_json(path, payload: dict) -> None:
 
 def _prepare_dashboard_files(root, *, include_weekly: bool = True) -> None:
     dashboard = root / "dashboard"
+    docs = root / "docs"
     dashboard.mkdir()
+    docs.mkdir()
     for name in ["index.html", "performance.html", "potential.html", "weekly.html"]:
         (dashboard / name).write_text("<html></html>", encoding="utf-8")
     _write_json(
@@ -42,6 +44,9 @@ def _prepare_dashboard_files(root, *, include_weekly: bool = True) -> None:
                 ],
             },
         )
+    for path in dashboard.iterdir():
+        if path.is_file():
+            (docs / path.name).write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
 
 
 def _prepare_db(root) -> None:
@@ -90,3 +95,29 @@ def test_post_update_check_reports_missing_weekly_json(tmp_path) -> None:
     assert result["status"] == "bad"
     assert result["counts"]["critical"] >= 1
     assert any("weekly_data.json" in item["message"] for item in result["issues"])
+
+
+def test_post_update_check_reports_mojibake_payload(tmp_path) -> None:
+    _prepare_dashboard_files(tmp_path)
+    _prepare_db(tmp_path)
+    payload_path = tmp_path / "dashboard" / "backtest_review.json"
+    docs_path = tmp_path / "docs" / "backtest_review.json"
+    broken = {"as_of": "2026-06-18", "status": "ok", "best": {"theme": {"label": "?航蕭頩斤???"}}}
+    _write_json(payload_path, broken)
+    _write_json(docs_path, broken)
+
+    result = run_check(tmp_path, tmp_path / "dashboard" / "post_update_check.json")
+
+    assert result["status"] == "bad"
+    assert any(item["area"] == "encoding" for item in result["issues"])
+
+
+def test_post_update_check_reports_docs_sync_mismatch(tmp_path) -> None:
+    _prepare_dashboard_files(tmp_path)
+    _prepare_db(tmp_path)
+    _write_json(tmp_path / "docs" / "dashboard_data.json", {"as_of": "2026-06-17"})
+
+    result = run_check(tmp_path, tmp_path / "dashboard" / "post_update_check.json")
+
+    assert result["status"] == "bad"
+    assert any(item["area"] == "publish_sync" for item in result["issues"])

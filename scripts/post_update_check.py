@@ -21,6 +21,7 @@ REQUIRED_DASHBOARD_FILES = [
     "debug_data.json",
     "backtest_review.json",
 ]
+MOJIBAKE_MARKERS = ("�", "?", "?航", "?", "?", "?", "??雿", "??", "??藕")
 
 
 def _issue(severity: str, area: str, message: str, suggestion: str) -> dict:
@@ -56,6 +57,23 @@ def _read_json(path: Path, issues: list[dict]) -> dict:
     return {}
 
 
+def _json_files() -> list[str]:
+    return [name for name in REQUIRED_DASHBOARD_FILES if name.endswith(".json")]
+
+
+def _find_mojibake(value, path: str = "$", found: list[str] | None = None) -> list[str]:
+    found = found if found is not None else []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            _find_mojibake(child, f"{path}.{key}", found)
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            _find_mojibake(child, f"{path}[{index}]", found)
+    elif isinstance(value, str) and any(marker in value for marker in MOJIBAKE_MARKERS):
+        found.append(path)
+    return found
+
+
 def _int(value) -> int:
     try:
         return int(value or 0)
@@ -78,6 +96,7 @@ def _db_scalar(conn: sqlite3.Connection, sql: str, params: tuple = ()) -> int:
 
 def _check_files(root: Path, issues: list[dict]) -> dict[str, dict]:
     dashboard_dir = root / "dashboard"
+    docs_dir = root / "docs"
     payloads = {}
     for name in REQUIRED_DASHBOARD_FILES:
         path = dashboard_dir / name
@@ -93,6 +112,21 @@ def _check_files(root: Path, issues: list[dict]) -> dict[str, dict]:
             continue
         if name.endswith(".json"):
             payloads[name] = _read_json(path, issues)
+    for name in _json_files():
+        dashboard_payload = payloads.get(name)
+        if dashboard_payload is None:
+            continue
+        docs_path = docs_dir / name
+        docs_payload = _read_json(docs_path, issues)
+        if docs_payload and docs_payload != dashboard_payload:
+            issues.append(
+                _issue(
+                    "critical",
+                    "publish_sync",
+                    f"docs/{name} differs from dashboard/{name}",
+                    "Run the docs copy step before publishing GitHub Pages.",
+                )
+            )
     return payloads
 
 
@@ -103,6 +137,18 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     potential = payloads.get("potential_data.json") or {}
     debug = payloads.get("debug_data.json") or {}
     backtest_review = payloads.get("backtest_review.json") or {}
+
+    for name, payload in payloads.items():
+        bad_paths = _find_mojibake(payload)
+        if bad_paths:
+            issues.append(
+                _issue(
+                    "critical",
+                    "encoding",
+                    f"{name} contains possible mojibake at {', '.join(bad_paths[:5])}",
+                    "Regenerate this payload with UTF-8 and confirm no cp950/terminal-decoded strings leaked in.",
+                )
+            )
 
     as_of = str(dashboard.get("as_of") or "")
     weekly_as_of = str(weekly.get("as_of") or "")
