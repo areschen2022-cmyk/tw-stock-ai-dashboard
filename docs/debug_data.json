@@ -1,14 +1,14 @@
 {
   "as_of": "2026-07-14",
-  "generated_at": "2026-07-14T23:38:39+08:00",
-  "dashboard_generated_at": "2026-07-14T23:38:36+08:00",
+  "generated_at": "2026-07-15T04:32:44+08:00",
+  "dashboard_generated_at": "2026-07-15T04:32:40+08:00",
   "source_status": {
-    "label": "部分限流",
-    "api": 29,
-    "cache": 3411,
+    "label": "正常",
+    "api": 4,
+    "cache": 3503,
     "fallback": 2,
     "quota": 0,
-    "error": 1,
+    "error": 0,
     "empty": 1,
     "official_snapshots": {
       "tpex_quotes": {
@@ -19,8 +19,8 @@
       },
       "institutional": {
         "date": "2026-07-13",
-        "valid": false,
-        "rows": 0,
+        "valid": true,
+        "rows": 1335,
         "source": "official"
       },
       "margin": {
@@ -85,13 +85,11 @@
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "官方快照未通過日期/內容檢查 1 項",
       "已由備援/補抓補回 120 次"
     ],
     "event_summary": {
-      "empty": 1,
-      "fallback": 2,
-      "error": 1
+      "empty": 2,
+      "fallback": 2
     },
     "details": [
       {
@@ -109,33 +107,26 @@
         "reason": "twse_month_missing"
       },
       {
-        "type": "error",
-        "dataset": "T86",
-        "data_id": "all",
-        "period": "",
-        "reason": "fetch_failed"
-      },
-      {
         "type": "fallback",
         "dataset": "revenue",
         "data_id": "7769",
         "period": "",
         "reason": "cold_history_short"
+      },
+      {
+        "type": "empty",
+        "dataset": "TaiwanStockMonthRevenue",
+        "data_id": "7769",
+        "period": "2024-07-01",
+        "reason": ""
       }
     ],
     "recovery_status": {
-      "label": "retry_ready",
-      "retryable": 1,
+      "label": "clean",
+      "retryable": 0,
       "blocked": 0,
-      "recovered": 3,
+      "recovered": 4,
       "items": [
-        {
-          "dataset": "T86",
-          "data_id": "all",
-          "period": "",
-          "type": "error",
-          "next_step": "retry_range"
-        },
         {
           "dataset": "STOCK_DAY",
           "data_id": "TAIEX",
@@ -156,6 +147,13 @@
           "period": "",
           "type": "fallback",
           "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "TaiwanStockMonthRevenue",
+          "data_id": "7769",
+          "period": "2024-07-01",
+          "type": "empty",
+          "next_step": "recovered_by_fallback"
         }
       ]
     },
@@ -168,8 +166,8 @@
       },
       "institutional": {
         "date": "2026-07-13",
-        "valid": false,
-        "rows": 0,
+        "valid": true,
+        "rows": 1335,
         "source": "official"
       },
       "margin": {
@@ -209,12 +207,12 @@
         "source": "official"
       }
     },
-    "official_valid": 7,
-    "official_invalid": 1
+    "official_valid": 8,
+    "official_invalid": 0
   },
   "data_source_health": {
-    "label": "需檢查",
-    "blocking_count": 1,
+    "label": "可用但待補",
+    "blocking_count": 0,
     "historical_failed_count": 20,
     "failed_recovered_ratio": 0.1449,
     "pending_count": 21,
@@ -222,8 +220,8 @@
     "recovered_count": 118,
     "effective_error": 0,
     "effective_empty": 0,
-    "official_valid": 7,
-    "official_invalid": 1,
+    "official_valid": 8,
+    "official_invalid": 0,
     "official_snapshots": {
       "tpex_quotes": {
         "date": "2026-07-14",
@@ -233,8 +231,8 @@
       },
       "institutional": {
         "date": "2026-07-13",
-        "valid": false,
-        "rows": 0,
+        "valid": true,
+        "rows": 1335,
         "source": "official"
       },
       "margin": {
@@ -693,29 +691,29 @@
       {
         "key": "source",
         "label": "資料源",
-        "status": "bad",
-        "value": "部分限流",
-        "note": "API 29 | 快取 3411 | 限流 0"
+        "status": "warn",
+        "value": "正常",
+        "note": "API 4 | 快取 3503 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
         "value": "79/79 檔",
-        "note": "S+ 0 | S 1 | A 1"
+        "note": "S+ 1 | S 0 | A 4"
       },
       {
         "key": "watch",
         "label": "進場追蹤",
         "status": "ok",
-        "value": "547 筆",
+        "value": "546 筆",
         "note": "完成 372 | 5日勝率 46.5%"
       },
       {
         "key": "potential",
         "label": "潛力雷達",
         "status": "ok",
-        "value": "240 筆",
+        "value": "238 筆",
         "note": "完成 156 | 5日勝率 50.6%"
       },
       {
@@ -743,9 +741,9 @@
     "summary": {
       "scanned": 79,
       "valid": 79,
-      "watch_signals": 547,
+      "watch_signals": 546,
       "watch_completed": 372,
-      "potential_signals": 240,
+      "potential_signals": 238,
       "potential_completed": 156,
       "data_coverage": {
         "bundle_stocks": 79,
@@ -784,10 +782,10 @@
     "diagnosis": [
       {
         "key": "source",
-        "status": "bad",
+        "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=部分限流; quality=high; api=29; cache=3411; quota=0; error=1",
+        "evidence": "source=正常; quality=high; api=4; cache=3503; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -802,9 +800,9 @@
     "history": [
       {
         "run_date": "2026-07-14",
-        "generated_at": "2026-07-14T23:38:39+08:00",
-        "overall_status": "bad",
-        "source_status": "bad",
+        "generated_at": "2026-07-15T04:32:44+08:00",
+        "overall_status": "warn",
+        "source_status": "warn",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
@@ -814,9 +812,9 @@
         "summary": {
           "scanned": 79,
           "valid": 79,
-          "watch_signals": 547,
+          "watch_signals": 546,
           "watch_completed": 372,
-          "potential_signals": 240,
+          "potential_signals": 238,
           "potential_completed": 156,
           "data_coverage": {
             "bundle_stocks": 79,
@@ -856,29 +854,29 @@
           {
             "key": "source",
             "label": "資料源",
-            "status": "bad",
-            "value": "部分限流",
-            "note": "API 29 | 快取 3411 | 限流 0"
+            "status": "warn",
+            "value": "正常",
+            "note": "API 4 | 快取 3503 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
             "value": "79/79 檔",
-            "note": "S+ 0 | S 1 | A 1"
+            "note": "S+ 1 | S 0 | A 4"
           },
           {
             "key": "watch",
             "label": "進場追蹤",
             "status": "ok",
-            "value": "547 筆",
+            "value": "546 筆",
             "note": "完成 372 | 5日勝率 46.5%"
           },
           {
             "key": "potential",
             "label": "潛力雷達",
             "status": "ok",
-            "value": "240 筆",
+            "value": "238 筆",
             "note": "完成 156 | 5日勝率 50.6%"
           },
           {
@@ -2278,7 +2276,7 @@
   },
   "performance": {
     "stats": {
-      "signals": 547,
+      "signals": 546,
       "completed": 372,
       "win_rate_5d": 46.50537634408602,
       "avg_return_5d": 0.320416584554332,
@@ -2287,9 +2285,9 @@
       "a_win_rate_5d": 48.30508474576271
     },
     "potential_radar": {
-      "signals": 240,
+      "signals": 238,
       "completed": 156,
-      "pending": 84,
+      "pending": 82,
       "win_rate_5d": 50.641025641025635,
       "avg_return_5d": 1.3844413244175982,
       "avg_return_10d": 0.45376027668829183,

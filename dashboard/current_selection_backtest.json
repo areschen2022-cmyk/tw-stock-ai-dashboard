@@ -1,19 +1,19 @@
 {
   "as_of": "2026-07-14",
-  "generated_at": "2026-07-14T23:38:39+08:00",
+  "generated_at": "2026-07-15T04:32:44+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 372,
-  "candidate_count": 2,
-  "referenceable_count": 2,
+  "candidate_count": 5,
+  "referenceable_count": 5,
   "strong_reference_count": 1,
-  "weak_reference_count": 1,
+  "weak_reference_count": 2,
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": -0.93,
+    "avg_reference_return_5d": -0.88,
     "avg_reference_win_rate_5d": 44.4,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
@@ -21,33 +21,33 @@
     {
       "stock_id": "6505",
       "name": "台塑化",
-      "score": 88,
-      "grade": "S",
+      "score": 96,
+      "grade": "S+",
       "action": "可追蹤突破",
       "entry_decision": "開盤確認",
       "decision_light": "green",
       "themes": [],
       "trigger_tags": [
-        "外資買超",
+        "法人共振",
         "技術突破",
         "放量長紅",
         "突破整理"
       ],
       "historical_profile": {
-        "completed": 98,
-        "win_rate_5d": 54.08163265306123,
-        "avg_return_5d": 2.19,
-        "stop_hit_rate": 20.408163265306122,
+        "completed": 101,
+        "win_rate_5d": 55.44554455445545,
+        "avg_return_5d": 2.26,
+        "stop_hit_rate": 18.81188118811881,
         "confidence": "高",
         "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 42,
-          "win_rate_5d": 45.23809523809524,
-          "avg_return_5d": -0.92,
-          "stop_hit_rate": 33.33333333333333,
+          "completed": 33,
+          "win_rate_5d": 54.54545454545454,
+          "avg_return_5d": 1.06,
+          "stop_hit_rate": 21.21212121212121,
           "confidence": "高"
         },
         "action": {
@@ -122,39 +122,91 @@
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "6789",
+      "name": "采鈺",
+      "score": 78,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "trigger_tags": [
+        "題材關注",
+        "法人共振",
+        "技術偏多",
+        "營收加速",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 23,
+        "win_rate_5d": 34.78260869565217,
+        "avg_return_5d": -4.05,
+        "stop_hit_rate": 47.82608695652174,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 23
+      },
+      "components": {
+        "grade": {
+          "completed": 118,
+          "win_rate_5d": 48.30508474576271,
+          "avg_return_5d": 0.96,
+          "stop_hit_rate": 30.508474576271187,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 100,
+          "win_rate_5d": 46.0,
+          "avg_return_5d": -0.91,
+          "stop_hit_rate": 39.0,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 99,
+          "win_rate_5d": 39.39393939393939,
+          "avg_return_5d": -1.9,
+          "stop_hit_rate": 43.43434343434344,
+          "confidence": "高"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
     }
   ],
   "candidates": [
     {
       "stock_id": "6505",
       "name": "台塑化",
-      "score": 88,
-      "grade": "S",
+      "score": 96,
+      "grade": "S+",
       "action": "可追蹤突破",
       "entry_decision": "開盤確認",
       "decision_light": "green",
       "themes": [],
       "trigger_tags": [
-        "外資買超",
+        "法人共振",
         "技術突破",
         "放量長紅",
         "突破整理"
       ],
       "historical_profile": {
-        "completed": 98,
-        "win_rate_5d": 54.08163265306123,
-        "avg_return_5d": 2.19,
-        "stop_hit_rate": 20.408163265306122,
+        "completed": 101,
+        "win_rate_5d": 55.44554455445545,
+        "avg_return_5d": 2.26,
+        "stop_hit_rate": 18.81188118811881,
         "confidence": "高",
         "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 42,
-          "win_rate_5d": 45.23809523809524,
-          "avg_return_5d": -0.92,
-          "stop_hit_rate": 33.33333333333333,
+          "completed": 33,
+          "win_rate_5d": 54.54545454545454,
+          "avg_return_5d": 1.06,
+          "stop_hit_rate": 21.21212121212121,
           "confidence": "高"
         },
         "action": {
@@ -173,6 +225,59 @@
         }
       },
       "interpretation": "同條件歷史偏正向，可以保留在優先觀察名單。"
+    },
+    {
+      "stock_id": "2634",
+      "name": "漢翔",
+      "score": 82,
+      "grade": "A",
+      "action": "可追蹤突破",
+      "entry_decision": "開盤確認",
+      "decision_light": "green",
+      "themes": [
+        "AI國防/軍工",
+        "防禦與政策"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術突破",
+        "放量長紅",
+        "突破整理"
+      ],
+      "historical_profile": {
+        "completed": 175,
+        "win_rate_5d": 48.0,
+        "avg_return_5d": 0.95,
+        "stop_hit_rate": 26.857142857142858,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 118,
+          "win_rate_5d": 48.30508474576271,
+          "avg_return_5d": 0.96,
+          "stop_hit_rate": 30.508474576271187,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 88,
+          "win_rate_5d": 54.54545454545454,
+          "avg_return_5d": 2.73,
+          "stop_hit_rate": 15.909090909090908,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 3,
+          "win_rate_5d": 66.66666666666666,
+          "avg_return_5d": 9.84,
+          "stop_hit_rate": 33.33333333333333,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
     },
     {
       "stock_id": "8046",
@@ -227,6 +332,108 @@
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "6789",
+      "name": "采鈺",
+      "score": 78,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "先進封裝/CoWoS"
+      ],
+      "trigger_tags": [
+        "題材關注",
+        "法人共振",
+        "技術偏多",
+        "營收加速",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 23,
+        "win_rate_5d": 34.78260869565217,
+        "avg_return_5d": -4.05,
+        "stop_hit_rate": 47.82608695652174,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 23
+      },
+      "components": {
+        "grade": {
+          "completed": 118,
+          "win_rate_5d": 48.30508474576271,
+          "avg_return_5d": 0.96,
+          "stop_hit_rate": 30.508474576271187,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 100,
+          "win_rate_5d": 46.0,
+          "avg_return_5d": -0.91,
+          "stop_hit_rate": 39.0,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 99,
+          "win_rate_5d": 39.39393939393939,
+          "avg_return_5d": -1.9,
+          "stop_hit_rate": 43.43434343434344,
+          "confidence": "高"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "4958",
+      "name": "臻鼎-KY",
+      "score": 76,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [],
+      "trigger_tags": [
+        "法人共振",
+        "技術突破",
+        "放量長紅",
+        "突破整理",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 147,
+        "win_rate_5d": 48.97959183673469,
+        "avg_return_5d": 0.49,
+        "stop_hit_rate": 33.33333333333333,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 118,
+          "win_rate_5d": 48.30508474576271,
+          "avg_return_5d": 0.96,
+          "stop_hit_rate": 30.508474576271187,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 100,
+          "win_rate_5d": 46.0,
+          "avg_return_5d": -0.91,
+          "stop_hit_rate": 39.0,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
     }
   ]
 }
