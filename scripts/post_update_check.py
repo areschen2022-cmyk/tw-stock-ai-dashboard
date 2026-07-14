@@ -22,7 +22,17 @@ REQUIRED_DASHBOARD_FILES = [
     "backtest_review.json",
     "backtest_30y.json",
 ]
-MOJIBAKE_MARKERS = ("�", "?", "?航", "?", "?", "?", "??雿", "??", "??藕")
+MOJIBAKE_MARKERS = (
+    chr(0xFFFD),
+    "?" + chr(0xE703),
+    "?" + chr(0x822A),
+    "?" + chr(0xF000),
+    "?" + chr(0xF5F7),
+    "?" + chr(0xE73F),
+    "??" + chr(0x96FF),
+    "??" + chr(0xEDD6),
+    "??" + chr(0x85D5),
+)
 
 
 def _issue(severity: str, area: str, message: str, suggestion: str) -> dict:

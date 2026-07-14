@@ -44,6 +44,9 @@ SCAN_FILES = [
     "main.py",
 ]
 SCAN_SUFFIXES = {".bat", ".html", ".md", ".py", ".yaml", ".yml"}
+SCAN_SKIP_FILES = {
+    "tests/test_post_update_check.py",
+}
 
 
 def _now() -> str:
@@ -101,12 +104,15 @@ def _iter_scan_paths(root: Path) -> list[Path]:
 def scan_mojibake(root: Path) -> dict:
     hits: list[dict] = []
     for path in _iter_scan_paths(root):
+        rel_path = str(path.relative_to(root)).replace("\\", "/")
+        if rel_path in SCAN_SKIP_FILES:
+            continue
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError as exc:
             hits.append(
                 {
-                    "path": str(path.relative_to(root)),
+                    "path": rel_path,
                     "line": 0,
                     "marker": "decode_error",
                     "snippet": str(exc),
@@ -118,7 +124,7 @@ def scan_mojibake(root: Path) -> dict:
             if marker:
                 hits.append(
                     {
-                        "path": str(path.relative_to(root)),
+                        "path": rel_path,
                         "line": line_no,
                         "marker": marker,
                         "snippet": line.strip()[:180],
