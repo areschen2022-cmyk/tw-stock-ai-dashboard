@@ -20,6 +20,7 @@ REQUIRED_DASHBOARD_FILES = [
     "weekly_data.json",
     "debug_data.json",
     "backtest_review.json",
+    "backtest_30y.json",
 ]
 MOJIBAKE_MARKERS = ("�", "?", "?航", "?", "?", "?", "??雿", "??", "??藕")
 
@@ -137,6 +138,7 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     potential = payloads.get("potential_data.json") or {}
     debug = payloads.get("debug_data.json") or {}
     backtest_review = payloads.get("backtest_review.json") or {}
+    backtest_30y = payloads.get("backtest_30y.json") or {}
 
     for name, payload in payloads.items():
         bad_paths = _find_mojibake(payload)
@@ -190,6 +192,17 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
                 "Open dashboard/backtest_review.json and inspect review_actions/adaptive_feedback.",
             )
         )
+    if backtest_30y:
+        long_status = str(backtest_30y.get("status") or "")
+        if long_status not in {"ok", "partial_coverage"}:
+            issues.append(
+                _issue(
+                    "warning",
+                    "long_horizon_backtest",
+                    f"30-year backtest status is {long_status}",
+                    "Run scripts/long_horizon_backtest.py and inspect dashboard/backtest_30y.json.",
+                )
+            )
 
     summary = dashboard.get("summary") or {}
     if _int(summary.get("valid")) <= 0:

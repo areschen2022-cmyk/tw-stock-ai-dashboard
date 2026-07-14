@@ -141,6 +141,7 @@ jobs:
         run: |
           python scripts/backtest_quality_check.py
           python scripts/backtest_review.py
+          python scripts/long_horizon_backtest.py --years 30
 
       - name: Run post-optimization finalizer
         run: python scripts/post_optimization_finalize.py --auto-hub --skip-tests
@@ -168,6 +169,7 @@ jobs:
           cp -f dashboard/theme_history.json docs/theme_history.json
           cp -f dashboard/debug_data.json docs/debug_data.json
           cp -f dashboard/backtest_review.json docs/backtest_review.json
+          cp -f dashboard/backtest_30y.json docs/backtest_30y.json
           cp -f dashboard/post_update_check.json docs/post_update_check.json
           cp -f dashboard/verification_loop.json docs/verification_loop.json
           git config user.name "github-actions[bot]"
@@ -342,6 +344,7 @@ jobs:
           cp -f dashboard/theme_history.json docs/theme_history.json
           cp -f dashboard/debug_data.json docs/debug_data.json
           cp -f dashboard/backtest_review.json docs/backtest_review.json || true
+          cp -f dashboard/backtest_30y.json docs/backtest_30y.json || true
           cp -f dashboard/post_update_check.json docs/post_update_check.json || true
           cp -f dashboard/verification_loop.json docs/verification_loop.json || true
           git config user.name "github-actions[bot]"
