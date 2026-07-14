@@ -63,6 +63,128 @@ def _qualified_weak_segments(rows: list[dict], min_completed: int = 10) -> list[
     return output
 
 
+def _month_key(value: str | None) -> str:
+    if not value or len(value) < 7:
+        return "unknown"
+    return value[:7]
+
+
+def _avg(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return sum(values) / len(values)
+
+
+def _rate(flags: list[bool]) -> float | None:
+    if not flags:
+        return None
+    return sum(1 for flag in flags if flag) / len(flags) * 100
+
+
+def _monthly_returns(items: list[dict], max_months: int = 12) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        value = item.get("return_5d")
+        if value is None:
+            continue
+        buckets.setdefault(_month_key(item.get("signal_date")), []).append(item)
+
+    rows = []
+    for month, month_items in sorted(buckets.items()):
+        returns = [_num(item.get("return_5d")) for item in month_items]
+        rows.append(
+            {
+                "month": month,
+                "signals": len(month_items),
+                "win_rate_5d": _rate([value > 0 for value in returns]),
+                "avg_return_5d": _avg(returns),
+                "best_return_5d": max(returns) if returns else None,
+                "worst_return_5d": min(returns) if returns else None,
+            }
+        )
+    return rows[-max_months:]
+
+
+def _weak_summary(row: dict | None, label_key: str = "label", reason: str = "") -> dict | None:
+    if not row:
+        return None
+    completed = int(_num(row.get("completed") or row.get("count")))
+    if completed <= 0:
+        return None
+    return {
+        "label": row.get(label_key) or row.get("label") or row.get("theme") or row.get("action") or row.get("grade"),
+        "sample": completed,
+        "win_rate_5d": row.get("win_rate_5d"),
+        "avg_return_5d": row.get("avg_return_5d"),
+        "stop_hit_rate": row.get("stop_hit_rate"),
+        "reason": reason,
+    }
+
+
+def _win_rate_diagnosis(
+    *,
+    stats: dict,
+    score_bands: list[dict],
+    theme_stats: list[dict],
+    action_stats: list[dict],
+    postmortem: dict,
+) -> dict:
+    overall_win = _num(stats.get("win_rate_5d"))
+    failure_rows = ((postmortem.get("failure_attribution") or {}).get("rows") or [])
+    candidates: list[dict] = []
+
+    weak_score = _weak_summary(
+        _first(score_bands, "avg_return_5d", reverse=False),
+        reason="分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。",
+    )
+    weak_theme = _weak_summary(
+        _first(theme_stats, "avg_return_5d", reverse=False),
+        reason="題材表現拖累，短期不宜只因新聞熱度加分。",
+    )
+    weak_action = _weak_summary(
+        _first(action_stats, "avg_return_5d", reverse=False),
+        reason="操作型態表現偏弱，需調整進場條件或降低優先度。",
+    )
+    for row in (weak_score, weak_theme, weak_action):
+        if row:
+            candidates.append(row)
+
+    for row in failure_rows[:3]:
+        candidates.append(
+            {
+                "label": row.get("label"),
+                "sample": row.get("count"),
+                "win_rate_5d": None,
+                "avg_return_5d": row.get("avg_return_5d"),
+                "stop_hit_rate": row.get("stop_hit_rate"),
+                "reason": row.get("lesson") or "失敗歸因集中，應轉成降權或開盤確認條件。",
+            }
+        )
+
+    actions: list[str] = []
+    for row in candidates[:5]:
+        label = row.get("label")
+        avg_return = _num(row.get("avg_return_5d"))
+        stop_hit = _num(row.get("stop_hit_rate"))
+        sample = int(_num(row.get("sample")))
+        if sample >= 20 and avg_return < 0:
+            actions.append(f"{label}：樣本 {sample} 且 5日平均為負，先降權或改列觀察。")
+        elif sample >= 10 and stop_hit >= 40:
+            actions.append(f"{label}：停損率偏高，需更嚴格開盤量價確認。")
+
+    if not actions and overall_win < 50:
+        actions.append("整體勝率低於 50%，但尚未有單一穩定拖累因子；先維持小部位並累積樣本。")
+    elif not actions:
+        actions.append("目前沒有明確需要降權的弱因子，持續觀察月度勝率是否改善。")
+
+    return {
+        "triggered": overall_win < 50,
+        "headline": f"5日勝率 {overall_win:.1f}%，{'低於' if overall_win < 50 else '高於或等於'} 50% 門檻。",
+        "likely_causes": candidates[:6],
+        "recommended_actions": actions[:6],
+    }
+
+
 def _why_win_rate_not_higher(
     *,
     stats: dict,
@@ -143,6 +265,7 @@ def build_review(performance: dict) -> dict:
     best_segments = (performance.get("backtest_insights") or {}).get("best_segments") or []
     calibration = performance.get("calibration_advice") or []
     adaptive = performance.get("adaptive_feedback") or []
+    items = performance.get("items") or []
 
     completed = _num(stats.get("completed"))
     win_rate = _num(stats.get("win_rate_5d"))
@@ -202,6 +325,14 @@ def build_review(performance: dict) -> dict:
             weak_segments=weak_segments,
             postmortem=postmortem,
         ),
+        "win_rate_diagnosis": _win_rate_diagnosis(
+            stats=stats,
+            score_bands=score_bands,
+            theme_stats=theme_stats,
+            action_stats=action_stats,
+            postmortem=postmortem,
+        ),
+        "monthly_returns": _monthly_returns(items),
         "review_actions": calibration[:8],
         "adaptive_feedback": adaptive[:8],
         "quality_gates": {
