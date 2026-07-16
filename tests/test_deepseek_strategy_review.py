@@ -69,4 +69,5 @@ def test_strategy_review_gating_terms_are_not_mojibake(tmp_path, monkeypatch):
 
     assert "可追" in rules
     assert "等拉回" in rules
-    assert "?航蕭" not in rules
+    legacy_mojibake = "".join(chr(code) for code in (0x003F, 0x822A, 0x856D))
+    assert legacy_mojibake not in rules
