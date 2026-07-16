@@ -112,6 +112,11 @@ def _local_review(context: dict[str, Any]) -> dict[str, Any]:
         if (item.get("completed") or 0) >= 20
         and ((item.get("win_rate_5d") or 0) < 45 or (item.get("avg_return_5d") or 0) < 0)
     ]
+    precision_gate_readiness = _precision_gate_readiness(
+        entry_analysis=entry,
+        weak_themes=weak_themes,
+        research_summary=research,
+    )
 
     return {
         "current_weaknesses": [
@@ -195,7 +200,85 @@ def _local_review(context: dict[str, Any]) -> dict[str, Any]:
             "Add retail clean-up confirmation into potential radar ranking.",
             "Run monthly outcome-weighted tag calibration into knowledge hub.",
         ],
+        "precision_gate_readiness": precision_gate_readiness,
     }
+
+
+def _precision_gate_readiness(
+    *,
+    entry_analysis: dict[str, Any],
+    weak_themes: list[dict[str, Any]],
+    research_summary: dict[str, Any],
+) -> list[dict[str, Any]]:
+    triggered = entry_analysis.get("triggered") or {}
+    not_triggered = entry_analysis.get("not_triggered") or {}
+    triggered_count = int(triggered.get("count") or 0)
+    not_triggered_count = int(not_triggered.get("count") or 0)
+    triggered_avg = triggered.get("avg_return_5d")
+    not_triggered_avg = not_triggered.get("avg_return_5d")
+    triggered_win = triggered.get("win_rate_5d")
+    not_triggered_win = not_triggered.get("win_rate_5d")
+
+    rows: list[dict[str, Any]] = []
+    entry_ready = triggered_count >= 20 and not_triggered_count >= 20
+    entry_underperform = (
+        entry_ready
+        and triggered_avg is not None
+        and not_triggered_avg is not None
+        and float(triggered_avg) < float(not_triggered_avg)
+    )
+    rows.append(
+        {
+            "gate": "entry_trigger_tightening",
+            "status": "ready" if entry_ready else "needs_more_samples",
+            "sample": {"triggered": triggered_count, "not_triggered": not_triggered_count},
+            "evidence": {
+                "triggered_win_rate_5d": triggered_win,
+                "triggered_avg_return_5d": triggered_avg,
+                "not_triggered_win_rate_5d": not_triggered_win,
+                "not_triggered_avg_return_5d": not_triggered_avg,
+            },
+            "recommendation": (
+                "Test stricter opening confirmation before allowing 可追."
+                if entry_underperform
+                else "Keep collecting triggered versus not-triggered outcomes before changing action rules."
+            ),
+        }
+    )
+
+    rows.append(
+        {
+            "gate": "weak_theme_downgrade",
+            "status": "ready" if weak_themes else "watch",
+            "sample": {"weak_theme_count": len(weak_themes)},
+            "evidence": [
+                {
+                    "label": item.get("label") or item.get("theme"),
+                    "completed": item.get("completed"),
+                    "win_rate_5d": item.get("win_rate_5d"),
+                    "avg_return_5d": item.get("avg_return_5d"),
+                }
+                for item in weak_themes[:5]
+            ],
+            "recommendation": (
+                "Use weak themes as action downgrades unless revenue, institutional flow, or core supply-chain role confirms."
+                if weak_themes
+                else "No completed weak theme bucket currently meets the minimum sample threshold."
+            ),
+        }
+    )
+
+    overall = research_summary.get("overall_5d") or {}
+    rows.append(
+        {
+            "gate": "five_year_baseline_guard",
+            "status": "ready" if overall else "missing_research_backtest",
+            "sample": {"signals": overall.get("signals"), "completed": overall.get("completed")},
+            "evidence": overall,
+            "recommendation": "Treat five-year baseline as a guardrail; only promote rules that beat the baseline after costs.",
+        }
+    )
+    return rows
 
 
 def _deepseek_review(context: dict[str, Any], max_tokens: int, timeout: int) -> dict[str, Any]:
@@ -251,6 +334,9 @@ def _write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.extend(["", "## Ablation Tests"])
     for item in local.get("ablation_tests", []):
         lines.append(f"- {item}")
+    lines.extend(["", "## Precision Gate Readiness"])
+    for item in local.get("precision_gate_readiness", []):
+        lines.append(f"- {item.get('gate')} [{item.get('status')}]: {item.get('recommendation')}")
     if deepseek.get("status") == "ok":
         lines.extend(["", "## DeepSeek Raw Review", "```json"])
         lines.append(json.dumps(deepseek.get("review"), ensure_ascii=False, indent=2))

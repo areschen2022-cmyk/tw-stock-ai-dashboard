@@ -7,10 +7,10 @@ from typing import Any
 def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int = 12) -> list[dict]:
     """Build early-stage candidates from enriched dashboard rows.
 
-    This is intentionally not a buy list. It looks for "not yet overheated"
-    names where several early conditions are starting to align: cleaner retail
-    structure, constructive candles, warming themes, initial institutional
-    support, and acceptable but not exhausted strength.
+    The potential radar is a research queue, not a buy list. It intentionally
+    excludes names that are already actionable on today's decision card, then
+    looks for early accumulation, constructive K-line signals, warming themes,
+    and acceptable but not exhausted strength.
     """
     candidates: list[dict] = []
     for row in rows:
@@ -18,6 +18,8 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         if not stock_id or row.get("label") == "DATA_INSUFFICIENT":
             continue
         if str(row.get("decision_light") or "") == "red":
+            continue
+        if _is_actionable_today(row):
             continue
 
         score = _int(row.get("score"))
@@ -34,6 +36,7 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
             tags.append(chase_risk["label"])
         if points < 5:
             continue
+
         stage = _stage(row, score, grade, tags, chase_risk["level"])
         lifecycle = _lifecycle_stage(row, score, grade, tags, chase_risk["level"])
         smart_money = _smart_money_signal(row, score, grade, tags, chase_risk["level"])
@@ -42,6 +45,7 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
             tags.append("主力先行")
         elif smart_money["key"] == "sync":
             tags.append("法人同步")
+
         research = _research_filter(row, score, grade, tags, chase_risk["level"])
         stock_type = _stock_type(row, score, grade, tags, stage["key"])
         position = _position_hint(row, chase_risk["level"])
@@ -49,11 +53,11 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         tags.extend(
             [
                 f"生命週期:{lifecycle['label']}",
-                f"資金節奏:{smart_money['label']}",
-                f"組合:{combo}",
-                f"快篩:{research['label']}",
-                f"類型:{stock_type['label']}",
-                f"部位:{position['label']}",
+                f"資金型態:{smart_money['label']}",
+                f"訊號組合:{combo}",
+                f"研究快篩:{research['label']}",
+                f"股票類型:{stock_type['label']}",
+                f"部位提示:{position['label']}",
             ]
         )
 
@@ -109,18 +113,31 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
     return candidates[:limit]
 
 
+def _is_actionable_today(row: dict[str, Any]) -> bool:
+    text = _text(
+        row.get("entry_decision"),
+        row.get("action"),
+        row.get("action_context"),
+        row.get("action_context_reason"),
+        row.get("trigger_summary"),
+    )
+    if _has_any(text, ["可追", "開盤確認", "綠燈可盯"]):
+        return True
+    return str(row.get("decision_light") or "") == "green" and _int(row.get("score")) >= 85
+
+
 def _score_row(row: dict[str, Any], score: int, grade: str) -> tuple[int, list[str]]:
     points = 0
     tags: list[str] = []
 
     retail_text = _text(row.get("retail_context"), row.get("retail_context_reason"))
-    if _has_any(retail_text, ["籌碼轉乾淨", "散戶減少", "人數減少"]):
+    if _has_any(retail_text, ["散戶減少", "籌碼轉乾淨", "持股人數減少"]):
         points += 3
         tags.append("散戶減少/籌碼轉乾淨")
-    elif _has_any(retail_text, ["觀察轉乾淨", "散戶降溫"]):
+    elif _has_any(retail_text, ["散戶轉乾淨", "籌碼改善"]):
         points += 2
-        tags.append("觀察轉乾淨")
-    if _has_any(retail_text, ["散戶過熱", "散戶增加", "人數增加"]):
+        tags.append("籌碼改善")
+    if _has_any(retail_text, ["散戶增加", "散戶過熱", "持股人數增加"]):
         points -= 3
         tags.append("散戶過熱")
 
@@ -139,54 +156,50 @@ def _score_row(row: dict[str, Any], score: int, grade: str) -> tuple[int, list[s
         tags.append(f"題材升溫:{themes[0]}")
 
     trigger_text = _text(row.get("trigger_summary"), *(row.get("trigger_tags") or []))
-    if _has_any(trigger_text, ["法人共振", "投信買超", "外資買超"]):
+    if _has_any(trigger_text, ["法人共振", "外資買超", "投信買超"]):
         points += 2
         tags.append("法人開始同步")
-    if _has_any(trigger_text, ["放量長紅", "突破整理", "技術突破"]):
+    if _has_any(trigger_text, ["放量長紅", "突破整理", "量能轉強"]):
         points += 2
         tags.append("量價開始轉強")
-    if _has_any(trigger_text, ["放量不漲", "量能失衡"]):
+    if _has_any(trigger_text, ["放量不漲", "量縮背離"]):
         points -= 2
-        tags.append("量價背離風險")
+        tags.append("量能無承接")
 
     if 75 <= score < 96:
         points += 2
-        tags.append("分數已成形")
+        tags.append("強度中高")
     elif 60 <= score < 75:
         points += 1
-        tags.append("分數醞釀中")
+        tags.append("分數初成形")
 
     decision_text = _text(row.get("entry_decision"), row.get("action_context"), row.get("action_context_reason"))
     if _has_any(decision_text, ["等拉回", "等待拉回"]):
         points += 2
         tags.append("強勢但等拉回")
-    elif _has_any(decision_text, ["只觀察", "觀察"]):
+    elif _has_any(decision_text, ["觀察", "等待"]):
         points += 1
-        tags.append("尚在低檔觀察")
-    if _has_any(decision_text, ["避免", "避開", "不追"]):
+        tags.append("仍在觀察")
+    if _has_any(decision_text, ["避開", "避免", "不建議"]):
         points -= 3
-        tags.append("避開訊號")
+        tags.append("暫不研究")
 
     if grade in {"A", "B"}:
         points += 1
         tags.append("尚未過熱強度")
     elif grade == "S":
         points += 1
-        tags.append("強度中高")
+        tags.append("強度已成形")
 
     if _has_any(_text(row.get("risk"), row.get("warnings")), ["風險偏高", "資料不足"]):
         points -= 1
-        tags.append("風險需複核")
+        tags.append("風險條件待確認")
 
     return points, tags
 
 
 def _research_filter(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, Any]:
-    """Compact version of the image-inspired 10-factor research checklist.
-
-    The result is a research completeness signal, not a buy/sell rule. It is stored
-    for later attribution so we can learn which factors actually helped.
-    """
+    """Compact 10-factor checklist inspired by the user's research notes."""
     text = _text(
         row.get("trigger_summary"),
         row.get("technical"),
@@ -200,14 +213,14 @@ def _research_filter(row: dict[str, Any], score: int, grade: str, tags: list[str
     )
     factors = [
         _factor("market_strength", "市場/強度", score >= 75 or grade in {"S", "A"}, "分數或強度已到研究門檻"),
-        _factor("theme", "產業題材", bool(row.get("themes")), "有明確題材或供應鏈位置"),
+        _factor("theme", "產業題材", bool(row.get("themes")), "公司已對應到題材或供應鏈"),
         _factor("catalyst", "催化劑", _int(row.get("opportunity_score")) >= 5 or _has_any(text, ["題材升溫", "題材強共振", "催化", "新產品", "訂單"]), "題材熱度或催化正在升溫"),
         _factor("revenue", "營收加速", _int(row.get("fundamental_score")) >= 12 or _has_any(text, ["營收", "年增", "月增", "新高", "加速"]), "營收或基本面有改善訊號"),
         _factor("valuation_risk", "估值風險", not _has_any(text, ["本益比過高", "估值過高", "風險偏高", "紅色警戒"]), "未出現明顯估值或風險警訊"),
         _factor("institutional", "法人籌碼", _int(row.get("chip_score")) >= 12 or _has_any(text, ["法人共振", "外資買超", "投信買超"]), "法人或籌碼面有支撐"),
-        _factor("retail_clean", "散戶結構", _has_any(text, ["籌碼轉乾淨", "散戶減少", "觀察轉乾淨"]), "散戶籌碼沒有過熱"),
+        _factor("retail_clean", "散戶籌碼", _has_any(text, ["散戶減少", "籌碼轉乾淨", "散戶轉乾淨"]), "散戶籌碼未明顯過熱"),
         _factor("technical", "技術型態", _int(row.get("technical_score")) >= 12 or bool(row.get("pattern_tags")), "技術面或 K 線型態轉強"),
-        _factor("volume", "量能確認", _has_any(text, ["放量長紅", "突破整理", "技術突破", "量價開始轉強"]), "量價有初步確認"),
+        _factor("volume", "量能活躍", _has_any(text, ["放量長紅", "突破整理", "量能轉強", "量價開始轉強"]), "成交量有放大跡象"),
         _factor("overheat_guard", "過熱排除", chase_risk != "high" and not row.get("pattern_risk_tags") and score < 96, "未進入明顯追高或型態風險區"),
     ]
     passed = sum(1 for item in factors if item["passed"])
@@ -218,7 +231,7 @@ def _research_filter(row: dict[str, Any], score: int, grade: str, tags: list[str
     elif passed >= 3:
         label = "降溫等待"
     else:
-        label = "先停手"
+        label = "資料不足"
     return {"score": passed, "label": label, "factors": factors}
 
 
@@ -243,11 +256,11 @@ def _stock_type(row: dict[str, Any], score: int, grade: str, tags: list[str], st
         and bool(row.get("themes"))
     ):
         return {"key": "growth_confirmed", "label": "成長確認型"}
-    if theme_tiers.intersection({"beneficiary", "speculative"}) or _has_any(text, ["二階", "受惠", "供應鏈"]):
+    if theme_tiers.intersection({"beneficiary", "speculative"}) or _has_any(text, ["受惠", "二階", "供應鏈"]):
         return {"key": "tier2_beneficiary", "label": "二階受惠型"}
-    if _has_any(themes + " " + text, ["記憶體", "面板", "原物料", "低基期", "景氣", "塑膠", "鋼鐵", "水泥"]):
+    if _has_any(themes + " " + text, ["景氣", "循環", "原物料", "面板", "塑化", "鋼鐵", "航運", "水泥"]):
         return {"key": "cyclical_recovery", "label": "景氣反轉型"}
-    if stage_key == "early_turn" or _has_any(text, ["轉機", "復甦", "改善", "突破整理", "技術突破"]):
+    if stage_key == "early_turn" or _has_any(text, ["轉強", "落底", "初動", "突破整理", "量能轉強"]):
         return {"key": "turnaround_confirmed", "label": "轉機確認型"}
     return {"key": "research_watch", "label": "研究觀察型"}
 
@@ -255,9 +268,9 @@ def _stock_type(row: dict[str, Any], score: int, grade: str, tags: list[str], st
 def _position_hint(row: dict[str, Any], chase_risk: str) -> dict[str, str]:
     atr = _float(row.get("atr_pct"))
     if chase_risk == "high":
-        return {"key": "avoid_chase", "label": "不追價"}
+        return {"key": "avoid_chase", "label": "避免追價"}
     if atr is None:
-        return {"key": "unknown", "label": "部位未定"}
+        return {"key": "unknown", "label": "部位待估"}
     if atr >= 8:
         return {"key": "small", "label": "小部位"}
     if atr >= 5:
@@ -268,10 +281,10 @@ def _position_hint(row: dict[str, Any], chase_risk: str) -> dict[str, str]:
 def _reason(points: int, tags: list[str], stage_label: str = "", chase_label: str = "") -> str:
     clean_tags = _dedupe([tag for tag in tags if tag])
     prefix = f"{stage_label}｜" if stage_label else ""
-    suffix = f"；{chase_label}" if chase_label else ""
+    suffix = f"｜{chase_label}" if chase_label else ""
     if clean_tags:
-        return f"{prefix}潛力分 {points}：{' + '.join(clean_tags[:5])}{suffix}"
-    return f"{prefix}潛力分 {points}：多項早期條件開始聚集{suffix}"
+        return f"{prefix}潛力分 {points}｜{' + '.join(clean_tags[:5])}{suffix}"
+    return f"{prefix}潛力分 {points}｜條件正在累積{suffix}"
 
 
 def _stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, str]:
@@ -282,16 +295,11 @@ def _stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_r
     if score >= 80 or grade in {"S", "A"}:
         return {"key": "early_turn", "label": "轉強初動"}
     if chase_risk == "medium":
-        return {"key": "wait_cooldown", "label": "降溫觀察"}
+        return {"key": "wait_cooldown", "label": "降溫等待"}
     return {"key": "low_base", "label": "低位醞釀"}
 
 
 def _lifecycle_stage(row: dict[str, Any], score: int, grade: str, tags: list[str], chase_risk: str) -> dict[str, str]:
-    """Classify signal age without changing buy decisions.
-
-    The label is for tracking whether a radar idea was found early, while it was
-    already maturing, or after it became crowded/extended.
-    """
     text = _text(
         row.get("trigger_summary"),
         row.get("technical"),
@@ -321,8 +329,8 @@ def _smart_money_signal(row: dict[str, Any], score: int, grade: str, tags: list[
     technical = _int(row.get("technical_score"))
     zscore = round(min(4.5, max(0.0, opportunity / 4 + max(0, technical - 10) / 12 + max(0, chip) / 18)), 2)
     institutional_follow = _has_any(text, ["外資", "投信", "法人買", "法人共振", "外資買超", "投信買超"]) or chip >= 14
-    retail_clean = _has_any(text, ["散戶減少", "籌碼轉乾淨", "觀察轉乾淨"])
-    price_ready = _has_any(text, ["突破", "站上", "整理", "放量", "量增"])
+    retail_clean = _has_any(text, ["散戶減少", "籌碼轉乾淨", "散戶轉乾淨"])
+    price_ready = _has_any(text, ["突破", "站上", "放量", "量能", "轉強"])
 
     if zscore >= 2.4 and not institutional_follow and chase_risk != "high":
         return {
@@ -376,22 +384,22 @@ def _chase_risk(row: dict[str, Any], score: int, grade: str) -> dict[str, str]:
     if price is not None and entry_limit is not None and price > entry_limit:
         return {"level": "high", "label": f"價格已高於進場上限 {entry_limit:g}"}
     if grade == "S+" or score >= 96:
-        return {"level": "high", "label": "已屬高強度追價區"}
-    if _has_any(decision_text, ["避免追高", "不追", "避開"]):
-        return {"level": "high", "label": "操作結論避免追高"}
+        return {"level": "high", "label": "分數過熱"}
+    if _has_any(decision_text, ["避免追高", "不建議", "避開"]):
+        return {"level": "high", "label": "操作建議避免追價"}
     if score >= 90 and _has_any(trigger_text, ["放量長紅", "突破整理"]):
-        return {"level": "medium", "label": "追高風險：強勢放量後需等拉回"}
+        return {"level": "medium", "label": "追高風險，等回測確認"}
     return {"level": "low", "label": "尚未過熱"}
 
 
 def _early_bonus(item: dict[str, Any]) -> int:
     tags = " ".join(item.get("tags") or [])
     bonus = 0
-    if "尚未過熱強度" in tags or "分數醞釀中" in tags:
+    if "尚未過熱強度" in tags or "分數初成形" in tags:
         bonus += 2
-    if "強勢但等拉回" in tags or "尚在低檔觀察" in tags:
+    if "強勢但等拉回" in tags or "仍在觀察" in tags:
         bonus += 1
-    if "量價背離風險" in tags or "散戶過熱" in tags:
+    if "量能無承接" in tags or "散戶過熱" in tags:
         bonus -= 3
     return bonus
 

@@ -3236,8 +3236,8 @@ def _potential_bucket_stats(items: list[dict], field: str, fallback: str, limit:
 def _potential_factor_label(tag: str) -> str:
     if "籌碼轉乾淨" in tag or "散戶減少" in tag:
         return "散戶減少/籌碼轉乾淨"
-    if "觀察轉乾淨" in tag:
-        return "觀察轉乾淨"
+    if "籌碼改善" in tag:
+        return "籌碼改善"
     if "散戶過熱" in tag:
         return "散戶過熱"
     if tag.startswith("K線轉強"):
@@ -3248,16 +3248,16 @@ def _potential_factor_label(tag: str) -> str:
         return "題材升溫"
     if tag.startswith("題材:"):
         return "題材觀察"
-    if "分數已成形" in tag:
-        return "分數已成形"
-    if "非過熱強度" in tag:
-        return "非過熱強度"
+    if "強度中高" in tag:
+        return "強度中高"
+    if "分數初成形" in tag:
+        return "分數初成形"
     if "強勢但等拉回" in tag:
         return "強勢但等拉回"
-    if "尚在低檔觀察" in tag:
-        return "尚在低檔觀察"
-    if "避開" in tag:
-        return "避開訊號"
+    if "仍在觀察" in tag:
+        return "仍在觀察"
+    if "暫不研究" in tag:
+        return "暫不研究"
     if "追高風險" in tag:
         return "追高風險"
     if tag.startswith("快篩:") or tag.startswith("研究快篩:"):
@@ -3272,12 +3272,15 @@ def _potential_factor_label(tag: str) -> str:
         return tag.replace("生命週期:", "", 1)
     if tag.startswith("資金節奏:"):
         return tag.replace("資金節奏:", "", 1)
+    if tag.startswith("資金型態:"):
+        return tag.replace("資金型態:", "", 1)
     if tag.startswith("組合:"):
         return tag.replace("組合:", "", 1)
+    if tag.startswith("訊號組合:"):
+        return tag.replace("訊號組合:", "", 1)
     if tag in {"主力先行", "法人同步"}:
         return tag
     return tag[:24] if tag else ""
-
 
 def _rank_potential_factors(factors: list[dict], *, reverse: bool, limit: int = 6) -> list[dict]:
     eligible = [row for row in factors if int(row.get("completed") or 0) > 0]

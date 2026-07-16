@@ -23,8 +23,8 @@ def test_strategy_review_runs_without_api_key(tmp_path, monkeypatch):
             "as_of": "2026-07-16",
             "stats": {"signals": 10, "completed": 10, "win_rate_5d": 40.0},
             "entry_analysis": {
-                "triggered": {"count": 5, "win_rate_5d": 30.0, "avg_return_5d": -1.0},
-                "not_triggered": {"count": 5, "win_rate_5d": 60.0, "avg_return_5d": 2.0},
+                "triggered": {"count": 25, "win_rate_5d": 30.0, "avg_return_5d": -1.0},
+                "not_triggered": {"count": 25, "win_rate_5d": 60.0, "avg_return_5d": 2.0},
             },
             "theme_stats": [
                 {
@@ -54,6 +54,7 @@ def test_strategy_review_runs_without_api_key(tmp_path, monkeypatch):
 
     assert payload["deepseek_review"]["status"] == "skipped"
     assert len(payload["local_review"]["precision_improvements"]) == 5
+    assert payload["local_review"]["precision_gate_readiness"][0]["status"] == "ready"
     assert (tmp_path / "reports" / "deepseek_strategy_review.json").exists()
     assert (tmp_path / "reports" / "deepseek_strategy_review.md").exists()
 
@@ -66,8 +67,11 @@ def test_strategy_review_gating_terms_are_not_mojibake(tmp_path, monkeypatch):
 
     payload = run(tmp_path, allow_api=False, max_tokens=100, timeout=1)
     rules = "\n".join(payload["local_review"]["gating_rules"])
+    report = (tmp_path / "reports" / "deepseek_strategy_review.md").read_text(encoding="utf-8")
 
     assert "可追" in rules
     assert "等拉回" in rules
-    legacy_mojibake = "".join(chr(code) for code in (0x003F, 0x822A, 0x856D))
-    assert legacy_mojibake not in rules
+    assert "Precision Gate Readiness" in report
+    for bad in ["?航蕭", "蝑", "銝餃", "憿"]:
+        assert bad not in rules
+        assert bad not in report

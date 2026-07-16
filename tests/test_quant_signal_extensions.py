@@ -15,7 +15,7 @@ def test_potential_radar_adds_lifecycle_smart_money_and_combo(tmp_path) -> None:
             "score": 78,
             "grade": "A",
             "price": 50.0,
-            "decision_light": "green",
+            "decision_light": "yellow",
             "technical_score": 24,
             "chip_score": 5,
             "opportunity_score": 9,
@@ -24,7 +24,7 @@ def test_potential_radar_adds_lifecycle_smart_money_and_combo(tmp_path) -> None:
             "retail_context": "散戶減少，籌碼轉乾淨",
             "pattern_tags": ["紅包孕"],
             "themes": ["測試題材"],
-            "entry_decision": "開盤確認",
+            "entry_decision": "等拉回",
         }
     ]
     candidates = build_potential_radar_candidates(rows, date(2026, 7, 1))
@@ -33,7 +33,10 @@ def test_potential_radar_adds_lifecycle_smart_money_and_combo(tmp_path) -> None:
     assert first["lifecycle_stage"] in {"fresh", "maturing", "extended"}
     assert first["smart_money"] in {"lead", "sync", "none"}
     assert first["signal_combo"]
-    assert "組合:" in " ".join(first["tags"])
+    joined_tags = " ".join(first["tags"])
+    assert "訊號組合:" in joined_tags
+    assert "生命週期:" in joined_tags
+    assert "資金型態:" in joined_tags
 
     store = SQLiteStore(tmp_path / "test.sqlite3")
     store.save_potential_radar(candidates, date(2026, 7, 1))
@@ -80,11 +83,11 @@ def test_weekly_and_block_trade_storage_round_trip(tmp_path) -> None:
                 "name": "台積電",
                 "block_value": 12.3,
                 "zscore": 3.1,
-                "signal": "鉅額交易異常",
+                "signal": "大額交易偏多",
                 "source": "manual-test",
-                "reason": "成交金額高於近期常態",
+                "reason": "鉅額交易金額明顯放大",
             }
         ],
         date(2026, 7, 1),
     )
-    assert store.latest_block_trade_anomalies()[0]["signal"] == "鉅額交易異常"
+    assert store.latest_block_trade_anomalies()[0]["signal"] == "大額交易偏多"

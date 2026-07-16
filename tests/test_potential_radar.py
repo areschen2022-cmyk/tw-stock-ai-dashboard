@@ -19,17 +19,17 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "entry_decision": "等拉回",
             "action_context": "強勢但等拉回",
             "retail_context": "籌碼轉乾淨",
-            "retail_context_reason": "散戶人數減少，價格尚未失控",
+            "retail_context_reason": "散戶持股人數減少，量能尚未過熱",
             "pattern_tags": ["突破整理"],
             "pattern_risk_tags": [],
-            "trigger_tags": ["法人共振", "技術突破"],
+            "trigger_tags": ["法人共振", "量能轉強"],
             "themes": ["記憶體/HBM"],
             "theme_tiers": ["core"],
             "opportunity_score": 6,
             "technical_score": 14,
             "chip_score": 14,
             "fundamental_score": 14,
-            "fundamental": "最新月營收年增 30%，營收加速創高",
+            "fundamental": "最新月營收年增 30%，營收新高",
             "risk": "風險條件可接受",
             "atr_pct": 4.2,
             "price": 100.0,
@@ -51,7 +51,7 @@ def test_potential_radar_prefers_early_confluence() -> None:
         },
         {
             "stock_id": "9999",
-            "name": "高風險股",
+            "name": "風險股",
             "score": 80,
             "grade": "A",
             "label": "BUY_WATCH",
@@ -59,7 +59,7 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "entry_decision": "避開",
             "retail_context": "籌碼轉乾淨",
             "pattern_tags": ["突破整理"],
-            "themes": ["題材"],
+            "themes": ["題材股"],
             "price": 10.0,
         },
     ]
@@ -82,6 +82,30 @@ def test_potential_radar_prefers_early_confluence() -> None:
     assert candidates[0]["reason"].startswith("強勢等拉回｜潛力分")
 
 
+def test_potential_radar_excludes_today_actionable_names() -> None:
+    rows = [
+        {
+            "stock_id": "2059",
+            "name": "川湖",
+            "score": 86,
+            "grade": "S",
+            "label": "BUY_WATCH",
+            "decision_light": "green",
+            "entry_decision": "開盤確認",
+            "action_context": "綠燈可盯",
+            "retail_context": "籌碼轉乾淨",
+            "pattern_tags": ["突破整理"],
+            "trigger_tags": ["法人共振", "量能轉強"],
+            "themes": ["AI伺服器"],
+            "opportunity_score": 6,
+            "price": 100.0,
+            "entry_limit_price": 102.0,
+        }
+    ]
+
+    assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
+
+
 def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> None:
     rows = [
         {
@@ -92,7 +116,7 @@ def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> 
             "label": "BUY_WATCH",
             "decision_light": "yellow",
             "entry_decision": "只觀察",
-            "retail_context": "散戶過熱，人數增加",
+            "retail_context": "散戶增加，籌碼過熱",
             "pattern_tags": ["突破整理"],
             "trigger_tags": ["放量不漲"],
             "themes": ["記憶體/HBM"],
@@ -116,7 +140,7 @@ def test_potential_radar_filters_chasing_above_entry_limit() -> None:
             "entry_decision": "等拉回",
             "retail_context": "籌碼轉乾淨",
             "pattern_tags": ["突破整理"],
-            "trigger_tags": ["法人共振", "技術突破"],
+            "trigger_tags": ["法人共振", "量能轉強"],
             "themes": ["AI伺服器"],
             "opportunity_score": 6,
             "price": 110.0,
@@ -157,7 +181,7 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "chase_risk_label": "尚未過熱",
                 "research_score": 8,
                 "research_label": "順風研究",
-                "research_factors": [{"label": "散戶結構", "passed": True}],
+                "research_factors": [{"label": "散戶籌碼", "passed": True}],
                 "stock_type": "growth_confirmed",
                 "stock_type_label": "成長確認型",
                 "position_hint": "normal",
@@ -202,7 +226,7 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
             day0 + timedelta(days=index),
         )
     promoted = StockScore("2408", 91, "BUY_WATCH", 102, 0, 0, 0, 0, 0)
-    store.save_watch_candidates([promoted], day0 + timedelta(days=2), {"2408": "??蝘?"})
+    store.save_watch_candidates([promoted], day0 + timedelta(days=2), {"2408": "南亞科"})
 
     store.update_potential_forward_returns(day0 + timedelta(days=5))
     summary = store.potential_radar_summary(day0 + timedelta(days=5))
