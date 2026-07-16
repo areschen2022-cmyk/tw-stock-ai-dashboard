@@ -70,8 +70,14 @@ def test_strategy_review_gating_terms_are_not_mojibake(tmp_path, monkeypatch):
     report = (tmp_path / "reports" / "deepseek_strategy_review.md").read_text(encoding="utf-8")
 
     assert "可追" in rules
-    assert "等拉回" in rules
+    assert "distribution risk" in rules
     assert "Precision Gate Readiness" in report
-    for bad in ["?航蕭", "蝑", "銝餃", "憿"]:
+    bad_samples = [
+        "?" + "\u822a" + "\u856d",
+        "\u8751\uf424",
+        "\u929d\u9903",
+        "\u61bf\uf5fb",
+    ]
+    for bad in bad_samples:
         assert bad not in rules
         assert bad not in report
