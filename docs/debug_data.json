@@ -1,11 +1,11 @@
 {
   "as_of": "2026-07-16",
-  "generated_at": "2026-07-16T23:56:45+08:00",
-  "dashboard_generated_at": "2026-07-16T23:56:42+08:00",
+  "generated_at": "2026-07-17T00:52:23+08:00",
+  "dashboard_generated_at": "2026-07-17T00:52:20+08:00",
   "source_status": {
     "label": "正常",
     "api": 3,
-    "cache": 3845,
+    "cache": 3852,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -185,10 +185,10 @@
   "data_source_health": {
     "label": "可用但待補",
     "blocking_count": 0,
-    "historical_failed_count": 20,
-    "failed_recovered_ratio": 0.1449,
-    "pending_count": 22,
-    "failed_count": 20,
+    "historical_failed_count": 21,
+    "failed_recovered_ratio": 0.1511,
+    "pending_count": 21,
+    "failed_count": 21,
     "recovered_count": 118,
     "effective_error": 0,
     "effective_empty": 0,
@@ -318,13 +318,13 @@
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
-        "status": "pending",
+        "status": "failed",
         "dataset": "t187ap05_R",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-16T23:56:45+08:00",
+        "last_attempt_at": "2026-07-17T00:52:23+08:00",
         "first_seen_at": "2026-07-16T23:21:30+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "pending",
@@ -422,18 +422,18 @@
       "advanced_packaging",
       "ai_server",
       "memory",
-      "silicon_photonics",
-      "materials_recovery"
+      "materials_recovery",
+      "silicon_photonics"
     ]
   },
   "retry": {
     "status_counts": {
-      "failed": 20,
-      "pending": 22,
+      "failed": 21,
+      "pending": 21,
       "recovered": 118
     },
-    "pending": 22,
-    "failed": 20,
+    "pending": 21,
+    "failed": 21,
     "recovered": 118,
     "diagnosis": [
       {
@@ -509,13 +509,13 @@
         "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
-        "status": "pending",
+        "status": "failed",
         "dataset": "t187ap05_R",
         "reason": "fetch_failed",
         "count": 1,
-        "last_attempt_at": "2026-07-16T23:56:45+08:00",
+        "last_attempt_at": "2026-07-17T00:52:23+08:00",
         "first_seen_at": "2026-07-16T23:21:30+08:00",
-        "suggestion": "待補類：由每日補抓佇列自動重試。"
+        "suggestion": "已達重試上限：保留紀錄，避免每日重複消耗請求。"
       },
       {
         "status": "pending",
@@ -563,10 +563,10 @@
         "data_id": "all",
         "period": "",
         "reason": "fetch_failed",
-        "status": "pending",
-        "attempts": 2,
+        "status": "failed",
+        "attempts": 3,
         "first_seen_at": "2026-07-16T23:21:30+08:00",
-        "last_attempt_at": "2026-07-16T23:56:45+08:00",
+        "last_attempt_at": "2026-07-17T00:52:23+08:00",
         "last_error": "unsupported_dataset",
         "recovered_at": null
       },
@@ -663,7 +663,7 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 3 | 快取 3845 | 限流 0"
+        "note": "API 3 | 快取 3852 | 限流 0"
       },
       {
         "key": "score",
@@ -683,7 +683,7 @@
         "key": "potential",
         "label": "潛力雷達",
         "status": "ok",
-        "value": "235 筆",
+        "value": "232 筆",
         "note": "完成 162 | 5日勝率 50.0%"
       },
       {
@@ -697,8 +697,8 @@
         "key": "retry",
         "label": "補抓佇列",
         "status": "warn",
-        "value": "待補 22",
-        "note": "已補 118 | 失敗 20"
+        "value": "待補 21",
+        "note": "已補 118 | 失敗 21"
       },
       {
         "key": "pages",
@@ -713,7 +713,7 @@
       "valid": 87,
       "watch_signals": 517,
       "watch_completed": 361,
-      "potential_signals": 235,
+      "potential_signals": 232,
       "potential_completed": 162,
       "data_coverage": {
         "bundle_stocks": 87,
@@ -755,7 +755,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=3; cache=3845; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3852; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -763,14 +763,14 @@
         "status": "warn",
         "label": "補抓佇列",
         "reason": "補抓佇列仍有待補或失敗紀錄。",
-        "evidence": "pending=44; recovered=236; failed=40",
+        "evidence": "pending=42; recovered=236; failed=42",
         "next_action": "若資料品質仍為 high 可先觀察；連續多日 failed 才調整資料源或清理佇列。"
       }
     ],
     "history": [
       {
         "run_date": "2026-07-16",
-        "generated_at": "2026-07-16T23:56:45+08:00",
+        "generated_at": "2026-07-17T00:52:23+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -784,7 +784,7 @@
           "valid": 87,
           "watch_signals": 517,
           "watch_completed": 361,
-          "potential_signals": 235,
+          "potential_signals": 232,
           "potential_completed": 162,
           "data_coverage": {
             "bundle_stocks": 87,
@@ -826,7 +826,7 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 3 | 快取 3845 | 限流 0"
+            "note": "API 3 | 快取 3852 | 限流 0"
           },
           {
             "key": "score",
@@ -846,7 +846,7 @@
             "key": "potential",
             "label": "潛力雷達",
             "status": "ok",
-            "value": "235 筆",
+            "value": "232 筆",
             "note": "完成 162 | 5日勝率 50.0%"
           },
           {
@@ -860,8 +860,8 @@
             "key": "retry",
             "label": "補抓佇列",
             "status": "warn",
-            "value": "待補 22",
-            "note": "已補 118 | 失敗 20"
+            "value": "待補 21",
+            "note": "已補 118 | 失敗 21"
           },
           {
             "key": "pages",
@@ -2255,9 +2255,9 @@
       "a_win_rate_5d": 46.49122807017544
     },
     "potential_radar": {
-      "signals": 235,
+      "signals": 232,
       "completed": 162,
-      "pending": 73,
+      "pending": 70,
       "win_rate_5d": 50.0,
       "avg_return_5d": 1.5007233644015487,
       "avg_return_10d": 0.3733068076739279,
