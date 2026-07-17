@@ -19,8 +19,10 @@ def load_potential_feedback(root: Path) -> dict[str, Any]:
     and never blocks the daily report when the file is missing or malformed.
     """
     path = root / "dashboard" / "potential_data.json"
+    weekly_path = root / "dashboard" / "weekly_review.json"
     if not path.exists():
-        return {"active": False, "weak": {}, "as_of": None}
+        weak = _weekly_potential_feedback(weekly_path)
+        return {"active": _has_feedback(weak), "weak": weak, "as_of": None}
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -64,11 +66,86 @@ def load_potential_feedback(root: Path) -> dict[str, Any]:
                     "avg_return_5d": avg_return,
                 }
 
+    weekly_weak = _weekly_potential_feedback(weekly_path)
+    for group, rows in weekly_weak.items():
+        weak.setdefault(group, {})
+        for label, item in rows.items():
+            weak[group].setdefault(label, item)
+
     return {
         "active": any(weak[group] for group in weak),
         "as_of": payload.get("as_of") if isinstance(payload, dict) else None,
         "weak": weak,
     }
+
+
+def _weekly_potential_feedback(path: Path) -> dict[str, dict[str, Any]]:
+    weak: dict[str, dict[str, Any]] = {
+        "stage": {},
+        "factor": {},
+        "lifecycle": {},
+        "smart_money": {},
+        "combo": {},
+    }
+    if not path.exists():
+        return weak
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return weak
+    if not isinstance(payload, dict):
+        return weak
+
+    weak_stage = ((payload.get("weak") or {}).get("potential_stage") or {})
+    if isinstance(weak_stage, dict):
+        _add_weekly_row(weak["stage"], weak_stage, default_reason="週檢討弱階段")
+
+    for item in payload.get("next_week_actions") or []:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("type") or "") != "deweight":
+            continue
+        target = str(item.get("target") or "")
+        if not target.startswith("潛力雷達："):
+            continue
+        label = target.split("：", 1)[1].strip()
+        if not label:
+            continue
+        weak["stage"].setdefault(
+            label,
+            {
+                "label": label,
+                "completed": MIN_FEEDBACK_COMPLETED,
+                "win_rate_5d": None,
+                "avg_return_5d": -0.1,
+                "reason": item.get("reason") or "週檢討建議降權",
+            },
+        )
+    return weak
+
+
+def _add_weekly_row(target: dict[str, Any], row: dict[str, Any], default_reason: str) -> None:
+    label = str(row.get("label") or "")
+    completed = _int(row.get("completed"))
+    win_rate = _float(row.get("win_rate_5d"))
+    avg_return = _float(row.get("avg_return_5d"))
+    if not label or completed < MIN_FEEDBACK_COMPLETED:
+        return
+    if (
+        (win_rate is not None and win_rate < WEAK_FEEDBACK_WIN_RATE)
+        or (avg_return is not None and avg_return < WEAK_FEEDBACK_AVG_RETURN)
+    ):
+        target[label] = {
+            "label": label,
+            "completed": completed,
+            "win_rate_5d": win_rate,
+            "avg_return_5d": avg_return,
+            "reason": row.get("reason") or default_reason,
+        }
+
+
+def _has_feedback(weak: dict[str, dict[str, Any]]) -> bool:
+    return any(bool(rows) for rows in weak.values())
 
 
 def build_potential_radar_candidates(

@@ -222,6 +222,34 @@ def test_potential_radar_feedback_ignores_small_samples(tmp_path) -> None:
     assert feedback["active"] is False
 
 
+def test_potential_radar_uses_weekly_review_deweight_when_potential_data_missing(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "weekly_review.json").write_text(
+        """
+        {
+          "weak": {
+            "potential_stage": {
+              "label": "強勢等拉回",
+              "completed": 75,
+              "win_rate_5d": 42.6,
+              "avg_return_5d": -0.4
+            }
+          },
+          "next_week_actions": [
+            {"type": "deweight", "target": "潛力雷達：強勢等拉回", "reason": "下週只列觀察或降權"}
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+    feedback = load_potential_feedback(tmp_path)
+
+    assert feedback["active"] is True
+    assert "強勢等拉回" in feedback["weak"]["stage"]
+    assert feedback["weak"]["stage"]["強勢等拉回"]["completed"] == 75
+
+
 def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 6, 1)

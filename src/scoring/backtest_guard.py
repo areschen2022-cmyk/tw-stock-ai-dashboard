@@ -35,6 +35,7 @@ def load_backtest_guard(root: Path) -> dict[str, Any]:
     """
     review_payload = _read_json(root / "dashboard" / "backtest_review.json")
     performance_payload = _read_json(root / "dashboard" / "performance_data.json")
+    weekly_payload = _read_json(root / "dashboard" / "weekly_review.json")
 
     rows: list[dict[str, Any]] = []
     if review_payload:
@@ -44,10 +45,11 @@ def load_backtest_guard(root: Path) -> dict[str, Any]:
 
     segments = _qualified_segments(rows)
     return {
-        "active": bool(segments),
+        "active": bool(segments) or bool(_weekly_guardrails(weekly_payload)),
         "as_of": performance_payload.get("as_of") or review_payload.get("as_of") if (performance_payload or review_payload) else None,
         "risk_level": review_payload.get("risk_level") if review_payload else None,
         "segments": segments,
+        "weekly": _weekly_guardrails(weekly_payload),
     }
 
 
@@ -63,11 +65,22 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
 
     segments = _qualified_segments(context.get("segments") or [])
     matches = _matches(score, segments)
+    weekly_notes = _apply_weekly_guard(score, context.get("weekly") or {})
     if not matches:
+        for note in weekly_notes:
+            score.reasons.setdefault("backtest_guard", []).append(note)
+            score.warnings.append(note)
+        if weekly_notes and "週檢討降權" not in score.trigger_tags:
+            score.trigger_tags.append("週檢討降權")
         return
 
     original_action = str(score.action or "")
     if original_action not in {"可追", "可追蹤突破"}:
+        for note in weekly_notes:
+            score.reasons.setdefault("backtest_guard", []).append(note)
+            score.warnings.append(note)
+        if weekly_notes and "週檢討降權" not in score.trigger_tags:
+            score.trigger_tags.append("週檢討降權")
         return
 
     score.action = "等拉回"
@@ -78,6 +91,59 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
     score.warnings.append(note)
     if "回測保護" not in score.trigger_tags:
         score.trigger_tags.append("回測保護")
+    for note in weekly_notes:
+        score.reasons.setdefault("backtest_guard", []).append(note)
+        score.warnings.append(note)
+    if weekly_notes and "週檢討降權" not in score.trigger_tags:
+        score.trigger_tags.append("週檢討降權")
+
+
+def _weekly_guardrails(payload: dict[str, Any]) -> dict[str, Any]:
+    if not payload:
+        return {}
+    summary = payload.get("summary") or {}
+    daily_completed = _num(summary.get("daily_completed"))
+    daily_win_rate = summary.get("daily_win_rate_5d")
+    actions = payload.get("next_week_actions") or []
+    guard: dict[str, Any] = {
+        "as_of": payload.get("as_of"),
+        "daily_deweight": False,
+        "entry_condition_caution": False,
+        "notes": [],
+    }
+    for item in actions:
+        if not isinstance(item, dict):
+            continue
+        action_type = str(item.get("type") or "")
+        target = str(item.get("target") or "")
+        reason = str(item.get("reason") or "")
+        if action_type == "deweight" and target == "每日可追訊號" and daily_completed >= MIN_COMPLETED:
+            if daily_win_rate is None or _num(daily_win_rate) < 50:
+                guard["daily_deweight"] = True
+                guard["notes"].append(reason or "週檢討顯示每日可追勝率低於 50%，提高確認門檻。")
+        elif target == "進場觸發條件":
+            guard["entry_condition_caution"] = True
+            guard["notes"].append(reason or "週檢討顯示進場條件需重新驗證。")
+    return guard if guard["daily_deweight"] or guard["entry_condition_caution"] else {}
+
+
+def _apply_weekly_guard(score: StockScore, guard: dict[str, Any]) -> list[str]:
+    if not guard:
+        return []
+    notes: list[str] = []
+    original_action = str(score.action or "")
+    if guard.get("daily_deweight") and original_action in {"可追", "可追蹤突破"}:
+        # Keep the strongest S/S+ names untouched, but require more confirmation
+        # for A/B or borderline candidates after a weak weekly review.
+        if int(score.total_score or 0) < 85:
+            score.action = "等拉回"
+            score.entry_decision = "等拉回"
+            notes.append("週檢討降權：每日可追近週勝率低於 50%，A/B 邊界訊號先等拉回")
+        else:
+            notes.append("週檢討提醒：每日可追近週勝率偏低，S級以上仍須開盤量價確認")
+    if guard.get("entry_condition_caution") and original_action in {"可追", "可追蹤突破"}:
+        notes.append("週檢討提醒：進場觸發條件近期需重驗，避免開盤追價")
+    return notes
 
 
 def _qualified_segments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

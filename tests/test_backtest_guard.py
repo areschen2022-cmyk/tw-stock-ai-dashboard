@@ -170,3 +170,53 @@ def test_backtest_guard_downgrades_when_entry_condition_recently_failed() -> Non
     assert score.action == "等拉回"
     assert score.entry_decision == "等拉回"
     assert any("進場條件" in item for item in score.warnings)
+
+
+def test_backtest_guard_loads_weekly_review_and_deweights_borderline_chase(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "weekly_review.json").write_text(
+        """
+        {
+          "as_of": "2026-07-16",
+          "summary": {"daily_completed": 42, "daily_win_rate_5d": 43.7},
+          "next_week_actions": [
+            {"type": "deweight", "target": "每日可追訊號", "reason": "5日勝率低於 50%"},
+            {"type": "investigate", "target": "進場觸發條件", "reason": "進場條件需重驗"}
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+    context = load_backtest_guard(tmp_path)
+    score = _score(action="可追蹤突破", total=82)
+
+    apply_backtest_guard(score, context)
+
+    assert context["active"] is True
+    assert score.action == "等拉回"
+    assert "週檢討降權" in score.trigger_tags
+    assert any("週檢討" in item for item in score.warnings)
+
+
+def test_backtest_guard_weekly_review_keeps_strong_s_chase_but_warns(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "weekly_review.json").write_text(
+        """
+        {
+          "summary": {"daily_completed": 42, "daily_win_rate_5d": 43.7},
+          "next_week_actions": [
+            {"type": "deweight", "target": "每日可追訊號", "reason": "5日勝率低於 50%"}
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+    context = load_backtest_guard(tmp_path)
+    score = _score(action="可追蹤突破", total=90)
+
+    apply_backtest_guard(score, context)
+
+    assert score.action == "可追蹤突破"
+    assert any("S級以上" in item for item in score.warnings)
