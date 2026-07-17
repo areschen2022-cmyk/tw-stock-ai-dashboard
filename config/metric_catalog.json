@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "metrics": [
+    {
+      "name": "actionable_chase_count",
+      "label": "今日可追檔數",
+      "grain": "report_date",
+      "source_files": ["dashboard/dashboard_data.json"],
+      "calculation": "action_lists.summary.chase",
+      "business_use": "Tell the user how many stocks are worth watching at the open.",
+      "good_value": "Usually 1-5. Too many names may indicate an overheated or noisy screen.",
+      "caveats": "A candidate is not a buy order; opening price and volume must still confirm."
+    },
+    {
+      "name": "signal_win_rate_5d",
+      "label": "訊號 5 日勝率",
+      "grain": "signal_group",
+      "source_files": ["dashboard/performance_data.json"],
+      "calculation": "completed signals with return_5d > 0 divided by completed signals",
+      "business_use": "Measure whether the selection rules are producing useful short-term signals.",
+      "good_value": "Above 50% with positive average return; below 50% triggers reason-tag review.",
+      "caveats": "Small samples can mislead. Always review completed count."
+    },
+    {
+      "name": "potential_radar_conversion_rate",
+      "label": "潛力雷達轉強率",
+      "grain": "potential_stage",
+      "source_files": ["dashboard/potential_data.json"],
+      "calculation": "potential records that become formal S/A signals within the tracking window divided by completed potential records",
+      "business_use": "Validate whether the radar finds early-stage names before they become daily picks.",
+      "good_value": "Higher than baseline daily screen conversion rate.",
+      "caveats": "Potential radar is a research queue, not a buy list."
+    },
+    {
+      "name": "knowledge_adjustment_effect",
+      "label": "智慧庫修正效果",
+      "grain": "knowledge_rule_match",
+      "source_files": ["dashboard/performance_data.json", "data/knowledge_exports/taiwan_stock_learning.jsonl"],
+      "calculation": "Compare outcomes after knowledge warnings/downgrades against unadjusted comparable signals.",
+      "business_use": "Confirm whether historical lessons actually improve decisions.",
+      "good_value": "Warnings reduce loss rate or avoid negative average-return setups.",
+      "caveats": "Knowledge rules should be conservative until enough live samples are available."
+    },
+    {
+      "name": "theme_heat_trend",
+      "label": "題材熱度趨勢",
+      "grain": "theme_date",
+      "source_files": ["dashboard/theme_history.json", "dashboard/dashboard_data.json"],
+      "calculation": "Daily theme headline intensity and 3-day average, plus trend label.",
+      "business_use": "Identify themes moving from background research into active market attention.",
+      "good_value": "Rising heat with matching volume, fundamentals, or policy catalysts.",
+      "caveats": "Headline heat alone is not enough; avoid pure news chasing."
+    }
+  ]
+}

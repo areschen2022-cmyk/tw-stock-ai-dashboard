@@ -21,6 +21,7 @@ REQUIRED_DASHBOARD_FILES = [
     "debug_data.json",
     "backtest_review.json",
     "backtest_30y.json",
+    "cloud_skill_routes_status.json",
 ]
 MOJIBAKE_MARKERS = (
     chr(0xFFFD),
@@ -149,6 +150,7 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     debug = payloads.get("debug_data.json") or {}
     backtest_review = payloads.get("backtest_review.json") or {}
     backtest_30y = payloads.get("backtest_30y.json") or {}
+    skill_routes = payloads.get("cloud_skill_routes_status.json") or {}
 
     for name, payload in payloads.items():
         bad_paths = _find_mojibake(payload)
@@ -211,6 +213,27 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
                     "long_horizon_backtest",
                     f"30-year backtest status is {long_status}",
                     "Run scripts/long_horizon_backtest.py and inspect dashboard/backtest_30y.json.",
+                )
+            )
+    if skill_routes:
+        route_status = str(skill_routes.get("status") or "")
+        if route_status not in {"ok", "warn"}:
+            issues.append(
+                _issue(
+                    "critical",
+                    "cloud_skill_routes",
+                    f"Cloud skill route check status is {route_status}",
+                    "Run scripts/cloud_skill_route_check.py and fix missing route implementation files.",
+                )
+            )
+        active_routes = _int((skill_routes.get("summary") or {}).get("active_routes"))
+        if active_routes < 2:
+            issues.append(
+                _issue(
+                    "warning",
+                    "cloud_skill_routes",
+                    f"Only {active_routes} active cloud skill route(s)",
+                    "Confirm market-research and semantic-model-builder routes remain enabled.",
                 )
             )
 

@@ -34,6 +34,10 @@ def _prepare_dashboard_files(root, *, include_weekly: bool = True) -> None:
     _write_json(dashboard / "debug_data.json", {"traceability": {"diagnosis": []}})
     _write_json(dashboard / "backtest_review.json", {"as_of": "2026-06-18", "status": "ok"})
     _write_json(dashboard / "backtest_30y.json", {"as_of": "2026-06-18", "status": "partial_coverage"})
+    _write_json(
+        dashboard / "cloud_skill_routes_status.json",
+        {"status": "ok", "summary": {"active_routes": 2, "routes": 3, "metrics": 5}},
+    )
     if include_weekly:
         _write_json(
             dashboard / "weekly_data.json",

@@ -1,0 +1,213 @@
+{
+  "generated_at": "2026-07-17T11:59:26+08:00",
+  "status": "ok",
+  "summary": {
+    "routes": 3,
+    "active_routes": 2,
+    "delegated_routes": 1,
+    "metrics": 5
+  },
+  "routes": [
+    {
+      "skill": "market-research",
+      "cloud_status": "active",
+      "decision_use": "Research market themes, policy catalysts, sector rotation, and source-backed downside cases before the daily candidate list is finalized.",
+      "cloud_jobs": [
+        "dashboard-update"
+      ],
+      "implemented_by": [
+        {
+          "path": "src/news/web_theme.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "src/news/headline_classifier.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "src/news/deepseek_theme_reviewer.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "src/news/policy_signal.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "scripts/deepseek_strategy_review.py",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "dashboard/dashboard_data.json",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "dashboard/theme_history.json",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "reports/deepseek_strategy_review.json",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "quality_gate": "Important theme claims must come from structured headlines, source URLs, or policy/news evidence. DeepSeek may review high-value themes, but the core score must still be based on structured data."
+    },
+    {
+      "skill": "semantic-model-builder",
+      "cloud_status": "active",
+      "decision_use": "Keep key metrics such as win rate, actionable candidates, potential radar outcomes, and knowledge adjustments consistently defined across reports.",
+      "cloud_jobs": [
+        "dashboard-update",
+        "morning-telegram"
+      ],
+      "implemented_by": [
+        {
+          "path": "config/metric_catalog.json",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "scripts/cloud_skill_route_check.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "scripts/post_update_check.py",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "dashboard/cloud_skill_routes_status.json",
+          "exists": true,
+          "kind": "generated_by_this_check"
+        },
+        {
+          "path": "dashboard/post_update_check.json",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "quality_gate": "Every metric used for decisions must declare grain, source files, calculation, and caveats in config/metric_catalog.json."
+    },
+    {
+      "skill": "earnings-trade-analyzer",
+      "cloud_status": "delegated",
+      "decision_use": "Use post-earnings momentum logic mainly for the US-stock project; Taiwan project uses monthly revenue acceleration and earnings-like event signals instead.",
+      "cloud_jobs": [
+        "dashboard-update"
+      ],
+      "implemented_by": [
+        {
+          "path": "scripts/import_us_stock_context.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "src/indicators/fundamental.py",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "src/report/potential_radar.py",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "data/us_stock_context.json",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "dashboard/dashboard_data.json",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "dashboard/potential_data.json",
+          "exists": true,
+          "kind": "file"
+        }
+      ],
+      "quality_gate": "Do not label Taiwan candidates as post-earnings PEAD unless an actual earnings/event source is available. Use monthly revenue acceleration as the Taiwan-safe proxy."
+    }
+  ],
+  "metrics": [
+    {
+      "name": "actionable_chase_count",
+      "label": "今日可追檔數",
+      "grain": "report_date",
+      "source_files": [
+        "dashboard/dashboard_data.json"
+      ],
+      "calculation": "action_lists.summary.chase",
+      "business_use": "Tell the user how many stocks are worth watching at the open.",
+      "good_value": "Usually 1-5. Too many names may indicate an overheated or noisy screen.",
+      "caveats": "A candidate is not a buy order; opening price and volume must still confirm."
+    },
+    {
+      "name": "signal_win_rate_5d",
+      "label": "訊號 5 日勝率",
+      "grain": "signal_group",
+      "source_files": [
+        "dashboard/performance_data.json"
+      ],
+      "calculation": "completed signals with return_5d > 0 divided by completed signals",
+      "business_use": "Measure whether the selection rules are producing useful short-term signals.",
+      "good_value": "Above 50% with positive average return; below 50% triggers reason-tag review.",
+      "caveats": "Small samples can mislead. Always review completed count."
+    },
+    {
+      "name": "potential_radar_conversion_rate",
+      "label": "潛力雷達轉強率",
+      "grain": "potential_stage",
+      "source_files": [
+        "dashboard/potential_data.json"
+      ],
+      "calculation": "potential records that become formal S/A signals within the tracking window divided by completed potential records",
+      "business_use": "Validate whether the radar finds early-stage names before they become daily picks.",
+      "good_value": "Higher than baseline daily screen conversion rate.",
+      "caveats": "Potential radar is a research queue, not a buy list."
+    },
+    {
+      "name": "knowledge_adjustment_effect",
+      "label": "智慧庫修正效果",
+      "grain": "knowledge_rule_match",
+      "source_files": [
+        "dashboard/performance_data.json",
+        "data/knowledge_exports/taiwan_stock_learning.jsonl"
+      ],
+      "calculation": "Compare outcomes after knowledge warnings/downgrades against unadjusted comparable signals.",
+      "business_use": "Confirm whether historical lessons actually improve decisions.",
+      "good_value": "Warnings reduce loss rate or avoid negative average-return setups.",
+      "caveats": "Knowledge rules should be conservative until enough live samples are available."
+    },
+    {
+      "name": "theme_heat_trend",
+      "label": "題材熱度趨勢",
+      "grain": "theme_date",
+      "source_files": [
+        "dashboard/theme_history.json",
+        "dashboard/dashboard_data.json"
+      ],
+      "calculation": "Daily theme headline intensity and 3-day average, plus trend label.",
+      "business_use": "Identify themes moving from background research into active market attention.",
+      "good_value": "Rising heat with matching volume, fundamentals, or policy catalysts.",
+      "caveats": "Headline heat alone is not enough; avoid pure news chasing."
+    }
+  ],
+  "issues": [],
+  "note": "Codex skills are not executed directly in GitHub Actions. These routes make their decision logic reproducible through repo scripts and scheduled jobs."
+}

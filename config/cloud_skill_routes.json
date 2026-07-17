@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Map locally installed Codex skills to reproducible cloud pipeline steps. GitHub Actions cannot execute Codex skills directly, so each route points to repo scripts, config, or dashboard outputs that implement the same decision discipline without requiring the PC to be on.",
+  "routes": [
+    {
+      "skill": "market-research",
+      "cloud_status": "active",
+      "decision_use": "Research market themes, policy catalysts, sector rotation, and source-backed downside cases before the daily candidate list is finalized.",
+      "implemented_by": [
+        "src/news/web_theme.py",
+        "src/news/headline_classifier.py",
+        "src/news/deepseek_theme_reviewer.py",
+        "src/news/policy_signal.py",
+        "scripts/deepseek_strategy_review.py"
+      ],
+      "outputs": [
+        "dashboard/dashboard_data.json",
+        "dashboard/theme_history.json",
+        "reports/deepseek_strategy_review.json"
+      ],
+      "cloud_jobs": [
+        "dashboard-update"
+      ],
+      "quality_gate": "Important theme claims must come from structured headlines, source URLs, or policy/news evidence. DeepSeek may review high-value themes, but the core score must still be based on structured data."
+    },
+    {
+      "skill": "semantic-model-builder",
+      "cloud_status": "active",
+      "decision_use": "Keep key metrics such as win rate, actionable candidates, potential radar outcomes, and knowledge adjustments consistently defined across reports.",
+      "implemented_by": [
+        "config/metric_catalog.json",
+        "scripts/cloud_skill_route_check.py",
+        "scripts/post_update_check.py"
+      ],
+      "outputs": [
+        "dashboard/cloud_skill_routes_status.json",
+        "dashboard/post_update_check.json"
+      ],
+      "cloud_jobs": [
+        "dashboard-update",
+        "morning-telegram"
+      ],
+      "quality_gate": "Every metric used for decisions must declare grain, source files, calculation, and caveats in config/metric_catalog.json."
+    },
+    {
+      "skill": "earnings-trade-analyzer",
+      "cloud_status": "delegated",
+      "decision_use": "Use post-earnings momentum logic mainly for the US-stock project; Taiwan project uses monthly revenue acceleration and earnings-like event signals instead.",
+      "implemented_by": [
+        "scripts/import_us_stock_context.py",
+        "src/indicators/fundamental.py",
+        "src/report/potential_radar.py"
+      ],
+      "outputs": [
+        "data/us_stock_context.json",
+        "dashboard/dashboard_data.json",
+        "dashboard/potential_data.json"
+      ],
+      "cloud_jobs": [
+        "dashboard-update"
+      ],
+      "quality_gate": "Do not label Taiwan candidates as post-earnings PEAD unless an actual earnings/event source is available. Use monthly revenue acceleration as the Taiwan-safe proxy."
+    }
+  ]
+}
