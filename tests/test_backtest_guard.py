@@ -42,6 +42,7 @@ def test_backtest_guard_downgrades_chase_when_recent_grade_is_weak() -> None:
     assert score.action == "等拉回"
     assert score.entry_decision == "等拉回"
     assert "回測保護" in score.trigger_tags
+    assert "backtest_weak_segment_downgrade" in score.guardrail_tags
     assert "backtest_guard" in score.reasons
 
 
@@ -196,6 +197,7 @@ def test_backtest_guard_loads_weekly_review_and_deweights_borderline_chase(tmp_p
     assert context["active"] is True
     assert score.action == "等拉回"
     assert "週檢討降權" in score.trigger_tags
+    assert "weekly_deweight_daily_chase" in score.guardrail_tags
     assert any("週檢討" in item for item in score.warnings)
 
 
@@ -219,4 +221,5 @@ def test_backtest_guard_weekly_review_keeps_strong_s_chase_but_warns(tmp_path) -
     apply_backtest_guard(score, context)
 
     assert score.action == "可追蹤突破"
+    assert "weekly_warn_strong_chase" in score.guardrail_tags
     assert any("S級以上" in item for item in score.warnings)

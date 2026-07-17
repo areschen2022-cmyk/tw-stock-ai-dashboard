@@ -86,6 +86,8 @@ class SQLiteStore:
                 ("return_10d", "REAL"),
                 ("stop_hit", "INTEGER"),
                 ("entry_triggered", "INTEGER"),
+                ("guardrail_tags_json", "TEXT NOT NULL DEFAULT '[]'"),
+                ("guardrail_notes_json", "TEXT NOT NULL DEFAULT '[]'"),
             ]:
                 if column not in watch_columns:
                     conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
@@ -194,6 +196,8 @@ class SQLiteStore:
                 ("signal_combo", "TEXT"),
                 ("feedback_penalty", "INTEGER NOT NULL DEFAULT 0"),
                 ("feedback_notes_json", "TEXT NOT NULL DEFAULT '[]'"),
+                ("radar_layer", "TEXT"),
+                ("radar_layer_label", "TEXT"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -977,8 +981,9 @@ class SQLiteStore:
                     INSERT OR REPLACE INTO watch_signals (
                         signal_date, stock_id, name, total_score, label, action,
                         entry_price, entry_condition, stop_reference, themes_json,
-                        stop_price, entry_limit_price, vol_5min_threshold, grade
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        stop_price, entry_limit_price, vol_5min_threshold, grade,
+                        guardrail_tags_json, guardrail_notes_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -995,6 +1000,8 @@ class SQLiteStore:
                         score.entry_limit_price,
                         score.vol_5min_threshold,
                         _grade(score.total_score),
+                        json.dumps(score.guardrail_tags, ensure_ascii=False),
+                        json.dumps(score.guardrail_notes, ensure_ascii=False),
                     ),
                 )
 
@@ -1233,8 +1240,8 @@ class SQLiteStore:
                         position_hint_label, lifecycle_stage, lifecycle_stage_label,
                         lifecycle_reason, smart_money, smart_money_label, smart_money_reason,
                         smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo,
-                        feedback_penalty, feedback_notes_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        feedback_penalty, feedback_notes_json, radar_layer, radar_layer_label
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -1271,6 +1278,8 @@ class SQLiteStore:
                         item.get("signal_combo"),
                         item.get("feedback_penalty") or 0,
                         json.dumps(item.get("feedback_notes") or [], ensure_ascii=False),
+                        item.get("radar_layer"),
+                        item.get("radar_layer_label"),
                     ),
                 )
 
@@ -1596,7 +1605,8 @@ class SQLiteStore:
             rows = conn.execute(
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, entry_price,
-                       entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json
+                       entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json,
+                       guardrail_tags_json, guardrail_notes_json
                 FROM watch_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -1605,7 +1615,11 @@ class SQLiteStore:
             ).fetchall()
         items = []
         for row in rows:
-            signal_date, stock_id, name, grade, total_score, entry_price, entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json = row
+            (
+                signal_date, stock_id, name, grade, total_score, entry_price,
+                entry_triggered, return_3d, return_5d, return_10d, stop_hit, action,
+                themes_json, guardrail_tags_json, guardrail_notes_json,
+            ) = row
             status_code = _return_status_code(signal_date, return_5d, as_of, horizon_days=5)
             items.append(
                 {
@@ -1622,6 +1636,8 @@ class SQLiteStore:
                     "stop_hit": _bool_or_none(stop_hit),
                     "action": action,
                     "themes": json.loads(themes_json or "[]"),
+                    "guardrail_tags": json.loads(guardrail_tags_json or "[]"),
+                    "guardrail_notes": json.loads(guardrail_notes_json or "[]"),
                     "status_code": status_code,
                     "status_label": {
                         "completed_5d": "completed",
@@ -1680,6 +1696,7 @@ class SQLiteStore:
             "postmortem": postmortem,
             "learning_center": learning_center,
             "potential_radar": potential_radar,
+            "guardrail_stats": _guardrail_stats(items),
             "exit_risk": exit_risk,
             "knowledge_adjustment": knowledge_adjustment,
             "backtest_insights": backtest_insights,
@@ -1713,7 +1730,7 @@ class SQLiteStore:
                        lifecycle_stage, lifecycle_stage_label, lifecycle_reason,
                        smart_money, smart_money_label, smart_money_reason,
                        smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo,
-                       feedback_penalty, feedback_notes_json
+                       feedback_penalty, feedback_notes_json, radar_layer, radar_layer_label
                 FROM potential_radar_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -1768,6 +1785,8 @@ class SQLiteStore:
                     "signal_combo": row[37] or "",
                     "feedback_penalty": row[38] or 0,
                     "feedback_notes": json.loads(row[39] or "[]"),
+                    "radar_layer": row[40] or _infer_radar_layer(row[11], row[28], row[31], row[4], row[3], row[6])["key"],
+                    "radar_layer_label": row[41] or _infer_radar_layer(row[11], row[28], row[31], row[4], row[3], row[6])["label"],
                 }
             )
         with self._connect() as conn:
@@ -1829,6 +1848,7 @@ class SQLiteStore:
             "pending_candidates": pending_candidates,
             "factor_stats": factor_stats,
             "stage_stats": _potential_stage_stats(items),
+            "layer_stats": _potential_bucket_stats(items, "radar_layer_label", "未分層"),
             "lifecycle_stats": _potential_bucket_stats(items, "lifecycle_stage_label", "生命週期待標記"),
             "smart_money_stats": _potential_bucket_stats(items, "smart_money_label", "資金待確認"),
             "combo_stats": _potential_bucket_stats(items, "signal_combo", "未分類", limit=12),
@@ -2510,6 +2530,29 @@ def _rate(values: list[bool | None]) -> float | None:
     if not known:
         return None
     return sum(1 for value in known if value) / len(known) * 100
+
+
+def _guardrail_stats(items: list[dict]) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        for tag in item.get("guardrail_tags") or []:
+            buckets.setdefault(str(tag), []).append(item)
+
+    rows: list[dict] = []
+    for tag, bucket in buckets.items():
+        completed = [item for item in bucket if item.get("return_5d") is not None]
+        stop_known = [item for item in bucket if item.get("stop_hit") is not None]
+        rows.append(
+            {
+                "tag": tag,
+                "signals": len(bucket),
+                "completed": len(completed),
+                "win_rate_5d": _rate([item.get("return_5d") > 0 for item in completed]),
+                "avg_return_5d": _avg([item.get("return_5d") for item in completed]),
+                "stop_hit_rate": _rate([item.get("stop_hit") for item in stop_known]),
+            }
+        )
+    return sorted(rows, key=lambda row: (-int(row["signals"] or 0), str(row["tag"])))
 
 
 def _bucket_stats(label: str, items: list[dict]) -> dict:
@@ -3416,6 +3459,19 @@ def _infer_potential_stage(potential_score, total_score, grade, tags: list | Non
     if "追高風險" in tag_text:
         return {"key": "wait_cooldown", "label": "降溫觀察"}
     return {"key": "low_base", "label": "低位醞釀"}
+
+
+def _infer_radar_layer(stage, lifecycle_stage, smart_money, total_score, grade, potential_score) -> dict[str, str]:
+    stage_key = str(stage or "")
+    lifecycle_key = str(lifecycle_stage or "")
+    smart_key = str(smart_money or "")
+    score = int(total_score or 0)
+    potential = int(potential_score or 0)
+    if stage_key == "pullback_watch" or smart_key == "sync" or potential >= 10:
+        return {"key": "confirmed_wait", "label": "已轉強等回測"}
+    if lifecycle_key == "extended" or score >= 90 or grade in {"S+", "S"}:
+        return {"key": "extended_watch", "label": "延伸觀察"}
+    return {"key": "early_potential", "label": "早期潛力"}
 
 
 def _potential_outcome(return_5d: float | None, return_10d: float | None, tags: list[str] | None = None) -> dict:

@@ -78,6 +78,8 @@ def test_potential_radar_prefers_early_confluence() -> None:
     assert candidates[0]["research_label"] == "順風研究"
     assert candidates[0]["stock_type_label"] == "成長確認型"
     assert candidates[0]["position_hint_label"] == "正常部位"
+    assert candidates[0]["radar_layer"] == "confirmed_wait"
+    assert candidates[0]["radar_layer_label"] == "已轉強等回測"
     assert any(item["label"] == "營收加速" and item["passed"] for item in candidates[0]["research_factors"])
     assert candidates[0]["reason"].startswith("強勢等拉回｜潛力分")
 
@@ -345,6 +347,7 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert summary["items"][0]["stock_type_label"] in {"成長確認型", "景氣反轉型"}
     assert summary["items"][0]["position_hint_label"] in {"正常部位", "半部位"}
     assert summary["stage_stats"]
+    assert summary["layer_stats"]
     assert summary["promotion_funnel"]["promoted"] == 1
     assert summary["promotion_funnel"]["examples"][0]["stock_id"] == "2408"
     assert summary["promotion_funnel"]["examples"][0]["days_to_promotion"] == 2

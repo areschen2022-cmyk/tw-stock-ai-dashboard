@@ -65,7 +65,9 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
 
     segments = _qualified_segments(context.get("segments") or [])
     matches = _matches(score, segments)
+    pre_weekly_action = str(score.action or "")
     weekly_notes = _apply_weekly_guard(score, context.get("weekly") or {})
+    _record_weekly_guardrail(score, context.get("weekly") or {}, weekly_notes, pre_weekly_action)
     if not matches:
         for note in weekly_notes:
             score.reasons.setdefault("backtest_guard", []).append(note)
@@ -83,6 +85,7 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
             score.trigger_tags.append("週檢討降權")
         return
 
+    _record_guardrail(score, "backtest_weak_segment_downgrade", "matched realized weak segment")
     score.action = "等拉回"
     score.entry_decision = "等拉回"
     labels = "、".join(_segment_label(match) for match in matches[:3])
@@ -144,6 +147,29 @@ def _apply_weekly_guard(score: StockScore, guard: dict[str, Any]) -> list[str]:
     if guard.get("entry_condition_caution") and original_action in {"可追", "可追蹤突破"}:
         notes.append("週檢討提醒：進場觸發條件近期需重驗，避免開盤追價")
     return notes
+
+
+def _record_weekly_guardrail(
+    score: StockScore,
+    guard: dict[str, Any],
+    notes: list[str],
+    original_action: str,
+) -> None:
+    if not guard or not notes:
+        return
+    joined = " | ".join(notes[:3])
+    if guard.get("daily_deweight"):
+        tag = "weekly_deweight_daily_chase" if str(score.action or "") != original_action else "weekly_warn_strong_chase"
+        _record_guardrail(score, tag, joined)
+    if guard.get("entry_condition_caution"):
+        _record_guardrail(score, "weekly_entry_condition_caution", joined)
+
+
+def _record_guardrail(score: StockScore, tag: str, note: str) -> None:
+    if tag and tag not in score.guardrail_tags:
+        score.guardrail_tags.append(tag)
+    if note and note not in score.guardrail_notes:
+        score.guardrail_notes.append(note)
 
 
 def _qualified_segments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

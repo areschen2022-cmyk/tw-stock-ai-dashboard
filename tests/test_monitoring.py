@@ -197,6 +197,27 @@ def test_performance_summary_uses_forward_prices(tmp_path) -> None:
     assert summary["postmortem"]["counts"][0]["category"] == "big_winner"
 
 
+def test_performance_summary_tracks_guardrail_stats(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+
+    signal = _score("2408", 80, price=100.0)
+    signal.guardrail_tags = ["weekly_deweight_daily_chase"]
+    signal.guardrail_notes = ["weekly review deweighted daily chase"]
+    store.save_daily_score(signal, day0)
+    store.save_watch_candidates([signal], day0, {"2408": "Nanya"})
+    for index, price in enumerate([99.0, 98.0, 97.0, 96.0, 94.0], start=1):
+        store.save_daily_score(_score("2408", 70, price=price), day0 + timedelta(days=index))
+
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+
+    assert summary["items"][0]["guardrail_tags"] == ["weekly_deweight_daily_chase"]
+    stats = {row["tag"]: row for row in summary["guardrail_stats"]}
+    assert stats["weekly_deweight_daily_chase"]["signals"] == 1
+    assert stats["weekly_deweight_daily_chase"]["completed"] == 1
+
+
 def test_knowledge_adjustment_summary_tracks_intervention_outcomes(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 5, 1)

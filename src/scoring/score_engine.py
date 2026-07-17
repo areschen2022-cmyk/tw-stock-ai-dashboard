@@ -49,6 +49,8 @@ class StockScore:
     selection_quality_notes: list[str] = field(default_factory=list)
     knowledge_adjustment: dict[str, Any] = field(default_factory=dict)
     knowledge_notes: list[str] = field(default_factory=list)
+    guardrail_tags: list[str] = field(default_factory=list)
+    guardrail_notes: list[str] = field(default_factory=list)
 
     @property
     def trigger_summary(self) -> str:

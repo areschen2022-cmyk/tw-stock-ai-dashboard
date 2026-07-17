@@ -199,6 +199,7 @@ def build_potential_radar_candidates(
         stock_type = _stock_type(row, score, grade, tags, stage["key"])
         position = _position_hint(row, chase_risk["level"])
         combo = _signal_combo(lifecycle["label"], smart_money["label"], tags)
+        layer = _radar_layer(stage, lifecycle, smart_money, score, grade, points)
         feedback_result = _feedback_adjustment(
             feedback,
             stage_label=stage["label"],
@@ -259,6 +260,8 @@ def build_potential_radar_candidates(
                 "branch_zscore_proxy": smart_money["zscore"],
                 "institutional_follow": smart_money["institutional_follow"],
                 "signal_combo": combo,
+                "radar_layer": layer["key"],
+                "radar_layer_label": layer["label"],
                 "tags": _dedupe(tags)[:12],
                 "reason": _reason(points, tags, stage["label"], chase_risk["label"]),
             }
@@ -604,6 +607,24 @@ def _smart_money_signal(row: dict[str, Any], score: int, grade: str, tags: list[
         "institutional_follow": bool(institutional_follow),
         "reason": "尚未看出主力先行或法人同步，維持觀察。",
     }
+
+
+def _radar_layer(
+    stage: dict[str, str],
+    lifecycle: dict[str, str],
+    smart_money: dict[str, Any],
+    score: int,
+    grade: str,
+    points: int,
+) -> dict[str, str]:
+    stage_key = str(stage.get("key") or "")
+    lifecycle_key = str(lifecycle.get("key") or "")
+    smart_key = str(smart_money.get("key") or "")
+    if stage_key == "pullback_watch" or smart_key == "sync" or points >= 10:
+        return {"key": "confirmed_wait", "label": "已轉強等回測"}
+    if lifecycle_key == "extended" or score >= 90 or grade in {"S+", "S"}:
+        return {"key": "extended_watch", "label": "延伸觀察"}
+    return {"key": "early_potential", "label": "早期潛力"}
 
 
 def _signal_combo(lifecycle_label: str, smart_money_label: str, tags: list[str]) -> str:
