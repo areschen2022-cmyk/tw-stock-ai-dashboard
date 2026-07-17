@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-17T11:59:26+08:00",
-  "status": "ok",
+  "generated_at": "2026-07-17T12:04:11+08:00",
+  "status": "warn",
   "summary": {
     "routes": 3,
     "active_routes": 2,
@@ -55,8 +55,8 @@
         },
         {
           "path": "reports/deepseek_strategy_review.json",
-          "exists": true,
-          "kind": "file"
+          "exists": false,
+          "kind": "missing"
         }
       ],
       "quality_gate": "Important theme claims must come from structured headlines, source URLs, or policy/news evidence. DeepSeek may review high-value themes, but the core score must still be based on structured data."
@@ -208,6 +208,12 @@
       "caveats": "Headline heat alone is not enough; avoid pure news chasing."
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "severity": "warning",
+      "skill": "market-research",
+      "message": "Missing latest output files: reports/deepseek_strategy_review.json"
+    }
+  ],
   "note": "Codex skills are not executed directly in GitHub Actions. These routes make their decision logic reproducible through repo scripts and scheduled jobs."
 }
