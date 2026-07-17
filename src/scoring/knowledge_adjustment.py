@@ -64,6 +64,7 @@ def load_knowledge_context(root: Path, limit: int = 80) -> dict[str, Any]:
     export_file = root / "data" / "knowledge_exports" / "taiwan_stock_learning.jsonl"
     rows: list[dict[str, Any]] = []
     if export_file.exists():
+        parsed_rows: list[dict[str, Any]] = []
         for line in export_file.read_text(encoding="utf-8", errors="ignore").splitlines():
             if not line.strip():
                 continue
@@ -72,9 +73,8 @@ def load_knowledge_context(root: Path, limit: int = 80) -> dict[str, Any]:
             except json.JSONDecodeError:
                 continue
             if isinstance(item, dict):
-                rows.append(item)
-            if len(rows) >= limit:
-                break
+                parsed_rows.append(item)
+        rows = sorted(parsed_rows, key=_row_sort_key, reverse=True)[:limit]
 
     return {
         "ok": bool(rows),
@@ -174,6 +174,15 @@ def _row_text(row: dict[str, Any]) -> str:
         " ".join(str(tag) for tag in (row.get("tags") or [])),
     ]
     return " ".join(str(part) for part in parts if part)
+
+
+def _row_sort_key(row: dict[str, Any]) -> tuple[str, str, str]:
+    """Prefer the newest exported lessons so recent postmortems are actually used."""
+    return (
+        str(row.get("updated_at") or ""),
+        str(row.get("created_at") or ""),
+        str(row.get("source_ref") or ""),
+    )
 
 
 def _matches_score(text: str, tags: list[Any], features: set[str]) -> bool:

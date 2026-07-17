@@ -1,4 +1,6 @@
-from src.scoring.knowledge_adjustment import apply_knowledge_adjustment
+import json
+
+from src.scoring.knowledge_adjustment import apply_knowledge_adjustment, load_knowledge_context
 from src.scoring.score_engine import StockScore
 
 
@@ -78,3 +80,30 @@ def test_knowledge_adjustment_positive_match_does_not_promote_action():
     assert score.total_score == 88
     assert score.knowledge_adjustment["positive_matches"]
     assert not score.knowledge_adjustment["negative_matches"]
+
+
+def test_load_knowledge_context_prefers_latest_export_rows(tmp_path):
+    export_dir = tmp_path / "data" / "knowledge_exports"
+    export_dir.mkdir(parents=True)
+    rows = [
+        {
+            "topic": "舊教訓",
+            "claim": "舊資料",
+            "status": "backtest_supported",
+            "updated_at": "2026-07-01T08:00:00+08:00",
+        },
+        {
+            "topic": "新教訓",
+            "claim": "近期低勝率拆解",
+            "status": "backtest_supported",
+            "updated_at": "2026-07-17T08:00:00+08:00",
+        },
+    ]
+    (export_dir / "taiwan_stock_learning.jsonl").write_text(
+        "\n".join(json.dumps(row, ensure_ascii=False) for row in rows),
+        encoding="utf-8",
+    )
+
+    context = load_knowledge_context(tmp_path, limit=1)
+
+    assert context["rows"][0]["topic"] == "新教訓"

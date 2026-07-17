@@ -109,3 +109,64 @@ def test_load_backtest_guard_filters_to_qualified_weak_segments(tmp_path) -> Non
     assert context["active"] is True
     assert len(context["segments"]) == 1
     assert context["segments"][0]["label"] == "S+"
+
+
+def test_backtest_guard_loads_low_win_rate_breakdown_from_performance(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "performance_data.json").write_text(
+        """
+        {
+          "as_of": "2026-07-16",
+          "low_win_rate_breakdown": {
+            "rows": [
+              {
+                "group": "題材",
+                "label": "記憶體/HBM",
+                "completed": 22,
+                "win_rate_5d": 9.1,
+                "avg_return_5d": -6.3,
+                "diagnosis": "題材聲量沒有同步轉成買盤"
+              },
+              {
+                "group": "進場條件",
+                "label": "有觸發進場",
+                "completed": 280,
+                "win_rate_5d": 36.1,
+                "avg_return_5d": -2.3
+              }
+            ]
+          }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    context = load_backtest_guard(tmp_path)
+
+    assert context["active"] is True
+    groups = {item["group"] for item in context["segments"]}
+    assert "theme" in groups
+    assert "entry_condition" in groups
+
+
+def test_backtest_guard_downgrades_when_entry_condition_recently_failed() -> None:
+    score = _score(action="可追蹤突破", total=98)
+    context = {
+        "active": True,
+        "segments": [
+            {
+                "group": "進場條件",
+                "label": "有觸發進場",
+                "completed": 280,
+                "win_rate_5d": 36.1,
+                "avg_return_5d": -2.3,
+            }
+        ],
+    }
+
+    apply_backtest_guard(score, context)
+
+    assert score.action == "等拉回"
+    assert score.entry_decision == "等拉回"
+    assert any("進場條件" in item for item in score.warnings)

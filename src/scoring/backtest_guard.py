@@ -7,7 +7,17 @@ from typing import Any
 from src.scoring.score_engine import StockScore
 
 
-WEAK_GROUPS = {"grade", "theme", "action", "score_band"}
+WEAK_GROUPS = {"grade", "theme", "action", "score_band", "entry_condition"}
+GROUP_ALIASES = {
+    "強度": "grade",
+    "等級": "grade",
+    "題材": "theme",
+    "主題": "theme",
+    "操作": "action",
+    "操作建議": "action",
+    "分數區間": "score_band",
+    "進場條件": "entry_condition",
+}
 MIN_COMPLETED = 10
 WEAK_WIN_RATE = 42.0
 WEAK_AVG_RETURN = 0.0
@@ -15,26 +25,28 @@ HIGH_STOP_HIT = 45.0
 
 
 def load_backtest_guard(root: Path) -> dict[str, Any]:
-    """Load the latest recurring backtest review as a conservative guardrail.
+    """Load realized weak segments as a conservative guardrail.
 
-    The guard intentionally reads the previous generated review from dashboard/.
-    If it is missing or malformed, it returns an inactive context so the daily
-    report is never blocked.
+    Sources:
+    1. dashboard/backtest_review.json weak segments.
+    2. dashboard/performance_data.json low_win_rate_breakdown rows.
+
+    If either source is missing or malformed, the daily report is never blocked.
     """
-    path = root / "dashboard" / "backtest_review.json"
-    if not path.exists():
-        return {"active": False, "reason": "missing_backtest_review", "segments": []}
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {"active": False, "reason": "invalid_backtest_review", "segments": []}
+    review_payload = _read_json(root / "dashboard" / "backtest_review.json")
+    performance_payload = _read_json(root / "dashboard" / "performance_data.json")
 
-    weak = payload.get("weak") or {}
-    segments = _qualified_segments(weak.get("segments") or [])
+    rows: list[dict[str, Any]] = []
+    if review_payload:
+        rows.extend((review_payload.get("weak") or {}).get("segments") or [])
+    if performance_payload:
+        rows.extend((performance_payload.get("low_win_rate_breakdown") or {}).get("rows") or [])
+
+    segments = _qualified_segments(rows)
     return {
         "active": bool(segments),
-        "as_of": payload.get("as_of"),
-        "risk_level": payload.get("risk_level"),
+        "as_of": performance_payload.get("as_of") or review_payload.get("as_of") if (performance_payload or review_payload) else None,
+        "risk_level": review_payload.get("risk_level") if review_payload else None,
         "segments": segments,
     }
 
@@ -60,7 +72,7 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
 
     score.action = "等拉回"
     score.entry_decision = "等拉回"
-    labels = "、".join(match["label"] for match in matches[:3])
+    labels = "、".join(_segment_label(match) for match in matches[:3])
     note = f"回測保護：近期 {labels} 表現偏弱，先降為等拉回"
     score.reasons.setdefault("backtest_guard", []).append(note)
     score.warnings.append(note)
@@ -71,7 +83,7 @@ def apply_backtest_guard(score: StockScore, context: dict[str, Any] | None) -> N
 def _qualified_segments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     qualified: list[dict[str, Any]] = []
     for row in rows:
-        group = str(row.get("group") or "")
+        group = _normalize_group(str(row.get("group") or ""))
         label = str(row.get("label") or "")
         completed = _num(row.get("completed"))
         win_rate = row.get("win_rate_5d")
@@ -91,6 +103,8 @@ def _qualified_segments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "win_rate_5d": win_rate,
                     "avg_return_5d": avg_return,
                     "stop_hit_rate": stop_hit,
+                    "diagnosis": row.get("diagnosis"),
+                    "recommended_action": row.get("recommended_action"),
                 }
             )
     return qualified
@@ -108,6 +122,8 @@ def _matches(score: StockScore, segments: list[dict[str, Any]]) -> list[dict[str
         elif group == "action" and label in {str(score.action or ""), str(score.entry_decision or "")}:
             matched.append(segment)
         elif group == "theme" and _normalize(label) in feature_text:
+            matched.append(segment)
+        elif group == "entry_condition" and _entry_condition_matches(score, label):
             matched.append(segment)
     return matched
 
@@ -134,6 +150,35 @@ def _score_group_matches(label: str, grade: str, total_score: int) -> bool:
             return False
         return low <= int(total_score) <= high
     return False
+
+
+def _entry_condition_matches(score: StockScore, label: str) -> bool:
+    if label not in {"有觸發進場", "進場觸發", "entry_triggered"}:
+        return False
+    action_text = f"{score.action} {score.entry_decision}"
+    return any(term in action_text for term in ["可追", "可追蹤突破", "開盤確認"])
+
+
+def _normalize_group(group: str) -> str:
+    return GROUP_ALIASES.get(group, group)
+
+
+def _segment_label(segment: dict[str, Any]) -> str:
+    group = str(segment.get("group") or "")
+    label = str(segment.get("label") or "")
+    if group == "entry_condition":
+        return f"進場條件:{label}"
+    return label
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def _grade(score: int) -> str:
