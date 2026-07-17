@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T12:35:46+08:00",
-  "status": "ok",
+  "generated_at": "2026-07-17T12:36:12+08:00",
+  "status": "bad",
   "counts": {
-    "critical": 0,
+    "critical": 1,
     "warning": 0,
     "info": 1
   },
@@ -11,8 +11,8 @@
     "weekly_as_of": "2026-07-16",
     "rows": 100,
     "valid": 100,
-    "chase": 4,
-    "pullback": 0,
+    "chase": 1,
+    "pullback": 2,
     "data_updates": [
       {
         "update_date": "2026-07-16",
@@ -21,8 +21,8 @@
         "row_count": 100,
         "source_date": "2026-07-16",
         "message": "100 stocks scanned for institutional flow",
-        "run_id": "29555196339",
-        "created_at": "2026-07-17 04:35:40"
+        "run_id": "",
+        "created_at": "2026-07-17 04:33:58"
       },
       {
         "update_date": "2026-07-16",
@@ -123,6 +123,12 @@
     "recent_tdcc_update_rows": 7
   },
   "issues": [
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/debug_data.json differs from dashboard/debug_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
     {
       "severity": "info",
       "area": "traceability",

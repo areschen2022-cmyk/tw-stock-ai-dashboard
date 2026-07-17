@@ -1642,6 +1642,14 @@ class SQLiteStore:
         learning_center = _learning_center_summary(items)
         signal_attribution = _signal_attribution_center(items, potential_radar, ai_council)
         calibration_advice = _calibration_advice(signal_lab, action_stats, theme_stats)
+        low_win_rate_breakdown = _low_win_rate_breakdown(
+            items,
+            theme_stats=theme_stats,
+            action_stats=action_stats,
+            score_bands=score_bands,
+            entry_analysis=_entry_analysis(items),
+            factor_rows=signal_attribution.get("factor_rows", []),
+        )
         return {
             "as_of": as_of.isoformat(),
             "days": days,
@@ -1677,6 +1685,7 @@ class SQLiteStore:
                 score_bands=score_bands,
                 ai_council=ai_council,
             ),
+            "low_win_rate_breakdown": low_win_rate_breakdown,
             "calibration_advice": calibration_advice,
             "adaptive_feedback": _adaptive_feedback(postmortem, potential_radar, signal_attribution, calibration_advice),
             "items": items,
@@ -3694,6 +3703,159 @@ def _backtest_notes(completed: list[dict], candidates: list[dict], weak: list[di
     if weak:
         worst = weak[0]
         notes.append(f"需檢討區塊：{worst['group']} {worst['label']}，5日平均 {worst['avg_return_5d']}%")
+    return notes
+
+
+def _low_win_rate_breakdown(
+    items: list[dict],
+    *,
+    theme_stats: list[dict],
+    action_stats: list[dict],
+    score_bands: list[dict],
+    entry_analysis: dict,
+    factor_rows: list[dict],
+    target_win_rate: float = 50.0,
+    min_completed: int = 5,
+    limit: int = 10,
+) -> dict:
+    completed_items = [item for item in items if item.get("return_5d") is not None]
+    total_completed = len(completed_items)
+    overall_win_rate = _rate([item.get("return_5d") > 0 for item in completed_items])
+    overall_avg = _avg([item.get("return_5d") for item in completed_items])
+
+    candidates: list[dict] = []
+
+    def add_row(group: str, label: str, row: dict, note: str) -> None:
+        completed = int(row.get("completed") or row.get("completed_5d") or row.get("count") or 0)
+        win_rate = row.get("win_rate_5d")
+        avg_return = row.get("avg_return_5d")
+        if completed < min_completed or win_rate is None:
+            return
+        win_rate_f = float(win_rate)
+        avg_return_f = float(avg_return) if avg_return is not None else 0.0
+        if win_rate_f >= target_win_rate and avg_return_f >= 0:
+            return
+        drag_score = round(
+            max(target_win_rate - win_rate_f, 0) * (completed / max(total_completed, 1))
+            + max(-avg_return_f, 0),
+            4,
+        )
+        candidates.append(
+            {
+                "group": group,
+                "label": label,
+                "completed": completed,
+                "signals": row.get("signals") or row.get("count") or completed,
+                "win_rate_5d": win_rate,
+                "avg_return_5d": avg_return,
+                "drag_score": drag_score,
+                "sample_label": _sample_label(completed),
+                "diagnosis": _low_win_rate_diagnosis(group, label, avg_return_f),
+                "recommended_action": _low_win_rate_action(group, label),
+                "note": note,
+            }
+        )
+
+    for grade_row in grade_return_summary(items):
+        add_row("強度", str(grade_row.get("grade") or "未分級"), grade_row, "同一強度級別的 5 日勝率低於基準。")
+    for row in score_bands:
+        add_row("分數區間", str(row.get("label") or "未分區"), row, "同一分數帶的短線表現拖累整體勝率。")
+    for row in action_stats:
+        add_row("操作", str(row.get("label") or "未分類"), row, "同一操作建議的實際表現偏弱。")
+    for row in theme_stats:
+        add_row("題材", str(row.get("label") or "未命名題材"), row, "題材熱度未轉成 5 日報酬。")
+    for row in factor_rows:
+        add_row("因素", str(row.get("label") or "未命名因素"), row, "單一訊號因素近 30 日效果偏弱。")
+
+    triggered = (entry_analysis or {}).get("triggered") or {}
+    not_triggered = (entry_analysis or {}).get("not_triggered") or {}
+    add_row(
+        "進場條件",
+        "有觸發進場",
+        {"completed": triggered.get("count"), **triggered},
+        "開盤條件觸發後仍轉弱，代表確認條件可能太鬆。",
+    )
+    add_row(
+        "進場條件",
+        "未觸發進場",
+        {"completed": not_triggered.get("count"), **not_triggered},
+        "未觸發進場後仍表現偏弱或勝率偏低，需確認過濾條件是否有效。",
+    )
+
+    candidates.sort(
+        key=lambda row: (
+            float(row.get("drag_score") or 0),
+            int(row.get("completed") or 0),
+            -float(row.get("win_rate_5d") or 0),
+        ),
+        reverse=True,
+    )
+    rows = candidates[:limit]
+    seen = {(row.get("group"), row.get("label")) for row in rows}
+    for row in candidates:
+        key = (row.get("group"), row.get("label"))
+        if row.get("group") == "進場條件" and key not in seen:
+            rows.append(row)
+            seen.add(key)
+    return {
+        "target_win_rate_5d": target_win_rate,
+        "min_completed": min_completed,
+        "sample": total_completed,
+        "overall_win_rate_5d": overall_win_rate,
+        "overall_avg_return_5d": overall_avg,
+        "is_below_target": bool(overall_win_rate is not None and float(overall_win_rate) < target_win_rate),
+        "rows": rows,
+        "top_drag": rows[0] if rows else None,
+        "notes": _low_win_rate_notes(overall_win_rate, overall_avg, rows, target_win_rate),
+    }
+
+
+def _low_win_rate_diagnosis(group: str, label: str, avg_return: float) -> str:
+    text = f"{group} {label}"
+    if "進場條件" in group and "有觸發" in label:
+        return "進場確認後仍下跌，可能是追價、隔日承接不足或市場轉弱。"
+    if "題材" in group:
+        return "題材聲量沒有同步轉成買盤，應要求法人、營收或量能續航確認。"
+    if "因素" in group and ("停損" in label or "轉弱" in label):
+        return "風險因子反覆命中，應優先降低追價與放寬停損的衝動。"
+    if "強度" in group or "分數" in group:
+        return "高分不等於可買，需檢查分數是否被重複題材或短線過熱灌高。"
+    if "操作" in group:
+        return "操作類型近期不順，應改用更保守的開盤價量確認。"
+    if avg_return < 0:
+        return "平均報酬為負，短線期望值偏弱，先降權觀察。"
+    return "勝率低於基準但平均報酬未明顯惡化，先累積樣本。"
+
+
+def _low_win_rate_action(group: str, label: str) -> str:
+    if "進場條件" in group and "有觸發" in label:
+        return "提高開盤確認門檻：不跳空過大、量能延續且站穩昨日高點才追。"
+    if "題材" in group:
+        return "題材先降權，要求營收、法人或供應鏈證據同步。"
+    if "因素" in group:
+        return "此因素不得單獨加分，需至少再搭配一個非同源確認。"
+    if "強度" in group or "分數" in group:
+        return "重新檢查分數來源，避免同一題材與同一量價訊號重複計分。"
+    if "操作" in group:
+        return "暫時改為等拉回或只觀察，直到勝率回到 50% 以上。"
+    return "保留紀錄，等待更多樣本再校準。"
+
+
+def _low_win_rate_notes(overall_win_rate, overall_avg, rows: list[dict], target_win_rate: float) -> list[str]:
+    notes: list[str] = []
+    if overall_win_rate is None:
+        notes.append("尚無足夠已完成樣本，暫不拆解低勝率原因。")
+        return notes
+    if float(overall_win_rate) < target_win_rate:
+        notes.append(f"整體 5 日勝率低於 {target_win_rate:.0f}% 基準，需優先降低拖累因子的權重。")
+    else:
+        notes.append("整體勝率已達基準，低勝率區塊仍可作為風控檢查。")
+    if overall_avg is not None and float(overall_avg) <= 0:
+        notes.append("整體平均報酬偏弱，代表不是只有勝率問題，也要檢查虧損幅度。")
+    if rows:
+        top = rows[0]
+        notes.append(f"目前最大拖累：{top.get('group')}「{top.get('label')}」，完成 {top.get('completed')} 筆。")
+    notes.append("本拆解只輸出資料與智慧庫教訓，不直接覆蓋核心交易分數。")
     return notes
 
 

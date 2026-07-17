@@ -280,6 +280,9 @@ def test_performance_summary_records_success_failure_and_missed_lessons(tmp_path
     assert any(row["label"] == "高分失敗" for row in summary["learning_center"]["failure_factors"])
     assert summary["signal_attribution"]["summary_rows"]
     assert summary["signal_attribution"]["summary_rows"][0]["label"] == "今日操作訊號"
+    low_win = summary["low_win_rate_breakdown"]
+    assert low_win["target_win_rate_5d"] == 50.0
+    assert low_win["sample"] == 3
     assert summary["signal_attribution"]["factor_rows"]
     assert summary["signal_attribution"]["best_factor"]
 
@@ -455,6 +458,33 @@ def test_performance_summary_entry_analysis(tmp_path) -> None:
     assert entry["not_triggered"]["count"] == 1
     assert entry["not_triggered"]["win_rate_5d"] == 0
     assert entry["not_triggered"]["avg_return_5d"] == -10
+
+
+def test_performance_summary_builds_low_win_rate_breakdown(tmp_path) -> None:
+    store = SQLiteStore(tmp_path / "test.sqlite3")
+    day0 = date(2026, 5, 1)
+    names = {f"24{i:02d}": f"Weak {i}" for i in range(6)}
+    signals = []
+    for index in range(6):
+        signal = _score(f"24{index:02d}", 96, price=100.0)
+        signal.themes = ["弱題材"]
+        signal.entry_limit_price = 103.0
+        signal.stop_price = 95.0
+        signals.append(signal)
+        store.save_daily_score(signal, day0)
+        for offset, price in enumerate([101.0, 99.0, 96.0, 94.0, 90.0], start=1):
+            store.save_daily_score(_score(signal.stock_id, 96, price=price), day0 + timedelta(days=offset))
+
+    store.save_watch_candidates(signals, day0, names)
+    store.update_forward_returns(day0 + timedelta(days=5))
+    summary = store.performance_summary(day0 + timedelta(days=5))
+    low_win = summary["low_win_rate_breakdown"]
+
+    assert low_win["is_below_target"] is True
+    assert low_win["top_drag"]
+    groups = {row["group"] for row in low_win["rows"]}
+    assert {"強度", "題材", "進場條件"} <= groups
+    assert any(row["recommended_action"] for row in low_win["rows"])
 
 
 def test_forward_returns_complete_when_stop_price_is_missing(tmp_path) -> None:

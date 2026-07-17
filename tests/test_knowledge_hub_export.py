@@ -42,17 +42,35 @@ def _performance_payload() -> dict:
                 "reason": "樣本仍少，但早期表現偏正向。",
             }
         ],
+        "low_win_rate_breakdown": {
+            "target_win_rate_5d": 50.0,
+            "rows": [
+                {
+                    "group": "進場條件",
+                    "label": "有觸發進場",
+                    "completed": 25,
+                    "signals": 30,
+                    "win_rate_5d": 36.0,
+                    "avg_return_5d": -2.4,
+                    "drag_score": 4.1,
+                    "sample_label": "觀察中",
+                    "diagnosis": "進場確認後仍下跌。",
+                    "recommended_action": "提高開盤確認門檻。",
+                }
+            ],
+        },
     }
 
 
 def test_build_knowledge_points_from_performance_payload() -> None:
     points = build_knowledge_points(_performance_payload())
 
-    assert len(points) == 3
+    assert len(points) == 4
     assert all(point["domain"] == "taiwan_stock" for point in points)
     assert any(point["topic"].startswith("台股訊號因素：") for point in points)
     assert any("台股失敗歸因：" in point["topic"] for point in points)
     assert any("台股回測回饋：" in point["topic"] for point in points)
+    assert any("台股低勝率拆解：" in point["topic"] for point in points)
     assert all(point["id"].startswith("kp_") for point in points)
     assert all("�" not in json.dumps(point, ensure_ascii=False) for point in points)
 

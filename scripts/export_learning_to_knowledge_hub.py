@@ -192,6 +192,38 @@ def build_knowledge_points(performance: dict) -> list[dict]:
             )
         )
 
+    low_win = performance.get("low_win_rate_breakdown") or {}
+    target_win_rate = low_win.get("target_win_rate_5d", 50)
+    for row in low_win.get("rows") or []:
+        completed = _int(row.get("completed"))
+        if completed <= 0:
+            continue
+        group = _text(row.get("group"), "低勝率區塊")
+        label = _text(row.get("label"), "未命名")
+        avg_return = row.get("avg_return_5d")
+        win_rate = row.get("win_rate_5d")
+        claim = (
+            f"{group}「{label}」拖累近期勝率："
+            f"完成 {completed} 筆，5 日勝率 {_fmt_pct(win_rate)}，"
+            f"低於基準 {_fmt_pct(target_win_rate)}，5 日平均報酬 {_fmt_pct(avg_return)}。"
+        )
+        evidence = (
+            f"drag_score={row.get('drag_score')}, sample={row.get('sample_label')}, "
+            f"diagnosis={row.get('diagnosis')}, recommended_action={row.get('recommended_action')}"
+        )
+        points.append(
+            _knowledge(
+                topic=f"台股低勝率拆解：{group}:{label}",
+                claim=claim,
+                evidence=evidence,
+                tags=["台股", "低勝率拆解", group, label],
+                completed=completed,
+                avg_return_5d=avg_return,
+                win_rate_5d=win_rate,
+                source_ref=source_ref,
+            )
+        )
+
     current_backtest = performance.get("current_selection_backtest") or {}
     for section, polarity in [("strong_references", "正向"), ("weak_references", "偏弱")]:
         for row in (current_backtest.get(section) or [])[:8]:
