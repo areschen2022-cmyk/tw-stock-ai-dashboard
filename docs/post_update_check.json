@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T12:52:08+08:00",
-  "status": "ok",
+  "generated_at": "2026-07-17T13:20:15+08:00",
+  "status": "bad",
   "counts": {
-    "critical": 0,
+    "critical": 5,
     "warning": 0,
     "info": 1
   },
@@ -11,8 +11,8 @@
     "weekly_as_of": "2026-07-16",
     "rows": 84,
     "valid": 84,
-    "chase": 4,
-    "pullback": 0,
+    "chase": 0,
+    "pullback": 3,
     "data_updates": [
       {
         "update_date": "2026-07-16",
@@ -21,8 +21,8 @@
         "row_count": 84,
         "source_date": "2026-07-16",
         "message": "84 stocks scanned for institutional flow",
-        "run_id": "29555842757",
-        "created_at": "2026-07-17 04:52:01"
+        "run_id": "",
+        "created_at": "2026-07-17 05:19:43"
       },
       {
         "update_date": "2026-07-16",
@@ -124,6 +124,36 @@
   },
   "issues": [
     {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/dashboard_data.json differs from dashboard/dashboard_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/performance_data.json differs from dashboard/performance_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/potential_data.json differs from dashboard/potential_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/weekly_data.json differs from dashboard/weekly_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/debug_data.json differs from dashboard/debug_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
       "severity": "info",
       "area": "traceability",
       "message": "Traceability diagnosis contains 2 item(s)",
@@ -131,7 +161,7 @@
     }
   ],
   "next_optimizations": [
-    "Next: compare decision-card outcomes by reason tag to identify which signals deserve more weight."
+    "Tune action thresholds only after checking whether zero chase candidates repeats for several days."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
 }
