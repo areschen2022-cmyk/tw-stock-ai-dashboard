@@ -1,25 +1,25 @@
 {
   "as_of": "2026-07-16",
-  "generated_at": "2026-07-17T12:35:44+08:00",
+  "generated_at": "2026-07-17T12:52:06+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
-    "signals": 515,
-    "completed": 365,
-    "win_rate_5d": 43.83561643835616,
-    "avg_return_5d": 0.0884503866501983,
-    "stop_hit_rate": 32.365145228215766,
-    "data_completion_rate_5d": 70.87378640776699,
+    "signals": 514,
+    "completed": 366,
+    "win_rate_5d": 43.71584699453552,
+    "avg_return_5d": 0.07644970945073204,
+    "stop_hit_rate": 32.15767634854772,
+    "data_completion_rate_5d": 71.20622568093385,
     "ai_win_rate_5d": 52.63157894736842,
-    "potential_win_rate_5d": 49.390243902439025
+    "potential_win_rate_5d": 49.09090909090909
   },
   "best": {
     "score_band": {
       "label": "75-84",
       "signals": 161,
-      "completed": 116,
-      "win_rate_5d": 45.689655172413794,
-      "avg_return_5d": 1.047271048460708,
+      "completed": 117,
+      "win_rate_5d": 45.2991452991453,
+      "avg_return_5d": 1.0015354201118603,
       "stop_hit_rate": 33.55263157894737
     },
     "theme": {
@@ -84,7 +84,7 @@
         "completed": 82,
         "win_rate_5d": 52.4390243902439,
         "avg_return_5d": 2.319766941525186,
-        "stop_hit_rate": 16.346153846153847
+        "stop_hit_rate": 15.384615384615385
       }
     ]
   },
@@ -95,22 +95,22 @@
       "completed": 42,
       "win_rate_5d": 45.23809523809524,
       "avg_return_5d": -0.9219285741935982,
-      "stop_hit_rate": 29.82456140350877
+      "stop_hit_rate": 28.07017543859649
     },
     "theme": {
       "label": "網通光通訊",
       "signals": 6,
-      "completed": 2,
+      "completed": 3,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -11.744417911066723,
+      "avg_return_5d": -9.264211096829293,
       "stop_hit_rate": 66.66666666666666
     },
     "action": {
       "label": "等拉回",
       "signals": 139,
-      "completed": 100,
-      "win_rate_5d": 44.0,
-      "avg_return_5d": -0.7142903465650191,
+      "completed": 101,
+      "win_rate_5d": 43.56435643564357,
+      "avg_return_5d": -0.7498300210381817,
       "stop_hit_rate": 40.298507462686565
     },
     "source_layer": {},
@@ -120,9 +120,9 @@
         "group": "theme",
         "label": "網通光通訊",
         "signals": 6,
-        "completed": 2,
+        "completed": 3,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -11.744417911066723,
+        "avg_return_5d": -9.264211096829293,
         "stop_hit_rate": 66.66666666666666
       },
       {
@@ -165,9 +165,9 @@
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 178,
-        "avg_return_5d": -8.290564066411742,
-        "stop_hit_rate": 53.93258426966292,
+        "count": 179,
+        "avg_return_5d": -8.268291627316449,
+        "stop_hit_rate": 53.63128491620112,
         "examples": [
           {
             "stock_id": "2492",
@@ -189,9 +189,9 @@
       },
       {
         "label": "題材失靈",
-        "count": 163,
-        "avg_return_5d": -6.782922317577434,
-        "stop_hit_rate": 49.693251533742334,
+        "count": 164,
+        "avg_return_5d": -6.767805702643146,
+        "stop_hit_rate": 49.390243902439025,
         "examples": [
           {
             "stock_id": "2492",
@@ -330,10 +330,10 @@
       },
       {
         "label": "進場觸發後下跌",
-        "count": 191,
-        "completed": 191,
-        "win_rate_5d": 6.806282722513089,
-        "avg_return_5d": -7.437735413801875,
+        "count": 192,
+        "completed": 192,
+        "win_rate_5d": 6.770833333333333,
+        "avg_return_5d": -7.421412820336003,
         "avg_return_10d": null,
         "reason": "進場條件觸發但後續轉弱，代表確認條件可能不足。"
       },
@@ -354,11 +354,11 @@
     ]
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 43.8%，平均報酬 0.1%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 43.7%，平均報酬 0.1%；需降低高分追價與弱題材追高。",
     "root_causes": [
       "85-94 分區拖累：完成 42 筆，5日勝率 45.2%，平均 -0.9%。",
       "操作型態拖累：等拉回 5日平均 -0.7%。",
-      "主要失敗歸因：進場後轉弱 178 筆，5日平均 -8.3%。"
+      "主要失敗歸因：進場後轉弱 179 筆，5日平均 -8.3%。"
     ],
     "guard_segments": [
       {
@@ -374,46 +374,46 @@
   },
   "win_rate_diagnosis": {
     "triggered": true,
-    "headline": "5日勝率 43.8%，低於 50% 門檻。",
+    "headline": "5日勝率 43.7%，低於 50% 門檻。",
     "likely_causes": [
       {
         "label": "85-94",
         "sample": 42,
         "win_rate_5d": 45.23809523809524,
         "avg_return_5d": -0.9219285741935982,
-        "stop_hit_rate": 29.82456140350877,
+        "stop_hit_rate": 28.07017543859649,
         "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
       },
       {
         "label": "網通光通訊",
-        "sample": 2,
+        "sample": 3,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -11.744417911066723,
+        "avg_return_5d": -9.264211096829293,
         "stop_hit_rate": 66.66666666666666,
         "reason": "題材表現拖累，短期不宜只因新聞熱度加分。"
       },
       {
         "label": "等拉回",
-        "sample": 100,
-        "win_rate_5d": 44.0,
-        "avg_return_5d": -0.7142903465650191,
+        "sample": 101,
+        "win_rate_5d": 43.56435643564357,
+        "avg_return_5d": -0.7498300210381817,
         "stop_hit_rate": 40.298507462686565,
         "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
       },
       {
         "label": "進場後轉弱",
-        "sample": 178,
+        "sample": 179,
         "win_rate_5d": null,
-        "avg_return_5d": -8.290564066411742,
-        "stop_hit_rate": 53.93258426966292,
+        "avg_return_5d": -8.268291627316449,
+        "stop_hit_rate": 53.63128491620112,
         "reason": "隔日開盤若沒有量價延續，強訊號也要降級處理。"
       },
       {
         "label": "題材失靈",
-        "sample": 163,
+        "sample": 164,
         "win_rate_5d": null,
-        "avg_return_5d": -6.782922317577434,
-        "stop_hit_rate": 49.693251533742334,
+        "avg_return_5d": -6.767805702643146,
+        "stop_hit_rate": 49.390243902439025,
         "reason": "新聞熱度不足以支撐價格時，要改看營收與法人是否同步。"
       },
       {
@@ -427,9 +427,9 @@
     ],
     "recommended_actions": [
       "85-94：樣本 42 且 5日平均為負，先降權或改列觀察。",
-      "等拉回：樣本 100 且 5日平均為負，先降權或改列觀察。",
-      "進場後轉弱：樣本 178 且 5日平均為負，先降權或改列觀察。",
-      "題材失靈：樣本 163 且 5日平均為負，先降權或改列觀察。"
+      "等拉回：樣本 101 且 5日平均為負，先降權或改列觀察。",
+      "進場後轉弱：樣本 179 且 5日平均為負，先降權或改列觀察。",
+      "題材失靈：樣本 164 且 5日平均為負，先降權或改列觀察。"
     ]
   },
   "monthly_returns": [
@@ -443,9 +443,9 @@
     },
     {
       "month": "2026-07",
-      "signals": 121,
-      "win_rate_5d": 36.36363636363637,
-      "avg_return_5d": -1.7239857144794457,
+      "signals": 122,
+      "win_rate_5d": 36.0655737704918,
+      "avg_return_5d": -1.7451317124620276,
       "best_return_5d": 28.1786941580756,
       "worst_return_5d": -25.100401606425706
     }
@@ -511,8 +511,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "進場後轉弱",
-      "sample": 178,
-      "avg_return_5d": -8.290564066411742,
+      "sample": 179,
+      "avg_return_5d": -8.268291627316449,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -520,8 +520,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "題材失靈",
-      "sample": 163,
-      "avg_return_5d": -6.782922317577434,
+      "sample": 164,
+      "avg_return_5d": -6.767805702643146,
       "action": "加嚴停損與追價條件",
       "reason": "失敗樣本常觸及停損，代表進場點或停損距離需要檢討。"
     },
@@ -556,8 +556,8 @@
       "priority": "medium",
       "source": "潛力雷達",
       "target": "強勢等拉回",
-      "sample": 74,
-      "avg_return_5d": -0.31786213956253195,
+      "sample": 75,
+      "avg_return_5d": -0.3710079439464236,
       "action": "潛力階段暫緩升級",
       "reason": "此階段尚未證明能帶來正報酬，維持觀察名單即可。"
     },

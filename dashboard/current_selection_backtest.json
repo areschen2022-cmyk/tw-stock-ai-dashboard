@@ -1,35 +1,36 @@
 {
   "as_of": "2026-07-16",
-  "generated_at": "2026-07-17T12:34:02+08:00",
+  "generated_at": "2026-07-17T12:52:05+08:00",
   "source": "dashboard_data + performance_data",
-  "history_completed_5d": 365,
-  "candidate_count": 4,
-  "referenceable_count": 2,
+  "history_completed_5d": 366,
+  "candidate_count": 5,
+  "referenceable_count": 5,
   "strong_reference_count": 1,
-  "weak_reference_count": 0,
+  "weak_reference_count": 1,
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": 1.14,
-    "avg_reference_win_rate_5d": 49.4,
+    "avg_reference_return_5d": 0.74,
+    "avg_reference_win_rate_5d": 45.8,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
   "strong_references": [
     {
-      "stock_id": "8150",
-      "name": "南茂",
-      "score": 90,
+      "stock_id": "8028",
+      "name": "昇陽半導體",
+      "score": 91,
       "grade": "S",
       "action": "可追蹤突破",
       "entry_decision": "開盤確認",
       "decision_light": "green",
       "themes": [],
       "trigger_tags": [
-        "法人共振",
+        "外資買超",
         "技術突破",
+        "營收加速",
         "放量長紅",
         "突破整理"
       ],
@@ -68,20 +69,70 @@
       "interpretation": "同條件歷史偏正向，可以保留在優先觀察名單。"
     }
   ],
-  "weak_references": [],
+  "weak_references": [
+    {
+      "stock_id": "1326",
+      "name": "台化",
+      "score": 69,
+      "grade": "B",
+      "action": "只觀察",
+      "entry_decision": "量價不確認取消",
+      "decision_light": "yellow",
+      "themes": [],
+      "trigger_tags": [
+        "法人共振",
+        "技術偏多",
+        "放量不漲"
+      ],
+      "historical_profile": {
+        "completed": 190,
+        "win_rate_5d": 40.0,
+        "avg_return_5d": -0.45,
+        "stop_hit_rate": 35.78947368421053,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 176,
+          "win_rate_5d": 40.909090909090914,
+          "avg_return_5d": -0.31,
+          "stop_hit_rate": 35.22727272727273,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 174,
+          "win_rate_5d": 39.08045977011494,
+          "avg_return_5d": -0.64,
+          "stop_hit_rate": 35.63218390804598,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    }
+  ],
   "candidates": [
     {
-      "stock_id": "8150",
-      "name": "南茂",
-      "score": 90,
+      "stock_id": "8028",
+      "name": "昇陽半導體",
+      "score": 91,
       "grade": "S",
       "action": "可追蹤突破",
       "entry_decision": "開盤確認",
       "decision_light": "green",
       "themes": [],
       "trigger_tags": [
-        "法人共振",
+        "外資買超",
         "技術突破",
+        "營收加速",
         "放量長紅",
         "突破整理"
       ],
@@ -120,64 +171,13 @@
       "interpretation": "同條件歷史偏正向，可以保留在優先觀察名單。"
     },
     {
-      "stock_id": "6770",
-      "name": "力積電",
-      "score": 84,
-      "grade": "A",
-      "action": "等拉回",
-      "entry_decision": "開盤確認",
-      "decision_light": "yellow",
-      "themes": [
-        "記憶體/HBM"
-      ],
-      "trigger_tags": [
-        "題材強共振",
-        "法人共振",
-        "技術偏多",
-        "智慧庫修正"
-      ],
-      "historical_profile": {
-        "completed": 4,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -5.62,
-        "stop_hit_rate": 50.0,
-        "confidence": "低",
-        "match_type": "component_fallback",
-        "same_profile_completed": 4
-      },
-      "components": {
-        "grade": {
-          "completed": 116,
-          "win_rate_5d": 45.689655172413794,
-          "avg_return_5d": 1.05,
-          "stop_hit_rate": 31.896551724137932,
-          "confidence": "高"
-        },
-        "action": {
-          "completed": 100,
-          "win_rate_5d": 44.0,
-          "avg_return_5d": -0.71,
-          "stop_hit_rate": 40.0,
-          "confidence": "高"
-        },
-        "theme": {
-          "completed": 22,
-          "win_rate_5d": 9.090909090909092,
-          "avg_return_5d": -6.27,
-          "stop_hit_rate": 45.45454545454545,
-          "confidence": "中"
-        }
-      },
-      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
-    },
-    {
       "stock_id": "6505",
       "name": "台塑化",
-      "score": 77,
+      "score": 84,
       "grade": "A",
-      "action": "等拉回",
-      "entry_decision": "等拉回",
-      "decision_light": "yellow",
+      "action": "可追蹤突破",
+      "entry_decision": "開盤確認",
+      "decision_light": "green",
       "themes": [],
       "trigger_tags": [
         "法人共振",
@@ -186,27 +186,27 @@
         "突破整理"
       ],
       "historical_profile": {
-        "completed": 144,
-        "win_rate_5d": 46.52777777777778,
-        "avg_return_5d": 0.49,
-        "stop_hit_rate": 34.72222222222222,
+        "completed": 169,
+        "win_rate_5d": 45.562130177514796,
+        "avg_return_5d": 0.79,
+        "stop_hit_rate": 27.810650887573964,
         "confidence": "高",
         "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 116,
-          "win_rate_5d": 45.689655172413794,
-          "avg_return_5d": 1.05,
-          "stop_hit_rate": 31.896551724137932,
+          "completed": 117,
+          "win_rate_5d": 45.2991452991453,
+          "avg_return_5d": 1.0,
+          "stop_hit_rate": 31.62393162393162,
           "confidence": "高"
         },
         "action": {
-          "completed": 100,
-          "win_rate_5d": 44.0,
-          "avg_return_5d": -0.71,
-          "stop_hit_rate": 40.0,
+          "completed": 82,
+          "win_rate_5d": 52.4390243902439,
+          "avg_return_5d": 2.32,
+          "stop_hit_rate": 17.073170731707318,
           "confidence": "高"
         },
         "theme": {
@@ -220,37 +220,132 @@
       "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
     },
     {
-      "stock_id": "2395",
-      "name": "研華",
-      "score": 75,
+      "stock_id": "8150",
+      "name": "南茂",
+      "score": 84,
       "grade": "A",
-      "action": "只觀察",
-      "entry_decision": "量價不確認取消",
+      "action": "可追蹤突破",
+      "entry_decision": "開盤確認",
       "decision_light": "yellow",
-      "themes": [
-        "AI伺服器"
-      ],
+      "themes": [],
       "trigger_tags": [
-        "題材強共振",
-        "法人共振",
+        "外資買超",
         "技術突破",
-        "散戶轉乾淨"
+        "放量長紅",
+        "突破整理"
       ],
       "historical_profile": {
-        "completed": 3,
-        "win_rate_5d": 33.33333333333333,
-        "avg_return_5d": -4.8,
-        "stop_hit_rate": 33.33333333333333,
-        "confidence": "低",
+        "completed": 169,
+        "win_rate_5d": 45.562130177514796,
+        "avg_return_5d": 0.79,
+        "stop_hit_rate": 27.810650887573964,
+        "confidence": "高",
         "match_type": "component_fallback",
-        "same_profile_completed": 3
+        "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 116,
-          "win_rate_5d": 45.689655172413794,
-          "avg_return_5d": 1.05,
-          "stop_hit_rate": 31.896551724137932,
+          "completed": 117,
+          "win_rate_5d": 45.2991452991453,
+          "avg_return_5d": 1.0,
+          "stop_hit_rate": 31.62393162393162,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 82,
+          "win_rate_5d": 52.4390243902439,
+          "avg_return_5d": 2.32,
+          "stop_hit_rate": 17.073170731707318,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
+    },
+    {
+      "stock_id": "2486",
+      "name": "一詮",
+      "score": 82,
+      "grade": "A",
+      "action": "可追蹤突破",
+      "entry_decision": "開盤確認",
+      "decision_light": "yellow",
+      "themes": [],
+      "trigger_tags": [
+        "法人共振",
+        "技術偏多",
+        "營收加速",
+        "放量不漲"
+      ],
+      "historical_profile": {
+        "completed": 169,
+        "win_rate_5d": 45.562130177514796,
+        "avg_return_5d": 0.79,
+        "stop_hit_rate": 27.810650887573964,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 117,
+          "win_rate_5d": 45.2991452991453,
+          "avg_return_5d": 1.0,
+          "stop_hit_rate": 31.62393162393162,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 82,
+          "win_rate_5d": 52.4390243902439,
+          "avg_return_5d": 2.32,
+          "stop_hit_rate": 17.073170731707318,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史中性，仍以開盤價量確認為準。"
+    },
+    {
+      "stock_id": "1326",
+      "name": "台化",
+      "score": 69,
+      "grade": "B",
+      "action": "只觀察",
+      "entry_decision": "量價不確認取消",
+      "decision_light": "yellow",
+      "themes": [],
+      "trigger_tags": [
+        "法人共振",
+        "技術偏多",
+        "放量不漲"
+      ],
+      "historical_profile": {
+        "completed": 190,
+        "win_rate_5d": 40.0,
+        "avg_return_5d": -0.45,
+        "stop_hit_rate": 35.78947368421053,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 176,
+          "win_rate_5d": 40.909090909090914,
+          "avg_return_5d": -0.31,
+          "stop_hit_rate": 35.22727272727273,
           "confidence": "高"
         },
         "action": {
@@ -261,14 +356,14 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 53,
-          "win_rate_5d": 37.735849056603776,
-          "avg_return_5d": -2.13,
-          "stop_hit_rate": 35.84905660377358,
-          "confidence": "高"
+          "completed": 0,
+          "win_rate_5d": null,
+          "avg_return_5d": null,
+          "stop_hit_rate": null,
+          "confidence": "低"
         }
       },
-      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
     }
   ]
 }
