@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T16:21:31+08:00",
-  "status": "ok",
+  "generated_at": "2026-07-17T16:54:29+08:00",
+  "status": "bad",
   "counts": {
-    "critical": 0,
+    "critical": 1,
     "warning": 0,
     "info": 1
   },
@@ -123,6 +123,12 @@
     "recent_tdcc_update_rows": 7
   },
   "issues": [
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/weekly_review.json differs from dashboard/weekly_review.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
     {
       "severity": "info",
       "area": "traceability",
