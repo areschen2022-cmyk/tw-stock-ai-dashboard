@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T13:35:24+08:00",
-  "status": "ok",
+  "generated_at": "2026-07-17T13:39:42+08:00",
+  "status": "bad",
   "counts": {
-    "critical": 0,
+    "critical": 5,
     "warning": 0,
     "info": 1
   },
@@ -12,7 +12,7 @@
     "rows": 85,
     "valid": 85,
     "chase": 0,
-    "pullback": 4,
+    "pullback": 3,
     "data_updates": [
       {
         "update_date": "2026-07-16",
@@ -21,8 +21,8 @@
         "row_count": 85,
         "source_date": "2026-07-16",
         "message": "85 stocks scanned for institutional flow",
-        "run_id": "29557665570",
-        "created_at": "2026-07-17 05:35:18"
+        "run_id": "",
+        "created_at": "2026-07-17 05:33:12"
       },
       {
         "update_date": "2026-07-16",
@@ -123,6 +123,36 @@
     "recent_tdcc_update_rows": 7
   },
   "issues": [
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/dashboard_data.json differs from dashboard/dashboard_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/performance_data.json differs from dashboard/performance_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/potential_data.json differs from dashboard/potential_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/weekly_data.json differs from dashboard/weekly_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
+    {
+      "severity": "critical",
+      "area": "publish_sync",
+      "message": "docs/debug_data.json differs from dashboard/debug_data.json",
+      "suggestion": "Run the docs copy step before publishing GitHub Pages."
+    },
     {
       "severity": "info",
       "area": "traceability",
