@@ -35,3 +35,47 @@ def test_weekly_review_builds_internal_action_items() -> None:
     assert review["weak"]["potential_stage"]["label"] == "強勢等拉回"
     assert any(item["target"] == "每日可追訊號" for item in review["next_week_actions"])
     assert any(item["target"] == "進場觸發條件" for item in review["next_week_actions"])
+
+
+def test_weekly_review_flags_ineffective_guardrails() -> None:
+    review = build_weekly_review(
+        {
+            "as_of": "2026-07-16",
+            "stats": {"signals": 10, "completed": 8, "win_rate_5d": 55.0, "avg_return_5d": 1.2},
+            "guardrail_stats": [
+                {
+                    "tag": "weekly_deweight_daily_chase",
+                    "signals": 22,
+                    "completed": 14,
+                    "win_rate_5d": 35.7,
+                    "avg_return_5d": -2.1,
+                    "stop_hit_rate": 28.6,
+                },
+                {
+                    "tag": "weekly_require_ai_agreement",
+                    "signals": 18,
+                    "completed": 12,
+                    "win_rate_5d": 58.3,
+                    "avg_return_5d": 1.4,
+                    "stop_hit_rate": 8.3,
+                },
+            ],
+        },
+        {"stats": {"signals": 20, "completed": 12, "win_rate_5d": 55.0, "avg_return_5d": 0.4}},
+        {},
+        {},
+        {
+            "guardrail_effectiveness": [
+                {"tag": "weekly_deweight_daily_chase", "status": "needs_review"},
+            ]
+        },
+    )
+
+    guardrails = {row["tag"]: row for row in review["guardrail_effectiveness"]}
+    weak = guardrails["weekly_deweight_daily_chase"]
+    strong = guardrails["weekly_require_ai_agreement"]
+    assert weak["status"] == "needs_review"
+    assert weak["consecutive_review"] is True
+    assert "暫停或調整" in weak["recommended_action"]
+    assert strong["status"] == "working"
+    assert any(item["type"] == "review_guardrail" for item in review["next_week_actions"])

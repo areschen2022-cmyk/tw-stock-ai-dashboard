@@ -51,6 +51,75 @@ def _compact_stat(row: dict) -> dict:
     }
 
 
+def _guardrail_status(row: dict, *, min_completed: int = 10) -> str:
+    completed = int(_num(row.get("completed")))
+    win_rate = row.get("win_rate_5d")
+    avg_return = row.get("avg_return_5d")
+    if completed < min_completed or win_rate is None or avg_return is None:
+        return "needs_more_samples"
+    if _num(win_rate) < 45 or _num(avg_return) < 0:
+        return "needs_review"
+    if _num(win_rate) >= 52 and _num(avg_return) >= 0:
+        return "working"
+    return "neutral"
+
+
+def _previous_guardrail_status(previous_review: dict | None) -> dict[str, str]:
+    if not isinstance(previous_review, dict):
+        return {}
+    return {
+        str(row.get("tag")): str(row.get("status"))
+        for row in previous_review.get("guardrail_effectiveness") or []
+        if row.get("tag")
+    }
+
+
+def _guardrail_effectiveness(performance: dict, previous_review: dict | None = None) -> list[dict]:
+    previous = _previous_guardrail_status(previous_review)
+    rows: list[dict] = []
+    for row in performance.get("guardrail_stats") or []:
+        tag = str(row.get("tag") or "")
+        if not tag:
+            continue
+        status = _guardrail_status(row)
+        previous_status = previous.get(tag)
+        consecutive_review = status == "needs_review" and previous_status == "needs_review"
+        if consecutive_review:
+            recommended_action = "連續兩週無效，暫停或調整這條降權規則。"
+        elif status == "needs_review":
+            recommended_action = "下週降權規則需觀察；若再無效就暫停或改門檻。"
+        elif status == "working":
+            recommended_action = "保留規則，持續累積樣本。"
+        elif status == "neutral":
+            recommended_action = "暫不調整，等待方向更明確。"
+        else:
+            recommended_action = "樣本不足，先不改規則。"
+        rows.append(
+            {
+                "tag": tag,
+                "label": tag,
+                "signals": row.get("signals"),
+                "completed": row.get("completed"),
+                "win_rate_5d": row.get("win_rate_5d"),
+                "avg_return_5d": row.get("avg_return_5d"),
+                "stop_hit_rate": row.get("stop_hit_rate"),
+                "status": status,
+                "previous_status": previous_status,
+                "consecutive_review": consecutive_review,
+                "recommended_action": recommended_action,
+            }
+        )
+    return sorted(
+        rows,
+        key=lambda item: (
+            0 if item["consecutive_review"] else 1,
+            0 if item["status"] == "needs_review" else 1,
+            -int(_num(item.get("completed"))),
+            str(item.get("tag")),
+        ),
+    )
+
+
 def _potential_rows(potential: dict, key: str) -> list[dict]:
     value = potential.get(key)
     if value is None and isinstance(potential.get("potential_radar"), dict):
@@ -74,7 +143,7 @@ def _weekly_themes(weekly: dict, max_items: int = 5) -> list[dict]:
     ]
 
 
-def _action_items(performance: dict, potential: dict, backtest: dict) -> list[dict]:
+def _action_items(performance: dict, potential: dict, backtest: dict, guardrails: list[dict] | None = None) -> list[dict]:
     actions: list[dict] = []
 
     win_rate = _num((performance.get("stats") or {}).get("win_rate_5d"))
@@ -117,10 +186,27 @@ def _action_items(performance: dict, potential: dict, backtest: dict) -> list[di
         if target and action:
             actions.append({"type": "carry_forward", "target": target, "reason": action})
 
+    for row in guardrails or []:
+        if row.get("status") != "needs_review":
+            continue
+        actions.append(
+            {
+                "type": "review_guardrail",
+                "target": f"降權規則：{row.get('tag')}",
+                "reason": row.get("recommended_action"),
+            }
+        )
+
     return actions[:8]
 
 
-def build_weekly_review(performance: dict, potential: dict, weekly: dict, backtest: dict) -> dict:
+def build_weekly_review(
+    performance: dict,
+    potential: dict,
+    weekly: dict,
+    backtest: dict,
+    previous_review: dict | None = None,
+) -> dict:
     perf_stats = performance.get("stats") or {}
     pot_stats = potential.get("stats") or (potential.get("potential_radar") or {}).get("stats") or {}
     stage_rows = _potential_rows(potential, "stage_stats")
@@ -134,6 +220,8 @@ def build_weekly_review(performance: dict, potential: dict, weekly: dict, backte
         risk_level = "needs_review"
     if daily_win < 45 and potential_win < 45:
         risk_level = "high_review"
+
+    guardrail_rows = _guardrail_effectiveness(performance, previous_review)
 
     return {
         "as_of": performance.get("as_of") or weekly.get("as_of") or backtest.get("as_of"),
@@ -163,22 +251,26 @@ def build_weekly_review(performance: dict, potential: dict, weekly: dict, backte
             "backtest_segments": ((backtest.get("weak") or {}).get("segments") or [])[:5],
             "failure_attribution": ((backtest.get("weak") or {}).get("failure_attribution") or [])[:5],
         },
-        "next_week_actions": _action_items(performance, potential, backtest),
+        "guardrail_effectiveness": guardrail_rows,
+        "next_week_actions": _action_items(performance, potential, backtest, guardrail_rows),
         "rules": [
             "每週檢討只調整下週觀察與降權，不直接產生買賣建議。",
             "樣本低於 10 筆只列觀察，不做正式降權。",
             "每日進場仍以今日監控的開盤價量、停損與風險名單為準。",
+            "降權規則若連續兩週無效，標記為需調整或暫停。",
         ],
     }
 
 
 def write_weekly_review(root: Path, output: Path) -> dict:
     dashboard = root / "dashboard"
+    previous_review = _read_json(output)
     review = build_weekly_review(
         _read_json(dashboard / "performance_data.json"),
         _read_json(dashboard / "potential_data.json"),
         _read_json(dashboard / "weekly_data.json"),
         _read_json(dashboard / "backtest_review.json"),
+        previous_review,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(review, ensure_ascii=False, indent=2), encoding="utf-8")

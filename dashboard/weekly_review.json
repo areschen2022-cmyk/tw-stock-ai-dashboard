@@ -1,6 +1,6 @@
 {
   "as_of": "2026-07-17",
-  "generated_at": "2026-07-17T16:55:30+08:00",
+  "generated_at": "2026-07-17T16:53:24+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
@@ -35,9 +35,9 @@
     "weekly_themes": [
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 589,
+        "week_score": 586,
         "trend": "升溫↑",
-        "today": 103
+        "today": 100
       },
       {
         "theme": "記憶體/HBM",
@@ -228,6 +228,7 @@
       }
     ]
   },
+  "guardrail_effectiveness": [],
   "next_week_actions": [
     {
       "type": "deweight",
@@ -263,6 +264,7 @@
   "rules": [
     "每週檢討只調整下週觀察與降權，不直接產生買賣建議。",
     "樣本低於 10 筆只列觀察，不做正式降權。",
-    "每日進場仍以今日監控的開盤價量、停損與風險名單為準。"
+    "每日進場仍以今日監控的開盤價量、停損與風險名單為準。",
+    "降權規則若連續兩週無效，標記為需調整或暫停。"
   ]
 }
