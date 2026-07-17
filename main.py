@@ -44,7 +44,7 @@ from src.report.dashboard import (
 )
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
-from src.report.potential_radar import build_potential_radar_candidates
+from src.report.potential_radar import build_potential_radar_candidates, load_potential_feedback
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
 from src.scoring.backtest_guard import apply_backtest_guard, load_backtest_guard
@@ -656,8 +656,9 @@ def main() -> int:
         retry_summary=dashboard_payload.get("data_retry", {}),
         recommendation_stability=recommendation_stability,
     )
+    potential_feedback = load_potential_feedback(ROOT)
     store.save_potential_radar(
-        build_potential_radar_candidates(dashboard_payload.get("rows", []), as_of),
+        build_potential_radar_candidates(dashboard_payload.get("rows", []), as_of, feedback=potential_feedback),
         as_of,
     )
     store.update_potential_forward_returns(as_of)

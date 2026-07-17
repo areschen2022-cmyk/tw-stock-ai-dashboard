@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -265,6 +266,30 @@ def build_knowledge_points(performance: dict) -> list[dict]:
     return _dedupe_by_id(points)
 
 
+def build_weekly_review_points(weekly_review: dict) -> list[dict]:
+    as_of = _text(weekly_review.get("as_of"), "")
+    source_ref = f"tw-stock-ai weekly_review.json {as_of}".strip()
+    points: list[dict] = []
+    for row in weekly_review.get("next_week_actions") or []:
+        target = _text(row.get("target"), "未命名檢討項")
+        reason = _text(row.get("reason"), "")
+        action_type = _text(row.get("type"), "review")
+        claim = f"每週檢討建議下週對「{target}」採取 {action_type}：{reason}"
+        points.append(
+            _knowledge(
+                topic=f"台股每週檢討：{target}",
+                claim=claim,
+                evidence=f"risk_level={weekly_review.get('risk_level')}, action_type={action_type}",
+                tags=["台股", "每週檢討", action_type, target],
+                completed=20,
+                avg_return_5d=None,
+                win_rate_5d=None,
+                source_ref=source_ref,
+            )
+        )
+    return _dedupe_by_id(points)
+
+
 def _dedupe_by_id(items: list[dict]) -> list[dict]:
     by_id: dict[str, dict] = {}
     for item in items:
@@ -287,7 +312,7 @@ def _read_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def upsert_jsonl(path: Path, items: list[dict]) -> dict:
+def upsert_jsonl(path: Path, items: list[dict], *, replace_retries: int = 5, retry_delay: float = 0.4) -> dict:
     existing = _read_jsonl(path)
     by_id = {str(item.get("id")): item for item in existing if item.get("id")}
     inserted = 0
@@ -310,13 +335,24 @@ def upsert_jsonl(path: Path, items: list[dict]) -> dict:
         "\n".join(json.dumps(item, ensure_ascii=False, sort_keys=True) for item in by_id.values()) + "\n",
         encoding="utf-8",
     )
-    tmp.replace(path)
+    last_error: PermissionError | None = None
+    for attempt in range(max(1, replace_retries)):
+        try:
+            tmp.replace(path)
+            last_error = None
+            break
+        except PermissionError as exc:
+            last_error = exc
+            time.sleep(retry_delay * (attempt + 1))
+    if last_error is not None:
+        raise last_error
     return {"inserted": inserted, "updated": updated, "total": len(by_id), "exported": len(items)}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export tw-stock-ai learning outcomes into Trading Knowledge Hub JSONL.")
     parser.add_argument("--performance", default="dashboard/performance_data.json")
+    parser.add_argument("--weekly-review", default="dashboard/weekly_review.json")
     parser.add_argument("--output", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -340,6 +376,10 @@ def main() -> int:
 
     performance = json.loads(performance_path.read_text(encoding="utf-8"))
     items = build_knowledge_points(performance)
+    weekly_review_path = Path(args.weekly_review)
+    if weekly_review_path.exists():
+        items.extend(build_weekly_review_points(json.loads(weekly_review_path.read_text(encoding="utf-8"))))
+        items = _dedupe_by_id(items)
     if args.dry_run:
         print(json.dumps({"exported": len(items), "output": str(output), "sample": items[:3]}, ensure_ascii=False, indent=2))
         return 0

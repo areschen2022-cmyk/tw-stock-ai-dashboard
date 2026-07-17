@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from scripts.export_learning_to_knowledge_hub import build_knowledge_points, upsert_jsonl
+from scripts.export_learning_to_knowledge_hub import build_knowledge_points, build_weekly_review_points, upsert_jsonl
 
 
 def _performance_payload() -> dict:
@@ -86,3 +86,19 @@ def test_upsert_jsonl_updates_existing_id(tmp_path) -> None:
     assert first["inserted"] == len(points)
     assert second["updated"] == len(points)
     assert len(rows) == len(points)
+
+
+def test_build_weekly_review_points() -> None:
+    points = build_weekly_review_points(
+        {
+            "as_of": "2026-07-16",
+            "risk_level": "needs_review",
+            "next_week_actions": [
+                {"type": "deweight", "target": "每日可追訊號", "reason": "勝率低於 50%。"}
+            ],
+        }
+    )
+
+    assert len(points) == 1
+    assert points[0]["topic"] == "台股每週檢討：每日可追訊號"
+    assert "每週檢討" in points[0]["tags"]

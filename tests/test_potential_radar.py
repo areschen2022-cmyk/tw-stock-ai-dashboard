@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from src.report.potential_radar import build_potential_radar_candidates
+from src.report.potential_radar import build_potential_radar_candidates, load_potential_feedback
 from src.scoring.score_engine import StockScore
 from src.storage.sqlite_store import SQLiteStore
 
@@ -151,6 +151,77 @@ def test_potential_radar_filters_chasing_above_entry_limit() -> None:
     assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
 
 
+def test_potential_radar_uses_prior_feedback_to_deweight_weak_stage(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "potential_data.json").write_text(
+        """
+        {
+          "as_of": "2026-07-16",
+          "potential_radar": {
+            "stage_stats": [
+              {"label": "強勢等拉回", "completed": 20, "win_rate_5d": 35.0, "avg_return_5d": -1.2}
+            ],
+            "factor_stats": []
+          }
+        }
+        """,
+        encoding="utf-8",
+    )
+    feedback = load_potential_feedback(tmp_path)
+    rows = [
+        {
+            "stock_id": "2408",
+            "name": "南亞科",
+            "score": 82,
+            "grade": "A",
+            "decision_light": "yellow",
+            "entry_decision": "等拉回",
+            "action_context": "強勢但等拉回",
+            "retail_context": "籌碼轉乾淨",
+            "pattern_tags": ["突破整理"],
+            "trigger_tags": ["法人共振", "量能轉強"],
+            "themes": ["記憶體/HBM"],
+            "opportunity_score": 6,
+            "technical_score": 14,
+            "chip_score": 14,
+            "fundamental_score": 14,
+            "fundamental": "最新月營收年增 30%",
+            "risk": "風險條件可接受",
+            "price": 100.0,
+            "entry_limit_price": 103.0,
+        }
+    ]
+
+    without_feedback = build_potential_radar_candidates(rows, date(2026, 7, 17))
+    with_feedback = build_potential_radar_candidates(rows, date(2026, 7, 17), feedback=feedback)
+
+    assert with_feedback[0]["potential_score"] == without_feedback[0]["potential_score"] - 2
+    assert with_feedback[0]["feedback_penalty"] == 2
+    assert "成效降權:強勢等拉回" in with_feedback[0]["tags"]
+
+
+def test_potential_radar_feedback_ignores_small_samples(tmp_path) -> None:
+    dashboard = tmp_path / "dashboard"
+    dashboard.mkdir()
+    (dashboard / "potential_data.json").write_text(
+        """
+        {
+          "as_of": "2026-07-16",
+          "potential_radar": {
+            "stage_stats": [
+              {"label": "強勢等拉回", "completed": 3, "win_rate_5d": 0.0, "avg_return_5d": -10.0}
+            ]
+          }
+        }
+        """,
+        encoding="utf-8",
+    )
+    feedback = load_potential_feedback(tmp_path)
+
+    assert feedback["active"] is False
+
+
 def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path) -> None:
     store = SQLiteStore(tmp_path / "test.sqlite3")
     day0 = date(2026, 6, 1)
@@ -186,6 +257,8 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
                 "stock_type_label": "成長確認型",
                 "position_hint": "normal",
                 "position_hint_label": "正常部位",
+                "feedback_penalty": 2,
+                "feedback_notes": ["強勢等拉回 近30日完成 20 筆，5日勝率 35.0%，平均 -1.2%"],
             },
             {
                 "signal_date": day0.isoformat(),
@@ -252,6 +325,8 @@ def test_potential_radar_factor_attribution_tracks_winners_and_failures(tmp_path
     assert summary["strong_factors"]
     assert summary["weak_factors"]
     assert summary["factor_notes"]
+    assert by_stock["2408"]["feedback_penalty"] == 2
+    assert by_stock["2408"]["feedback_notes"]
 
 
 def test_potential_radar_summary_deduplicates_display_cases(tmp_path) -> None:

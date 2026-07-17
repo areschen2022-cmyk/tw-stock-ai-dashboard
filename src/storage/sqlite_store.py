@@ -151,6 +151,8 @@ class SQLiteStore:
                     branch_zscore_proxy REAL,
                     institutional_follow INTEGER,
                     signal_combo TEXT,
+                    feedback_penalty INTEGER NOT NULL DEFAULT 0,
+                    feedback_notes_json TEXT NOT NULL DEFAULT '[]',
                     return_3d REAL,
                     return_5d REAL,
                     return_10d REAL,
@@ -190,6 +192,8 @@ class SQLiteStore:
                 ("branch_zscore_proxy", "REAL"),
                 ("institutional_follow", "INTEGER"),
                 ("signal_combo", "TEXT"),
+                ("feedback_penalty", "INTEGER NOT NULL DEFAULT 0"),
+                ("feedback_notes_json", "TEXT NOT NULL DEFAULT '[]'"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -1228,8 +1232,9 @@ class SQLiteStore:
                         research_factors_json, stock_type, stock_type_label, position_hint,
                         position_hint_label, lifecycle_stage, lifecycle_stage_label,
                         lifecycle_reason, smart_money, smart_money_label, smart_money_reason,
-                        smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo,
+                        feedback_penalty, feedback_notes_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -1264,6 +1269,8 @@ class SQLiteStore:
                         item.get("branch_zscore_proxy"),
                         1 if item.get("institutional_follow") else 0,
                         item.get("signal_combo"),
+                        item.get("feedback_penalty") or 0,
+                        json.dumps(item.get("feedback_notes") or [], ensure_ascii=False),
                     ),
                 )
 
@@ -1705,7 +1712,8 @@ class SQLiteStore:
                        outcome_category, outcome_label, outcome_reason,
                        lifecycle_stage, lifecycle_stage_label, lifecycle_reason,
                        smart_money, smart_money_label, smart_money_reason,
-                       smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo
+                       smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo,
+                       feedback_penalty, feedback_notes_json
                 FROM potential_radar_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -1758,6 +1766,8 @@ class SQLiteStore:
                     "branch_zscore_proxy": row[35],
                     "institutional_follow": bool(row[36]) if row[36] is not None else False,
                     "signal_combo": row[37] or "",
+                    "feedback_penalty": row[38] or 0,
+                    "feedback_notes": json.loads(row[39] or "[]"),
                 }
             )
         with self._connect() as conn:

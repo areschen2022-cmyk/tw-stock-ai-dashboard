@@ -20,6 +20,7 @@ REQUIRED_DASHBOARD_FILES = [
     "weekly_data.json",
     "debug_data.json",
     "backtest_review.json",
+    "weekly_review.json",
     "backtest_30y.json",
     "cloud_skill_routes_status.json",
 ]

@@ -1,0 +1,268 @@
+{
+  "as_of": "2026-07-16",
+  "generated_at": "2026-07-17T14:38:45+08:00",
+  "status": "ok",
+  "risk_level": "needs_review",
+  "summary": {
+    "daily_signals": 514,
+    "daily_completed": 366,
+    "daily_win_rate_5d": 43.71584699453552,
+    "daily_avg_return_5d": 0.07644970945073268,
+    "potential_signals": 234,
+    "potential_completed": 165,
+    "potential_win_rate_5d": 49.09090909090909,
+    "potential_avg_return_5d": 1.1704545063696128,
+    "backtest_risk_level": "needs_review",
+    "backtest_completed": 366
+  },
+  "best": {
+    "potential_stage": {
+      "label": "轉強初動",
+      "signals": 65,
+      "completed": 48,
+      "win_rate_5d": 54.166666666666664,
+      "avg_return_5d": 4.0279537186409975,
+      "stop_hit_rate": null
+    },
+    "potential_factor": {
+      "label": "小部位",
+      "signals": 97,
+      "completed": 63,
+      "win_rate_5d": 53.96825396825397,
+      "avg_return_5d": 5.317505785633385,
+      "stop_hit_rate": null
+    },
+    "weekly_themes": [
+      {
+        "theme": "先進封裝/CoWoS",
+        "week_score": 544,
+        "trend": "升溫↑",
+        "today": 113
+      },
+      {
+        "theme": "記憶體/HBM",
+        "week_score": 254,
+        "trend": "升溫↑",
+        "today": 47
+      },
+      {
+        "theme": "AI伺服器",
+        "week_score": 251,
+        "trend": "升溫↑",
+        "today": 35
+      },
+      {
+        "theme": "網通光通訊",
+        "week_score": 220,
+        "trend": "-",
+        "today": 33
+      },
+      {
+        "theme": "矽光子/CPO",
+        "week_score": 215,
+        "trend": "升溫↑",
+        "today": 33
+      }
+    ]
+  },
+  "weak": {
+    "potential_stage": {
+      "label": "強勢等拉回",
+      "signals": 105,
+      "completed": 75,
+      "win_rate_5d": 42.66666666666667,
+      "avg_return_5d": -0.37100794394642406,
+      "stop_hit_rate": null
+    },
+    "potential_factor": {
+      "label": "二階受惠型",
+      "signals": 55,
+      "completed": 41,
+      "win_rate_5d": 29.268292682926827,
+      "avg_return_5d": -5.509252195452232,
+      "stop_hit_rate": null
+    },
+    "backtest_segments": [
+      {
+        "group": "theme",
+        "label": "網通光通訊",
+        "signals": 6,
+        "completed": 3,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -9.264211096829293,
+        "stop_hit_rate": 66.66666666666666
+      },
+      {
+        "group": "theme",
+        "label": "記憶體/HBM",
+        "signals": 26,
+        "completed": 22,
+        "win_rate_5d": 9.090909090909092,
+        "avg_return_5d": -6.272173863072377,
+        "stop_hit_rate": 38.46153846153847
+      },
+      {
+        "group": "theme",
+        "label": "散熱/液冷",
+        "signals": 3,
+        "completed": 3,
+        "win_rate_5d": 33.33333333333333,
+        "avg_return_5d": -5.658433686880137,
+        "stop_hit_rate": 66.66666666666666
+      },
+      {
+        "group": "theme",
+        "label": "被動元件",
+        "signals": 6,
+        "completed": 3,
+        "win_rate_5d": 66.66666666666666,
+        "avg_return_5d": -4.015181793006329,
+        "stop_hit_rate": 16.666666666666664
+      },
+      {
+        "group": "theme",
+        "label": "矽光子/CPO",
+        "signals": 5,
+        "completed": 5,
+        "win_rate_5d": 40.0,
+        "avg_return_5d": -3.5803129692598232,
+        "stop_hit_rate": 40.0
+      }
+    ],
+    "failure_attribution": [
+      {
+        "label": "進場後轉弱",
+        "count": 179,
+        "avg_return_5d": -8.268291627316449,
+        "stop_hit_rate": 53.63128491620112,
+        "examples": [
+          {
+            "stock_id": "2492",
+            "name": "華新科",
+            "return_5d": -32.090761750405186
+          },
+          {
+            "stock_id": "3042",
+            "name": "晶技",
+            "return_5d": -25.100401606425706
+          },
+          {
+            "stock_id": "5289",
+            "name": "宜鼎",
+            "return_5d": -23.096446700507613
+          }
+        ],
+        "lesson": "隔日開盤若沒有量價延續，強訊號也要降級處理。"
+      },
+      {
+        "label": "題材失靈",
+        "count": 164,
+        "avg_return_5d": -6.767805702643146,
+        "stop_hit_rate": 49.390243902439025,
+        "examples": [
+          {
+            "stock_id": "2492",
+            "name": "華新科",
+            "return_5d": -32.090761750405186
+          },
+          {
+            "stock_id": "3042",
+            "name": "晶技",
+            "return_5d": -25.100401606425706
+          },
+          {
+            "stock_id": "3189",
+            "name": "景碩",
+            "return_5d": -22.895622895622896
+          }
+        ],
+        "lesson": "新聞熱度不足以支撐價格時，要改看營收與法人是否同步。"
+      },
+      {
+        "label": "停損觸發",
+        "count": 120,
+        "avg_return_5d": -8.809573571947812,
+        "stop_hit_rate": 100.0,
+        "examples": [
+          {
+            "stock_id": "5289",
+            "name": "宜鼎",
+            "return_5d": -23.096446700507613
+          },
+          {
+            "stock_id": "3189",
+            "name": "景碩",
+            "return_5d": -22.895622895622896
+          },
+          {
+            "stock_id": "6515",
+            "name": "穎崴",
+            "return_5d": -21.565656565656568
+          }
+        ],
+        "lesson": "先檢查停損距離與波動是否匹配，避免一開盤就被洗出。"
+      },
+      {
+        "label": "進場條件保護",
+        "count": 10,
+        "avg_return_5d": -9.147453184285215,
+        "stop_hit_rate": 100.0,
+        "examples": [
+          {
+            "stock_id": "3131",
+            "name": "弘塑",
+            "return_5d": -15.718157181571815
+          },
+          {
+            "stock_id": "6271",
+            "name": "同欣電",
+            "return_5d": -12.156862745098039
+          },
+          {
+            "stock_id": "3026",
+            "name": "禾伸堂",
+            "return_5d": -12.067156348373558
+          }
+        ],
+        "lesson": "沒有觸發進場且後續走弱，代表開盤條件有保護效果。"
+      }
+    ]
+  },
+  "next_week_actions": [
+    {
+      "type": "deweight",
+      "target": "每日可追訊號",
+      "reason": "5日勝率 43.7% 低於 50%，下週需提高開盤量價確認門檻。"
+    },
+    {
+      "type": "investigate",
+      "target": "進場觸發條件",
+      "reason": "有觸發進場的樣本報酬低於未觸發樣本，需檢討是否追價或開盤條件太寬。"
+    },
+    {
+      "type": "deweight",
+      "target": "潛力雷達：強勢等拉回",
+      "reason": "完成 75 筆但 5日平均 -0.4%，下週只列觀察或降權。"
+    },
+    {
+      "type": "carry_forward",
+      "target": "進場後轉弱",
+      "reason": "加嚴停損與追價條件"
+    },
+    {
+      "type": "carry_forward",
+      "target": "題材失靈",
+      "reason": "加嚴停損與追價條件"
+    },
+    {
+      "type": "carry_forward",
+      "target": "停損觸發",
+      "reason": "加嚴停損與追價條件"
+    }
+  ],
+  "rules": [
+    "每週檢討只調整下週觀察與降權，不直接產生買賣建議。",
+    "樣本低於 10 筆只列觀察，不做正式降權。",
+    "每日進場仍以今日監控的開盤價量、停損與風險名單為準。"
+  ]
+}

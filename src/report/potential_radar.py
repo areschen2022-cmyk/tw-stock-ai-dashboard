@@ -1,10 +1,82 @@
 from __future__ import annotations
 
+import json
 from datetime import date
+from pathlib import Path
 from typing import Any
 
 
-def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int = 12) -> list[dict]:
+MIN_FEEDBACK_COMPLETED = 10
+WEAK_FEEDBACK_WIN_RATE = 45.0
+WEAK_FEEDBACK_AVG_RETURN = 0.0
+
+
+def load_potential_feedback(root: Path) -> dict[str, Any]:
+    """Load prior potential-radar outcomes as internal-only calibration.
+
+    The feedback is intentionally conservative: only buckets with enough
+    completed outcomes can reduce candidate priority. It never promotes a stock
+    and never blocks the daily report when the file is missing or malformed.
+    """
+    path = root / "dashboard" / "potential_data.json"
+    if not path.exists():
+        return {"active": False, "weak": {}, "as_of": None}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"active": False, "weak": {}, "as_of": None}
+    radar = payload.get("potential_radar") if isinstance(payload, dict) else {}
+    if not isinstance(radar, dict):
+        return {"active": False, "weak": {}, "as_of": payload.get("as_of") if isinstance(payload, dict) else None}
+
+    weak: dict[str, dict[str, dict[str, Any]]] = {
+        "stage": {},
+        "factor": {},
+        "lifecycle": {},
+        "smart_money": {},
+        "combo": {},
+    }
+    sources = {
+        "stage": radar.get("stage_stats") or [],
+        "factor": radar.get("factor_stats") or [],
+        "lifecycle": radar.get("lifecycle_stats") or [],
+        "smart_money": radar.get("smart_money_stats") or [],
+        "combo": radar.get("combo_stats") or [],
+    }
+    for group, rows in sources.items():
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            label = str(row.get("label") or "")
+            completed = _int(row.get("completed"))
+            win_rate = _float(row.get("win_rate_5d"))
+            avg_return = _float(row.get("avg_return_5d"))
+            if not label or completed < MIN_FEEDBACK_COMPLETED:
+                continue
+            if (
+                (win_rate is not None and win_rate < WEAK_FEEDBACK_WIN_RATE)
+                or (avg_return is not None and avg_return < WEAK_FEEDBACK_AVG_RETURN)
+            ):
+                weak[group][label] = {
+                    "label": label,
+                    "completed": completed,
+                    "win_rate_5d": win_rate,
+                    "avg_return_5d": avg_return,
+                }
+
+    return {
+        "active": any(weak[group] for group in weak),
+        "as_of": payload.get("as_of") if isinstance(payload, dict) else None,
+        "weak": weak,
+    }
+
+
+def build_potential_radar_candidates(
+    rows: list[dict],
+    as_of: date,
+    limit: int = 12,
+    feedback: dict[str, Any] | None = None,
+) -> list[dict]:
     """Build early-stage candidates from enriched dashboard rows.
 
     The potential radar is a research queue, not a buy list. It intentionally
@@ -50,6 +122,18 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         stock_type = _stock_type(row, score, grade, tags, stage["key"])
         position = _position_hint(row, chase_risk["level"])
         combo = _signal_combo(lifecycle["label"], smart_money["label"], tags)
+        feedback_result = _feedback_adjustment(
+            feedback,
+            stage_label=stage["label"],
+            lifecycle_label=lifecycle["label"],
+            smart_money_label=smart_money["label"],
+            combo=combo,
+            tags=tags,
+        )
+        points -= feedback_result["penalty"]
+        tags.extend(feedback_result["tags"])
+        if points < 5:
+            continue
         tags.extend(
             [
                 f"生命週期:{lifecycle['label']}",
@@ -86,6 +170,8 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
                 "stock_type_label": stock_type["label"],
                 "position_hint": position["key"],
                 "position_hint_label": position["label"],
+                "feedback_penalty": feedback_result["penalty"],
+                "feedback_notes": feedback_result["notes"],
                 "lifecycle_stage": lifecycle["key"],
                 "lifecycle_stage_label": lifecycle["label"],
                 "lifecycle_reason": lifecycle["reason"],
@@ -111,6 +197,89 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         reverse=True,
     )
     return candidates[:limit]
+
+
+def _feedback_adjustment(
+    feedback: dict[str, Any] | None,
+    *,
+    stage_label: str,
+    lifecycle_label: str,
+    smart_money_label: str,
+    combo: str,
+    tags: list[str],
+) -> dict[str, Any]:
+    if not feedback or not feedback.get("active"):
+        return {"penalty": 0, "tags": [], "notes": []}
+    weak = feedback.get("weak") or {}
+    matches: list[dict[str, Any]] = []
+    checks = [
+        ("stage", stage_label),
+        ("lifecycle", lifecycle_label),
+        ("smart_money", smart_money_label),
+        ("combo", combo),
+    ]
+    for group, label in checks:
+        item = (weak.get(group) or {}).get(label)
+        if item:
+            matches.append(item)
+    for tag in tags:
+        label = _potential_factor_label(tag)
+        item = (weak.get("factor") or {}).get(label)
+        if item:
+            matches.append(item)
+
+    unique: dict[str, dict[str, Any]] = {}
+    for item in matches:
+        unique[str(item.get("label") or "")] = item
+    rows = [item for item in unique.values() if item.get("label")]
+    if not rows:
+        return {"penalty": 0, "tags": [], "notes": []}
+
+    penalty = min(4, 2 + max(0, len(rows) - 1))
+    notes = [
+        (
+            f"{row['label']} 近30日完成 {row.get('completed')} 筆，"
+            f"5日勝率 {_fmt_pct(row.get('win_rate_5d'))}，"
+            f"平均 {_fmt_pct(row.get('avg_return_5d'))}"
+        )
+        for row in rows[:3]
+    ]
+    return {
+        "penalty": penalty,
+        "tags": [f"成效降權:{row['label']}" for row in rows[:2]],
+        "notes": notes,
+    }
+
+
+def _potential_factor_label(tag: str) -> str:
+    if tag.startswith("題材升溫:"):
+        return "題材升溫"
+    if tag.startswith("K線轉強:"):
+        return "K線轉強"
+    if tag.startswith("K線風險:"):
+        return "K線風險"
+    if tag.startswith("追高檢查:"):
+        return tag
+    if tag.startswith("研究快篩:"):
+        return tag.split(":", 1)[1]
+    if tag.startswith("股票類型:"):
+        return tag.split(":", 1)[1]
+    if tag.startswith("部位提示:"):
+        return tag.split(":", 1)[1]
+    if tag.startswith("生命週期:"):
+        return tag.split(":", 1)[1]
+    if tag.startswith("資金型態:"):
+        return tag.split(":", 1)[1]
+    if tag.startswith("訊號組合:"):
+        return tag.split(":", 1)[1]
+    return tag
+
+
+def _fmt_pct(value: Any) -> str:
+    number = _float(value)
+    if number is None:
+        return "-"
+    return f"{number:.1f}%"
 
 
 def _is_actionable_today(row: dict[str, Any]) -> bool:
