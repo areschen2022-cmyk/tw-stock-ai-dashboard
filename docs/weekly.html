@@ -345,6 +345,7 @@
       </div>
       <div class="stack">
         <section><h2>法人週流向</h2><div id="institutional"></div></section>
+        <section><h2>資料更新狀態</h2><div id="dataFreshness"></div></section>
         <section><h2>訊號品質摘要</h2><div id="performance"></div></section>
         <section><h2>市場環境</h2><div id="market"></div></section>
       </div>
@@ -353,7 +354,7 @@
   <script>
     window.__WEEKLY_DATA__ = {
   "as_of": "2026-07-17",
-  "generated_at": "2026-07-17T17:00:06+08:00",
+  "generated_at": "2026-07-19T23:08:10+08:00",
   "market": {
     "summary": "健康：指數維持在主要均線上方｜加權-0.01%｜半導體+0.38%｜金融-0.03%｜航運-0.90%｜生技-0.95%",
     "warning": null
@@ -781,7 +782,7 @@
       },
       {
         "stock_id": "2891",
-        "name": "中信金",
+        "name": "",
         "net_shares": 21259195.0
       },
       {
@@ -808,7 +809,7 @@
     "top_sell": [
       {
         "stock_id": "2409",
-        "name": "友達",
+        "name": "",
         "net_shares": -184342792.0
       },
       {
@@ -838,7 +839,7 @@
       },
       {
         "stock_id": "1102",
-        "name": "亞泥",
+        "name": "",
         "net_shares": -14009015.0
       },
       {
@@ -870,7 +871,7 @@
       },
       {
         "stock_id": "2891",
-        "name": "中信金",
+        "name": "",
         "net_shares": 39502931.0
       },
       {
@@ -895,7 +896,7 @@
       },
       {
         "stock_id": "1101",
-        "name": "台泥",
+        "name": "",
         "net_shares": 11474610.0
       },
       {
@@ -912,7 +913,7 @@
     "foreign_top_sell": [
       {
         "stock_id": "2409",
-        "name": "友達",
+        "name": "",
         "net_shares": -166735204.0
       },
       {
@@ -947,12 +948,12 @@
       },
       {
         "stock_id": "1102",
-        "name": "亞泥",
+        "name": "",
         "net_shares": -13228242.0
       },
       {
         "stock_id": "6282",
-        "name": "康舒",
+        "name": "",
         "net_shares": -12121624.0
       },
       {
@@ -1264,6 +1265,40 @@
       "created_at": "2026-06-29 00:46:24"
     }
   ],
+  "data_freshness": {
+    "tdcc_retail_holders": {
+      "dataset": "tdcc_retail_holders",
+      "label": "集保股權分散",
+      "status": "recovered",
+      "status_label": "沿用前次成功",
+      "latest_update_date": "2026-07-16",
+      "latest_status": "failed",
+      "latest_message": "HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=30)",
+      "latest_success_update_date": "2026-07-15",
+      "latest_success_source_date": "2026-07-09",
+      "latest_success_rows": 4003,
+      "latest_failure_update_date": "2026-07-16",
+      "latest_failure_message": "HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=30)",
+      "age_days": 8,
+      "stale_after_days": 10
+    },
+    "institutional_flow": {
+      "dataset": "institutional_flow",
+      "label": "三大法人週流向",
+      "status": "ok",
+      "status_label": "正常",
+      "latest_update_date": "2026-07-17",
+      "latest_status": "ok",
+      "latest_message": "79 stocks scanned for institutional flow",
+      "latest_success_update_date": "2026-07-17",
+      "latest_success_source_date": "2026-07-17",
+      "latest_success_rows": 79,
+      "latest_failure_update_date": "",
+      "latest_failure_message": "",
+      "age_days": 0,
+      "stale_after_days": 3
+    }
+  },
   "themes": [
     {
       "key": "advanced_packaging",
@@ -2663,6 +2698,17 @@
           <td data-label="週淨買賣">${shares(row.net_shares)}</td>
         </tr>`).join("");
     }
+    function renderFreshnessRows(rows) {
+      return Object.values(rows || {}).map(row => {
+        const cls = row.status === "ok" ? "good" : row.status === "recovered" ? "warn" : "bad";
+        const failure = row.latest_failure_message ? `<div class="small">最近失敗：${esc(row.latest_failure_update_date || "-")} ${esc(row.latest_failure_message)}</div>` : "";
+        return `<tr>
+          <td data-label="資料">${esc(row.label)}</td>
+          <td data-label="狀態"><b class="${cls}">${esc(row.status_label)}</b><div class="small">最新更新：${esc(row.latest_update_date || "-")}</div></td>
+          <td data-label="最近成功">${esc(row.latest_success_source_date || "-")}<div class="small">${esc(row.latest_success_rows || 0)} 筆｜${esc(row.age_days ?? "-")} 天前</div>${failure}</td>
+        </tr>`;
+      }).join("");
+    }
     function render() {
       const retail = data.retail_divergence || {};
       const retailSummary = retail.summary || {};
@@ -2696,6 +2742,9 @@
         <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_buy) || "<tr><td>暫無資料</td></tr>"}</tbody></table>
         <h2 class="bad">法人週賣超</h2>
         <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_sell) || "<tr><td>暫無資料</td></tr>"}</tbody></table>`;
+      document.querySelector("#dataFreshness").innerHTML = `
+        <div class="line">每週更新用最近成功資料判斷；若本次抓取逾時但前次來源仍新鮮，會標示為沿用前次成功。</div>
+        <table><thead><tr><th>資料</th><th>狀態</th><th>最近成功</th></tr></thead><tbody>${renderFreshnessRows(data.data_freshness) || "<tr><td>尚無資料更新紀錄</td></tr>"}</tbody></table>`;
       const selection = data.performance?.selection_quality || {};
       document.querySelector("#performance").innerHTML = `
         <div class="line">訊號數：${esc(perfStats.signals ?? 0)}｜完成：${esc(perfStats.completed ?? 0)}</div>
