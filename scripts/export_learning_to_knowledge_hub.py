@@ -290,6 +290,39 @@ def build_weekly_review_points(weekly_review: dict) -> list[dict]:
     return _dedupe_by_id(points)
 
 
+def build_research_source_points(research_review: dict) -> list[dict]:
+    source_ref = "tw-stock-ai research_source_review.json"
+    points: list[dict] = []
+    for row in research_review.get("rows") or []:
+        status = _text(row.get("status"), "candidate")
+        if status not in {"adopted", "candidate"}:
+            continue
+        name = _text(row.get("name"), "未命名來源")
+        integration = _text(row.get("integration"), "research")
+        risk_level = _text(row.get("risk_level"), "unknown")
+        claim = (
+            f"{name} 可作為台股系統的 {integration} 參考來源；"
+            f"目前狀態為 {status}，風險層級 {risk_level}。"
+        )
+        evidence = (
+            f"decision_use={row.get('decision_use', '')}; "
+            f"score_use={row.get('score_use', '')}; url={row.get('url', '')}"
+        )
+        points.append(
+            _knowledge(
+                topic=f"台股外部資料源：{name}",
+                claim=claim,
+                evidence=evidence,
+                tags=["台股", "外部資料源", status, integration, risk_level],
+                completed=20 if status == "adopted" else 5,
+                avg_return_5d=None,
+                win_rate_5d=None,
+                source_ref=source_ref,
+            )
+        )
+    return _dedupe_by_id(points)
+
+
 def _dedupe_by_id(items: list[dict]) -> list[dict]:
     by_id: dict[str, dict] = {}
     for item in items:
@@ -353,6 +386,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export tw-stock-ai learning outcomes into Trading Knowledge Hub JSONL.")
     parser.add_argument("--performance", default="dashboard/performance_data.json")
     parser.add_argument("--weekly-review", default="dashboard/weekly_review.json")
+    parser.add_argument("--research-source-review", default="dashboard/research_source_review.json")
     parser.add_argument("--output", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -379,6 +413,10 @@ def main() -> int:
     weekly_review_path = Path(args.weekly_review)
     if weekly_review_path.exists():
         items.extend(build_weekly_review_points(json.loads(weekly_review_path.read_text(encoding="utf-8"))))
+        items = _dedupe_by_id(items)
+    research_review_path = Path(args.research_source_review)
+    if research_review_path.exists():
+        items.extend(build_research_source_points(json.loads(research_review_path.read_text(encoding="utf-8"))))
         items = _dedupe_by_id(items)
     if args.dry_run:
         print(json.dumps({"exported": len(items), "output": str(output), "sample": items[:3]}, ensure_ascii=False, indent=2))

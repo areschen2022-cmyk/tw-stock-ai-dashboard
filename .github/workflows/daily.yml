@@ -144,6 +144,7 @@ jobs:
           python scripts/weekly_review.py
           python scripts/long_horizon_backtest.py --years 30
           python scripts/cloud_skill_route_check.py
+          python scripts/research_source_review.py
 
       - name: Sync dashboard artifacts before final checks
         run: |
@@ -162,6 +163,7 @@ jobs:
           cp -f dashboard/weekly_review.json docs/weekly_review.json
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
+          cp -f dashboard/research_source_review.json docs/research_source_review.json
 
       - name: Run post-optimization finalizer
         run: python scripts/post_optimization_finalize.py --auto-hub --skip-tests
@@ -192,6 +194,7 @@ jobs:
           cp -f dashboard/weekly_review.json docs/weekly_review.json
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
+          cp -f dashboard/research_source_review.json docs/research_source_review.json
           cp -f dashboard/post_update_check.json docs/post_update_check.json
           cp -f dashboard/verification_loop.json docs/verification_loop.json
           git config user.name "github-actions[bot]"

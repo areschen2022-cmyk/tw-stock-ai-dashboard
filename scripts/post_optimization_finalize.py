@@ -156,6 +156,11 @@ def run_finalize(
     if not skip_tests:
         checks["tests"] = _run([sys.executable, "-m", "pytest", "-q"], cwd=root, timeout=240)
 
+    checks["research_source_review"] = _run(
+        [sys.executable, "scripts/research_source_review.py"],
+        cwd=root,
+        timeout=60,
+    )
     checks["post_update"] = _run([sys.executable, "scripts/post_update_check.py"], cwd=root, timeout=120)
     checks["mojibake_scan"] = scan_mojibake(root)
 
@@ -191,6 +196,8 @@ def _next_actions(checks: dict[str, dict]) -> list[str]:
         actions.append("修正 Python 語法或 import 錯誤。")
     if "tests" in checks and not checks["tests"].get("ok"):
         actions.append("查看 pytest 失敗項目，修正後重跑 post_optimization_finalize。")
+    if not checks.get("research_source_review", {}).get("ok"):
+        actions.append("檢查 dashboard/research_source_review.json，修正外部資料源欄位或重複 id。")
     if not checks.get("post_update", {}).get("ok"):
         actions.append("打開 dashboard/post_update_check.json，先處理 critical 或資料銜接問題。")
     if not checks.get("mojibake_scan", {}).get("ok"):

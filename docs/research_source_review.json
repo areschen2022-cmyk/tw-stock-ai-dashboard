@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-07-20T00:31:00+08:00",
+  "status": "ok",
+  "summary": {
+    "total": 9,
+    "adopted": 2,
+    "candidates": 7,
+    "manual_review": 2
+  },
+  "rows": [
+    {
+      "id": "twse_openapi",
+      "name": "TWSE OpenAPI",
+      "status": "adopted",
+      "priority": "core",
+      "integration": "data_provider",
+      "risk_level": "low",
+      "score": 120,
+      "ui_policy": "status_only",
+      "decision_use": "Daily price, volume, institutional and market data should prefer official TWSE/TPEx endpoints before third-party fallbacks.",
+      "score_use": "Allowed to affect core score when freshness and schema checks pass.",
+      "url": "https://openapi.twse.com.tw/"
+    },
+    {
+      "id": "tide_tw",
+      "name": "Tide Taiwan Market Dashboard",
+      "status": "adopted",
+      "priority": "high",
+      "integration": "market_tide_guardrail",
+      "risk_level": "medium",
+      "score": 90,
+      "ui_policy": "summary_only",
+      "decision_use": "Convert market breadth and heat into position-control guardrails.",
+      "score_use": "Allowed to adjust action labels and position stance, not raw stock score.",
+      "url": "https://tide-tw.app/"
+    },
+    {
+      "id": "tpex_value_chain",
+      "name": "TWSE/TPEx Industry Value Chain",
+      "status": "candidate",
+      "priority": "core",
+      "integration": "theme_chain_map",
+      "risk_level": "low",
+      "score": 100,
+      "ui_policy": "internal_only",
+      "decision_use": "Use as the baseline map for upstream, component, assembly and downstream relationships.",
+      "score_use": "Internal theme confidence only; do not create a buy signal by itself.",
+      "url": "https://ic.tpex.org.tw/"
+    },
+    {
+      "id": "statementdog_market_trend",
+      "name": "StatementDog Market Trend",
+      "status": "candidate",
+      "priority": "high",
+      "integration": "theme_validation",
+      "risk_level": "needs_manual_review",
+      "score": 55,
+      "ui_policy": "internal_only",
+      "decision_use": "Cross-check concept stocks and supply-chain labels when a topic suddenly heats up.",
+      "score_use": "Can raise theme confidence only when confirmed by price-volume and revenue evidence.",
+      "url": "https://statementdog.com/market-trend"
+    },
+    {
+      "id": "backtesting_py",
+      "name": "backtesting.py",
+      "status": "candidate",
+      "priority": "medium",
+      "integration": "strategy_replay",
+      "risk_level": "low",
+      "score": 40,
+      "ui_policy": "internal_only",
+      "decision_use": "Useful for readable single-strategy entry/exit experiments.",
+      "score_use": "Can validate trade-plan rules, not daily live data.",
+      "url": "https://github.com/kernc/backtesting.py"
+    },
+    {
+      "id": "quantstats",
+      "name": "QuantStats",
+      "status": "candidate",
+      "priority": "medium",
+      "integration": "performance_report",
+      "risk_level": "low",
+      "score": 40,
+      "ui_policy": "internal_only",
+      "decision_use": "Useful for drawdown, monthly return and risk-adjusted performance reports.",
+      "score_use": "Reporting only.",
+      "url": "https://github.com/ranaroussi/quantstats"
+    },
+    {
+      "id": "twstock_python",
+      "name": "twstock Python Library",
+      "status": "candidate",
+      "priority": "medium",
+      "integration": "backup_adapter",
+      "risk_level": "medium",
+      "score": 40,
+      "ui_policy": "internal_only",
+      "decision_use": "Potential local fallback for Taiwan stock quote/history utilities.",
+      "score_use": "No scoring impact until adapter tests and freshness checks pass.",
+      "url": "https://github.com/mlouielu/twstock"
+    },
+    {
+      "id": "vectorbt",
+      "name": "vectorbt",
+      "status": "candidate",
+      "priority": "medium",
+      "integration": "research_backtest",
+      "risk_level": "low",
+      "score": 40,
+      "ui_policy": "internal_only",
+      "decision_use": "Useful for fast vectorized factor research across many stocks.",
+      "score_use": "Can inform future thresholds only after reproducible local backtests.",
+      "url": "https://github.com/polakowo/vectorbt"
+    },
+    {
+      "id": "aistockmap",
+      "name": "AI Stock Map",
+      "status": "candidate",
+      "priority": "medium",
+      "integration": "semantic_theme_map",
+      "risk_level": "needs_manual_review",
+      "score": 25,
+      "ui_policy": "internal_only",
+      "decision_use": "Use for comparing industry-chain structure and missing concept clusters.",
+      "score_use": "Research backlog only until mappings are manually verified.",
+      "url": "https://aistockmap.com/"
+    }
+  ],
+  "issues": [],
+  "next_actions": [
+    "TWSE/TPEx Industry Value Chain -> theme_chain_map",
+    "backtesting.py -> strategy_replay",
+    "QuantStats -> performance_report",
+    "twstock Python Library -> backup_adapter",
+    "vectorbt -> research_backtest"
+  ],
+  "manual_review_sources": [
+    "StatementDog Market Trend",
+    "AI Stock Map"
+  ]
+}
