@@ -275,6 +275,8 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "stability": row.get("stability"),
             "stability_label": row.get("stability_label"),
             "stability_reason": row.get("stability_reason"),
+            "tide_context": row.get("tide_context"),
+            "tide_context_reason": row.get("tide_context_reason"),
         }
 
     chase = [
@@ -330,11 +332,16 @@ def _annotate_action_context(
     action_lists: dict,
     exit_risks: list[dict] | None = None,
     retail_divergence: dict | None = None,
+    market_tide: dict | None = None,
 ) -> None:
     chase_ids = {str(item.get("stock_id")) for item in action_lists.get("chase", [])}
     pullback_ids = {str(item.get("stock_id")) for item in action_lists.get("pullback", [])}
     risk_ids = {str(item.get("stock_id")) for item in exit_risks or []}
     retail_lookup = _retail_signal_lookup(retail_divergence)
+    tide = market_tide or {}
+    tide_level = str(tide.get("risk_level") or "")
+    tide_label = str(tide.get("label") or "")
+    tide_hint = str(tide.get("position_hint") or "")
 
     for row in rows:
         stock_id = str(row.get("stock_id") or "")
@@ -415,9 +422,19 @@ def _annotate_action_context(
             light_label = "灰燈追蹤"
             light_reason = "尚未形成今日操作條件"
 
+        if tide_level in {"headwind", "neutral"} and stock_id in chase_ids:
+            if light == "green":
+                light = "yellow"
+                light_label = "黃燈等確認"
+                light_reason = f"{tide_label}：{tide_hint}"
+            elif light == "yellow" and tide_label:
+                light_reason = f"{light_reason}；{tide_label}"
+
         row["decision_light"] = light
         row["decision_light_label"] = light_label
         row["decision_light_reason"] = light_reason
+        row["tide_context"] = tide_label
+        row["tide_context_reason"] = tide_hint
 
 
 def _data_recovery_status(details: list[dict]) -> dict:
@@ -557,7 +574,149 @@ def _data_quality(
     }
 
 
-def _decision_summary(rows: list[dict], action_lists: dict, data_quality: dict, health: dict, theme_signal: ThemeSignal | None) -> dict:
+def _theme_tide_rows(theme_signal: ThemeSignal | None, config: dict, limit: int = 5) -> list[dict]:
+    if not theme_signal:
+        return []
+    names = {key: value.get("name", key) for key, value in (config.get("theme_pools", {}) or {}).items()}
+    rows = []
+    for key, score in (theme_signal.scores or {}).items():
+        score_int = int(score or 0)
+        if score_int <= 0:
+            continue
+        momentum = (theme_signal.momentum or {}).get(key)
+        trend = str(getattr(momentum, "trend", "") or "")
+        catalyst = (theme_signal.catalyst_confidence or {}).get(key)
+        catalyst_grade = str(getattr(catalyst, "grade", "") or "")
+        if score_int >= 25 and ("急升" in trend or "升溫" in trend):
+            tide = "漲潮"
+        elif score_int >= 12 and catalyst_grade in {"A", "B"}:
+            tide = "輪動"
+        elif "降溫" in trend or "退潮" in trend:
+            tide = "退潮"
+        else:
+            tide = "觀望"
+        rows.append(
+            {
+                "theme_key": key,
+                "theme_name": names.get(key, key),
+                "score": score_int,
+                "trend": trend or "-",
+                "catalyst_grade": catalyst_grade or "-",
+                "tide": tide,
+            }
+        )
+    rows.sort(key=lambda item: (item["tide"] == "漲潮", item["tide"] == "輪動", item["score"]), reverse=True)
+    return rows[:limit]
+
+
+def _market_tide(
+    rows: list[dict],
+    action_lists: dict,
+    data_quality: dict,
+    market_warning: str | None,
+    overseas: OverseasSentiment | None,
+    theme_signal: ThemeSignal | None,
+    config: dict,
+) -> dict:
+    """Market-first guardrail inspired by tide-style money-flow maps.
+
+    The goal is not to add another noisy signal.  It summarizes whether today's
+    stock picks are happening with or against the broader market tide.
+    """
+
+    summary = action_lists.get("summary") or {}
+    chase = int(summary.get("chase") or 0)
+    strong = int(summary.get("strong") or 0)
+    risk = int(summary.get("risk") or 0)
+    ai_agree = int(summary.get("ai_agree") or 0)
+    score = 50
+    reasons: list[str] = []
+
+    if chase >= 3:
+        score += 10
+        reasons.append(f"可追 {chase} 檔")
+    elif chase == 0:
+        score -= 8
+        reasons.append("沒有可追名單")
+
+    if strong >= 6:
+        score += 8
+        reasons.append(f"S+/S 強度 {strong} 檔")
+    if ai_agree >= 2:
+        score += 5
+        reasons.append(f"AI 同意 {ai_agree} 檔")
+    if risk >= 5:
+        score -= 14
+        reasons.append(f"風險名單 {risk} 檔")
+    elif risk >= 3:
+        score -= 8
+        reasons.append(f"風險名單 {risk} 檔")
+
+    overseas_label = str(overseas.label if overseas else "")
+    if "偏多" in overseas_label:
+        score += 8
+        reasons.append("海外順風")
+    elif "偏空" in overseas_label:
+        score -= 12
+        reasons.append("海外偏空")
+
+    if market_warning:
+        score -= 8
+        reasons.append(str(market_warning))
+    if data_quality.get("label") == "low":
+        score -= 10
+        reasons.append("資料品質偏低")
+
+    theme_rows = _theme_tide_rows(theme_signal, config)
+    flood = [row for row in theme_rows if row["tide"] == "漲潮"]
+    rotation = [row for row in theme_rows if row["tide"] == "輪動"]
+    ebb = [row for row in theme_rows if row["tide"] == "退潮"]
+    if flood:
+        score += min(12, 4 * len(flood))
+        reasons.append("題材漲潮：" + "、".join(row["theme_name"] for row in flood[:2]))
+    elif rotation:
+        score += 4
+        reasons.append("題材輪動：" + "、".join(row["theme_name"] for row in rotation[:2]))
+    if ebb:
+        score -= min(8, 3 * len(ebb))
+        reasons.append("題材退潮：" + "、".join(row["theme_name"] for row in ebb[:2]))
+
+    score = max(0, min(100, int(score)))
+    if score >= 70:
+        label = "順風漲潮"
+        risk_level = "favorable"
+        position_hint = "可依個股進場條件執行，仍不追超過進場上限。"
+    elif score >= 55:
+        label = "選股順風"
+        risk_level = "selective"
+        position_hint = "只挑可追前段與 AI 同意標的，未放量就等待。"
+    elif score >= 40:
+        label = "中性潮汐"
+        risk_level = "neutral"
+        position_hint = "用小部位或等拉回，先看開盤 5 分鐘量價。"
+    else:
+        label = "逆風控倉"
+        risk_level = "headwind"
+        position_hint = "不追高，只做最強且開盤確認的標的；其餘等拉回。"
+
+    return {
+        "score": score,
+        "label": label,
+        "risk_level": risk_level,
+        "position_hint": position_hint,
+        "summary": "｜".join(reasons[:4]) if reasons else "暫無明顯潮汐訊號",
+        "theme_tides": theme_rows,
+    }
+
+
+def _decision_summary(
+    rows: list[dict],
+    action_lists: dict,
+    data_quality: dict,
+    health: dict,
+    theme_signal: ThemeSignal | None,
+    market_tide: dict | None = None,
+) -> dict:
     risk_count = int((action_lists.get("summary") or {}).get("risk") or 0)
     chase_count = int((action_lists.get("summary") or {}).get("chase") or 0)
     pullback_count = int((action_lists.get("summary") or {}).get("pullback") or 0)
@@ -578,12 +737,15 @@ def _decision_summary(rows: list[dict], action_lists: dict, data_quality: dict, 
         "strong_grade_count": s_count,
         "data_quality": data_quality.get("label"),
         "ai_status": "available",
+        "market_tide_label": (market_tide or {}).get("label", ""),
+        "market_tide_score": (market_tide or {}).get("score"),
         "top_theme": (theme_signal.active_themes[0] if theme_signal and theme_signal.active_themes else ""),
         "notes": [
             f"watch={chase_count}",
             f"pullback={pullback_count}",
             f"risk={risk_count}",
             f"data_quality={data_quality.get('label')}",
+            f"market_tide={(market_tide or {}).get('label', '')}",
         ],
     }
 
@@ -756,10 +918,17 @@ def build_dashboard_payload(
         rows.append(row)
     valid = [row for row in rows if row["label"] != "DATA_INSUFFICIENT"]
     action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
-    _annotate_action_context(rows, action_lists, exit_risks=exit_risks, retail_divergence=retail_divergence)
-    action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
     data_quality = _data_quality(source_status, rows, ai_status=ai_status)
     health = _build_health_status(as_of, source_status, theme_signal)
+    market_tide = _market_tide(rows, action_lists, data_quality, market_warning, overseas, theme_signal, config)
+    _annotate_action_context(
+        rows,
+        action_lists,
+        exit_risks=exit_risks,
+        retail_divergence=retail_divergence,
+        market_tide=market_tide,
+    )
+    action_lists = _action_lists(rows, ai_picks=ai_picks, exit_risks=exit_risks)
     return {
         "as_of": as_of.isoformat(),
         "generated_at": health.get("generated_at"),
@@ -826,7 +995,8 @@ def build_dashboard_payload(
         "action_lists": action_lists,
         "data_quality": data_quality,
         "data_source_health": _data_source_health(source_status, data_quality),
-        "decision_summary": _decision_summary(rows, action_lists, data_quality, health, theme_signal),
+        "market_tide": market_tide,
+        "decision_summary": _decision_summary(rows, action_lists, data_quality, health, theme_signal, market_tide),
         "summary": {
             "scanned": len(rows),
             "valid": len(valid),
@@ -868,11 +1038,22 @@ def enrich_dashboard_payload(
         ai_picks=ai_picks,
         exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
     )
+    if not payload.get("market_tide"):
+        payload["market_tide"] = _market_tide(
+            rows,
+            payload.get("action_lists", {}),
+            payload.get("data_quality", {}),
+            (payload.get("market") or {}).get("warning"),
+            None,
+            None,
+            {"theme_pools": {}},
+        )
     _annotate_action_context(
         rows,
         payload.get("action_lists", {}),
         exit_risks=exit_risks if exit_risks is not None else payload.get("exit_risks", []),
         retail_divergence=payload.get("retail_divergence", {}),
+        market_tide=payload.get("market_tide", {}),
     )
     payload["action_lists"] = _action_lists(
         rows,
@@ -897,6 +1078,7 @@ def enrich_dashboard_payload(
         payload.get("data_quality", {}),
         payload.get("health", {}),
         None,
+        payload.get("market_tide", {}),
     )
     if previous_top_theme and not payload["decision_summary"].get("top_theme"):
         payload["decision_summary"]["top_theme"] = previous_top_theme
@@ -2215,6 +2397,12 @@ def _html() -> str:
         ["風險", actionSummary.risk ?? 0, "is-bad"]
       ].map(([k,v,c]) => `<div class="metric ${c}"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
+      const marketTide = data.market_tide || {};
+      function tideClass(level) {
+        if (level === "favorable" || level === "selective") return "good";
+        if (level === "headwind") return "bad";
+        return "warn";
+      }
       function marketTemperature() {
         const retail = data.retail_divergence || {};
         const retailSummary = retail.summary || {};
@@ -2243,7 +2431,9 @@ def _html() -> str:
         risk_control: "風險控管",
       }[decision.posture] || "精選觀察";
       const decisionTopTheme = themeName(decision.top_theme);
-      const temp = marketTemperature();
+      const temp = marketTide.label
+        ? { label: marketTide.label, cls: tideClass(marketTide.risk_level), note: marketTide.summary || marketTide.position_hint || "市場潮汐已納入操作護欄" }
+        : marketTemperature();
       const topChase = (actionLists.chase || []).slice(0, 3).map(row => `${row.stock_id} ${row.name}`).join("、") || "今日暫無";
       const topRisk = (actionLists.risk || []).slice(0, 2).map(row => `${row.stock_id} ${row.name}`).join("、") || "目前無紅黃警戒";
       document.querySelector("#decisionSummary").innerHTML = `
@@ -2259,7 +2449,8 @@ def _html() -> str:
           <div class="decision-pill"><b>${esc(actionSummary.ai_agree ?? 0)}</b><span>AI 同意</span></div>
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
-        <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>`;
+        <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>
+        ${marketTide.position_hint ? `<div class="line"><b>潮汐護欄</b>｜${esc(marketTide.position_hint)}</div>` : ""}`;
       document.querySelector("#decisionBrief").innerHTML = `
         <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
         <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
@@ -2267,6 +2458,7 @@ def _html() -> str:
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
         <div class="line">海外：${esc(data.overseas.label)}｜${esc(data.overseas.summary)}</div>
+        ${marketTide.label ? `<div class="line">潮汐：${esc(marketTide.label)} ${esc(marketTide.score ?? "-")}/100｜${esc(marketTide.summary || "")}</div>` : ""}
         ${(data.overseas.sector_impacts || []).slice(0,2).map(x => `<div class="line">映射：${esc(x.symbol)} ${Number(x.change_pct).toFixed(2)}% → ${esc(x.sector)}｜${esc(x.stocks)}</div>`).join("")}
         <div class="line"><span class="${sourceClass(data.source_status.label)}"></span>資料源：${esc(data.source_status.label)}｜API ${data.source_status.api || 0}｜快取 ${data.source_status.cache || 0}｜限流 ${data.source_status.quota || 0}</div>
         ${data.market.warning ? `<div class="line bad">提醒：${esc(data.market.warning)}</div>` : ""}`;
@@ -2314,6 +2506,7 @@ def _html() -> str:
         const aiReason = row.ai_reason || "";
         const retailText = row.retail_context || "散戶：無明顯背離";
         const retailReason = row.retail_context_reason || "";
+        const tideText = row.tide_context ? `${row.tide_context}｜${row.tide_context_reason || ""}` : "依市場潮汐控管部位";
         const stabilityLabel = row.stability_label || "新進名單";
         const stabilityReason = row.stability_reason || "近期尚無連續推薦紀錄。";
         const exitPlan = row.exit_plan || {};
@@ -2350,6 +2543,7 @@ def _html() -> str:
           </details>
           <div class="decision-note-grid">
             <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
+            <div class="decision-note"><b>潮汐</b><br>${esc(tideText)}</div>
             <div class="decision-note"><b>穩定性</b><br>${esc(stabilityReason)}</div>
             <div class="decision-note"><b>散戶</b><br>${esc(retailText)}${retailReason ? `｜${esc(retailReason)}` : ""}</div>
           </div>

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from src.indicators.overseas import OverseasSentiment
 from src.news.policy_signal import PolicySignal
 from src.news.catalyst_confidence import CatalystConfidence
 from src.news.web_theme import ThemeSignal
@@ -95,12 +96,57 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["data_quality"]["official_valid"] == 1
     assert payload["data_source_health"]["label"] == "可用"
     assert payload["data_source_health"]["official_valid"] == 1
+    assert payload["market_tide"]["label"]
+    assert payload["decision_summary"]["market_tide_label"] == payload["market_tide"]["label"]
     assert payload["decision_summary"]["top_theme"] == "defense_policy"
     assert payload["themes"]["matched_headlines"]["defense_policy"] == ["國防預算帶動軍工題材"]
     assert payload["themes"]["quality"]["defense_policy"].startswith("高")
     assert payload["themes"]["catalyst_confidence"]["defense_policy"]["grade"] == "A"
     assert payload["themes"]["policy"]["us_events"][0]["event"] == "Defense bill / NDAA"
     assert payload["themes"]["discovery"][0]["keyword"] == "石英元件"
+
+
+def test_market_tide_guardrail_downgrades_chase_light_in_headwind() -> None:
+    score = StockScore(
+        stock_id="2408",
+        total_score=92,
+        label="BUY_WATCH",
+        price=100.0,
+        technical_score=25,
+        chip_score=20,
+        fundamental_score=20,
+        risk_score=20,
+        market_adjustment=0,
+        reasons={"technical": ["突破整理"], "chip": ["法人共振"]},
+        action="可追蹤突破",
+        entry_decision="開盤確認",
+        trigger_tags=["題材強共振", "法人共振", "技術突破"],
+    )
+    payload = build_dashboard_payload(
+        [score],
+        date(2026, 7, 17),
+        "偏弱，指數跌破主要均線",
+        "大盤轉弱",
+        {"stock_names": {"2408": "南亞科"}, "theme_pools": {}},
+        overseas=OverseasSentiment("偏空", -4, -5, "SOX -3.0%", ["SOX -3.0%"]),
+        theme_signal=ThemeSignal([], "未偵測到明顯題材", [], {}, source_count=1, failed_count=0),
+        source_status={"label": "正常", "api": 1, "cache": 0, "quota": 0, "error": 0},
+        ai_picks=[
+            {
+                "stock_id": "2408",
+                "consensus_action": "可追",
+                "pick_agreement_count": 5,
+                "model_count": 5,
+                "reason": "strong setup",
+            }
+        ],
+    )
+
+    row = payload["rows"][0]
+    assert payload["market_tide"]["risk_level"] == "headwind"
+    assert row["decision_light"] == "yellow"
+    assert row["decision_light_label"] == "黃燈等確認"
+    assert row["tide_context"] == payload["market_tide"]["label"]
 
 
 def test_weekly_overview_marks_recent_tdcc_failure_as_recovered() -> None:
