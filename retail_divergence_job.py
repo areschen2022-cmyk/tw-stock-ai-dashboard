@@ -33,6 +33,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv-path", help="Optional local TDCC CSV path for manual backfill/testing")
     parser.add_argument("--as-of-date", help="Optional cutoff date YYYY-MM-DD")
     parser.add_argument("--max-stocks", type=int, default=80, help="Max candidate stocks to enrich with price/volume")
+    parser.add_argument("--tdcc-timeout", type=int, default=int(os.getenv("TDCC_TIMEOUT", "45")))
+    parser.add_argument("--tdcc-retries", type=int, default=int(os.getenv("TDCC_RETRIES", "3")))
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -47,7 +49,11 @@ def main() -> int:
     run_id = os.getenv("GITHUB_RUN_ID", "")
 
     try:
-        rows = load_tdcc_csv(Path(args.csv_path)) if args.csv_path else TdccClient().fetch_holding_rows()
+        rows = (
+            load_tdcc_csv(Path(args.csv_path))
+            if args.csv_path
+            else TdccClient(timeout=args.tdcc_timeout, retries=args.tdcc_retries).fetch_holding_rows()
+        )
     except Exception as exc:
         logging.warning("TDCC retail divergence update skipped: %s", exc)
         if not args.dry_run:

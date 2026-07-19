@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from retail_divergence_job import build_retail_signals
-from src.data_provider.tdcc_client import parse_tdcc_csv, retail_holder_counts
+from src.data_provider.tdcc_client import TdccClient, parse_tdcc_csv, retail_holder_counts
 
 
 SAMPLE = """資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%
@@ -48,6 +48,46 @@ def test_parse_tdcc_csv_and_group_retail_holders() -> None:
 
     assert grouped[date(2026, 5, 15)]["2408"] == 1600
     assert grouped[date(2026, 5, 22)]["2344"] == 1770
+
+
+def test_tdcc_client_retries_transient_failures(monkeypatch) -> None:
+    calls = {"count": 0}
+
+    class Response:
+        text = SAMPLE
+        content = SAMPLE.encode("utf-8")
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(*args, **kwargs):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            raise RuntimeError("temporary timeout")
+        return Response()
+
+    monkeypatch.setattr("src.data_provider.tdcc_client.requests.get", fake_get)
+    monkeypatch.setattr("src.data_provider.tdcc_client.time.sleep", lambda seconds: None)
+
+    rows = TdccClient(retries=2, backoff_seconds=0).fetch_holding_rows()
+
+    assert calls["count"] == 2
+    assert rows[0].stock_id == "2408"
+
+
+def test_tdcc_client_reports_final_retry_error(monkeypatch) -> None:
+    def fake_get(*args, **kwargs):
+        raise RuntimeError("timeout")
+
+    monkeypatch.setattr("src.data_provider.tdcc_client.requests.get", fake_get)
+    monkeypatch.setattr("src.data_provider.tdcc_client.time.sleep", lambda seconds: None)
+
+    try:
+        TdccClient(retries=2, backoff_seconds=0).fetch_holding_rows()
+    except RuntimeError as exc:
+        assert "failed after 2 attempts" in str(exc)
+    else:
+        raise AssertionError("expected RuntimeError")
 
 
 def test_build_retail_signals_from_tdcc_rows() -> None:

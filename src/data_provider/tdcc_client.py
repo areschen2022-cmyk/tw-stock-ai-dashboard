@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import io
 import logging
+import time
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
@@ -25,20 +26,49 @@ class TdccHoldingRow:
 
 
 class TdccClient:
-    def __init__(self, url: str = DEFAULT_TDCC_URL, timeout: int = 30) -> None:
+    def __init__(
+        self,
+        url: str = DEFAULT_TDCC_URL,
+        timeout: int = 30,
+        retries: int = 3,
+        backoff_seconds: float = 2.0,
+    ) -> None:
         self.url = url
         self.timeout = timeout
+        self.retries = max(1, int(retries or 1))
+        self.backoff_seconds = max(0.0, float(backoff_seconds or 0.0))
         self.headers = {
             "User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0; research dashboard)",
             "Accept": "text/csv,text/plain,*/*",
         }
 
     def fetch_holding_rows(self) -> list[TdccHoldingRow]:
-        response = requests.get(self.url, headers=self.headers, timeout=self.timeout)
-        response.raise_for_status()
-        if response.text.lstrip().startswith("<"):
-            raise RuntimeError("TDCC returned HTML instead of CSV")
-        return parse_tdcc_csv(response.content)
+        last_error: Exception | None = None
+        for attempt in range(1, self.retries + 1):
+            try:
+                response = requests.get(self.url, headers=self.headers, timeout=self.timeout)
+                response.raise_for_status()
+                if response.text.lstrip().startswith("<"):
+                    raise RuntimeError("TDCC returned HTML instead of CSV")
+                rows = parse_tdcc_csv(response.content)
+                if rows:
+                    return rows
+                raise RuntimeError("TDCC returned empty CSV")
+            except (requests.RequestException, RuntimeError) as exc:
+                last_error = exc
+                if attempt >= self.retries:
+                    break
+                wait = self.backoff_seconds * attempt
+                logging.warning(
+                    "TDCC fetch attempt %s/%s failed: %s; retry in %.1fs",
+                    attempt,
+                    self.retries,
+                    exc,
+                    wait,
+                )
+                if wait > 0:
+                    time.sleep(wait)
+        raise RuntimeError(f"TDCC fetch failed after {self.retries} attempts: {last_error}") from last_error
 
 
 def parse_tdcc_csv(content: bytes | str) -> list[TdccHoldingRow]:

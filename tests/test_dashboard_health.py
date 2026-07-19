@@ -103,6 +103,54 @@ def test_dashboard_payload_includes_health_and_decision_reason() -> None:
     assert payload["themes"]["discovery"][0]["keyword"] == "石英元件"
 
 
+def test_weekly_overview_marks_recent_tdcc_failure_as_recovered() -> None:
+    payload = build_weekly_overview_payload(
+        date(2026, 7, 17),
+        {
+            "market": {},
+            "overseas": {},
+            "retail_divergence": {},
+            "themes": {"names": {}, "scores": {}, "momentum": {}},
+        },
+        {"stats": {}, "selection_quality": {}},
+        {},
+        {},
+        data_updates=[
+            {
+                "update_date": "2026-07-16",
+                "dataset": "tdcc_retail_holders",
+                "status": "failed",
+                "row_count": 0,
+                "source_date": "",
+                "message": "Read timed out",
+            },
+            {
+                "update_date": "2026-07-15",
+                "dataset": "tdcc_retail_holders",
+                "status": "ok",
+                "row_count": 4003,
+                "source_date": "2026-07-09",
+                "message": "44 divergence signals",
+            },
+            {
+                "update_date": "2026-07-17",
+                "dataset": "institutional_flow",
+                "status": "ok",
+                "row_count": 79,
+                "source_date": "2026-07-17",
+                "message": "weekly flow",
+            },
+        ],
+    )
+
+    tdcc = payload["data_freshness"]["tdcc_retail_holders"]
+    assert tdcc["status"] == "recovered"
+    assert tdcc["status_label"] == "沿用前次成功"
+    assert tdcc["latest_success_source_date"] == "2026-07-09"
+    assert tdcc["latest_failure_message"] == "Read timed out"
+    assert payload["data_freshness"]["institutional_flow"]["status"] == "ok"
+
+
 def test_build_traceability_summary_links_scoring_and_backtests() -> None:
     dashboard_payload = {
         "summary": {"scanned": 5, "valid": 4, "s_plus_grade": 1, "s_grade": 1, "a_grade": 2},

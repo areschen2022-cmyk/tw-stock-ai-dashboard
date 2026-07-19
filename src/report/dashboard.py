@@ -1576,6 +1576,70 @@ def build_traceability_diagnosis(traceability: dict, dashboard_payload: dict) ->
     return diagnosis
 
 
+def _iso_date(value: str | None) -> date | None:
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
+
+
+def _data_freshness(data_updates: list[dict], as_of: date) -> dict[str, dict]:
+    dataset_labels = {
+        "tdcc_retail_holders": "集保股權分散",
+        "institutional_flow": "三大法人週流向",
+    }
+    max_age_days = {
+        "tdcc_retail_holders": 10,
+        "institutional_flow": 3,
+    }
+    grouped: dict[str, list[dict]] = {}
+    for item in data_updates:
+        dataset = str(item.get("dataset") or "")
+        if dataset:
+            grouped.setdefault(dataset, []).append(item)
+
+    freshness = {}
+    for dataset, label in dataset_labels.items():
+        rows = grouped.get(dataset, [])
+        latest = rows[0] if rows else {}
+        latest_success = next((row for row in rows if row.get("status") == "ok"), {})
+        latest_failure = next((row for row in rows if row.get("status") not in {"ok", "skipped"}), {})
+        source_date = _iso_date(str(latest_success.get("source_date") or ""))
+        age_days = (as_of - source_date).days if source_date else None
+        stale_after = max_age_days.get(dataset, 7)
+        if not latest_success:
+            status = "missing"
+            status_label = "無成功紀錄"
+        elif age_days is not None and age_days > stale_after:
+            status = "stale"
+            status_label = "過期"
+        elif latest.get("status") == "ok":
+            status = "ok"
+            status_label = "正常"
+        else:
+            status = "recovered"
+            status_label = "沿用前次成功"
+        freshness[dataset] = {
+            "dataset": dataset,
+            "label": label,
+            "status": status,
+            "status_label": status_label,
+            "latest_update_date": latest.get("update_date", ""),
+            "latest_status": latest.get("status", ""),
+            "latest_message": latest.get("message", ""),
+            "latest_success_update_date": latest_success.get("update_date", ""),
+            "latest_success_source_date": latest_success.get("source_date", ""),
+            "latest_success_rows": latest_success.get("row_count", 0),
+            "latest_failure_update_date": latest_failure.get("update_date", ""),
+            "latest_failure_message": latest_failure.get("message", ""),
+            "age_days": age_days,
+            "stale_after_days": stale_after,
+        }
+    return freshness
+
+
 def build_weekly_overview_payload(
     as_of: date,
     dashboard_payload: dict,
@@ -1614,6 +1678,7 @@ def build_weekly_overview_payload(
         "retail_divergence": dashboard_payload.get("retail_divergence", {}),
         "institutional": institutional_summary,
         "data_updates": data_updates or [],
+        "data_freshness": _data_freshness(data_updates or [], as_of),
         "themes": theme_rows[:12],
         "performance": {
             "stats": performance_payload.get("stats", {}),
@@ -2733,6 +2798,7 @@ def _weekly_html() -> str:
       </div>
       <div class="stack">
         <section><h2>法人週流向</h2><div id="institutional"></div></section>
+        <section><h2>資料更新狀態</h2><div id="dataFreshness"></div></section>
         <section><h2>訊號品質摘要</h2><div id="performance"></div></section>
         <section><h2>市場環境</h2><div id="market"></div></section>
       </div>
@@ -2769,6 +2835,17 @@ def _weekly_html() -> str:
           <td data-label="週淨買賣">${shares(row.net_shares)}</td>
         </tr>`).join("");
     }
+    function renderFreshnessRows(rows) {
+      return Object.values(rows || {}).map(row => {
+        const cls = row.status === "ok" ? "good" : row.status === "recovered" ? "warn" : "bad";
+        const failure = row.latest_failure_message ? `<div class="small">最近失敗：${esc(row.latest_failure_update_date || "-")} ${esc(row.latest_failure_message)}</div>` : "";
+        return `<tr>
+          <td data-label="資料">${esc(row.label)}</td>
+          <td data-label="狀態"><b class="${cls}">${esc(row.status_label)}</b><div class="small">最新更新：${esc(row.latest_update_date || "-")}</div></td>
+          <td data-label="最近成功">${esc(row.latest_success_source_date || "-")}<div class="small">${esc(row.latest_success_rows || 0)} 筆｜${esc(row.age_days ?? "-")} 天前</div>${failure}</td>
+        </tr>`;
+      }).join("");
+    }
     function render() {
       const retail = data.retail_divergence || {};
       const retailSummary = retail.summary || {};
@@ -2802,6 +2879,9 @@ def _weekly_html() -> str:
         <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_buy) || "<tr><td>暫無資料</td></tr>"}</tbody></table>
         <h2 class="bad">法人週賣超</h2>
         <table><thead><tr><th>股票</th><th>週淨買賣</th></tr></thead><tbody>${renderFlowRows(flow.top_sell) || "<tr><td>暫無資料</td></tr>"}</tbody></table>`;
+      document.querySelector("#dataFreshness").innerHTML = `
+        <div class="line">每週更新用最近成功資料判斷；若本次抓取逾時但前次來源仍新鮮，會標示為沿用前次成功。</div>
+        <table><thead><tr><th>資料</th><th>狀態</th><th>最近成功</th></tr></thead><tbody>${renderFreshnessRows(data.data_freshness) || "<tr><td>尚無資料更新紀錄</td></tr>"}</tbody></table>`;
       const selection = data.performance?.selection_quality || {};
       document.querySelector("#performance").innerHTML = `
         <div class="line">訊號數：${esc(perfStats.signals ?? 0)}｜完成：${esc(perfStats.completed ?? 0)}</div>
