@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import logging
 import os
@@ -710,11 +711,16 @@ def main() -> int:
         data_quality = dashboard_payload.get("data_quality", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
 
+        def _h(value: object, default: str = "") -> str:
+            if value is None:
+                value = default
+            return html.escape(str(value), quote=False)
+
         def _compact_list(rows: list[dict], empty: str, limit: int = 3) -> str:
             return "\n".join(
-                f"▸ <b>{row['stock_id']} {row['name']}</b>｜{row.get('score', 0)}/100｜"
-                f"{row.get('grade', '-')}｜{row.get('entry_decision') or row.get('action', '只觀察')}｜"
-                f"{row.get('ai_label', 'AI 未複核')}"
+                f"▸ <b>{_h(row.get('stock_id'))} {_h(row.get('name'))}</b>｜{_h(row.get('score', 0))}/100｜"
+                f"{_h(row.get('grade', '-'))}｜{_h(row.get('entry_decision') or row.get('action'), '只觀察')}｜"
+                f"{_h(row.get('ai_label'), 'AI 未複核')}"
                 for row in rows[:limit]
             ) or empty
 
@@ -726,9 +732,9 @@ def main() -> int:
             f"不建議 {ai_summary.get('ai_avoid', 0)}｜"
             f"已複核 {ai_summary.get('ai_reviewed', 0)}"
         )
-        alert_text = "\n".join(f"⚠️ {item}" for item in alerts[: limits["max_alert_items"]]) or "✅ 無重大異常"
+        alert_text = "\n".join(f"⚠️ {_h(item)}" for item in alerts[: limits["max_alert_items"]]) or "✅ 無重大異常"
         exit_text = "\n".join(
-            f"▸ <b>{item['stock_id']} {item['name']}</b>｜{item['level']}｜{'、'.join(item['reasons'][:1])}"
+            f"▸ <b>{_h(item.get('stock_id'))} {_h(item.get('name'))}</b>｜{_h(item.get('level'))}｜{_h('、'.join(item.get('reasons', [])[:1]))}"
             for item in exit_risks[: limits["max_exit_items"]]
         ) or "▸ 無紅黃警戒"
         health = dashboard_payload.get("health", {})
@@ -738,15 +744,16 @@ def main() -> int:
             schedule_text = f"{float(schedule_delay):.1f} 分"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
+        safe_dashboard_url = html.escape(str(dashboard_url), quote=True)
         telegram_message = "\n".join(
             [
                 f"🇹🇼 <b>台股 AI 早報</b>｜{delivery_date.isoformat()}",
                 f"資料日：{as_of.isoformat()}",
                 "",
-                f"🧭 風向：{dashboard_payload['overseas']['label']}",
-                f"📰 題材：{dashboard_payload['themes']['summary']}",
-                f"📊 掃描 <b>{s['scanned']}</b> 檔｜S+ <b>{s['s_plus_grade']}</b>｜S <b>{s['s_grade']}</b>｜A <b>{s['a_grade']}</b>｜B <b>{s['b_grade']}</b>｜資料源：{dashboard_payload['source_status']['label']}",
-                f"⏱ 延遲：{schedule_text}｜資料品質：{data_quality.get('label_text') or data_quality.get('label', '未知')}｜AI：{ai_health.get('label', '未啟用')}",
+                f"🧭 風向：{_h(dashboard_payload.get('overseas', {}).get('label'))}",
+                f"📰 題材：{_h(dashboard_payload.get('themes', {}).get('summary'))}",
+                f"📊 掃描 <b>{_h(s.get('scanned'))}</b> 檔｜S+ <b>{_h(s.get('s_plus_grade'))}</b>｜S <b>{_h(s.get('s_grade'))}</b>｜A <b>{_h(s.get('a_grade'))}</b>｜B <b>{_h(s.get('b_grade'))}</b>｜資料源：{_h(dashboard_payload.get('source_status', {}).get('label'))}",
+                f"⏱ 延遲：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
                 "",
                 "🔥 <b>今日重點</b>",
                 must_watch_text,
@@ -758,7 +765,7 @@ def main() -> int:
                 "🛡 <b>危險名單</b>",
                 exit_text,
                 "",
-                f"🔗 <a href=\"{dashboard_url}\">開啟監控頁</a>",
+                f"🔗 <a href=\"{safe_dashboard_url}\">開啟監控頁</a>",
                 "⚠️ 僅供研究追蹤，不是投資建議。",
             ]
         )

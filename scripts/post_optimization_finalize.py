@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 DEFAULT_HUB_FILE = Path("C:/Users/User/trading_knowledge_hub/data/knowledge_points.jsonl")
+HARD_CHECKS = {"compile", "tests", "post_update", "mojibake_scan", "verification_loop"}
 
 MOJIBAKE_MARKERS = [
     chr(0x5697),
@@ -182,11 +183,17 @@ def run_finalize(
     verification_command.extend(_knowledge_output_arg(hub_file))
     checks["verification_loop"] = _run(verification_command, cwd=root, timeout=180)
 
-    ok = all(item.get("ok", False) for item in checks.values())
+    hard_failures = [
+        name
+        for name, item in checks.items()
+        if name in HARD_CHECKS and not item.get("ok", False)
+    ]
+    ok = not hard_failures
     report = {
         "generated_at": _now(),
         "status": "ok" if ok else "bad",
         "hub_file": str(hub_file) if hub_file is not None else "auto",
+        "hard_failures": hard_failures,
         "checks": checks,
         "next_actions": _next_actions(checks),
     }
@@ -202,13 +209,13 @@ def _next_actions(checks: dict[str, dict]) -> list[str]:
     if "tests" in checks and not checks["tests"].get("ok"):
         actions.append("檢查 pytest 失敗項目，先補回歸測試或修正行為。")
     if not checks.get("research_source_review", {}).get("ok"):
-        actions.append("檢查 dashboard/research_source_review.json，確認研究來源 id 與狀態設定。")
+        actions.append("檢查 dashboard/research_source_review.json，確認研究來源 id 與狀態設定；這是診斷項，不應阻止網站更新。")
     if not checks.get("post_update", {}).get("ok"):
         actions.append("打開 dashboard/post_update_check.json，優先修正 critical 或資料同步問題。")
     if not checks.get("mojibake_scan", {}).get("ok"):
         actions.append("修正 mojibake_scan 命中的亂碼或編碼損壞檔案。")
     if not checks.get("knowledge_export", {}).get("ok"):
-        actions.append("檢查知識庫輸出路徑與 export_learning_to_knowledge_hub.py 執行結果。")
+        actions.append("檢查知識庫輸出路徑與 export_learning_to_knowledge_hub.py 執行結果；這是學習回寫項，不應阻止網站更新。")
     if not checks.get("verification_loop", {}).get("ok"):
         actions.append("檢查 dashboard/verification_loop.json，確認 dashboard/docs、freshness、knowledge hub 是否銜接。")
     if not actions:

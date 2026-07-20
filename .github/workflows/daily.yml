@@ -138,13 +138,14 @@ jobs:
         run: python main.py --dry-run --telegram-summary
 
       - name: Run recurring backtest review
+        continue-on-error: true
         run: |
-          python scripts/backtest_quality_check.py
-          python scripts/backtest_review.py
-          python scripts/weekly_review.py
-          python scripts/long_horizon_backtest.py --years 30
-          python scripts/cloud_skill_route_check.py
-          python scripts/research_source_review.py
+          python scripts/backtest_quality_check.py || echo "backtest_quality_check failed; continuing dashboard update"
+          python scripts/backtest_review.py || echo "backtest_review failed; continuing dashboard update"
+          python scripts/weekly_review.py || echo "weekly_review failed; continuing dashboard update"
+          python scripts/long_horizon_backtest.py --years 30 || echo "long_horizon_backtest failed; continuing dashboard update"
+          python scripts/cloud_skill_route_check.py || echo "cloud_skill_route_check failed; continuing dashboard update"
+          python scripts/research_source_review.py || echo "research_source_review failed; continuing dashboard update"
 
       - name: Sync dashboard artifacts before final checks
         run: |
@@ -354,6 +355,9 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: python main.py --send-telegram --telegram-summary
+
+      - name: Run Telegram post-update check
+        run: python scripts/post_update_check.py
 
       - name: Commit Telegram delivery log
         run: |

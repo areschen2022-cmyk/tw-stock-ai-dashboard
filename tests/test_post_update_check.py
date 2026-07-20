@@ -127,3 +127,18 @@ def test_post_update_check_reports_docs_sync_mismatch(tmp_path) -> None:
 
     assert result["status"] == "bad"
     assert any(item["area"] == "publish_sync" for item in result["issues"])
+
+
+def test_post_update_check_reports_performance_and_potential_date_mismatch(tmp_path) -> None:
+    _prepare_dashboard_files(tmp_path)
+    _prepare_db(tmp_path)
+    _write_json(tmp_path / "dashboard" / "performance_data.json", {"as_of": "2026-06-17", "stats": {"signals": 1}})
+    _write_json(tmp_path / "docs" / "performance_data.json", {"as_of": "2026-06-17", "stats": {"signals": 1}})
+    _write_json(tmp_path / "dashboard" / "potential_data.json", {"as_of": "2026-06-16", "stats": {"signals": 1}})
+    _write_json(tmp_path / "docs" / "potential_data.json", {"as_of": "2026-06-16", "stats": {"signals": 1}})
+
+    result = run_check(tmp_path, tmp_path / "dashboard" / "post_update_check.json")
+
+    assert result["status"] == "warn"
+    assert any(item["area"] == "performance" for item in result["issues"])
+    assert any(item["area"] == "potential" for item in result["issues"])

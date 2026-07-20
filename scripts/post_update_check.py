@@ -167,6 +167,8 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
 
     as_of = str(dashboard.get("as_of") or "")
     weekly_as_of = str(weekly.get("as_of") or "")
+    performance_as_of = str(performance.get("as_of") or "")
+    potential_as_of = str(potential.get("as_of") or "")
     if not as_of:
         issues.append(
             _issue(
@@ -183,6 +185,24 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
                 "weekly",
                 f"weekly_data.as_of({weekly_as_of}) differs from dashboard.as_of({as_of})",
                 "Confirm weekly overview is written after the current run date is resolved.",
+            )
+        )
+    if as_of and performance_as_of and as_of != performance_as_of:
+        issues.append(
+            _issue(
+                "warning",
+                "performance",
+                f"performance_data.as_of({performance_as_of}) differs from dashboard.as_of({as_of})",
+                "Confirm performance_data.json was regenerated after the current dashboard run.",
+            )
+        )
+    if as_of and potential_as_of and as_of != potential_as_of:
+        issues.append(
+            _issue(
+                "warning",
+                "potential",
+                f"potential_data.as_of({potential_as_of}) differs from dashboard.as_of({as_of})",
+                "Confirm potential_data.json was regenerated after the current dashboard run.",
             )
         )
 
@@ -354,6 +374,8 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     return {
         "as_of": as_of,
         "weekly_as_of": weekly_as_of,
+        "performance_as_of": performance_as_of,
+        "potential_as_of": potential_as_of,
         "rows": len(rows),
         "valid": _int(summary.get("valid")),
         "chase": chase,
