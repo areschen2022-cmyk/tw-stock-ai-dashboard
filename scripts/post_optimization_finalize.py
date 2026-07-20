@@ -198,21 +198,21 @@ def run_finalize(
 def _next_actions(checks: dict[str, dict]) -> list[str]:
     actions: list[str] = []
     if not checks.get("compile", {}).get("ok"):
-        actions.append("修正 Python 語法或 import 錯誤。")
+        actions.append("修正 Python 語法或 import 錯誤後再繼續優化。")
     if "tests" in checks and not checks["tests"].get("ok"):
-        actions.append("查看 pytest 失敗項目，修正後重跑 post_optimization_finalize。")
+        actions.append("檢查 pytest 失敗項目，先補回歸測試或修正行為。")
     if not checks.get("research_source_review", {}).get("ok"):
-        actions.append("檢查 dashboard/research_source_review.json，修正外部資料源欄位或重複 id。")
+        actions.append("檢查 dashboard/research_source_review.json，確認研究來源 id 與狀態設定。")
     if not checks.get("post_update", {}).get("ok"):
-        actions.append("打開 dashboard/post_update_check.json，先處理 critical 或資料銜接問題。")
+        actions.append("打開 dashboard/post_update_check.json，優先修正 critical 或資料同步問題。")
     if not checks.get("mojibake_scan", {}).get("ok"):
-        actions.append("修正 mojibake_scan 列出的亂碼檔案。")
+        actions.append("修正 mojibake_scan 命中的亂碼或編碼損壞檔案。")
     if not checks.get("knowledge_export", {}).get("ok"):
-        actions.append("檢查交易智慧庫路徑或 export_learning_to_knowledge_hub.py。")
+        actions.append("檢查知識庫輸出路徑與 export_learning_to_knowledge_hub.py 執行結果。")
     if not checks.get("verification_loop", {}).get("ok"):
-        actions.append("查看 dashboard/verification_loop.json，修正未通過的收尾檢查。")
+        actions.append("檢查 dashboard/verification_loop.json，確認 dashboard/docs、freshness、knowledge hub 是否銜接。")
     if not actions:
-        actions.append("下一步可把本次新經驗納入選股規則，但仍需累積樣本再調整權重。")
+        actions.append("所有收尾檢查通過；下一步可優先把候選研究來源轉成離線 adapter，再逐步導入題材加權。")
     return actions
 
 
