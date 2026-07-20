@@ -1,11 +1,12 @@
-# AI Council Rules
+# AI Review Rules
 
-The AI Council is a second-opinion layer for candidates already scored by the
-local screening engine. It should not create picks from raw news alone.
+The AI layer is a second-opinion review for candidates already scored by the
+local screening engine. It must not create picks from raw news alone.
 
 ## DeepSeek Primary Mode
 
-Production now uses the official DeepSeek API as the primary review model:
+Production currently uses the official DeepSeek API as the primary review
+model:
 
 ```yaml
 ai_council:
@@ -19,40 +20,32 @@ ai_council:
 ```
 
 GitHub Actions must have `DEEPSEEK_API_KEY` in Repository Secrets. The local
-`.env` can also define `DEEPSEEK_API_KEY` for manual testing. If DeepSeek is not
-configured, AI review is skipped and the dashboard keeps the rule-based stock
-list. OpenRouter fallback is supported only when `fallback_provider` and
-`fallback_models` are explicitly configured together.
+`.env` can also define `DEEPSEEK_API_KEY` for manual testing.
 
-## Strong AI Pick Rule
+## Dashboard Wording
 
-A stock is listed as an official AI pick only when all conditions are true:
+Because production uses one paid model, the dashboard should say
+`AI 單模型複核` instead of `AI 共識` or `AI Council`.
 
-- At least `min_model_count` models returned a valid review.
-- At least `min_agree_count` models voted for `pick_action`.
-- The stock is already in the dashboard candidate set passed to AI Council.
+- `AI 同意`: the configured model returned `可追`.
+- `AI 保留`: the configured model preferred `等拉回` or `只觀察`.
+- `AI 不建議`: the configured model returned `避免`.
+- `待 AI 確認`: the candidate has not received a valid AI review yet.
 
-This means:
+The AI review is not a buy signal by itself. A stock still needs the local
+score, risk guard, historical-reference check, and opening price/volume
+confirmation.
 
-- In DeepSeek primary mode, the single paid model must return a valid review and
-  vote `可追`.
-- The AI layer still cannot create picks from raw news; it can only review
-  candidates already selected by the local scoring engine.
-- If the paid API is unavailable, AI review is skipped unless an explicit
-  fallback model list is configured.
+## If Multi-Model Review Is Reintroduced
 
-## Why free-model consensus was replaced
+If more models are added later, increase `min_model_count` and
+`min_agree_count` together, and then the UI may use `AI 共識` only when the
+threshold is actually greater than one model.
+
+## Why Free-Model Consensus Was Replaced
 
 Free OpenRouter models frequently returned 429, timeout, or malformed JSON. The
-old 5-model consensus rule looked strict, but in practice the system often had
-only 1-3 valid responses and therefore no useful AI picks. DeepSeek primary mode
-trades multi-model voting for stable paid availability, while keeping
-`fallback_pick_count` at `0` to avoid weak fallback picks.
-
-## Dashboard wording
-
-The dashboard should distinguish:
-
-- `AI 自選股`: passed model-count and vote-count thresholds.
-- `AI review`: model comments exist, but the threshold was not met.
-- `AI 樣本不足`: fewer than `min_model_count` valid model reviews.
+old five-model rule looked strict, but in practice the system often had only
+one to three valid responses and therefore no stable AI review. DeepSeek
+primary mode trades multi-model voting for stable paid availability, while
+keeping `fallback_pick_count` at `0` to avoid weak fallback picks.
