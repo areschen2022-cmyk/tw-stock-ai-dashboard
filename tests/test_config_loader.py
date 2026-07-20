@@ -1,10 +1,27 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, Iterator
 
 import yaml
 
 from src.config_loader import merge_theme_database
+
+
+def _walk_strings(value: Any) -> Iterator[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from _walk_strings(key)
+            yield from _walk_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _walk_strings(item)
+
+
+def _has_obvious_encoding_damage(text: str) -> bool:
+    return chr(0xFFFD) in text or any(0xE000 <= ord(char) <= 0xF8FF for char in text)
 
 
 def test_merge_theme_database_adds_stocks_keywords_and_chain_metadata(tmp_path) -> None:
@@ -52,7 +69,7 @@ def test_merge_theme_database_adds_stocks_keywords_and_chain_metadata(tmp_path) 
 
     config = {
         "theme_pools": {"memory": {"name": "Memory", "stocks": {"2344": "華邦電"}}},
-        "stock_names": {},
+        "stock_names": {"2408": "舊南亞科"},
         "web_news": {"theme_keywords": {"memory": ["NAND"]}},
     }
 
@@ -61,6 +78,7 @@ def test_merge_theme_database_adds_stocks_keywords_and_chain_metadata(tmp_path) 
     assert merged["theme_pools"]["memory"]["name"] == "記憶體/HBM"
     assert merged["theme_pools"]["memory"]["stocks"]["2408"] == "南亞科"
     assert merged["theme_pools"]["memory"]["stocks"]["2344"] == "華邦電"
+    assert merged["stock_names"]["2408"] == "南亞科"
     assert merged["stock_names"]["8299"] == "群聯"
     assert merged["web_news"]["theme_keywords"]["memory"] == ["NAND", "HBM", "DRAM"]
 
@@ -105,3 +123,25 @@ def test_real_theme_database_includes_key_themes_and_chain_map() -> None:
     assert "MLCC" in merged["web_news"]["theme_keywords"]["passive_components"]
     assert merged["theme_stock_meta"]["2408"]["memory"]["tier_label"] == "核心"
     assert merged["theme_stock_meta"]["2408"]["memory"]["chain_layer_label"] in {"中游", "上游"}
+
+
+def test_real_theme_database_has_no_obvious_encoding_damage() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    merged = merge_theme_database(
+        {
+            "theme_pools": {},
+            "stock_names": {},
+            "web_news": {"theme_keywords": {}},
+        },
+        project_root,
+    )
+
+    scanned = {
+        "theme_pools": merged["theme_pools"],
+        "theme_chain_map": merged["theme_chain_map"],
+        "theme_stock_meta": merged["theme_stock_meta"],
+        "theme_keywords": merged["web_news"]["theme_keywords"],
+    }
+    bad = [text for text in _walk_strings(scanned) if _has_obvious_encoding_damage(text)]
+
+    assert bad == []

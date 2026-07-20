@@ -8,7 +8,7 @@ import yaml
 TIER_LABELS = {
     "core": "核心",
     "beneficiary": "受惠",
-    "speculative": "聯想",
+    "speculative": "題材",
 }
 
 CHAIN_LAYER_LABELS = {
@@ -130,7 +130,7 @@ def merge_theme_database(config: dict[str, Any], project_root: Path) -> dict[str
                     continue
                 if name:
                     pool_stocks[stock_id] = name
-                    stock_names.setdefault(stock_id, name)
+                    stock_names[stock_id] = name
                 tier = str(item.get("tier", "beneficiary")).strip() or "beneficiary"
                 role = str(item.get("role", "")).strip()
                 meta = {

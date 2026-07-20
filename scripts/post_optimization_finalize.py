@@ -32,6 +32,7 @@ MOJIBAKE_MARKERS = [
 
 SCAN_DIRS = [
     ".github",
+    "data",
     "docs",
     "scripts",
     "src",
@@ -47,6 +48,10 @@ SCAN_SUFFIXES = {".bat", ".html", ".md", ".py", ".yaml", ".yml"}
 SCAN_SKIP_FILES = {
     "tests/test_post_update_check.py",
 }
+
+
+def _has_private_use_char(text: str) -> bool:
+    return any(0xE000 <= ord(char) <= 0xF8FF for char in text)
 
 
 def _now() -> str:
@@ -121,12 +126,12 @@ def scan_mojibake(root: Path) -> dict:
             continue
         for line_no, line in enumerate(text.splitlines(), start=1):
             marker = next((item for item in MOJIBAKE_MARKERS if item in line), None)
-            if marker:
+            if marker or _has_private_use_char(line):
                 hits.append(
                     {
                         "path": rel_path,
                         "line": line_no,
-                        "marker": marker,
+                        "marker": marker or "private_use_char",
                         "snippet": line.strip()[:180],
                     }
                 )

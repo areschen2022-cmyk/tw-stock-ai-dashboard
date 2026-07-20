@@ -1,16 +1,9 @@
-version: 1
-notes: "Starter thematic universe. Edit this file to add or remove Taiwan stocks without changing code."
+version: 2
+notes: "Clean UTF-8 thematic universe. Theme labels are used for screening, backtest attribution, and internal AI context."
 themes:
   ai_server:
     name: "AI伺服器"
-    keywords:
-      - "AI伺服器"
-      - "AI Server"
-      - "GB200"
-      - "GB300"
-      - "NVIDIA"
-      - "Blackwell"
-      - "水冷"
+    keywords: ["AI伺服器", "AI Server", "GB200", "GB300", "NVIDIA", "Blackwell", "液冷", "CSP", "雲端伺服器"]
     stocks:
       - {id: "2317", name: "鴻海", tier: "core", role: "system assembly"}
       - {id: "2382", name: "廣達", tier: "core", role: "server ODM"}
@@ -21,23 +14,23 @@ themes:
       - {id: "3706", name: "神達", tier: "beneficiary", role: "server"}
       - {id: "3013", name: "晟銘電", tier: "beneficiary", role: "server chassis"}
       - {id: "8210", name: "勤誠", tier: "beneficiary", role: "server chassis"}
-      - {id: "3324", name: "雙鴻", tier: "beneficiary", role: "thermal"}
+      - {id: "2059", name: "川湖", tier: "beneficiary", role: "server rail"}
+      - {id: "2395", name: "研華", tier: "beneficiary", role: "industrial computer"}
       - {id: "3017", name: "奇鋐", tier: "beneficiary", role: "thermal"}
+      - {id: "3324", name: "雙鴻", tier: "beneficiary", role: "thermal"}
       - {id: "2308", name: "台達電", tier: "beneficiary", role: "power"}
 
   advanced_packaging:
     name: "先進封裝/CoWoS"
-    keywords:
-      - "CoWoS"
-      - "先進封裝"
-      - "封裝"
-      - "晶圓代工"
-      - "台積電"
+    keywords: ["CoWoS", "先進封裝", "封測", "ABF", "探針卡", "測試座", "Chiplet", "HPC封裝"]
     stocks:
       - {id: "2330", name: "台積電", tier: "core", role: "foundry/CoWoS"}
       - {id: "3711", name: "日月光投控", tier: "core", role: "OSAT"}
       - {id: "2449", name: "京元電子", tier: "beneficiary", role: "testing"}
       - {id: "3264", name: "欣銓", tier: "beneficiary", role: "testing"}
+      - {id: "3037", name: "欣興", tier: "beneficiary", role: "ABF substrate"}
+      - {id: "8046", name: "南電", tier: "beneficiary", role: "ABF substrate"}
+      - {id: "3189", name: "景碩", tier: "beneficiary", role: "ABF substrate"}
       - {id: "3583", name: "辛耘", tier: "beneficiary", role: "equipment"}
       - {id: "3131", name: "弘塑", tier: "beneficiary", role: "equipment"}
       - {id: "6187", name: "萬潤", tier: "beneficiary", role: "equipment"}
@@ -48,20 +41,7 @@ themes:
 
   memory:
     name: "記憶體/HBM"
-    keywords:
-      - "HBM"
-      - "DRAM"
-      - "NAND"
-      - "記憶體"
-      - "Micron"
-      - "美光"
-      - "高頻寬記憶體"
-      - "航太級記憶體"
-      - "耐輻射記憶體"
-      - "Rad-hard Memory"
-      - "太空資料中心"
-      - "天基資料中心"
-      - "太空邊緣運算"
+    keywords: ["HBM", "DRAM", "NAND", "記憶體", "Micron", "美光", "DDR5", "SSD", "Enterprise SSD", "Rad-hard Memory", "耐輻射記憶體"]
     stocks:
       - {id: "2408", name: "南亞科", tier: "core", role: "DRAM"}
       - {id: "2344", name: "華邦電", tier: "core", role: "DRAM/Flash"}
@@ -75,24 +55,13 @@ themes:
 
   silicon_photonics:
     name: "矽光子/CPO"
-    keywords:
-      - "矽光子"
-      - "CPO"
-      - "光通訊"
-      - "光收發"
-      - "光模組"
-      - "800G"
-      - "1.6T"
-      - "星間雷射"
-      - "雷射通訊"
-      - "雷射星間鏈路"
-      - "Laser Inter-satellite"
+    keywords: ["矽光子", "CPO", "共同封裝光學", "光模組", "光通訊", "800G", "1.6T", "星間雷射", "Laser Inter-satellite"]
     stocks:
       - {id: "3081", name: "聯亞", tier: "core", role: "optical component"}
-      - {id: "3363", name: "上詮", tier: "beneficiary", role: "fiber component"}
-      - {id: "3163", name: "波若威", tier: "beneficiary", role: "optical communication"}
       - {id: "4979", name: "華星光", tier: "core", role: "optical transceiver"}
       - {id: "4977", name: "眾達-KY", tier: "core", role: "optical transceiver"}
+      - {id: "3363", name: "上詮", tier: "beneficiary", role: "fiber component"}
+      - {id: "3163", name: "波若威", tier: "beneficiary", role: "optical communication"}
       - {id: "4908", name: "前鼎", tier: "beneficiary", role: "optical communication"}
       - {id: "3450", name: "聯鈞", tier: "beneficiary", role: "optical component"}
       - {id: "6442", name: "光聖", tier: "beneficiary", role: "optical component"}
@@ -100,36 +69,24 @@ themes:
 
   cooling_power:
     name: "散熱/液冷"
-    keywords:
-      - "散熱"
-      - "水冷"
-      - "液冷"
-      - "液冷散熱"
-      - "浸沒式冷卻"
-      - "熱管"
-      - "風扇"
-      - "均熱片"
+    keywords: ["散熱", "液冷", "水冷", "浸沒式", "CDU", "熱管理", "風扇", "散熱模組"]
     stocks:
       - {id: "3017", name: "奇鋐", tier: "core", role: "thermal"}
       - {id: "3324", name: "雙鴻", tier: "core", role: "thermal"}
       - {id: "3653", name: "健策", tier: "beneficiary", role: "thermal/mechanical"}
-      - {id: "2230", name: "建準", tier: "beneficiary", role: "thermal fan"}
+      - {id: "2421", name: "建準", tier: "beneficiary", role: "thermal fan"}
       - {id: "3338", name: "泰碩", tier: "beneficiary", role: "thermal module"}
-      - {id: "6230", name: "尼得科超眾", tier: "beneficiary", role: "thermal"}
+      - {id: "6230", name: "超眾", tier: "beneficiary", role: "thermal"}
+      - {id: "2308", name: "台達電", tier: "beneficiary", role: "power/thermal"}
 
   robotics:
     name: "機器人/自動化"
-    keywords:
-      - "機器人"
-      - "自動化"
-      - "人形機器人"
-      - "伺服馬達"
-      - "減速機"
+    keywords: ["機器人", "人形機器人", "自動化", "線性滑軌", "滾珠螺桿", "機器視覺", "工業電腦"]
     stocks:
       - {id: "2359", name: "所羅門", tier: "core", role: "machine vision"}
-      - {id: "8374", name: "羅昇", tier: "beneficiary", role: "automation"}
+      - {id: "8374", name: "羅昇", tier: "core", role: "linear motion"}
       - {id: "1597", name: "直得", tier: "beneficiary", role: "linear motion"}
-      - {id: "2049", name: "上銀", tier: "core", role: "linear motion"}
+      - {id: "2049", name: "上銀", tier: "beneficiary", role: "linear guide"}
       - {id: "2464", name: "盟立", tier: "beneficiary", role: "automation"}
-      - {id: "4576", name: "大銀微系統", tier: "beneficiary", role: "linear motion"}
-      - {id: "6414", name: "樺漢", tier: "speculative", role: "industrial computer"}
+      - {id: "4576", name: "大銀微系統", tier: "beneficiary", role: "motion control"}
+      - {id: "6414", name: "樺漢", tier: "beneficiary", role: "industrial computer"}
