@@ -613,7 +613,7 @@
     document.head.appendChild(chartScript);
     window.__DASHBOARD_DATA__ = {
   "as_of": "2026-07-20",
-  "generated_at": "2026-07-21T04:33:06+08:00",
+  "generated_at": "2026-07-21T05:02:58+08:00",
   "generated_date": "2026-07-21",
   "market": {
     "summary": "偏弱：指數位於 MA60 下方｜加權-6.47%｜半導體-7.71%｜金融-0.84%｜航運-2.08%｜生技-5.17%",
@@ -824,14 +824,14 @@
       ]
     },
     "quality": {
-      "ai_server": "AI high：標題提及台股公司時碩工業、大成鋼及大訊，直接相關。",
+      "ai_server": "AI high：標題提及台股公司及AI液冷量產。",
       "cooling_power": "高：新聞含股票代號或公司名",
       "silicon_photonics": "高：新聞含股票代號或公司名",
       "advanced_packaging": "高：新聞含股票代號或公司名",
       "memory": "低：僅單一產業關鍵字",
       "robotics": "低：僅單一產業關鍵字",
       "power_grid": "高：新聞含股票代號或公司名",
-      "defense_ai": "AI high：標題提及台股公司萬旭、漢翔及PCB產業鏈，直接相關。",
+      "defense_ai": "AI high：標題提及台股公司及營收，直接相關。",
       "optoelectronics_panel": "中：多則產業關鍵字命中",
       "optics_lens": "中：多則產業關鍵字命中",
       "edge_ai_device": "高：新聞含股票代號或公司名",
@@ -841,7 +841,7 @@
       "passive_components": "高：新聞含股票代號或公司名",
       "low_orbit_satellite": "高：新聞含股票代號或公司名",
       "network_optical_communication": "高：新聞含股票代號或公司名",
-      "defense_policy": "AI high：標題明確提到台股軍工概念股及政策概念，直接相關。"
+      "defense_policy": "AI high：標題明確提到軍工、無人機概念股。"
     },
     "catalyst_confidence": {
       "ai_server": {
@@ -1825,7 +1825,7 @@
     "schedule_label": "正常",
     "data_source_label": "部分限流",
     "news_label": "部分失敗",
-    "generated_at": "2026-07-21T04:33:06+08:00",
+    "generated_at": "2026-07-21T05:02:58+08:00",
     "generated_date": "2026-07-21",
     "data_date": "2026-07-20",
     "website_schedule": "04:30 / 05:00",
@@ -1833,13 +1833,13 @@
     "provider_label": "正常",
     "news_sources": 15,
     "news_failed": 2,
-    "github_run_id": "29776435786",
+    "github_run_id": "29778476567",
     "github_event": "workflow_dispatch",
     "scheduler": "cloudflare-worker",
     "scheduled_task": "dashboard",
-    "scheduled_cron": "30 20 * * SUN-THU",
-    "scheduled_target_taipei": "2026-07-21T04:30:52+08:00",
-    "schedule_delay_minutes": 2.2,
+    "scheduled_cron": "0 21 * * SUN-THU",
+    "scheduled_target_taipei": "2026-07-21T05:00:52+08:00",
+    "schedule_delay_minutes": 2.1,
     "report_date": "2026-07-21",
     "telegram_delivery": {
       "channel": "telegram",
@@ -2027,7 +2027,7 @@
       "signal_score": 81,
       "entry_price": 67.1,
       "current_price": 65.0,
-      "current_score": 71,
+      "current_score": 81,
       "current_label": "BUY_WATCH",
       "change_pct": -3.1296572280178756,
       "action": "可追蹤突破",
@@ -2632,35 +2632,39 @@
     "chase": [],
     "pullback": [
       {
-        "stock_id": "3532",
-        "name": "台勝科",
-        "score": 77,
+        "stock_id": "2634",
+        "name": "漢翔",
+        "score": 81,
         "grade": "A",
         "action": "等拉回",
-        "entry_decision": "等拉回",
+        "entry_decision": "開盤確認",
         "entry_checklist": [
-          "回測 MA20 368.90 或近3日低 424.00 後守住",
-          "反彈時前5分鐘量 >= 253 張",
-          "不追超過 434.60（+2.5%）"
+          "站穩昨高 67.30",
+          "開盤不追超過 66.30（+2%）",
+          "前5分鐘量 >= 2019 張",
+          "未跌破停損 60.80"
         ],
-        "reason": "法人共振 + 技術偏多 + 營收加速 + 智慧庫修正",
-        "entry_limit_price": 434.6,
-        "stop_price": 424.0,
+        "reason": "題材強共振 + 法人共振 + 技術偏多 + 智慧庫修正",
+        "entry_limit_price": 66.3,
+        "stop_price": 60.8,
         "exit_plan": {
           "plan_type": "高波動控倉",
-          "hard_stop": "跌破 424.00 退出，不攤平",
-          "take_profit_1": 445.2,
-          "take_profit_2": 455.8,
-          "risk_per_share": 10.6,
+          "hard_stop": "跌破 60.80 退出，不攤平",
+          "take_profit_1": 71.8,
+          "take_profit_2": 77.3,
+          "risk_per_share": 5.5,
           "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
           "checklist": [
-            "跌破 424.00 退出，不攤平",
+            "跌破 60.80 退出，不攤平",
             "達第一段停利可先減碼 1/3 到 1/2",
             "達第二段停利後改用移動停利保護",
             "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
           ]
         },
-        "themes": [],
+        "themes": [
+          "AI國防/軍工",
+          "防禦與政策"
+        ],
         "pattern_tags": [],
         "pattern_risk_tags": [],
         "ai_review": null,
@@ -2674,15 +2678,15 @@
         "action_context": "已列入等拉回",
         "action_context_reason": "強度夠，但進場條件偏向等待回測",
         "stability": {
-          "stock_id": "3532",
-          "name": "台勝科",
+          "stock_id": "2634",
+          "name": "漢翔",
           "active_today": true,
           "recent_count": 3,
-          "first_seen": "2026-07-13",
+          "first_seen": "2026-07-14",
           "last_seen": "2026-07-20",
           "previous_seen": "2026-07-15",
-          "best_grade": "S+",
-          "best_score": 100,
+          "best_grade": "A",
+          "best_score": 82,
           "completed": 0,
           "avg_return_5d": null,
           "stability_label": "連續追蹤",
@@ -3007,7 +3011,7 @@
     "summary": {
       "chase": 0,
       "pullback": 5,
-      "observe": 3,
+      "observe": 2,
       "avoid": 118,
       "ai_agree": 0,
       "ai_hold": 0,
@@ -3413,8 +3417,8 @@
     "valid": 127,
     "s_plus_grade": 0,
     "s_grade": 4,
-    "a_grade": 2,
-    "b_grade": 3,
+    "a_grade": 3,
+    "b_grade": 2,
     "data_insufficient": 0
   },
   "rows": [
@@ -3865,6 +3869,131 @@
       }
     },
     {
+      "stock_id": "2634",
+      "name": "漢翔",
+      "score": 81,
+      "grade": "A",
+      "label": "BUY_WATCH",
+      "label_text": "買進觀察",
+      "price": 65.0,
+      "technical": "收盤價站上 MA20",
+      "chip": "外資近 3 日買超",
+      "fundamental": "最新月營收月增 99900.0%",
+      "risk": "短期波動明顯升高",
+      "opportunity": "成交量放大 2.2 倍",
+      "technical_score": 25,
+      "chip_score": 26,
+      "fundamental_score": 4,
+      "risk_score": 15,
+      "action": "等拉回",
+      "entry_condition": "強勢型：開盤站穩昨高 67.30，跳空不追超過 66.30（+2%）；開盤前5分鐘量 >= 2019 張（日均量5%）",
+      "stop_reference": "跌破 60.80（MA5 65.22 / 昨低 61.80 / 近3日低 60.80 三者取低）止損出場",
+      "stop_price": 60.8,
+      "entry_limit_price": 66.3,
+      "themes": [
+        "AI國防/軍工",
+        "防禦與政策"
+      ],
+      "theme_tiers": [
+        "防禦與政策:核心"
+      ],
+      "theme_chain": [
+        {
+          "theme_key": "defense_policy",
+          "theme_name": "防禦與政策",
+          "tier": "core",
+          "tier_label": "核心",
+          "role": "aerospace/defense",
+          "chain_layer": "midstream",
+          "chain_layer_label": "中游",
+          "beneficiary_order": 1,
+          "beneficiary_label": "直接受惠",
+          "chain_role": "aerospace/defense",
+          "lead_lag": "政策新聞先行，標案/訂單與營收確認較慢。"
+        }
+      ],
+      "chain_summary": [
+        "防禦與政策：中游/直接受惠｜aerospace/defense"
+      ],
+      "entry_decision": "開盤確認",
+      "entry_checklist": [
+        "站穩昨高 67.30",
+        "開盤不追超過 66.30（+2%）",
+        "前5分鐘量 >= 2019 張",
+        "未跌破停損 60.80"
+      ],
+      "overseas_adjustment": 0,
+      "opportunity_score": 16,
+      "warnings": [
+        "智慧庫風險命中：台股低勝率拆解：進場條件:有觸發進場、今日候選股同條件回測：6414 樺漢"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術偏多",
+        "智慧庫修正"
+      ],
+      "pattern_tags": [],
+      "pattern_risk_tags": [],
+      "atr_pct": 7.41,
+      "trigger_summary": "題材強共振 + 法人共振 + 技術偏多 + 智慧庫修正",
+      "decision_reason": "題材強共振 + 法人共振 + 技術偏多 + 智慧庫修正；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 99900.0%",
+      "retail_signal": {},
+      "selection_quality_adjustment": 0,
+      "selection_quality_notes": [],
+      "ai_review": null,
+      "ai_label": "待 AI 確認",
+      "exit_plan": {
+        "plan_type": "高波動控倉",
+        "hard_stop": "跌破 60.80 退出，不攤平",
+        "take_profit_1": 71.8,
+        "take_profit_2": 77.3,
+        "risk_per_share": 5.5,
+        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
+        "checklist": [
+          "跌破 60.80 退出，不攤平",
+          "達第一段停利可先減碼 1/3 到 1/2",
+          "達第二段停利後改用移動停利保護",
+          "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
+        ]
+      },
+      "action_context": "已列入等拉回",
+      "action_context_reason": "強度夠，但進場條件偏向等待回測",
+      "retail_context": "散戶：無明顯背離",
+      "retail_context_reason": "",
+      "ai_reason": "",
+      "decision_light": "yellow",
+      "decision_light_label": "黃燈等拉回",
+      "decision_light_reason": "強度足夠，但進場位置要等回測",
+      "tide_context": "逆風控倉",
+      "tide_context_reason": "不追高，只做最強且開盤確認的標的；其餘等拉回。",
+      "stability": {
+        "stock_id": "2634",
+        "name": "漢翔",
+        "active_today": true,
+        "recent_count": 3,
+        "first_seen": "2026-07-14",
+        "last_seen": "2026-07-20",
+        "previous_seen": "2026-07-15",
+        "best_grade": "A",
+        "best_score": 82,
+        "completed": 0,
+        "avg_return_5d": null,
+        "stability_label": "連續追蹤",
+        "stability_reason": "近 10 天出現 3 次，訊號有延續性。"
+      },
+      "stability_label": "連續追蹤",
+      "stability_reason": "近 10 天出現 3 次，訊號有延續性。",
+      "historical_reference": {
+        "label": "樣本不足",
+        "completed": 1,
+        "win_rate_5d": 100.0,
+        "avg_return_5d": 22.69,
+        "confidence": "低",
+        "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
+      }
+    },
+    {
       "stock_id": "3532",
       "name": "台勝科",
       "score": 77,
@@ -3931,14 +4060,14 @@
           "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
         ]
       },
-      "action_context": "已列入等拉回",
-      "action_context_reason": "強度夠，但進場條件偏向等待回測；同條件歷史偏弱，先降低追價衝動",
+      "action_context": "未列入今日操作",
+      "action_context_reason": "等拉回，未進前5檔；待 AI 確認；同條件歷史偏弱，先降低追價衝動",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
       "decision_light": "yellow",
       "decision_light_label": "黃燈等確認",
-      "decision_light_reason": "強度足夠，但進場位置要等回測；同條件歷史偏弱",
+      "decision_light_reason": "尚未形成今日操作條件；同條件歷史偏弱",
       "tide_context": "逆風控倉",
       "tide_context_reason": "不追高，只做最強且開盤確認的標的；其餘等拉回。",
       "stability": {
@@ -4069,122 +4198,6 @@
         "confidence": "高",
         "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
       }
-    },
-    {
-      "stock_id": "2634",
-      "name": "漢翔",
-      "score": 71,
-      "grade": "B",
-      "label": "BUY_WATCH",
-      "label_text": "買進觀察",
-      "price": 65.0,
-      "technical": "收盤價站上 MA20",
-      "chip": "外資近 3 日買超",
-      "fundamental": "最新月營收月增 99900.0%",
-      "risk": "短期波動明顯升高",
-      "opportunity": "成交量放大 2.2 倍",
-      "technical_score": 25,
-      "chip_score": 16,
-      "fundamental_score": 4,
-      "risk_score": 15,
-      "action": "只觀察",
-      "entry_condition": "觀察站穩 MA5（65.22）且開盤前5分鐘量 >= 2019 張；條件同時滿足再考慮，不追超過 66.62（+2.5%）",
-      "stop_reference": "跌破 60.80 不考慮進場",
-      "stop_price": 60.8,
-      "entry_limit_price": 66.62,
-      "themes": [
-        "AI國防/軍工",
-        "防禦與政策"
-      ],
-      "theme_tiers": [
-        "防禦與政策:核心"
-      ],
-      "theme_chain": [
-        {
-          "theme_key": "defense_policy",
-          "theme_name": "防禦與政策",
-          "tier": "core",
-          "tier_label": "核心",
-          "role": "aerospace/defense",
-          "chain_layer": "midstream",
-          "chain_layer_label": "中游",
-          "beneficiary_order": 1,
-          "beneficiary_label": "直接受惠",
-          "chain_role": "aerospace/defense",
-          "lead_lag": "政策新聞先行，標案/訂單與營收確認較慢。"
-        }
-      ],
-      "chain_summary": [
-        "防禦與政策：中游/直接受惠｜aerospace/defense"
-      ],
-      "entry_decision": "量價不確認取消",
-      "entry_checklist": [
-        "站穩 MA5 65.22",
-        "前5分鐘量 >= 2019 張",
-        "未同時滿足就取消，不預設進場"
-      ],
-      "overseas_adjustment": 0,
-      "opportunity_score": 16,
-      "warnings": [
-        "智慧庫風險命中：台股回測回饋：操作:只觀察、台股低勝率拆解：操作:只觀察、台股低勝率拆解：操作:等拉回"
-      ],
-      "trigger_tags": [
-        "題材強共振",
-        "法人共振",
-        "技術偏多",
-        "智慧庫修正"
-      ],
-      "pattern_tags": [],
-      "pattern_risk_tags": [],
-      "atr_pct": 7.41,
-      "trigger_summary": "題材強共振 + 法人共振 + 技術偏多 + 智慧庫修正",
-      "decision_reason": "題材強共振 + 法人共振 + 技術偏多 + 智慧庫修正；收盤價站上 MA20；外資近 3 日買超；最新月營收月增 99900.0%",
-      "retail_signal": {},
-      "selection_quality_adjustment": 0,
-      "selection_quality_notes": [],
-      "ai_review": null,
-      "ai_label": "待 AI 確認",
-      "exit_plan": {
-        "plan_type": "高波動控倉",
-        "hard_stop": "跌破 60.80 退出，不攤平",
-        "take_profit_1": 72.44,
-        "take_profit_2": 78.26,
-        "risk_per_share": 5.82,
-        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
-        "checklist": [
-          "跌破 60.80 退出，不攤平",
-          "達第一段停利可先減碼 1/3 到 1/2",
-          "達第二段停利後改用移動停利保護",
-          "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利"
-        ]
-      },
-      "action_context": "未列入今日操作",
-      "action_context_reason": "量價條件尚未確認；待 AI 確認",
-      "retail_context": "散戶：無明顯背離",
-      "retail_context_reason": "",
-      "ai_reason": "",
-      "decision_light": "gray",
-      "decision_light_label": "灰燈追蹤",
-      "decision_light_reason": "尚未形成今日操作條件",
-      "tide_context": "逆風控倉",
-      "tide_context_reason": "不追高，只做最強且開盤確認的標的；其餘等拉回。",
-      "stability": {
-        "stock_id": "2634",
-        "name": "漢翔",
-        "active_today": true,
-        "recent_count": 3,
-        "first_seen": "2026-07-14",
-        "last_seen": "2026-07-20",
-        "previous_seen": "2026-07-15",
-        "best_grade": "A",
-        "best_score": 82,
-        "completed": 0,
-        "avg_return_5d": null,
-        "stability_label": "連續追蹤",
-        "stability_reason": "近 10 天出現 3 次，訊號有延續性。"
-      },
-      "stability_label": "連續追蹤",
-      "stability_reason": "近 10 天出現 3 次，訊號有延續性。"
     },
     {
       "stock_id": "6414",
@@ -6068,6 +6081,104 @@
       "stability_reason": "近期尚無連續推薦紀錄。"
     },
     {
+      "stock_id": "3017",
+      "name": "奇鋐",
+      "score": 49,
+      "grade": "-",
+      "label": "AVOID",
+      "label_text": "避開",
+      "price": 2135.0,
+      "technical": "技術面中性",
+      "chip": "投信近 3 日買超",
+      "fundamental": "最新月營收年增 66.1%",
+      "risk": "股價淨值比極高 19.1x（>15x 扣分）",
+      "opportunity": "題材分層：AI伺服器(受惠)",
+      "technical_score": 0,
+      "chip_score": 18,
+      "fundamental_score": 14,
+      "risk_score": 18,
+      "action": "避免追高",
+      "entry_condition": "訊號偏弱，不建議進場；等 MA20（2397.25）企穩、量能回升後重新評估",
+      "stop_reference": "觀察支撐 2015.00",
+      "stop_price": 2015.0,
+      "entry_limit_price": 2199.05,
+      "themes": [
+        "AI伺服器"
+      ],
+      "theme_tiers": [
+        "AI伺服器:受惠"
+      ],
+      "theme_chain": [
+        {
+          "theme_key": "ai_server",
+          "theme_name": "AI伺服器",
+          "tier": "beneficiary",
+          "tier_label": "受惠",
+          "role": "thermal",
+          "chain_layer": "upstream",
+          "chain_layer_label": "上游",
+          "beneficiary_order": 2,
+          "beneficiary_label": "二階受惠",
+          "chain_role": "thermal",
+          "lead_lag": "ODM 與關鍵零組件通常領先，二階材料與設備跟隨。"
+        }
+      ],
+      "chain_summary": [
+        "AI伺服器：上游/二階受惠｜thermal"
+      ],
+      "entry_decision": "避免",
+      "entry_checklist": [
+        "分數未達進場觀察門檻，不列入今日進場"
+      ],
+      "overseas_adjustment": 0,
+      "opportunity_score": 4,
+      "warnings": [
+        "智慧庫風險命中：台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74、台股低勝率拆解：強度:A"
+      ],
+      "trigger_tags": [
+        "題材關注",
+        "投信買超",
+        "營收加速",
+        "智慧庫修正"
+      ],
+      "pattern_tags": [],
+      "pattern_risk_tags": [],
+      "atr_pct": 8.31,
+      "trigger_summary": "題材關注 + 投信買超 + 營收加速 + 智慧庫修正",
+      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 智慧庫修正；技術面中性；投信近 3 日買超；最新月營收年增 66.1%",
+      "retail_signal": {},
+      "selection_quality_adjustment": 0,
+      "selection_quality_notes": [],
+      "ai_review": null,
+      "ai_label": "待 AI 確認",
+      "exit_plan": {
+        "plan_type": "高波動控倉",
+        "hard_stop": "跌破 2015.00 退出，不攤平",
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "risk_per_share": 184.05,
+        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
+        "checklist": [
+          "不追價、不加碼",
+          "等待危險名單、法人連賣或散戶過熱解除",
+          "跌破 2015.00 退出，不攤平"
+        ]
+      },
+      "action_context": "未列入今日操作",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
+      "retail_context": "散戶：過熱警示",
+      "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
+      "ai_reason": "",
+      "decision_light": "red",
+      "decision_light_label": "紅燈控風險",
+      "decision_light_reason": "危險名單或操作結論偏保守",
+      "tide_context": "逆風控倉",
+      "tide_context_reason": "不追高，只做最強且開盤確認的標的；其餘等拉回。",
+      "stability": {},
+      "stability_label": "新進名單",
+      "stability_reason": "近期尚無連續推薦紀錄。"
+    },
+    {
       "stock_id": "6510",
       "name": "精測",
       "score": 49,
@@ -7818,104 +7929,6 @@
       "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
-      "ai_reason": "",
-      "decision_light": "red",
-      "decision_light_label": "紅燈控風險",
-      "decision_light_reason": "危險名單或操作結論偏保守",
-      "tide_context": "逆風控倉",
-      "tide_context_reason": "不追高，只做最強且開盤確認的標的；其餘等拉回。",
-      "stability": {},
-      "stability_label": "新進名單",
-      "stability_reason": "近期尚無連續推薦紀錄。"
-    },
-    {
-      "stock_id": "3017",
-      "name": "奇鋐",
-      "score": 39,
-      "grade": "-",
-      "label": "AVOID",
-      "label_text": "避開",
-      "price": 2135.0,
-      "technical": "技術面中性",
-      "chip": "投信近 3 日買超",
-      "fundamental": "最新月營收年增 66.1%",
-      "risk": "股價淨值比極高 19.1x（>15x 扣分）",
-      "opportunity": "題材分層：AI伺服器(受惠)",
-      "technical_score": 0,
-      "chip_score": 8,
-      "fundamental_score": 14,
-      "risk_score": 18,
-      "action": "避免追高",
-      "entry_condition": "訊號偏弱，不建議進場；等 MA20（2397.25）企穩、量能回升後重新評估",
-      "stop_reference": "觀察支撐 2015.00",
-      "stop_price": 2015.0,
-      "entry_limit_price": 2199.05,
-      "themes": [
-        "AI伺服器"
-      ],
-      "theme_tiers": [
-        "AI伺服器:受惠"
-      ],
-      "theme_chain": [
-        {
-          "theme_key": "ai_server",
-          "theme_name": "AI伺服器",
-          "tier": "beneficiary",
-          "tier_label": "受惠",
-          "role": "thermal",
-          "chain_layer": "upstream",
-          "chain_layer_label": "上游",
-          "beneficiary_order": 2,
-          "beneficiary_label": "二階受惠",
-          "chain_role": "thermal",
-          "lead_lag": "ODM 與關鍵零組件通常領先，二階材料與設備跟隨。"
-        }
-      ],
-      "chain_summary": [
-        "AI伺服器：上游/二階受惠｜thermal"
-      ],
-      "entry_decision": "避免",
-      "entry_checklist": [
-        "分數未達進場觀察門檻，不列入今日進場"
-      ],
-      "overseas_adjustment": 0,
-      "opportunity_score": 4,
-      "warnings": [
-        "智慧庫風險命中：台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74、台股低勝率拆解：強度:A"
-      ],
-      "trigger_tags": [
-        "題材關注",
-        "投信買超",
-        "營收加速",
-        "智慧庫修正"
-      ],
-      "pattern_tags": [],
-      "pattern_risk_tags": [],
-      "atr_pct": 8.31,
-      "trigger_summary": "題材關注 + 投信買超 + 營收加速 + 智慧庫修正",
-      "decision_reason": "題材關注 + 投信買超 + 營收加速 + 智慧庫修正；技術面中性；投信近 3 日買超；最新月營收年增 66.1%",
-      "retail_signal": {},
-      "selection_quality_adjustment": 0,
-      "selection_quality_notes": [],
-      "ai_review": null,
-      "ai_label": "待 AI 確認",
-      "exit_plan": {
-        "plan_type": "高波動控倉",
-        "hard_stop": "跌破 2015.00 退出，不攤平",
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "risk_per_share": 184.05,
-        "trailing_rule": "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。",
-        "checklist": [
-          "不追價、不加碼",
-          "等待危險名單、法人連賣或散戶過熱解除",
-          "跌破 2015.00 退出，不攤平"
-        ]
-      },
-      "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
-      "retail_context": "散戶：過熱警示",
-      "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
       "decision_light": "red",
       "decision_light_label": "紅燈控風險",
@@ -15570,13 +15583,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振、技術突破、營收加速，但系統歷史勝率偏低，建議等拉回再進場。",
+        "reason": "法人共振、技術突破、營收加速，但系統歷史勝率偏低，建議等拉回再介入。",
         "model_reviews": [
           {
             "stock_id": "6505",
             "action": "等拉回",
             "confidence": 0.7,
-            "reason": "法人共振、技術突破、營收加速，但系統歷史勝率偏低，建議等拉回再進場。",
+            "reason": "法人共振、技術突破、營收加速，但系統歷史勝率偏低，建議等拉回再介入。",
             "model": "deepseek-chat"
           }
         ]
@@ -15593,13 +15606,13 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振、技術突破，但營收月增異常高，需確認數據真實性，建議等拉回。",
+        "reason": "法人共振、技術突破，但月營收月增異常高，需確認數據真實性，建議等拉回。",
         "model_reviews": [
           {
             "stock_id": "1216",
             "action": "等拉回",
             "confidence": 0.65,
-            "reason": "法人共振、技術突破，但營收月增異常高，需確認數據真實性，建議等拉回。",
+            "reason": "法人共振、技術突破，但月營收月增異常高，需確認數據真實性，建議等拉回。",
             "model": "deepseek-chat"
           }
         ]
@@ -15639,36 +15652,36 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振、技術突破，但本益比偏高且高位上影線，等拉回降低風險。",
+        "reason": "法人共振、技術突破，但本益比偏高（81.2x）且營收月增異常，風險較高，等拉回。",
         "model_reviews": [
           {
             "stock_id": "8039",
             "action": "等拉回",
             "confidence": 0.6,
-            "reason": "法人共振、技術突破，但本益比偏高且高位上影線，等拉回降低風險。",
+            "reason": "法人共振、技術突破，但本益比偏高（81.2x）且營收月增異常，風險較高，等拉回。",
             "model": "deepseek-chat"
           }
         ]
       },
       {
         "review_date": "2026-07-20",
-        "stock_id": "3532",
-        "name": "台勝科",
-        "score": 77,
+        "stock_id": "2634",
+        "name": "漢翔",
+        "score": 81,
         "grade": "A",
         "consensus_action": "等拉回",
-        "confidence": 0.5,
+        "confidence": 0.6,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振、營收加速，但本益比極高，風險較大，建議等拉回並嚴格停損。",
+        "reason": "題材強、法人共振，但短期波動明顯升高，系統歷史勝率低，建議等拉回。",
         "model_reviews": [
           {
-            "stock_id": "3532",
+            "stock_id": "2634",
             "action": "等拉回",
-            "confidence": 0.5,
-            "reason": "法人共振、營收加速，但本益比極高，風險較大，建議等拉回並嚴格停損。",
+            "confidence": 0.6,
+            "reason": "題材強、法人共振，但短期波動明顯升高，系統歷史勝率低，建議等拉回。",
             "model": "deepseek-chat"
           }
         ]
@@ -16713,7 +16726,7 @@
     "attempted": []
   },
   "current_selection_backtest": {
-    "candidate_count": 6,
+    "candidate_count": 7,
     "referenceable_count": 6,
     "strong_reference_count": 0,
     "weak_reference_count": 6,
@@ -16724,7 +16737,7 @@
     }
   },
   "traceability": {
-    "generated_at": "2026-07-21T04:33:09+08:00",
+    "generated_at": "2026-07-21T05:03:01+08:00",
     "steps": [
       {
         "key": "source",
@@ -16738,7 +16751,7 @@
         "label": "每日評分",
         "status": "ok",
         "value": "127/127 檔",
-        "note": "S+ 0 | S 4 | A 2"
+        "note": "S+ 0 | S 4 | A 3"
       },
       {
         "key": "watch",
@@ -16820,7 +16833,7 @@
     "history": [
       {
         "run_date": "2026-07-20",
-        "generated_at": "2026-07-21T04:33:09+08:00",
+        "generated_at": "2026-07-21T05:03:01+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -16883,7 +16896,7 @@
             "label": "每日評分",
             "status": "ok",
             "value": "127/127 檔",
-            "note": "S+ 0 | S 4 | A 2"
+            "note": "S+ 0 | S 4 | A 3"
           },
           {
             "key": "watch",
