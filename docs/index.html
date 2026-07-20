@@ -101,6 +101,11 @@
     .decision-light.gray .decision-dot { background:#94a3b8; }
     .decision-note-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px; }
     .decision-note { background:#f8fafc; border:1px solid #eef1f5; border-radius:8px; padding:7px; font-size:12px; line-height:1.35; color:var(--muted); }
+    .decision-note.full { grid-column:1 / -1; }
+    .history-ref { background:#f8fafc; border:1px solid #e6edf5; border-radius:8px; padding:8px; font-size:12px; line-height:1.35; color:var(--muted); }
+    .history-ref.good { border-left:4px solid var(--good); background:#f6fef9; }
+    .history-ref.warn { border-left:4px solid var(--warn); background:#fffbeb; }
+    .history-ref.bad { border-left:4px solid var(--bad); background:#fff5f5; }
     .decision-note b { color:var(--ink); }
     .decision-badge { display:inline-flex; align-items:center; min-height:22px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
     .decision-badge.chase { color:#fff; background:var(--good); }
@@ -2633,7 +2638,7 @@
         ],
         "pattern_risk_tags": [],
         "ai_review": null,
-        "ai_label": "未複核",
+        "ai_label": "待 AI 確認",
         "ai_reason": "",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等拉回",
@@ -2699,7 +2704,7 @@
         ],
         "pattern_risk_tags": [],
         "ai_review": null,
-        "ai_label": "未複核",
+        "ai_label": "待 AI 確認",
         "ai_reason": "",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等拉回",
@@ -2764,7 +2769,7 @@
         ],
         "pattern_risk_tags": [],
         "ai_review": null,
-        "ai_label": "未複核",
+        "ai_label": "待 AI 確認",
         "ai_reason": "",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等拉回",
@@ -2829,7 +2834,7 @@
         ],
         "pattern_risk_tags": [],
         "ai_review": null,
-        "ai_label": "未複核",
+        "ai_label": "待 AI 確認",
         "ai_reason": "",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等拉回",
@@ -2896,7 +2901,7 @@
           "高位上影線"
         ],
         "ai_review": null,
-        "ai_label": "未複核",
+        "ai_label": "待 AI 確認",
         "ai_reason": "",
         "decision_light": "yellow",
         "decision_light_label": "黃燈等確認",
@@ -3481,7 +3486,7 @@
         "散戶人數下降且股價未弱，籌碼較乾淨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "強勢延伸型",
         "hard_stop": "跌破 66.10 退出，不攤平",
@@ -3589,7 +3594,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "強勢延伸型",
         "hard_stop": "跌破 74.50 退出，不攤平",
@@ -3695,7 +3700,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "強勢延伸型",
         "hard_stop": "跌破 74.40 退出，不攤平",
@@ -3802,7 +3807,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "強勢延伸型",
         "hard_stop": "跌破 300.00 退出，不攤平",
@@ -3911,7 +3916,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "強勢延伸型",
         "hard_stop": "跌破 169.00 退出，不攤平",
@@ -4014,7 +4019,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 424.00 退出，不攤平",
@@ -4030,7 +4035,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "等拉回，未進前5檔；未複核；同條件歷史偏弱，先降低追價衝動",
+      "action_context_reason": "等拉回，未進前5檔；待 AI 確認；同條件歷史偏弱，先降低追價衝動",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4117,7 +4122,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "等拉回型",
         "hard_stop": "跌破 314.50 退出，不攤平",
@@ -4133,7 +4138,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "等拉回，未進前5檔；未複核；同條件歷史偏弱，先降低追價衝動",
+      "action_context_reason": "等拉回，未進前5檔；待 AI 確認；同條件歷史偏弱，先降低追價衝動",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4241,7 +4246,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 60.80 退出，不攤平",
@@ -4257,7 +4262,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "量價條件尚未確認；未複核",
+      "action_context_reason": "量價條件尚未確認；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4358,7 +4363,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 377.50 退出，不攤平",
@@ -4374,7 +4379,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "量價條件尚未確認；未複核",
+      "action_context_reason": "量價條件尚未確認；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4474,7 +4479,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 502.00 退出，不攤平",
@@ -4490,7 +4495,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "量價條件尚未確認；未複核",
+      "action_context_reason": "量價條件尚未確認；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4566,7 +4571,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1170.00 退出，不攤平",
@@ -4582,7 +4587,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4658,7 +4663,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 216.50 退出，不攤平",
@@ -4674,7 +4679,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4753,7 +4758,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 30.75 退出，不攤平",
@@ -4769,7 +4774,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4852,7 +4857,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 1040.00 退出，不攤平",
@@ -4868,7 +4873,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -4966,7 +4971,7 @@
         "SpaceX 題材具核心供應鏈角色，且營收成長有佐證"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 4180.00 退出，不攤平",
@@ -4982,7 +4987,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -5065,7 +5070,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 4620.00 退出，不攤平",
@@ -5081,7 +5086,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5178,7 +5183,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 7610.00 退出，不攤平",
@@ -5194,7 +5199,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5281,7 +5286,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 86.00 退出，不攤平",
@@ -5297,7 +5302,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5398,7 +5403,7 @@
         "SpaceX 題材具核心供應鏈角色，且營收成長有佐證"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 311.00 退出，不攤平",
@@ -5414,7 +5419,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -5514,7 +5519,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 255.00 退出，不攤平",
@@ -5530,7 +5535,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5607,7 +5612,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 34.40 退出，不攤平",
@@ -5623,7 +5628,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5720,7 +5725,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 230.50 退出，不攤平",
@@ -5736,7 +5741,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5798,7 +5803,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 105.00 退出，不攤平",
@@ -5814,7 +5819,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -5909,7 +5914,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 45.80 退出，不攤平",
@@ -5925,7 +5930,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6008,7 +6013,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 309.00 退出，不攤平",
@@ -6024,7 +6029,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6107,7 +6112,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 56.90 退出，不攤平",
@@ -6123,7 +6128,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6223,7 +6228,7 @@
         "SpaceX 題材具核心供應鏈角色，且營收成長有佐證"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 202.00 退出，不攤平",
@@ -6239,7 +6244,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6318,7 +6323,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1150.00 退出，不攤平",
@@ -6334,7 +6339,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6410,7 +6415,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 151.00 退出，不攤平",
@@ -6426,7 +6431,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6503,7 +6508,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 122.00 退出，不攤平",
@@ -6519,7 +6524,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6581,7 +6586,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 1450.00 退出，不攤平",
@@ -6597,7 +6602,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6699,7 +6704,7 @@
         "SpaceX 題材具核心供應鏈角色，且營收成長有佐證"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 232.50 退出，不攤平",
@@ -6715,7 +6720,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6777,7 +6782,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 696.00 退出，不攤平",
@@ -6793,7 +6798,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6868,7 +6873,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 456.00 退出，不攤平",
@@ -6884,7 +6889,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -6962,7 +6967,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 198.00 退出，不攤平",
@@ -6978,7 +6983,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7056,7 +7061,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 135.50 退出，不攤平",
@@ -7072,7 +7077,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7172,7 +7177,7 @@
         "SpaceX 題材具核心供應鏈角色，且營收成長有佐證"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 191.00 退出，不攤平",
@@ -7188,7 +7193,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7271,7 +7276,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 40.00 退出，不攤平",
@@ -7287,7 +7292,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7348,7 +7353,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 133.00 退出，不攤平",
@@ -7364,7 +7369,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7426,7 +7431,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 80.10 退出，不攤平",
@@ -7442,7 +7447,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7503,7 +7508,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 348.50 退出，不攤平",
@@ -7519,7 +7524,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7615,7 +7620,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 831.00 退出，不攤平",
@@ -7631,7 +7636,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7713,7 +7718,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 587.00 退出，不攤平",
@@ -7729,7 +7734,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7806,7 +7811,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 2400.00 退出，不攤平",
@@ -7822,7 +7827,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -7900,7 +7905,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 653.00 退出，不攤平",
@@ -7916,7 +7921,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8013,7 +8018,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 60.20 退出，不攤平",
@@ -8029,7 +8034,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8111,7 +8116,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 320.50 退出，不攤平",
@@ -8127,7 +8132,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8212,7 +8217,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 117.00 退出，不攤平",
@@ -8228,7 +8233,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8293,7 +8298,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 65.40 退出，不攤平",
@@ -8309,7 +8314,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8405,7 +8410,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 302.50 退出，不攤平",
@@ -8421,7 +8426,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8482,7 +8487,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 106.00 退出，不攤平",
@@ -8498,7 +8503,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8559,7 +8564,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 766.00 退出，不攤平",
@@ -8575,7 +8580,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8657,7 +8662,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 100.00 退出，不攤平",
@@ -8673,7 +8678,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8755,7 +8760,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 41.45 退出，不攤平",
@@ -8771,7 +8776,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8856,7 +8861,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 124.50 退出，不攤平",
@@ -8872,7 +8877,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -8936,7 +8941,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 5145.00 退出，不攤平",
@@ -8952,7 +8957,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9034,7 +9039,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 88.40 退出，不攤平",
@@ -9050,7 +9055,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9133,7 +9138,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 2015.00 退出，不攤平",
@@ -9149,7 +9154,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -9231,7 +9236,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 116.50 退出，不攤平",
@@ -9247,7 +9252,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9329,7 +9334,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 42.80 退出，不攤平",
@@ -9345,7 +9350,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9430,7 +9435,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 28.00 退出，不攤平",
@@ -9446,7 +9451,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9529,7 +9534,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 2000.00 退出，不攤平",
@@ -9545,7 +9550,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -9623,7 +9628,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 199.00 退出，不攤平",
@@ -9639,7 +9644,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9716,7 +9721,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 93.40 退出，不攤平",
@@ -9732,7 +9737,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9813,7 +9818,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 3780.00 退出，不攤平",
@@ -9829,7 +9834,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -9907,7 +9912,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 380.50 退出，不攤平",
@@ -9923,7 +9928,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -9998,7 +10003,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 161.00 退出，不攤平",
@@ -10014,7 +10019,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10091,7 +10096,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 34.70 退出，不攤平",
@@ -10107,7 +10112,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10184,7 +10189,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 191.00 退出，不攤平",
@@ -10200,7 +10205,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -10261,7 +10266,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1860.00 退出，不攤平",
@@ -10277,7 +10282,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10342,7 +10347,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 631.00 退出，不攤平",
@@ -10358,7 +10363,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10454,7 +10459,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 181.00 退出，不攤平",
@@ -10470,7 +10475,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10545,7 +10550,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1160.00 退出，不攤平",
@@ -10561,7 +10566,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10628,7 +10633,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 11880.00 退出，不攤平",
@@ -10644,7 +10649,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10726,7 +10731,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 139.00 退出，不攤平",
@@ -10742,7 +10747,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10804,7 +10809,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 332.00 退出，不攤平",
@@ -10820,7 +10825,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10902,7 +10907,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 43.20 退出，不攤平",
@@ -10918,7 +10923,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -10996,7 +11001,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 389.00 退出，不攤平",
@@ -11012,7 +11017,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11090,7 +11095,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 747.00 退出，不攤平",
@@ -11106,7 +11111,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -11183,7 +11188,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 52.60 退出，不攤平",
@@ -11199,7 +11204,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11276,7 +11281,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 690.00 退出，不攤平",
@@ -11292,7 +11297,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11354,7 +11359,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 235.50 退出，不攤平",
@@ -11370,7 +11375,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11447,7 +11452,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 62.00 退出，不攤平",
@@ -11463,7 +11468,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11560,7 +11565,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 109.00 退出，不攤平",
@@ -11576,7 +11581,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11674,7 +11679,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1060.00 退出，不攤平",
@@ -11690,7 +11695,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -11772,7 +11777,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1335.00 退出，不攤平",
@@ -11788,7 +11793,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11849,7 +11854,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 21.00 退出，不攤平",
@@ -11865,7 +11870,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -11943,7 +11948,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 127.00 退出，不攤平",
@@ -11959,7 +11964,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12039,7 +12044,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 64.00 退出，不攤平",
@@ -12055,7 +12060,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12133,7 +12138,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 6030.00 退出，不攤平",
@@ -12149,7 +12154,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12226,7 +12231,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 390.00 退出，不攤平",
@@ -12242,7 +12247,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12303,7 +12308,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 927.00 退出，不攤平",
@@ -12319,7 +12324,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12402,7 +12407,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 1665.00 退出，不攤平",
@@ -12418,7 +12423,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12496,7 +12501,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 2990.00 退出，不攤平",
@@ -12512,7 +12517,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：籌碼轉乾淨",
       "retail_context_reason": "散戶人數小幅下降且股價未弱，列入籌碼轉乾淨觀察",
       "ai_reason": "",
@@ -12589,7 +12594,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 61.30 退出，不攤平",
@@ -12605,7 +12610,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12666,7 +12671,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 180.50 退出，不攤平",
@@ -12682,7 +12687,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12743,7 +12748,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 359.00 退出，不攤平",
@@ -12759,7 +12764,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12841,7 +12846,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 64.20 退出，不攤平",
@@ -12857,7 +12862,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -12939,7 +12944,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 154.00 退出，不攤平",
@@ -12955,7 +12960,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13016,7 +13021,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 6030.00 退出，不攤平",
@@ -13032,7 +13037,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13110,7 +13115,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 2290.00 退出，不攤平",
@@ -13126,7 +13131,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13218,7 +13223,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 614.00 退出，不攤平",
@@ -13234,7 +13239,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13325,7 +13330,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 63.50 退出，不攤平",
@@ -13341,7 +13346,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13418,7 +13423,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 258.50 退出，不攤平",
@@ -13434,7 +13439,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -13511,7 +13516,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 146.00 退出，不攤平",
@@ -13527,7 +13532,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13588,7 +13593,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1190.00 退出，不攤平",
@@ -13604,7 +13609,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13686,7 +13691,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 317.50 退出，不攤平",
@@ -13702,7 +13707,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13784,7 +13789,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 48.60 退出，不攤平",
@@ -13800,7 +13805,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -13881,7 +13886,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 115.00 退出，不攤平",
@@ -13897,7 +13902,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -13979,7 +13984,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 130.00 退出，不攤平",
@@ -13995,7 +14000,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14072,7 +14077,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 747.00 退出，不攤平",
@@ -14088,7 +14093,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14168,7 +14173,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 2735.00 退出，不攤平",
@@ -14184,7 +14189,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14261,7 +14266,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 910.00 退出，不攤平",
@@ -14277,7 +14282,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14354,7 +14359,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 194.50 退出，不攤平",
@@ -14370,7 +14375,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14447,7 +14452,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1685.00 退出，不攤平",
@@ -14463,7 +14468,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數小幅增加且股價未強，列入散戶過熱觀察",
       "ai_reason": "",
@@ -14540,7 +14545,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 68.90 退出，不攤平",
@@ -14556,7 +14561,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14631,7 +14636,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 521.00 退出，不攤平",
@@ -14647,7 +14652,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14722,7 +14727,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 124.00 退出，不攤平",
@@ -14738,7 +14743,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14799,7 +14804,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1765.00 退出，不攤平",
@@ -14815,7 +14820,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14876,7 +14881,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 152.50 退出，不攤平",
@@ -14892,7 +14897,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -14953,7 +14958,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1170.00 退出，不攤平",
@@ -14969,7 +14974,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15066,7 +15071,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1230.00 退出，不攤平",
@@ -15082,7 +15087,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15166,7 +15171,7 @@
         "SpaceX 題材有供應鏈角色，但營收佐證不足"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1016.00 退出，不攤平",
@@ -15182,7 +15187,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15264,7 +15269,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 12.60 退出，不攤平",
@@ -15280,7 +15285,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15357,7 +15362,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 25.55 退出，不攤平",
@@ -15373,7 +15378,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15448,7 +15453,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 819.00 退出，不攤平",
@@ -15464,7 +15469,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15546,7 +15551,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 141.50 退出，不攤平",
@@ -15562,7 +15567,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15646,7 +15651,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 458.50 退出，不攤平",
@@ -15662,7 +15667,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15743,7 +15748,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 28.30 退出，不攤平",
@@ -15759,7 +15764,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15836,7 +15841,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 3985.00 退出，不攤平",
@@ -15852,7 +15857,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -15936,7 +15941,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 9.99 退出，不攤平",
@@ -15952,7 +15957,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16029,7 +16034,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 433.00 退出，不攤平",
@@ -16045,7 +16050,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16120,7 +16125,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 135.00 退出，不攤平",
@@ -16136,7 +16141,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16211,7 +16216,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 1730.00 退出，不攤平",
@@ -16227,7 +16232,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16320,7 +16325,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 690.00 退出，不攤平",
@@ -16336,7 +16341,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -16411,7 +16416,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 434.50 退出，不攤平",
@@ -16427,7 +16432,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16507,7 +16512,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 3245.00 退出，不攤平",
@@ -16523,7 +16528,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -16600,7 +16605,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 64.00 退出，不攤平",
@@ -16616,7 +16621,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16693,7 +16698,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 111.50 退出，不攤平",
@@ -16709,7 +16714,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16786,7 +16791,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 334.00 退出，不攤平",
@@ -16802,7 +16807,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16863,7 +16868,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 144.00 退出，不攤平",
@@ -16879,7 +16884,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -16940,7 +16945,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 196.50 退出，不攤平",
@@ -16956,7 +16961,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -17017,7 +17022,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 794.00 退出，不攤平",
@@ -17033,7 +17038,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -17110,7 +17115,7 @@
       "selection_quality_adjustment": 0,
       "selection_quality_notes": [],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 286.50 退出，不攤平",
@@ -17126,7 +17131,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "強度未達操作觀察門檻；未複核",
+      "action_context_reason": "強度未達操作觀察門檻；待 AI 確認",
       "retail_context": "散戶：無明顯背離",
       "retail_context_reason": "",
       "ai_reason": "",
@@ -17219,7 +17224,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "高波動控倉",
         "hard_stop": "跌破 699.00 退出，不攤平",
@@ -17235,7 +17240,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -17332,7 +17337,7 @@
         "散戶人數增加但股價不漲，疑似有人倒貨"
       ],
       "ai_review": null,
-      "ai_label": "未複核",
+      "ai_label": "待 AI 確認",
       "exit_plan": {
         "plan_type": "標準控風險",
         "hard_stop": "跌破 3240.00 退出，不攤平",
@@ -17348,7 +17353,7 @@
         ]
       },
       "action_context": "未列入今日操作",
-      "action_context_reason": "危險名單，先避開；未複核",
+      "action_context_reason": "危險名單，先避開；待 AI 確認",
       "retail_context": "散戶：過熱警示",
       "retail_context_reason": "散戶人數增加但股價漲不動，需防範籌碼過熱",
       "ai_reason": "",
@@ -20301,6 +20306,34 @@
       const n = Number(value);
       return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/, "") : String(value);
     }
+    function isAvoidPlan(row) {
+      const text = [
+        row?.action,
+        row?.entry_decision,
+        row?.action_context,
+        row?.decision_light_label,
+      ].map(x => String(x || "")).join(" ");
+      return text.includes("避免") || text.includes("紅燈");
+    }
+    function pctText(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      const n = Number(value);
+      return Number.isFinite(n) ? `${n >= 0 ? "+" : ""}${n.toFixed(1)}%` : String(value);
+    }
+    function historicalReferenceHtml(row) {
+      const hist = row?.historical_reference || {};
+      const completed = Number(hist.completed || 0);
+      if (!completed) {
+        return `<div class="history-ref warn"><b>歷史同條件</b>｜樣本不足，需以開盤量價確認為主。</div>`;
+      }
+      const avg = Number(hist.avg_return_5d);
+      const win = Number(hist.win_rate_5d);
+      const cls = Number.isFinite(avg) && avg > 0 ? "good" : Number.isFinite(avg) && avg < 0 ? "bad" : "warn";
+      const label = hist.label || "同條件參考";
+      const confidence = hist.confidence ? `｜可信度 ${hist.confidence}` : "";
+      const interpretation = hist.interpretation ? `<div class="small">${esc(hist.interpretation)}</div>` : "";
+      return `<div class="history-ref ${cls}"><b>${esc(label)}</b>｜樣本 ${esc(completed)}｜5日勝率 ${esc(Number.isFinite(win) ? win.toFixed(1) + "%" : "—")}｜5日均 ${esc(pctText(hist.avg_return_5d))}${esc(confidence)}${interpretation}</div>`;
+    }
     function detailStockLink(row) {
       return `https://www.wantgoo.com/stock/${encodeURIComponent(String(row.stock_id || ""))}`;
     }
@@ -20328,17 +20361,24 @@
       const drawer = document.querySelector("#stockDrawer");
       const backdrop = document.querySelector("#stockDrawerBackdrop");
       const exitPlan = row.exit_plan || {};
+      const avoidPlan = isAvoidPlan(row);
+      const profitCells = avoidPlan ? `
+          <div><span>交易狀態</span><b class="bad">今日不建立停利目標</b></div>
+          <div><span>重新評估</span><b>風險解除後</b></div>`
+        : `
+          <div><span>第一段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+          <div><span>第二段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>`;
       document.querySelector("#drawerTitle").innerHTML = `${esc(row.stock_id)} ${esc(row.name)}`;
       document.querySelector("#drawerSubtitle").innerHTML = `${esc(row.score ?? "-")}/100 | ${esc(row.grade || "-")} | ${esc(row.entry_decision || row.action || "-")}`;
       document.querySelector("#drawerBody").innerHTML = `
         <div class="drawer-kv">
           <div><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
           <div><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
-          <div><span>第一段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
-          <div><span>第二段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
-          <div><span>AI 複核</span><b>${esc(row.ai_label || "未審核")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
+          ${profitCells}
+          <div><span>AI 單模型複核</span><b>${esc(row.ai_label || "待 AI 確認")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
           <div><span>散戶狀態</span><b>${esc(row.retail_context || "無明顯訊號")}</b></div>
         </div>
+        <div class="drawer-section"><b>歷史同條件</b>${historicalReferenceHtml(row)}</div>
         <div class="drawer-section"><b>主要理由</b><div class="small">${esc(row.decision_reason || row.trigger_summary || row.action || "-")}</div></div>
         <div class="drawer-section"><b>出場計劃｜${esc(exitPlan.plan_type || "標準控風險")}</b>
           <div class="small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
@@ -20440,7 +20480,7 @@
           <option value="risk">風險警示</option>
           <option value="retail_clean">散戶轉乾淨</option>
           <option value="retail_hot">散戶過熱</option>
-          <option value="ai">AI 共識</option>
+          <option value="ai">AI 單模型同意</option>
           <option value="new">今日新增</option>
           <option value="top_theme">主題焦點</option>
           <option value="pattern_bull">K線偏多</option>
@@ -20458,8 +20498,12 @@
       document.querySelector("#subtitle").textContent = `早報日期 ${reportDate}｜資料日 ${dataDate}｜僅供研究追蹤，不是投資建議`;
       const actionLists = data.action_lists || {};
       const actionSummary = actionLists.summary || {};
+      const universeBrief = data.source_status?.universe || {};
+      const scanCoverageText = universeBrief.selected_count
+        ? `${universeBrief.selected_count}/${universeBrief.target_total_listed || 1056}`
+        : `${data.summary.valid || data.summary.scanned || 0}`;
       document.querySelector("#metrics").innerHTML = [
-        ["有效標的", data.summary.valid, ""],
+        ["掃描覆蓋", scanCoverageText, ""],
         ["S+/S 強度", actionSummary.strong ?? ((data.summary.s_plus_grade || 0) + (data.summary.s_grade || 0)), "is-good"],
         ["可追", actionSummary.chase ?? 0, "is-good"],
         ["等拉回", actionSummary.pullback ?? 0, "is-warn"],
@@ -20519,10 +20563,12 @@
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
         <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>
+        <div class="line"><b>掃描範圍</b>｜本次 ${esc(scanCoverageText)} 檔，覆蓋約 ${esc(universeBrief.coverage_pct ?? "—")}%；以分層候選池篩選，不等於全市場逐檔深度掃描。</div>
         ${marketTide.position_hint ? `<div class="line"><b>潮汐護欄</b>｜${esc(marketTide.position_hint)}</div>` : ""}`;
       document.querySelector("#decisionBrief").innerHTML = `
         <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
         <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
+        <div class="brief-row"><b>信心來源</b><span>掃描 ${esc(scanCoverageText)}｜歷史強 ${esc(actionSummary.historical_strong ?? 0)}｜歷史弱 ${esc(actionSummary.historical_weak ?? 0)}</span></div>
         <div class="brief-row"><b>避開風險</b><span>${esc(topRisk)}</span></div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
@@ -20565,10 +20611,10 @@
         const qualityNotes = (row.selection_quality_notes || []).slice(0, 1).join(" / ");
         const reason = qualityNotes || row.reason || checklist || row.action || "綜合訊號";
         const aiReview = row.ai_review || {};
-        const aiLabel = row.ai_label || "未複核";
+        const aiLabel = row.ai_label || "待 AI 確認";
         const aiText = aiReview.stock_id
           ? `｜${esc(aiLabel)} ${esc(aiReview.pick_agreement_count || aiReview.agreement_count || 0)}/${esc(aiReview.model_count || 0)}`
-          : "｜AI 未複核";
+          : "｜待 AI 確認";
         const light = row.decision_light || "gray";
         const lightLabel = row.decision_light_label || "灰燈追蹤";
         const lightReason = row.decision_light_reason || row.action_context_reason || "";
@@ -20579,6 +20625,21 @@
         const stabilityLabel = row.stability_label || "新進名單";
         const stabilityReason = row.stability_reason || "近期尚無連續推薦紀錄。";
         const exitPlan = row.exit_plan || {};
+        const avoidPlan = isAvoidPlan(row);
+        const priceBlock = avoidPlan ? `
+          <div class="decision-price"><span>交易狀態</span><b class="bad">今日不建立交易計劃</b></div>
+          <div class="decision-price"><span>觀察支撐</span><b>${esc(priceText(row.stop_price))}</b></div>`
+          : `
+          <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
+          <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>`;
+        const exitBlock = avoidPlan ? `
+          <div class="history-ref bad"><b>避免追價</b>｜紅燈或避免標的只保留觀察支撐，不顯示第一段、第二段停利，等風險解除後再重新計畫。</div>`
+          : `
+          <div class="decision-exit">
+            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
+          </div>`;
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
@@ -20592,15 +20653,11 @@
             </div>
           </div>
           <div class="decision-prices">
-            <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
-            <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+            ${priceBlock}
           </div>
-          <div class="decision-exit">
-            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
-            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
-            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
-          </div>
+          ${exitBlock}
           <div class="decision-reason">${esc(reason)}</div>
+          ${historicalReferenceHtml(row)}
           <details class="mini-detail">
             <summary>個股開盤檢查表</summary>
             ${(row.entry_checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("") || '<div class="line small">尚無足夠資料設定條件</div>'}
@@ -20821,7 +20878,7 @@
       const aiRequiredModels = ai.min_model_count || ai.min_agree_count || 5;
       const aiRequiredVotes = ai.min_agree_count || 5;
       const aiAvailability = aiStatus.requested_models
-        ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
+        ? `<div class="line">AI 單模型可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
         : "";
       const aiFailureDetail = [...(aiStatus.failed_models || []), ...(aiStatus.timed_out_models || [])]
         .slice(0, 4)
@@ -20831,13 +20888,13 @@
         ? `<div class="line ${aiStatus.health.score >= 80 ? "good" : aiStatus.health.score >= 50 ? "warn" : "bad"}">模型健康度：${esc(aiStatus.health.label || "-")}｜${esc(aiStatus.health.score ?? 0)}/100${aiFailureDetail ? `｜異常：${esc(aiFailureDetail)}` : ""}</div>`
         : "";
       const aiReviewNote = ai.enabled
-        ? `AI 複核：同意 ${esc(actionSummary.ai_agree ?? 0)}｜保留 ${esc(actionSummary.ai_hold ?? 0)}｜不建議 ${esc(actionSummary.ai_avoid ?? 0)}｜已複核 ${esc(actionSummary.ai_reviewed ?? 0)}`
-        : "AI 複核未啟用";
+        ? `AI 單模型複核：同意 ${esc(actionSummary.ai_agree ?? 0)}｜保留 ${esc(actionSummary.ai_hold ?? 0)}｜不建議 ${esc(actionSummary.ai_avoid ?? 0)}｜已複核 ${esc(actionSummary.ai_reviewed ?? 0)}`
+        : "AI 單模型複核未啟用";
       document.querySelector("#decisionSummary").insertAdjacentHTML("beforeend", `
         <div class="line">${aiReviewNote}</div>
         ${aiHealthLine || ""}
         ${aiAvailability || ""}
-        ${ai.using_fallback_picks ? `<div class="line warn">AI 未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，僅作複核參考</div>` : ""}
+        ${ai.using_fallback_picks ? `<div class="line warn">AI 未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票門檻，僅作複核參考</div>` : ""}
       `);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
@@ -20884,7 +20941,7 @@
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr data-stock-id="${esc(r.stock_id)}">
           <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
-          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "AI 未複核")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "待 AI 確認")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
           <td data-label="題材" class="themes"><div>${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</div>${chainSummary(r)}</td>
@@ -20901,10 +20958,13 @@
           </td>
           <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div><div class="decision-light ${esc(r.decision_light || "gray")}"><span class="decision-dot"></span>${esc(r.decision_light_label || "灰燈追蹤")}</div><div class="small"><b>今日：</b>${esc(r.action_context || "未列入今日操作")}</div><div class="small">${esc(r.action_context_reason || "")}</div><div class="small">${esc(r.retail_context || "散戶：無明顯背離")}</div></td>
           <td data-label="進場/停損">
-            ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
-            ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
-            ${r.exit_plan?.take_profit_1 != null ? `<div class="small good">第一段停利：${esc(priceText(r.exit_plan.take_profit_1))}</div>` : ""}
-            ${r.exit_plan?.take_profit_2 != null ? `<div class="small good">第二段停利：${esc(priceText(r.exit_plan.take_profit_2))}</div>` : ""}
+            ${isAvoidPlan(r)
+              ? `<div class="bad"><b>今日不建立交易計劃</b></div><div class="small">觀察支撐：${esc(priceText(r.stop_price))}</div>`
+              : `${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
+                 ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
+                 ${r.exit_plan?.take_profit_1 != null ? `<div class="small good">第一段停利：${esc(priceText(r.exit_plan.take_profit_1))}</div>` : ""}
+                 ${r.exit_plan?.take_profit_2 != null ? `<div class="small good">第二段停利：${esc(priceText(r.exit_plan.take_profit_2))}</div>` : ""}`}
+            ${historicalReferenceHtml(r)}
             <details class="row-detail">
               <summary>進出場條件</summary>
               ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}

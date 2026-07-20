@@ -126,7 +126,7 @@ def _decision_reason(item: StockScore) -> str:
 
 def _ai_review_label(review: dict | None) -> str:
     if not review:
-        return "未複核"
+        return "待 AI 確認"
     action = str(review.get("consensus_action") or "")
     if action == "可追":
         return "AI 同意"
@@ -134,7 +134,7 @@ def _ai_review_label(review: dict | None) -> str:
         return "AI 保留"
     if action in {"避免", "只觀察"}:
         return "AI 不建議" if action == "避免" else "AI 保留"
-    return "AI 無共識"
+    return "AI 未定"
 
 
 def _ai_review_reason(review: dict | None) -> str:
@@ -182,6 +182,14 @@ def _round_price(value: float | None) -> float | None:
     return round(float(value), 2)
 
 
+def _is_avoid_plan(row: dict) -> bool:
+    text = " ".join(
+        str(row.get(key) or "")
+        for key in ("action", "entry_decision", "action_context", "decision_light_label")
+    )
+    return "避免" in text or "紅燈" in text
+
+
 def _exit_plan(row: dict) -> dict:
     price = _as_float(row.get("price"))
     entry_limit = _as_float(row.get("entry_limit_price")) or price
@@ -189,11 +197,15 @@ def _exit_plan(row: dict) -> dict:
     atr_pct = _as_float(row.get("atr_pct"))
     grade = str(row.get("grade") or "")
     entry_decision = str(row.get("entry_decision") or row.get("action") or "")
+    avoid_plan = _is_avoid_plan(row)
     risk_per_share = None
     if entry_limit is not None and stop_price is not None and entry_limit > stop_price:
         risk_per_share = entry_limit - stop_price
 
-    if risk_per_share:
+    if avoid_plan:
+        take_profit_1 = None
+        take_profit_2 = None
+    elif risk_per_share:
         take_profit_1 = entry_limit + risk_per_share
         take_profit_2 = entry_limit + risk_per_share * 2
     elif entry_limit is not None:
@@ -208,7 +220,10 @@ def _exit_plan(row: dict) -> dict:
     else:
         hard_stop = f"跌破 {stop_price:.2f} 退出，不攤平"
 
-    if "等拉回" in entry_decision:
+    if avoid_plan:
+        plan_type = "不建立交易計劃"
+        rule = "今日只觀察風險是否解除；未轉回黃燈或綠燈前，不設定停利目標。"
+    elif "等拉回" in entry_decision:
         plan_type = "等拉回型"
         rule = "未回到進場區前不追價；進場後先守停損，站穩再提高停利。"
     elif grade in {"S+", "S"}:
@@ -222,12 +237,19 @@ def _exit_plan(row: dict) -> dict:
         plan_type = "高波動控倉"
         rule = "波動偏大，部位降一級；爆量長黑、跌破前低或跌破停損先退出。"
 
-    checklist = [
-        hard_stop,
-        "達第一段停利可先減碼 1/3 到 1/2",
-        "達第二段停利後改用移動停利保護",
-        "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利",
-    ]
+    if avoid_plan:
+        checklist = [
+            "不追價、不加碼",
+            "等待危險名單、法人連賣或散戶過熱解除",
+            hard_stop,
+        ]
+    else:
+        checklist = [
+            hard_stop,
+            "達第一段停利可先減碼 1/3 到 1/2",
+            "達第二段停利後改用移動停利保護",
+            "若進入危險名單、散戶過熱或法人連賣，停止加碼並提高停利",
+        ]
 
     return {
         "plan_type": plan_type,
@@ -277,6 +299,7 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
             "stability_reason": row.get("stability_reason"),
             "tide_context": row.get("tide_context"),
             "tide_context_reason": row.get("tide_context_reason"),
+            "historical_reference": row.get("historical_reference"),
         }
 
     chase = [
@@ -348,7 +371,7 @@ def _annotate_action_context(
         grade = str(row.get("grade") or "")
         action = str(row.get("action") or "")
         entry_decision = str(row.get("entry_decision") or "")
-        ai_label = str(row.get("ai_label") or "未複核")
+        ai_label = str(row.get("ai_label") or "待 AI 確認")
         retail_label, retail_reason = _retail_context(row, retail_lookup)
         pattern_risks = row.get("pattern_risk_tags") or []
 
@@ -380,7 +403,7 @@ def _annotate_action_context(
             context = "未列入今日操作"
             reason = "只追蹤，不作為今日進場候選"
 
-        if ai_label in {"AI 不建議", "未複核", "AI 無共識"} and context.startswith("未列入"):
+        if ai_label in {"AI 不建議", "待 AI 確認", "AI 未定"} and context.startswith("未列入"):
             reason = f"{reason}；{ai_label}"
 
         row["action_context"] = context
@@ -1989,6 +2012,11 @@ def _html() -> str:
     .decision-light.gray .decision-dot { background:#94a3b8; }
     .decision-note-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px; }
     .decision-note { background:#f8fafc; border:1px solid #eef1f5; border-radius:8px; padding:7px; font-size:12px; line-height:1.35; color:var(--muted); }
+    .decision-note.full { grid-column:1 / -1; }
+    .history-ref { background:#f8fafc; border:1px solid #e6edf5; border-radius:8px; padding:8px; font-size:12px; line-height:1.35; color:var(--muted); }
+    .history-ref.good { border-left:4px solid var(--good); background:#f6fef9; }
+    .history-ref.warn { border-left:4px solid var(--warn); background:#fffbeb; }
+    .history-ref.bad { border-left:4px solid var(--bad); background:#fff5f5; }
     .decision-note b { color:var(--ink); }
     .decision-badge { display:inline-flex; align-items:center; min-height:22px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
     .decision-badge.chase { color:#fff; background:var(--good); }
@@ -2232,6 +2260,34 @@ def _html() -> str:
       const n = Number(value);
       return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/, "") : String(value);
     }
+    function isAvoidPlan(row) {
+      const text = [
+        row?.action,
+        row?.entry_decision,
+        row?.action_context,
+        row?.decision_light_label,
+      ].map(x => String(x || "")).join(" ");
+      return text.includes("避免") || text.includes("紅燈");
+    }
+    function pctText(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      const n = Number(value);
+      return Number.isFinite(n) ? `${n >= 0 ? "+" : ""}${n.toFixed(1)}%` : String(value);
+    }
+    function historicalReferenceHtml(row) {
+      const hist = row?.historical_reference || {};
+      const completed = Number(hist.completed || 0);
+      if (!completed) {
+        return `<div class="history-ref warn"><b>歷史同條件</b>｜樣本不足，需以開盤量價確認為主。</div>`;
+      }
+      const avg = Number(hist.avg_return_5d);
+      const win = Number(hist.win_rate_5d);
+      const cls = Number.isFinite(avg) && avg > 0 ? "good" : Number.isFinite(avg) && avg < 0 ? "bad" : "warn";
+      const label = hist.label || "同條件參考";
+      const confidence = hist.confidence ? `｜可信度 ${hist.confidence}` : "";
+      const interpretation = hist.interpretation ? `<div class="small">${esc(hist.interpretation)}</div>` : "";
+      return `<div class="history-ref ${cls}"><b>${esc(label)}</b>｜樣本 ${esc(completed)}｜5日勝率 ${esc(Number.isFinite(win) ? win.toFixed(1) + "%" : "—")}｜5日均 ${esc(pctText(hist.avg_return_5d))}${esc(confidence)}${interpretation}</div>`;
+    }
     function detailStockLink(row) {
       return `https://www.wantgoo.com/stock/${encodeURIComponent(String(row.stock_id || ""))}`;
     }
@@ -2259,17 +2315,24 @@ def _html() -> str:
       const drawer = document.querySelector("#stockDrawer");
       const backdrop = document.querySelector("#stockDrawerBackdrop");
       const exitPlan = row.exit_plan || {};
+      const avoidPlan = isAvoidPlan(row);
+      const profitCells = avoidPlan ? `
+          <div><span>交易狀態</span><b class="bad">今日不建立停利目標</b></div>
+          <div><span>重新評估</span><b>風險解除後</b></div>`
+        : `
+          <div><span>第一段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+          <div><span>第二段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>`;
       document.querySelector("#drawerTitle").innerHTML = `${esc(row.stock_id)} ${esc(row.name)}`;
       document.querySelector("#drawerSubtitle").innerHTML = `${esc(row.score ?? "-")}/100 | ${esc(row.grade || "-")} | ${esc(row.entry_decision || row.action || "-")}`;
       document.querySelector("#drawerBody").innerHTML = `
         <div class="drawer-kv">
           <div><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
           <div><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
-          <div><span>第一段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
-          <div><span>第二段停利</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
-          <div><span>AI 複核</span><b>${esc(row.ai_label || "未審核")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
+          ${profitCells}
+          <div><span>AI 單模型複核</span><b>${esc(row.ai_label || "待 AI 確認")}${row.ai_review ? ` ${esc(row.ai_review.pick_agreement_count || row.ai_review.agreement_count || 0)}/${esc(row.ai_review.model_count || 0)}` : ""}</b></div>
           <div><span>散戶狀態</span><b>${esc(row.retail_context || "無明顯訊號")}</b></div>
         </div>
+        <div class="drawer-section"><b>歷史同條件</b>${historicalReferenceHtml(row)}</div>
         <div class="drawer-section"><b>主要理由</b><div class="small">${esc(row.decision_reason || row.trigger_summary || row.action || "-")}</div></div>
         <div class="drawer-section"><b>出場計劃｜${esc(exitPlan.plan_type || "標準控風險")}</b>
           <div class="small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
@@ -2371,7 +2434,7 @@ def _html() -> str:
           <option value="risk">風險警示</option>
           <option value="retail_clean">散戶轉乾淨</option>
           <option value="retail_hot">散戶過熱</option>
-          <option value="ai">AI 共識</option>
+          <option value="ai">AI 單模型同意</option>
           <option value="new">今日新增</option>
           <option value="top_theme">主題焦點</option>
           <option value="pattern_bull">K線偏多</option>
@@ -2389,8 +2452,12 @@ def _html() -> str:
       document.querySelector("#subtitle").textContent = `早報日期 ${reportDate}｜資料日 ${dataDate}｜僅供研究追蹤，不是投資建議`;
       const actionLists = data.action_lists || {};
       const actionSummary = actionLists.summary || {};
+      const universeBrief = data.source_status?.universe || {};
+      const scanCoverageText = universeBrief.selected_count
+        ? `${universeBrief.selected_count}/${universeBrief.target_total_listed || 1056}`
+        : `${data.summary.valid || data.summary.scanned || 0}`;
       document.querySelector("#metrics").innerHTML = [
-        ["有效標的", data.summary.valid, ""],
+        ["掃描覆蓋", scanCoverageText, ""],
         ["S+/S 強度", actionSummary.strong ?? ((data.summary.s_plus_grade || 0) + (data.summary.s_grade || 0)), "is-good"],
         ["可追", actionSummary.chase ?? 0, "is-good"],
         ["等拉回", actionSummary.pullback ?? 0, "is-warn"],
@@ -2450,10 +2517,12 @@ def _html() -> str:
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
         <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>
+        <div class="line"><b>掃描範圍</b>｜本次 ${esc(scanCoverageText)} 檔，覆蓋約 ${esc(universeBrief.coverage_pct ?? "—")}%；以分層候選池篩選，不等於全市場逐檔深度掃描。</div>
         ${marketTide.position_hint ? `<div class="line"><b>潮汐護欄</b>｜${esc(marketTide.position_hint)}</div>` : ""}`;
       document.querySelector("#decisionBrief").innerHTML = `
         <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
         <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
+        <div class="brief-row"><b>信心來源</b><span>掃描 ${esc(scanCoverageText)}｜歷史強 ${esc(actionSummary.historical_strong ?? 0)}｜歷史弱 ${esc(actionSummary.historical_weak ?? 0)}</span></div>
         <div class="brief-row"><b>避開風險</b><span>${esc(topRisk)}</span></div>`;
       document.querySelector("#market").innerHTML = `
         <div class="line">台股：${esc(data.market.summary)}</div>
@@ -2496,10 +2565,10 @@ def _html() -> str:
         const qualityNotes = (row.selection_quality_notes || []).slice(0, 1).join(" / ");
         const reason = qualityNotes || row.reason || checklist || row.action || "綜合訊號";
         const aiReview = row.ai_review || {};
-        const aiLabel = row.ai_label || "未複核";
+        const aiLabel = row.ai_label || "待 AI 確認";
         const aiText = aiReview.stock_id
           ? `｜${esc(aiLabel)} ${esc(aiReview.pick_agreement_count || aiReview.agreement_count || 0)}/${esc(aiReview.model_count || 0)}`
-          : "｜AI 未複核";
+          : "｜待 AI 確認";
         const light = row.decision_light || "gray";
         const lightLabel = row.decision_light_label || "灰燈追蹤";
         const lightReason = row.decision_light_reason || row.action_context_reason || "";
@@ -2510,6 +2579,21 @@ def _html() -> str:
         const stabilityLabel = row.stability_label || "新進名單";
         const stabilityReason = row.stability_reason || "近期尚無連續推薦紀錄。";
         const exitPlan = row.exit_plan || {};
+        const avoidPlan = isAvoidPlan(row);
+        const priceBlock = avoidPlan ? `
+          <div class="decision-price"><span>交易狀態</span><b class="bad">今日不建立交易計劃</b></div>
+          <div class="decision-price"><span>觀察支撐</span><b>${esc(priceText(row.stop_price))}</b></div>`
+          : `
+          <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
+          <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>`;
+        const exitBlock = avoidPlan ? `
+          <div class="history-ref bad"><b>避免追價</b>｜紅燈或避免標的只保留觀察支撐，不顯示第一段、第二段停利，等風險解除後再重新計畫。</div>`
+          : `
+          <div class="decision-exit">
+            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
+            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
+          </div>`;
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
@@ -2523,15 +2607,11 @@ def _html() -> str:
             </div>
           </div>
           <div class="decision-prices">
-            <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
-            <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
+            ${priceBlock}
           </div>
-          <div class="decision-exit">
-            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
-            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
-            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
-          </div>
+          ${exitBlock}
           <div class="decision-reason">${esc(reason)}</div>
+          ${historicalReferenceHtml(row)}
           <details class="mini-detail">
             <summary>個股開盤檢查表</summary>
             ${(row.entry_checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("") || '<div class="line small">尚無足夠資料設定條件</div>'}
@@ -2752,7 +2832,7 @@ def _html() -> str:
       const aiRequiredModels = ai.min_model_count || ai.min_agree_count || 5;
       const aiRequiredVotes = ai.min_agree_count || 5;
       const aiAvailability = aiStatus.requested_models
-        ? `<div class="line">AI 可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 模型成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
+        ? `<div class="line">AI 單模型可用率：${esc(aiStatus.successful_models || 0)}/${esc(aiStatus.requested_models || 0)} 成功${(aiStatus.failed_models || []).length ? `｜限流/失敗 ${esc((aiStatus.failed_models || []).length)}` : ""}${(aiStatus.timed_out_models || []).length ? `｜逾時 ${esc((aiStatus.timed_out_models || []).length)}` : ""}</div>`
         : "";
       const aiFailureDetail = [...(aiStatus.failed_models || []), ...(aiStatus.timed_out_models || [])]
         .slice(0, 4)
@@ -2762,13 +2842,13 @@ def _html() -> str:
         ? `<div class="line ${aiStatus.health.score >= 80 ? "good" : aiStatus.health.score >= 50 ? "warn" : "bad"}">模型健康度：${esc(aiStatus.health.label || "-")}｜${esc(aiStatus.health.score ?? 0)}/100${aiFailureDetail ? `｜異常：${esc(aiFailureDetail)}` : ""}</div>`
         : "";
       const aiReviewNote = ai.enabled
-        ? `AI 複核：同意 ${esc(actionSummary.ai_agree ?? 0)}｜保留 ${esc(actionSummary.ai_hold ?? 0)}｜不建議 ${esc(actionSummary.ai_avoid ?? 0)}｜已複核 ${esc(actionSummary.ai_reviewed ?? 0)}`
-        : "AI 複核未啟用";
+        ? `AI 單模型複核：同意 ${esc(actionSummary.ai_agree ?? 0)}｜保留 ${esc(actionSummary.ai_hold ?? 0)}｜不建議 ${esc(actionSummary.ai_avoid ?? 0)}｜已複核 ${esc(actionSummary.ai_reviewed ?? 0)}`
+        : "AI 單模型複核未啟用";
       document.querySelector("#decisionSummary").insertAdjacentHTML("beforeend", `
         <div class="line">${aiReviewNote}</div>
         ${aiHealthLine || ""}
         ${aiAvailability || ""}
-        ${ai.using_fallback_picks ? `<div class="line warn">AI 未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票強共識，僅作複核參考</div>` : ""}
+        ${ai.using_fallback_picks ? `<div class="line warn">AI 未達 ${esc(aiRequiredModels)} 模型參與 / ${esc(aiRequiredVotes)} 票門檻，僅作複核參考</div>` : ""}
       `);
       renderThemeHistoryChart();
       document.querySelector("#alerts").innerHTML = (data.alerts || []).length
@@ -2815,7 +2895,7 @@ def _html() -> str:
       document.querySelector("#rows").innerHTML = rows.map(r => `
         <tr data-stock-id="${esc(r.stock_id)}">
           <td data-label="強度"><span class="${cls(r.grade)}">${r.grade}</span></td>
-          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "AI 未複核")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
+          <td data-label="股票"><b><a class="stock-link" href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></b><div class="small">${esc(r.label_text)}｜收 ${r.price ?? "-"}｜${esc(r.ai_label || "待 AI 確認")}${r.ai_review ? ` ${esc(r.ai_review.pick_agreement_count || r.ai_review.agreement_count || 0)}/${esc(r.ai_review.model_count || 0)}` : ""}</div></td>
           <td data-label="分數"><b>${r.score}/100</b><div class="small">海外 ${r.overseas_adjustment >= 0 ? "+" : ""}${r.overseas_adjustment}｜機會 ${r.opportunity_score}</div></td>
           <td data-label="原因標籤"><div class="tags">${renderTags(r.trigger_tags)}</div></td>
           <td data-label="題材" class="themes"><div>${esc((r.theme_tiers || []).join(" / ") || (r.themes || []).join(" / ") || "-")}</div>${chainSummary(r)}</td>
@@ -2832,10 +2912,13 @@ def _html() -> str:
           </td>
           <td data-label="操作"><b>${esc(r.entry_decision || r.action || "只觀察")}</b><div class="small">${esc(r.action || "")}</div><div class="decision-light ${esc(r.decision_light || "gray")}"><span class="decision-dot"></span>${esc(r.decision_light_label || "灰燈追蹤")}</div><div class="small"><b>今日：</b>${esc(r.action_context || "未列入今日操作")}</div><div class="small">${esc(r.action_context_reason || "")}</div><div class="small">${esc(r.retail_context || "散戶：無明顯背離")}</div></td>
           <td data-label="進場/停損">
-            ${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
-            ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
-            ${r.exit_plan?.take_profit_1 != null ? `<div class="small good">第一段停利：${esc(priceText(r.exit_plan.take_profit_1))}</div>` : ""}
-            ${r.exit_plan?.take_profit_2 != null ? `<div class="small good">第二段停利：${esc(priceText(r.exit_plan.take_profit_2))}</div>` : ""}
+            ${isAvoidPlan(r)
+              ? `<div class="bad"><b>今日不建立交易計劃</b></div><div class="small">觀察支撐：${esc(priceText(r.stop_price))}</div>`
+              : `${r.entry_limit_price != null ? `<div><b>📌 進場上限：${r.entry_limit_price}</b></div>` : ""}
+                 ${r.stop_price != null ? `<div style="color:var(--bad)"><b>🔴 止損：${r.stop_price}</b></div>` : ""}
+                 ${r.exit_plan?.take_profit_1 != null ? `<div class="small good">第一段停利：${esc(priceText(r.exit_plan.take_profit_1))}</div>` : ""}
+                 ${r.exit_plan?.take_profit_2 != null ? `<div class="small good">第二段停利：${esc(priceText(r.exit_plan.take_profit_2))}</div>` : ""}`}
+            ${historicalReferenceHtml(r)}
             <details class="row-detail">
               <summary>進出場條件</summary>
               ${(r.entry_checklist || []).slice(0,3).map(x => `<div class="small">□ ${esc(x)}</div>`).join("")}

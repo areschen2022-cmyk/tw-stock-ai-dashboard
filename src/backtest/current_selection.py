@@ -195,6 +195,18 @@ def _rebalance_action_lists(
     kept_chase = []
     for item in chase:
         stock_id = str(item.get("stock_id") or "")
+        candidate = candidates.get(stock_id) or {}
+        profile = candidate.get("historical_profile") or {}
+        if profile and not item.get("historical_reference"):
+            item = dict(item)
+            item["historical_reference"] = {
+                "label": _reference_label(candidate),
+                "completed": profile.get("completed", 0),
+                "win_rate_5d": profile.get("win_rate_5d"),
+                "avg_return_5d": profile.get("avg_return_5d"),
+                "confidence": profile.get("confidence"),
+                "interpretation": candidate.get("interpretation"),
+            }
         if stock_id in weak_ids:
             item = dict(item)
             item["decision_light"] = "yellow"

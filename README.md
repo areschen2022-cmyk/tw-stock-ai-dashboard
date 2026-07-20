@@ -33,9 +33,9 @@ The monitoring dashboard is generated in `dashboard/`. To publish it through Git
 
 Cloudflare Workers Cron can trigger the GitHub workflow through `workflow_dispatch` for more reliable timing than GitHub's native schedule. The Worker also passes the intended Asia/Taipei trigger time so the dashboard can show schedule delay minutes. See `docs/external_scheduler.md`.
 
-## AI Council
+## AI Review
 
-AI picks require enough model participation before they are shown as official picks. Current strict rule: at least 5 valid model reviews and 5 votes for `可追`. See `docs/ai_council_rules.md`.
+AI review is a second-opinion layer for stocks already selected by the local scoring engine. Production currently uses DeepSeek single-model review (`deepseek-chat`, 1/1 threshold), so dashboard wording treats it as `AI 單模型複核`, not as multi-model consensus. See `docs/ai_council_rules.md`.
 
 Stock grades describe signal strength, not automatic buy permission. The dashboard now separates strength from `entry_decision`, danger-list rules, and theme quality. See `docs/entry_risk_theme_rules.md`.
 
