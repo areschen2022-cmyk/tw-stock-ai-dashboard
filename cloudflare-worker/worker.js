@@ -4,10 +4,6 @@ const GITHUB_WORKFLOW = "daily.yml";
 const GITHUB_REF = "main";
 
 const CRON_TASKS = {
-  "30 20 * * SUN-THU": "dashboard",
-  "0 21 * * SUN-THU": "dashboard",
-  "20 23 * * SUN-THU": "telegram",
-  "35 23 * * SUN-THU": "telegram",
   "5 0 * * MON-FRI": "telegram",
 };
 

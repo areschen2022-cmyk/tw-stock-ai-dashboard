@@ -8,12 +8,6 @@ on:
     # 04:30 / 05:00 Asia/Taipei, Monday-Friday: update GitHub Pages dashboard.
     - cron: "30 20 * * 0-4"
     - cron: "0 21 * * 0-4"
-    # 07:20 / 07:35 / 07:50 / 08:05 Asia/Taipei, Monday-Friday: send Telegram morning report.
-    # Multiple backups are safe because delivery_log prevents duplicate morning reports.
-    - cron: "20 23 * * 0-4"
-    - cron: "35 23 * * 0-4"
-    - cron: "50 23 * * 0-4"
-    - cron: "5 0 * * 1-5"
   workflow_dispatch:
     inputs:
       task:
@@ -281,19 +275,13 @@ jobs:
           fi
 
   morning-telegram:
-    name: 07:20/07:35/07:50/08:05 send Telegram
+    name: 08:05 send Telegram
     if: >-
-      github.event.schedule == '20 23 * * 0-4' ||
-      github.event.schedule == '35 23 * * 0-4' ||
-      github.event.schedule == '50 23 * * 0-4' ||
-      github.event.schedule == '5 0 * * 1-5' ||
+      github.event_name == 'workflow_dispatch' &&
       (
-        github.event_name == 'workflow_dispatch' &&
-        (
-          inputs.task == 'telegram' ||
-          inputs.task == 'all' ||
-          inputs.send_telegram == 'true'
-        )
+        inputs.task == 'telegram' ||
+        inputs.task == 'all' ||
+        inputs.send_telegram == 'true'
       )
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -348,6 +336,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Send Telegram morning report
+        id: send_telegram
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -355,9 +344,6 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: python main.py --send-telegram --telegram-summary
-
-      - name: Run Telegram post-update check
-        run: python scripts/post_update_check.py
 
       - name: Commit Telegram delivery log
         run: |
@@ -429,7 +415,7 @@ jobs:
         uses: actions/deploy-pages@v5
 
       - name: Notify Telegram failure
-        if: failure()
+        if: failure() && steps.send_telegram.outcome == 'failure'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
