@@ -1995,8 +1995,8 @@ def _html() -> str:
     .temperature-card.warn { border-left:4px solid var(--warn); }
     .temperature-card.bad { border-left:4px solid var(--bad); }
     .temperature-card b { display:block; font-size:20px; margin-bottom:4px; }
-    .decision-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr)); gap:10px; margin:8px 0 10px; }
-    .decision-card { border:1px solid var(--line); border-radius:12px; padding:12px; background:linear-gradient(180deg,#fff,#fbfdff); min-height:132px; box-shadow:var(--shadow-sm); transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .decision-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); gap:10px; margin:8px 0 10px; }
+    .decision-card { border:1px solid var(--line); border-radius:12px; padding:12px; background:linear-gradient(180deg,#fff,#fbfdff); min-height:0; box-shadow:var(--shadow-sm); transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
     .decision-card:hover { transform:translateY(-1px); box-shadow:var(--shadow); border-color:#b6c7dc; }
     .decision-card.chase { border-left:4px solid var(--good); }
     .decision-card.pullback { border-left:4px solid var(--warn); }
@@ -2004,6 +2004,15 @@ def _html() -> str:
     .decision-card-head { display:flex; gap:8px; justify-content:space-between; align-items:flex-start; }
     .decision-card-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
     .decision-card-title { font-weight:800; line-height:1.25; }
+    .decision-signal-line { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; margin:4px 0 8px; color:var(--muted); font-size:12px; }
+    .decision-signal-line b { color:var(--ink); }
+    .decision-kv-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:6px; margin:8px 0; }
+    .decision-kv { border:1px solid #e6edf5; border-radius:8px; padding:7px 8px; min-height:48px; background:#fff; }
+    .decision-kv.wide { grid-column:1 / -1; }
+    .decision-kv span { display:block; color:var(--muted); font-size:11px; margin-bottom:2px; }
+    .decision-kv b { display:block; font-size:14px; line-height:1.32; }
+    .decision-risk-line { display:flex; gap:6px; align-items:flex-start; color:var(--muted); font-size:12px; line-height:1.4; margin-top:6px; }
+    .decision-risk-line b { color:var(--bad); white-space:nowrap; }
     .decision-light { display:inline-flex; align-items:center; gap:4px; margin-top:3px; font-size:12px; font-weight:800; }
     .decision-dot { width:9px; height:9px; border-radius:999px; display:inline-block; background:#94a3b8; }
     .decision-light.green .decision-dot { background:var(--good); }
@@ -2179,7 +2188,7 @@ def _html() -> str:
           <div class="action-head">
             <div class="action-title">
               <h2>今日操作結論</h2>
-              <div class="line">先看燈號與可追/等拉回，再用個股卡片確認進場上限、停損與開盤量能。</div>
+              <div class="line">早盤只看五件事：操作、進場條件、停損、歷史同條件勝率、主要風險。</div>
               <div id="decisionBrief" class="decision-brief"></div>
             </div>
             <div id="decisionSummary" class="decision-summary-compact"></div>
@@ -2558,79 +2567,81 @@ def _html() -> str:
         const n = Number(value);
         return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/, "") : String(value);
       }
+      function compactHistoryText(row) {
+        const hist = row?.historical_reference || {};
+        const completed = Number(hist.completed || 0);
+        const win = Number(hist.win_rate_5d);
+        const avg = Number(hist.avg_return_5d);
+        if (!completed) return "樣本不足，先看開盤量價";
+        const winText = Number.isFinite(win) ? `${win.toFixed(1)}%` : "—";
+        const avgText = Number.isFinite(avg) ? `，5日均 ${pctText(avg)}` : "";
+        return `樣本 ${completed}｜勝率 ${winText}${avgText}`;
+      }
+      function compactEntryText(row, mode) {
+        const checks = (row.entry_checklist || []).filter(Boolean);
+        const limit = priceText(row.entry_limit_price);
+        if (mode === "avoid" || isAvoidPlan(row)) return "不追價；等紅燈解除後再評估";
+        if (mode === "pullback") return `回到進場區再看；上限 ${limit}`;
+        if (checks.length) return checks.slice(0, 2).join("；");
+        return `開盤量價確認；上限 ${limit}`;
+      }
+      function compactRiskText(row, mode) {
+        const riskBits = [
+          row.action_context_reason,
+          row.decision_light_reason,
+          row.retail_context_reason,
+          row.risk,
+        ].filter(Boolean);
+        const text = riskBits.join("；");
+        if (mode === "avoid") return text || "紅燈或籌碼轉弱，今日先避開";
+        if (text) return text.slice(0, 72);
+        return "跳空過高、量能不足或跌破停損需放棄";
+      }
       function decisionCard(row, mode) {
         const badgeText = mode === "pullback" ? "等拉回" : mode === "avoid" ? "避開" : "可追";
         const stockLink = `<a class="stock-link" href="https://www.wantgoo.com/stock/${esc(row.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(row.stock_id)} ${esc(row.name)}</a>`;
-        const checklist = (row.entry_checklist || []).slice(0, 2).join(" / ");
         const qualityNotes = (row.selection_quality_notes || []).slice(0, 1).join(" / ");
-        const reason = qualityNotes || row.reason || checklist || row.action || "綜合訊號";
+        const reason = qualityNotes || row.reason || row.action || "綜合訊號";
         const aiReview = row.ai_review || {};
         const aiLabel = row.ai_label || "待 AI 確認";
         const aiText = aiReview.stock_id
           ? `｜${esc(aiLabel)} ${esc(aiReview.pick_agreement_count || aiReview.agreement_count || 0)}/${esc(aiReview.model_count || 0)}`
           : "｜待 AI 確認";
-        const light = row.decision_light || "gray";
-        const lightLabel = row.decision_light_label || "灰燈追蹤";
-        const lightReason = row.decision_light_reason || row.action_context_reason || "";
-        const aiReason = row.ai_reason || "";
-        const retailText = row.retail_context || "散戶：無明顯背離";
-        const retailReason = row.retail_context_reason || "";
-        const tideText = row.tide_context ? `${row.tide_context}｜${row.tide_context_reason || ""}` : "依市場潮汐控管部位";
-        const stabilityLabel = row.stability_label || "新進名單";
-        const stabilityReason = row.stability_reason || "近期尚無連續推薦紀錄。";
-        const exitPlan = row.exit_plan || {};
         const avoidPlan = isAvoidPlan(row);
-        const priceBlock = avoidPlan ? `
-          <div class="decision-price"><span>交易狀態</span><b class="bad">今日不建立交易計劃</b></div>
-          <div class="decision-price"><span>觀察支撐</span><b>${esc(priceText(row.stop_price))}</b></div>`
-          : `
-          <div class="decision-price"><span>進場上限</span><b>${esc(priceText(row.entry_limit_price))}</b></div>
-          <div class="decision-price"><span>停損參考</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>`;
-        const exitBlock = avoidPlan ? `
-          <div class="history-ref bad"><b>避免追價</b>｜紅燈或避免標的只保留觀察支撐，不顯示第一段、第二段停利，等風險解除後再重新計畫。</div>`
-          : `
-          <div class="decision-exit">
-            <div><span>硬停損</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(priceText(row.stop_price))}</b></div>
-            <div><span>第一段</span><b class="good">${esc(priceText(exitPlan.take_profit_1))}</b></div>
-            <div><span>第二段</span><b class="good">${esc(priceText(exitPlan.take_profit_2))}</b></div>
-          </div>`;
+        const effectiveMode = avoidPlan ? "avoid" : mode;
+        const stopLabel = effectiveMode === "avoid" ? "觀察支撐" : "停損";
+        const entryText = compactEntryText(row, effectiveMode);
+        const stopText = priceText(row.stop_price);
+        const historyText = compactHistoryText(row);
+        const riskText = compactRiskText(row, effectiveMode);
         return `<article class="decision-card ${mode}">
           <div class="decision-card-head">
             <div>
               <div class="decision-card-title">${stockLink}</div>
-              <div class="small">${esc(row.score ?? "-")}/100｜${esc(row.grade || "-")}${row.entry_decision ? `｜${esc(row.entry_decision)}` : ""}｜${esc(stabilityLabel)}${aiText}</div>
-              <div class="decision-light ${esc(light)}"><span class="decision-dot"></span>${esc(lightLabel)}<span class="small">｜${esc(lightReason)}</span></div>
+              <div class="decision-signal-line">
+                <span><b>${esc(row.score ?? "-")}/100</b></span>
+                <span>${esc(row.grade || "-")}</span>
+                <span>${esc(row.entry_decision || row.action || "-")}</span>
+                <span>${aiText.replace(/^｜/, "")}</span>
+              </div>
             </div>
             <div class="decision-card-actions">
               <button class="detail-button" type="button" data-detail-stock="${esc(row.stock_id)}">詳情</button>
               <span class="decision-badge ${mode}">${badgeText}</span>
             </div>
           </div>
-          <div class="decision-prices">
-            ${priceBlock}
+          <div class="decision-kv-grid">
+            <div class="decision-kv wide"><span>進場條件</span><b>${esc(entryText)}</b></div>
+            <div class="decision-kv"><span>${esc(stopLabel)}</span><b class="${row.stop_price != null ? "bad" : ""}">${esc(stopText)}</b></div>
+            <div class="decision-kv"><span>歷史同條件</span><b>${esc(historyText)}</b></div>
           </div>
-          ${exitBlock}
+          <div class="decision-risk-line"><b>風險</b><span>${esc(riskText)}</span></div>
           <div class="decision-reason">${esc(reason)}</div>
-          ${historicalReferenceHtml(row)}
-          <details class="mini-detail">
-            <summary>個股開盤檢查表</summary>
-            ${(row.entry_checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("") || '<div class="line small">尚無足夠資料設定條件</div>'}
-          </details>
-          <details class="mini-detail">
-            <summary>持倉出場計劃｜${esc(exitPlan.plan_type || "標準控風險")}</summary>
-            <div class="line small">${esc(exitPlan.trailing_rule || "依停損與移動停利控管。")}</div>
-            ${(exitPlan.checklist || []).map(item => `<div class="line small">□ ${esc(item)}</div>`).join("")}
-          </details>
-          <div class="decision-note-grid">
-            <div class="decision-note"><b>AI</b><br>${esc(aiReason || aiLabel)}</div>
-            <div class="decision-note"><b>潮汐</b><br>${esc(tideText)}</div>
-            <div class="decision-note"><b>穩定性</b><br>${esc(stabilityReason)}</div>
-            <div class="decision-note"><b>散戶</b><br>${esc(retailText)}${retailReason ? `｜${esc(retailReason)}` : ""}</div>
-          </div>
         </article>`;
       }
       const chaseCards = (actionLists.chase || []).slice(0, 4).map(row => decisionCard(row, "chase")).join("");
       const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
+      const avoidCards = (actionLists.risk || []).slice(0, 2).map(row => decisionCard(row, "avoid")).join("");
       document.querySelector("#actionLists").innerHTML = `
         <details class="mini-detail open-check-guide">
           <summary>開盤時怎麼確認？</summary>
@@ -2642,7 +2653,9 @@ def _html() -> str:
         <div class="line good"><b>可追</b>：${esc(actionLists.summary?.chase ?? 0)} 檔</div>
         <div class="decision-card-grid">${chaseCards || '<div class="line">今日暫無高分可追清單</div>'}</div>
         <div class="line warn"><b>等拉回</b>：${esc(actionLists.summary?.pullback ?? 0)} 檔</div>
-        <div class="decision-card-grid">${pullbackCards || '<div class="line">暫無等拉回清單</div>'}</div>`;
+        <div class="decision-card-grid">${pullbackCards || '<div class="line">暫無等拉回清單</div>'}</div>
+        <div class="line bad"><b>避開</b>：${esc(actionLists.summary?.risk ?? 0)} 檔</div>
+        <div class="decision-card-grid">${avoidCards || '<div class="line">今日暫無避開清單</div>'}</div>`;
       function compactRetail(row) {
         const pct = row.holder_change_pct == null ? "—" : `${Number(row.holder_change_pct).toFixed(1)}%`;
         const px = row.price_change_pct == null ? "—" : `${Number(row.price_change_pct).toFixed(1)}%`;
