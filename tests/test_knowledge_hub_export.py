@@ -11,12 +11,12 @@ def _performance_payload() -> dict:
         "signal_attribution": {
             "factor_rows": [
                 {
-                    "label": "題材升溫：AI伺服器",
+                    "label": "AI agreement",
                     "signals": 12,
                     "completed": 6,
                     "win_rate_5d": 66.7,
                     "avg_return_5d": 3.2,
-                    "sample_label": "有效樣本",
+                    "sample_label": "small sample",
                 }
             ]
         },
@@ -24,38 +24,38 @@ def _performance_payload() -> dict:
             "failure_attribution": {
                 "rows": [
                     {
-                        "label": "追高過熱",
+                        "label": "overheated",
                         "count": 3,
                         "avg_return_5d": -4.5,
                         "stop_hit_rate": 33.3,
-                        "lesson": "過熱後續航不足，應等開盤量價確認。",
+                        "lesson": "avoid chasing overextended names",
                     }
                 ]
             }
         },
         "adaptive_feedback": [
             {
-                "target": "題材升溫：AI伺服器",
-                "action": "保留加權但提高開盤確認門檻",
+                "target": "AI agreement",
+                "action": "raise threshold",
                 "sample": 6,
                 "avg_return_5d": 3.2,
-                "reason": "樣本仍少，但早期表現偏正向。",
+                "reason": "small but positive sample",
             }
         ],
         "low_win_rate_breakdown": {
             "target_win_rate_5d": 50.0,
             "rows": [
                 {
-                    "group": "進場條件",
-                    "label": "有觸發進場",
+                    "group": "action",
+                    "label": "chase",
                     "completed": 25,
                     "signals": 30,
                     "win_rate_5d": 36.0,
                     "avg_return_5d": -2.4,
                     "drag_score": 4.1,
-                    "sample_label": "觀察中",
-                    "diagnosis": "進場確認後仍下跌。",
-                    "recommended_action": "提高開盤確認門檻。",
+                    "sample_label": "weak cohort",
+                    "diagnosis": "bad risk/reward",
+                    "recommended_action": "downgrade",
                 }
             ],
         },
@@ -67,10 +67,10 @@ def test_build_knowledge_points_from_performance_payload() -> None:
 
     assert len(points) == 4
     assert all(point["domain"] == "taiwan_stock" for point in points)
-    assert any(point["topic"].startswith("台股訊號因素：") for point in points)
-    assert any("台股失敗歸因：" in point["topic"] for point in points)
-    assert any("台股回測回饋：" in point["topic"] for point in points)
-    assert any("台股低勝率拆解：" in point["topic"] for point in points)
+    assert any(point["topic"].startswith("Taiwan stock factor attribution") for point in points)
+    assert any("Taiwan stock failure attribution" in point["topic"] for point in points)
+    assert any("Taiwan stock adaptive feedback" in point["topic"] for point in points)
+    assert any("Taiwan stock low win-rate breakdown" in point["topic"] for point in points)
     assert all(point["id"].startswith("kp_") for point in points)
     assert all("�" not in json.dumps(point, ensure_ascii=False) for point in points)
 
@@ -94,11 +94,11 @@ def test_build_weekly_review_points() -> None:
             "as_of": "2026-07-16",
             "risk_level": "needs_review",
             "next_week_actions": [
-                {"type": "deweight", "target": "每日可追訊號", "reason": "勝率低於 50%。"}
+                {"type": "deweight", "target": "weak chase signals", "reason": "below 50% win rate"}
             ],
         }
     )
 
     assert len(points) == 1
-    assert points[0]["topic"] == "台股每週檢討：每日可追訊號"
-    assert "每週檢討" in points[0]["tags"]
+    assert points[0]["topic"] == "Taiwan stock weekly review action: weak chase signals"
+    assert "weekly_review" in points[0]["tags"]

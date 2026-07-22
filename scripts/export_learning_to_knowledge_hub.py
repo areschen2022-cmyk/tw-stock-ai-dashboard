@@ -56,7 +56,7 @@ def _int(value, default: int = 0) -> int:
         return default
 
 
-def _text(value, default: str = "未命名") -> str:
+def _text(value, default: str = "unknown") -> str:
     text = str(value or default).strip()
     return text if text else default
 
@@ -103,7 +103,7 @@ def _knowledge(
         "evidence": evidence,
         "source_type": "backtest",
         "source_ref": source_ref,
-        "tags": tags,
+        "tags": [str(tag) for tag in tags if str(tag or "").strip()],
         "confidence": _confidence(completed, avg_return_5d, win_rate_5d),
         "created_at": created,
         "updated_at": created,
@@ -120,23 +120,20 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         completed = _int(row.get("completed"))
         if completed <= 0:
             continue
-        label = _text(row.get("label"), "未命名因素")
+        label = _text(row.get("label"), "factor")
         avg_return = row.get("avg_return_5d")
         win_rate = row.get("win_rate_5d")
         claim = (
-            f"{label} 在已完成樣本中，5 日平均報酬 {_fmt_pct(avg_return)}，"
-            f"5 日勝率 {_fmt_pct(win_rate)}。"
+            f"Factor {label} has {completed} completed samples; "
+            f"5-day win rate {_fmt_pct(win_rate)}, average return {_fmt_pct(avg_return)}."
         )
-        evidence = (
-            f"signals={row.get('signals', 0)}, completed={completed}, "
-            f"sample={row.get('sample_label', '')}"
-        )
+        evidence = f"signals={row.get('signals', 0)}, sample={row.get('sample_label', '')}"
         points.append(
             _knowledge(
-                topic=f"台股訊號因素：{label}",
+                topic=f"Taiwan stock factor attribution: {label}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "訊號歸因", label],
+                tags=["taiwan_stock", "factor_attribution", label],
                 completed=completed,
                 avg_return_5d=avg_return,
                 win_rate_5d=win_rate,
@@ -149,19 +146,16 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         count = _int(row.get("count"))
         if count <= 0:
             continue
-        label = _text(row.get("label"), "未命名失敗因素")
+        label = _text(row.get("label"), "failure")
         avg_return = row.get("avg_return_5d")
-        claim = f"{label} 常出現在失敗樣本，5 日平均報酬 {_fmt_pct(avg_return)}。"
-        evidence = (
-            f"count={count}, stop_hit_rate={_fmt_pct(row.get('stop_hit_rate'))}, "
-            f"lesson={row.get('lesson', '')}"
-        )
+        claim = f"Failure factor {label} appeared in {count} losing samples; average return {_fmt_pct(avg_return)}."
+        evidence = f"stop_hit_rate={_fmt_pct(row.get('stop_hit_rate'))}, lesson={row.get('lesson', '')}"
         points.append(
             _knowledge(
-                topic=f"台股失敗歸因：{label}",
+                topic=f"Taiwan stock failure attribution: {label}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "失敗歸因", label],
+                tags=["taiwan_stock", "failure_attribution", label],
                 completed=count,
                 avg_return_5d=avg_return,
                 win_rate_5d=None,
@@ -173,19 +167,16 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         sample = _int(row.get("sample"))
         if sample <= 0:
             continue
-        target = _text(row.get("target"), "未命名目標")
-        action = _text(row.get("action"), "持續觀察")
-        claim = f"{target} 的回測回饋建議為「{action}」。"
-        evidence = (
-            f"sample={sample}, avg_return_5d={_fmt_pct(row.get('avg_return_5d'))}, "
-            f"reason={row.get('reason', '')}"
-        )
+        target = _text(row.get("target"), "target")
+        action = _text(row.get("action"), "review")
+        claim = f"Adaptive feedback suggests {action} for {target} based on {sample} samples."
+        evidence = f"avg_return_5d={_fmt_pct(row.get('avg_return_5d'))}, reason={row.get('reason', '')}"
         points.append(
             _knowledge(
-                topic=f"台股回測回饋：{target}",
+                topic=f"Taiwan stock adaptive feedback: {target}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "回測回饋", target],
+                tags=["taiwan_stock", "adaptive_feedback", target, action],
                 completed=sample,
                 avg_return_5d=row.get("avg_return_5d"),
                 win_rate_5d=None,
@@ -199,14 +190,14 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         completed = _int(row.get("completed"))
         if completed <= 0:
             continue
-        group = _text(row.get("group"), "低勝率區塊")
-        label = _text(row.get("label"), "未命名")
+        group = _text(row.get("group"), "group")
+        label = _text(row.get("label"), "label")
         avg_return = row.get("avg_return_5d")
         win_rate = row.get("win_rate_5d")
         claim = (
-            f"{group}「{label}」拖累近期勝率："
-            f"完成 {completed} 筆，5 日勝率 {_fmt_pct(win_rate)}，"
-            f"低於基準 {_fmt_pct(target_win_rate)}，5 日平均報酬 {_fmt_pct(avg_return)}。"
+            f"Low win-rate group {group}:{label} has {completed} samples; "
+            f"5-day win rate {_fmt_pct(win_rate)} vs target {_fmt_pct(target_win_rate)}, "
+            f"average return {_fmt_pct(avg_return)}."
         )
         evidence = (
             f"drag_score={row.get('drag_score')}, sample={row.get('sample_label')}, "
@@ -214,10 +205,10 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         )
         points.append(
             _knowledge(
-                topic=f"台股低勝率拆解：{group}:{label}",
+                topic=f"Taiwan stock low win-rate breakdown: {group}:{label}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "低勝率拆解", group, label],
+                tags=["taiwan_stock", "low_win_rate", group, label],
                 completed=completed,
                 avg_return_5d=avg_return,
                 win_rate_5d=win_rate,
@@ -226,7 +217,7 @@ def build_knowledge_points(performance: dict) -> list[dict]:
         )
 
     current_backtest = performance.get("current_selection_backtest") or {}
-    for section, polarity in [("strong_references", "正向"), ("weak_references", "偏弱")]:
+    for section, polarity in [("strong_references", "strong"), ("weak_references", "weak")]:
         for row in (current_backtest.get(section) or [])[:8]:
             profile = row.get("historical_profile") or {}
             completed = _int(profile.get("completed"))
@@ -239,11 +230,11 @@ def build_knowledge_points(performance: dict) -> list[dict]:
             avg_return = profile.get("avg_return_5d")
             win_rate = profile.get("win_rate_5d")
             theme_tags = [_text(theme, "") for theme in (row.get("themes") or []) if theme]
-            topic_label = f"{stock_id} {name}".strip() or "候選股"
+            topic_label = f"{stock_id} {name}".strip() or "candidate"
             claim = (
-                f"{topic_label} 的今日條件歷史參考為{polarity}："
-                f"{completed} 筆樣本，5 日平均報酬 {_fmt_pct(avg_return)}，"
-                f"5 日勝率 {_fmt_pct(win_rate)}。"
+                f"Current candidate {topic_label} has {polarity} historical profile; "
+                f"{completed} comparable samples, average 5-day return {_fmt_pct(avg_return)}, "
+                f"5-day win rate {_fmt_pct(win_rate)}."
             )
             evidence = (
                 f"grade={grade}, action={action}, match_type={profile.get('match_type')}, "
@@ -252,10 +243,10 @@ def build_knowledge_points(performance: dict) -> list[dict]:
             )
             points.append(
                 _knowledge(
-                    topic=f"今日候選股同條件回測：{topic_label}",
+                    topic=f"Taiwan stock current candidate profile: {topic_label}",
                     claim=claim,
                     evidence=evidence,
-                    tags=["今日候選股", "同條件回測", polarity, grade, action, *theme_tags],
+                    tags=["taiwan_stock", "current_candidate", polarity, grade, action, *theme_tags],
                     completed=completed,
                     avg_return_5d=avg_return,
                     win_rate_5d=win_rate,
@@ -271,16 +262,16 @@ def build_weekly_review_points(weekly_review: dict) -> list[dict]:
     source_ref = f"tw-stock-ai weekly_review.json {as_of}".strip()
     points: list[dict] = []
     for row in weekly_review.get("next_week_actions") or []:
-        target = _text(row.get("target"), "未命名檢討項")
+        target = _text(row.get("target"), "target")
         reason = _text(row.get("reason"), "")
         action_type = _text(row.get("type"), "review")
-        claim = f"每週檢討建議下週對「{target}」採取 {action_type}：{reason}"
+        claim = f"Weekly review action {action_type} for {target}: {reason}"
         points.append(
             _knowledge(
-                topic=f"台股每週檢討：{target}",
+                topic=f"Taiwan stock weekly review action: {target}",
                 claim=claim,
                 evidence=f"risk_level={weekly_review.get('risk_level')}, action_type={action_type}",
-                tags=["台股", "每週檢討", action_type, target],
+                tags=["taiwan_stock", "weekly_review", action_type, target],
                 completed=20,
                 avg_return_5d=None,
                 win_rate_5d=None,
@@ -297,23 +288,20 @@ def build_research_source_points(research_review: dict) -> list[dict]:
         status = _text(row.get("status"), "candidate")
         if status not in {"adopted", "candidate"}:
             continue
-        name = _text(row.get("name"), "未命名來源")
+        name = _text(row.get("name"), "source")
         integration = _text(row.get("integration"), "research")
         risk_level = _text(row.get("risk_level"), "unknown")
         claim = (
-            f"{name} 可作為台股系統的 {integration} 參考來源；"
-            f"目前狀態為 {status}，風險層級 {risk_level}。"
+            f"Research source {name} is marked {status}; integration={integration}; "
+            f"risk_level={risk_level}."
         )
-        evidence = (
-            f"decision_use={row.get('decision_use', '')}; "
-            f"score_use={row.get('score_use', '')}; url={row.get('url', '')}"
-        )
+        evidence = f"decision_use={row.get('decision_use', '')}; score_use={row.get('score_use', '')}; url={row.get('url', '')}"
         points.append(
             _knowledge(
-                topic=f"台股外部資料源：{name}",
+                topic=f"Taiwan stock research source review: {name}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "外部資料源", status, integration, risk_level],
+                tags=["taiwan_stock", "research_source", status, integration, risk_level],
                 completed=20 if status == "adopted" else 5,
                 avg_return_5d=None,
                 win_rate_5d=None,
@@ -329,23 +317,24 @@ def build_kronos_proxy_points(kronos_payload: dict) -> list[dict]:
     phase2 = kronos_payload.get("phase2") or {}
     summary = kronos_payload.get("summary") or {}
     overall = summary.get("overall_5d") or {}
+    segments = summary.get("phase2_segments") or {}
     points: list[dict] = []
 
     completed = _int(overall.get("completed"))
     if completed > 0:
         status = _text(phase2.get("status"), "unknown")
         claim = (
-            f"Kronos proxy 技術偏向回測目前為 {status}："
-            f"完成 {completed} 筆，5 日勝率 {_fmt_pct(overall.get('win_rate'))}，"
-            f"5 日平均報酬 {_fmt_pct(overall.get('avg_return'))}。"
+            f"Kronos proxy overall validation status is {status}; "
+            f"{completed} completed 5-day samples, win rate {_fmt_pct(overall.get('win_rate'))}, "
+            f"average 5-day return {_fmt_pct(overall.get('avg_return'))}."
         )
-        evidence = "；".join(str(item) for item in (phase2.get("recommended_integration") or [])[:3])
+        evidence = "; ".join(str(item) for item in (phase2.get("recommended_integration") or [])[:3])
         points.append(
             _knowledge(
-                topic="台股 Kronos proxy 第二階段門檻",
+                topic="Taiwan stock Kronos proxy overall validation",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "Kronos", "技術偏向", "第二階段", status],
+                tags=["taiwan_stock", "Kronos", "proxy_backtest", "phase2", status],
                 completed=completed,
                 avg_return_5d=overall.get("avg_return"),
                 win_rate_5d=overall.get("win_rate"),
@@ -359,22 +348,52 @@ def build_kronos_proxy_points(kronos_payload: dict) -> list[dict]:
             continue
         bias = _text(row.get("kronos_bias"), "unknown")
         claim = (
-            f"Kronos proxy 偏向「{bias}」的 5 日勝率為 {_fmt_pct(row.get('win_rate'))}，"
-            f"5 日平均報酬 {_fmt_pct(row.get('avg_return'))}。"
+            f"Kronos proxy bias {bias} has 5-day win rate {_fmt_pct(row.get('win_rate'))} "
+            f"and average 5-day return {_fmt_pct(row.get('avg_return'))}."
         )
         evidence = f"signals={row.get('signals')}, completed={completed}, median={row.get('median_return')}"
         points.append(
             _knowledge(
-                topic=f"台股 Kronos proxy 偏向：{bias}",
+                topic=f"Taiwan stock Kronos proxy bias: {bias}",
                 claim=claim,
                 evidence=evidence,
-                tags=["台股", "Kronos", "技術偏向", bias],
+                tags=["taiwan_stock", "Kronos", "proxy_backtest", bias],
                 completed=completed,
                 avg_return_5d=row.get("avg_return"),
                 win_rate_5d=row.get("win_rate"),
                 source_ref=source_ref,
             )
         )
+
+    for bucket_name, tag in [("qualified_segments", "qualified"), ("weak_segments", "weak")]:
+        for row in (segments.get(bucket_name) or [])[:10]:
+            completed = _int(row.get("completed"))
+            if completed <= 0:
+                continue
+            segment = _text(row.get("segment"), "unknown")
+            value = _text(row.get("value"), "unknown")
+            claim = (
+                f"Kronos proxy segment {segment}={value} is {tag}; "
+                f"{completed} completed samples, 5-day win rate {_fmt_pct(row.get('win_rate'))}, "
+                f"average return {_fmt_pct(row.get('avg_return'))}, "
+                f"edge vs baseline {row.get('edge_avg_return')} pct."
+            )
+            evidence = (
+                f"baseline={segments.get('baseline')}; edge_win_rate={row.get('edge_win_rate')}; "
+                f"min_completed={segments.get('min_completed')}"
+            )
+            points.append(
+                _knowledge(
+                    topic=f"Taiwan stock Kronos proxy segment {tag}: {segment}={value}",
+                    claim=claim,
+                    evidence=evidence,
+                    tags=["taiwan_stock", "Kronos", "proxy_backtest", "segment", tag, segment, value],
+                    completed=completed,
+                    avg_return_5d=row.get("avg_return"),
+                    win_rate_5d=row.get("win_rate"),
+                    source_ref=source_ref,
+                )
+            )
     return _dedupe_by_id(points)
 
 

@@ -13,11 +13,13 @@ import pandas as pd
 
 from src.config_loader import load_yaml, merge_theme_database
 from src.data_provider.finmind_client import FinMindClient
+from src.scoring.grade import grade_label
 
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 DEFAULT_COST_BPS = 60.0
 MIN_PHASE2_SAMPLE = 80
+MIN_SEGMENT_SAMPLE = 50
 
 
 def _now() -> str:
@@ -216,6 +218,84 @@ def _bucket(rows: list[dict], key: str) -> list[dict]:
     ]
 
 
+def _score_band(score: int | float | None) -> str:
+    if score is None:
+        return "unknown"
+    value = float(score)
+    if value >= 90:
+        return "90+"
+    if value >= 80:
+        return "80-89"
+    if value >= 70:
+        return "70-79"
+    if value >= 60:
+        return "60-69"
+    return "50-59"
+
+
+def _segment_rows(rows: list[dict], key: str, label: str, baseline: dict) -> list[dict]:
+    base_win = float(baseline.get("win_rate") or 0)
+    base_avg = float(baseline.get("avg_return") or 0)
+    output: list[dict] = []
+    buckets: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        value = row.get(key)
+        if value is None:
+            continue
+        buckets[str(value)].append(row)
+    for value, items in sorted(buckets.items()):
+        stats = _return_stats(items)
+        completed = int(stats.get("completed") or 0)
+        if completed < MIN_SEGMENT_SAMPLE:
+            continue
+        win_rate = float(stats.get("win_rate") or 0)
+        avg_return = float(stats.get("avg_return") or 0)
+        edge_win = round(win_rate - base_win, 2)
+        edge_avg = round(avg_return - base_avg, 4)
+        output.append(
+            {
+                "segment": label,
+                "value": value,
+                **stats,
+                "edge_win_rate": edge_win,
+                "edge_avg_return": edge_avg,
+                "qualified": edge_win >= 3 and edge_avg >= 0.3,
+                "weak": edge_win <= -5 or edge_avg <= -0.8,
+            }
+        )
+    output.sort(key=lambda row: (row["qualified"], row["edge_avg_return"], row["edge_win_rate"]), reverse=True)
+    return output
+
+
+def _phase2_segments(rows: list[dict]) -> dict:
+    completed = [row for row in rows if row.get("net_return_5d") is not None]
+    baseline = _return_stats(completed)
+    segment_rows: list[dict] = []
+    for key, label in [
+        ("grade", "strength"),
+        ("score_band", "score_band"),
+        ("label", "original_signal"),
+        ("kronos_bias", "kronos_proxy"),
+        ("label_kronos", "original_signal_x_kronos"),
+        ("grade_kronos", "strength_x_kronos"),
+    ]:
+        segment_rows.extend(_segment_rows(completed, key, label, baseline))
+    qualified = [row for row in segment_rows if row.get("qualified")]
+    weak = [row for row in segment_rows if row.get("weak")]
+    qualified.sort(key=lambda row: (row["edge_avg_return"], row["edge_win_rate"], row["completed"]), reverse=True)
+    weak.sort(key=lambda row: (row["edge_avg_return"], row["edge_win_rate"], row["completed"]))
+    return {
+        "baseline": baseline,
+        "min_completed": MIN_SEGMENT_SAMPLE,
+        "qualified_count": len(qualified),
+        "weak_count": len(weak),
+        "qualified_segments": qualified[:12],
+        "weak_segments": weak[:12],
+        "all_segments": segment_rows,
+        "note": "Only use as research gating until it passes fresh out-of-sample days.",
+    }
+
+
 def _feature_stats(rows: list[dict]) -> list[dict]:
     buckets: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
@@ -348,8 +428,12 @@ def build_kronos_proxy_backtest(
                     "stock_id": stock_id,
                     "name": names.get(stock_id, ""),
                     "score": int(candidate["total_score"]),
+                    "grade": grade_label(int(candidate["total_score"])),
+                    "score_band": _score_band(candidate["total_score"]),
                     "label": candidate["label"],
                     "kronos_bias": bias["bias"],
+                    "label_kronos": f"{candidate['label']}|{bias['bias']}",
+                    "grade_kronos": f"{grade_label(int(candidate['total_score']))}|{bias['bias']}",
                     "kronos_score": bias["score"],
                     "features": bias["features"],
                     "metrics": bias["metrics"],
@@ -392,6 +476,7 @@ def build_kronos_proxy_backtest(
             "by_bias": _bucket(records, "kronos_bias"),
             "by_label": _bucket(records, "label"),
             "by_feature": _feature_stats(records),
+            "phase2_segments": _phase2_segments(records),
         },
         "phase2": phase2,
         "recent_examples": records[:30],
