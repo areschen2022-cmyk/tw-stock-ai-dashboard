@@ -562,7 +562,7 @@
   "as_of": "2026-07-22",
   "days": 30,
   "stats": {
-    "signals": 445,
+    "signals": 444,
     "completed": 331,
     "win_rate_5d": 38.670694864048336,
     "avg_return_5d": -1.715304240877139,
@@ -617,15 +617,6 @@
       "stop_hit_rate": 18.181818181818183
     },
     {
-      "label": "AI電力/重電/電網",
-      "signals": 7,
-      "completed": 2,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -5.037023324694557,
-      "avg_return_10d": null,
-      "stop_hit_rate": 66.66666666666666
-    },
-    {
       "label": "原物料/低基期傳產",
       "signals": 7,
       "completed": 6,
@@ -633,6 +624,15 @@
       "avg_return_5d": 11.54063111740215,
       "avg_return_10d": null,
       "stop_hit_rate": 14.285714285714285
+    },
+    {
+      "label": "AI電力/重電/電網",
+      "signals": 6,
+      "completed": 2,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.037023324694557,
+      "avg_return_10d": null,
+      "stop_hit_rate": 66.66666666666666
     },
     {
       "label": "被動元件",
@@ -739,7 +739,7 @@
   "action_stats": [
     {
       "label": "只觀察",
-      "signals": 217,
+      "signals": 216,
       "completed": 161,
       "win_rate_5d": 34.78260869565217,
       "avg_return_5d": -2.2112341320663806,
@@ -1105,18 +1105,18 @@
     ]
   },
   "data_quality": {
-    "signals": 445,
+    "signals": 444,
     "completed_5d": 331,
-    "pending_5d": 41,
+    "pending_5d": 40,
     "data_missing_5d": 73,
-    "completion_rate_5d": 74.38202247191012,
+    "completion_rate_5d": 74.54954954954955,
     "entry_trigger_known": 405,
     "entry_trigger_rate": 75.30864197530865,
     "stop_known": 405,
     "stop_hit_rate": 38.51851851851852,
     "status_counts": {
       "completed_5d": 331,
-      "pending_5d": 41,
+      "pending_5d": 40,
       "data_missing": 73
     },
     "pending_examples": [
@@ -1164,15 +1164,15 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "1590",
-        "name": "亞德客-KY",
+        "stock_id": "6488",
+        "name": "環球晶",
         "grade": "B",
         "action": "只觀察"
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "6488",
-        "name": "環球晶",
+        "stock_id": "3374",
+        "name": "精材",
         "grade": "B",
         "action": "只觀察"
       }
@@ -1248,7 +1248,7 @@
     },
     {
       "label": "65-74",
-      "signals": 218,
+      "signals": 217,
       "completed": 162,
       "win_rate_5d": 36.41975308641975,
       "avg_return_5d": -1.8944693023125023,
@@ -1337,7 +1337,7 @@
     },
     {
       "grade": "B",
-      "signals": 218,
+      "signals": 217,
       "completed_3d": 179,
       "completed_5d": 162,
       "completed_10d": 0,
@@ -1403,7 +1403,7 @@
       {
         "category": "pending",
         "label": "等待驗證",
-        "count": 114,
+        "count": 113,
         "completed": 0,
         "avg_return_5d": null,
         "avg_return_10d": null
@@ -29436,6 +29436,26 @@
     "items": [
       {
         "signal_date": "2026-07-22",
+        "stock_id": "1802",
+        "name": "台玻",
+        "level": "紅色警戒",
+        "risk_score": 19,
+        "current_score": 28,
+        "previous_score": 18,
+        "entry_price": 54.1,
+        "reasons": [
+          "法人賣、融資增、股價轉弱",
+          "外資連 3 日賣超",
+          "投信連 3 日賣超",
+          "外資 5 日合計賣超"
+        ],
+        "action": "準備減碼或停利，跌破停損不硬凹",
+        "return_3d": null,
+        "return_5d": null,
+        "outcome": null
+      },
+      {
+        "signal_date": "2026-07-22",
         "stock_id": "3481",
         "name": "群創",
         "level": "紅色警戒",
@@ -29448,26 +29468,6 @@
           "投信連 3 日賣超",
           "外資 5 日合計賣超",
           "法人賣超占成交量 26.4%"
-        ],
-        "action": "準備減碼或停利，跌破停損不硬凹",
-        "return_3d": null,
-        "return_5d": null,
-        "outcome": null
-      },
-      {
-        "signal_date": "2026-07-22",
-        "stock_id": "6282",
-        "name": "康舒",
-        "level": "紅色警戒",
-        "risk_score": 16,
-        "current_score": 37,
-        "previous_score": 21,
-        "entry_price": 48.5,
-        "reasons": [
-          "法人賣、融資增、股價轉弱",
-          "外資連 3 日賣超",
-          "投信近 3 日偏賣",
-          "外資 5 日合計賣超"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -29508,6 +29508,26 @@
           "外資近 3 日偏賣",
           "投信近 3 日偏賣",
           "外資 5 日合計賣超"
+        ],
+        "action": "準備減碼或停利，跌破停損不硬凹",
+        "return_3d": null,
+        "return_5d": null,
+        "outcome": null
+      },
+      {
+        "signal_date": "2026-07-22",
+        "stock_id": "1102",
+        "name": "亞泥",
+        "level": "紅色警戒",
+        "risk_score": 15,
+        "current_score": 29,
+        "previous_score": 46,
+        "entry_price": 33.15,
+        "reasons": [
+          "法人賣、融資增、股價轉弱",
+          "外資近 3 日偏賣",
+          "外資 5 日合計賣超",
+          "跌破 MA5"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -29568,26 +29588,6 @@
           "外資近 3 日偏賣",
           "投信近 3 日偏賣",
           "外資 5 日合計賣超"
-        ],
-        "action": "準備減碼或停利，跌破停損不硬凹",
-        "return_3d": null,
-        "return_5d": null,
-        "outcome": null
-      },
-      {
-        "signal_date": "2026-07-22",
-        "stock_id": "1514",
-        "name": "亞力",
-        "level": "紅色警戒",
-        "risk_score": 13,
-        "current_score": 38,
-        "previous_score": 28,
-        "entry_price": 107.5,
-        "reasons": [
-          "法人賣、融資增、股價轉弱",
-          "外資近 3 日偏賣",
-          "外資 5 日合計賣超",
-          "跌破 MA10"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -30139,15 +30139,15 @@
     ]
   },
   "knowledge_adjustment": {
-    "signals": 1624,
-    "completed": 922,
+    "signals": 1625,
+    "completed": 923,
     "downgraded": 40,
     "downgraded_completed": 25,
     "protected_count": 15,
     "protection_rate_5d": 60.0,
     "positive_completed": 45,
     "positive_win_rate_5d": 22.22222222222222,
-    "avg_return_5d": -3.948095326509781,
+    "avg_return_5d": -3.9564158158383123,
     "avg_return_10d": -6.072806807227276,
     "items": [
       {
@@ -30301,35 +30301,6 @@
         "grade": "B",
         "label": "BUY_WATCH",
         "entry_price": 7975.0,
-        "source": "knowledge_export",
-        "original_action": "只觀察",
-        "adjusted_action": "只觀察",
-        "negative_matches": [
-          "台股低勝率拆解：操作:只觀察",
-          "台股低勝率拆解：操作:等拉回",
-          "台股回測回饋：操作:只觀察",
-          "台股低勝率拆解：操作:只觀察",
-          "台股低勝率拆解：操作:等拉回"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：台股低勝率拆解：操作:只觀察、台股低勝率拆解：操作:等拉回、台股回測回饋：操作:只觀察"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-22",
-        "stock_id": "1590",
-        "name": "亞德客-KY",
-        "total_score": 73,
-        "grade": "B",
-        "label": "BUY_WATCH",
-        "entry_price": 1360.0,
         "source": "knowledge_export",
         "original_action": "只觀察",
         "adjusted_action": "只觀察",
@@ -30513,6 +30484,35 @@
           "台股低勝率拆解：分數區間:65-74",
           "台股低勝率拆解：題材:先進封裝/CoWoS",
           "台股低勝率拆解：強度:A"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-22",
+        "stock_id": "1301",
+        "name": "台塑",
+        "total_score": 60,
+        "grade": "C",
+        "label": "WAIT",
+        "entry_price": 63.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "台股失敗歸因：停損觸發",
+          "台股低勝率拆解：強度:B",
+          "台股低勝率拆解：分數區間:65-74",
+          "台股低勝率拆解：強度:A",
+          "台股低勝率拆解：分數區間:75-84"
         ],
         "positive_matches": [],
         "notes": [
@@ -30730,12 +30730,12 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "1301",
-        "name": "台塑",
-        "total_score": 54,
+        "stock_id": "2881",
+        "name": "富邦金",
+        "total_score": 53,
         "grade": "C",
         "label": "WAIT",
-        "entry_price": 63.0,
+        "entry_price": 123.5,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -30759,12 +30759,12 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "2881",
-        "name": "富邦金",
+        "stock_id": "1303",
+        "name": "南亞",
         "total_score": 53,
         "grade": "C",
         "label": "WAIT",
-        "entry_price": 123.5,
+        "entry_price": 195.5,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -30991,35 +30991,6 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "2308",
-        "name": "台達電",
-        "total_score": 48,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 1835.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "台股失敗歸因：停損觸發",
-          "台股低勝率拆解：強度:B",
-          "台股低勝率拆解：分數區間:65-74",
-          "台股低勝率拆解：強度:A",
-          "台股低勝率拆解：分數區間:75-84"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-22",
         "stock_id": "3260",
         "name": "威剛",
         "total_score": 47,
@@ -31049,12 +31020,12 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "1303",
-        "name": "南亞",
+        "stock_id": "2002",
+        "name": "中鋼",
         "total_score": 47,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 195.5,
+        "entry_price": 18.8,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -31093,35 +31064,6 @@
           "台股低勝率拆解：分數區間:65-74",
           "台股低勝率拆解：題材:先進封裝/CoWoS",
           "台股低勝率拆解：強度:A"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-22",
-        "stock_id": "1519",
-        "name": "華城",
-        "total_score": 46,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 692.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "台股失敗歸因：停損觸發",
-          "台股低勝率拆解：強度:B",
-          "台股低勝率拆解：分數區間:65-74",
-          "台股低勝率拆解：強度:A",
-          "台股低勝率拆解：分數區間:75-84"
         ],
         "positive_matches": [],
         "notes": [
@@ -31223,9 +31165,38 @@
       },
       {
         "signal_date": "2026-07-22",
+        "stock_id": "2308",
+        "name": "台達電",
+        "total_score": 45,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 1835.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "台股失敗歸因：停損觸發",
+          "台股低勝率拆解：強度:B",
+          "台股低勝率拆解：分數區間:65-74",
+          "台股低勝率拆解：強度:A",
+          "台股低勝率拆解：分數區間:75-84"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-22",
         "stock_id": "1605",
         "name": "華新",
-        "total_score": 44,
+        "total_score": 45,
         "grade": "-",
         "label": "AVOID",
         "entry_price": 32.95,
@@ -31484,41 +31455,12 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "1514",
-        "name": "亞力",
+        "stock_id": "1101",
+        "name": "台泥",
         "total_score": 38,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 107.5,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "台股失敗歸因：停損觸發",
-          "台股低勝率拆解：強度:B",
-          "台股低勝率拆解：分數區間:65-74",
-          "台股低勝率拆解：強度:A",
-          "台股低勝率拆解：分數區間:75-84"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-22",
-        "stock_id": "6282",
-        "name": "康舒",
-        "total_score": 37,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 48.5,
+        "entry_price": 24.05,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -31577,6 +31519,35 @@
         "grade": "-",
         "label": "AVOID",
         "entry_price": 682.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "台股失敗歸因：停損觸發",
+          "台股低勝率拆解：強度:B",
+          "台股低勝率拆解：分數區間:65-74",
+          "台股低勝率拆解：強度:A",
+          "台股低勝率拆解：分數區間:75-84"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-22",
+        "stock_id": "1815",
+        "name": "富喬",
+        "total_score": 35,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 80.5,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -31861,12 +31832,41 @@
       },
       {
         "signal_date": "2026-07-22",
-        "stock_id": "2301",
-        "name": "光寶科",
-        "total_score": 30,
+        "stock_id": "1102",
+        "name": "亞泥",
+        "total_score": 29,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 207.0,
+        "entry_price": 33.15,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "台股失敗歸因：停損觸發",
+          "台股低勝率拆解：強度:B",
+          "台股低勝率拆解：分數區間:65-74",
+          "台股低勝率拆解：強度:A",
+          "台股低勝率拆解：分數區間:75-84"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-22",
+        "stock_id": "1802",
+        "name": "台玻",
+        "total_score": 28,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 54.1,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -31938,6 +31938,35 @@
         "positive_matches": [],
         "notes": [
           "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：題材:記憶體/HBM、台股低勝率拆解：強度:B"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-22",
+        "stock_id": "5347",
+        "name": "世界",
+        "total_score": 27,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 171.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "台股失敗歸因：停損觸發",
+          "台股低勝率拆解：強度:B",
+          "台股低勝率拆解：分數區間:65-74",
+          "台股低勝率拆解：強度:A",
+          "台股低勝率拆解：分數區間:75-84"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：台股失敗歸因：停損觸發、台股低勝率拆解：強度:B、台股低勝率拆解：分數區間:65-74"
         ],
         "return_3d": null,
         "return_5d": null,
@@ -37352,9 +37381,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-20",
@@ -44139,7 +44168,7 @@
         "notes": [
           "智慧庫風險命中：台股失敗歸因：停損觸發"
         ],
-        "return_3d": null,
+        "return_3d": -8.310991957104557,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -60529,11 +60558,11 @@
           "智慧庫風險命中：台股失敗歸因：停損觸發"
         ],
         "return_3d": -3.10077519379845,
-        "return_5d": null,
+        "return_5d": -11.627906976744185,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-06",
@@ -65997,7 +66026,7 @@
         "notes": [
           "智慧庫風險命中：台股失敗歸因：停損觸發"
         ],
-        "return_3d": -15.508021390374324,
+        "return_3d": -27.673796791443845,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -66672,7 +66701,7 @@
         "notes": [
           "智慧庫風險命中：台股失敗歸因：停損觸發"
         ],
-        "return_3d": -14.326923076923082,
+        "return_3d": -22.596153846153847,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -75942,7 +75971,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "題材與法人共振，營收強勁，但短期漲幅已大，建議等拉回至MA20附近再布局。",
+        "reason": "題材與法人共振，營收高成長，但短期漲幅已大，建議等拉回至MA20附近再布局。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -75960,7 +75989,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "軍工題材熱門，營收月增驚人，但短期波動明顯升高，風險較大，宜等拉回。",
+        "reason": "國防題材強勁，但營收月增異常高，波動風險明顯，宜等拉回。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -75973,12 +76002,12 @@
         "score": 91,
         "grade": "S",
         "consensus_action": "等拉回",
-        "confidence": 0.65,
+        "confidence": 0.7,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人買超且營收成長，但無明顯題材，且系統等拉回歷史勝率較低，建議保守。",
+        "reason": "法人買超且營收成長，但無明顯題材，追高風險較大，建議拉回。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -75990,13 +76019,13 @@
         "name": "台勝科",
         "score": 87,
         "grade": "S",
-        "consensus_action": "只觀察",
+        "consensus_action": "等拉回",
         "confidence": 0.5,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "本益比極高，風險較大，雖有投信買超，但不宜追高，僅觀察。",
+        "reason": "投信買超且營收成長，但本益比過高，風險較大，僅適合拉回低接。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -76014,7 +76043,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人共振且營收成長，但價格貼近MA20，追價空間有限，建議等拉回。",
+        "reason": "法人共振且營收成長，但股價已接近MA20，追價空間有限，建議等拉回。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -77940,7 +77969,7 @@
       },
       {
         "action": "等拉回",
-        "signals": 68,
+        "signals": 69,
         "completed": 46,
         "win_rate_5d": 36.95652173913043,
         "avg_return_5d": -3.3106862240648764,
@@ -77948,7 +77977,7 @@
       },
       {
         "action": "只觀察",
-        "signals": 5,
+        "signals": 4,
         "completed": 3,
         "win_rate_5d": 100.0,
         "avg_return_5d": 4.446898241623069,
@@ -77975,14 +78004,14 @@
       {
         "key": "watch",
         "label": "今日操作訊號",
-        "signals": 445,
+        "signals": 444,
         "completed": 331,
         "win_rate_5d": 38.670694864048336,
         "avg_return_5d": -1.715304240877139,
         "avg_return_10d": null,
         "success_count": 128,
         "failure_count": 203,
-        "pending_count": 114,
+        "pending_count": 113,
         "note": "正式列入買進觀察後的 3/5/10 日驗證。"
       },
       {
@@ -78256,7 +78285,7 @@
         "group": "操作",
         "label": "只觀察",
         "completed": 161,
-        "signals": 217,
+        "signals": 216,
         "win_rate_5d": 34.78260869565217,
         "avg_return_5d": -2.2112341320663806,
         "drag_score": 9.613,
@@ -78282,7 +78311,7 @@
         "group": "強度",
         "label": "B",
         "completed": 162,
-        "signals": 218,
+        "signals": 217,
         "win_rate_5d": 36.41975308641975,
         "avg_return_5d": -1.8944693023125023,
         "drag_score": 8.541,
@@ -78295,7 +78324,7 @@
         "group": "分數區間",
         "label": "65-74",
         "completed": 162,
-        "signals": 218,
+        "signals": 217,
         "win_rate_5d": 36.41975308641975,
         "avg_return_5d": -1.8944693023125023,
         "drag_score": 8.541,
@@ -78689,34 +78718,6 @@
       "stop_hit": null,
       "action": "只觀察",
       "themes": [],
-      "guardrail_tags": [],
-      "guardrail_notes": [],
-      "status_code": "pending_5d",
-      "status_label": "pending",
-      "status": "進行中",
-      "outcome_category": "pending",
-      "outcome_label": "等待驗證",
-      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
-      "lesson_tags": [
-        "等待驗證"
-      ]
-    },
-    {
-      "signal_date": "2026-07-22",
-      "stock_id": "1590",
-      "name": "亞德客-KY",
-      "grade": "B",
-      "total_score": 73,
-      "entry_price": 1360.0,
-      "entry_triggered": null,
-      "return_3d": null,
-      "return_5d": null,
-      "return_10d": null,
-      "stop_hit": null,
-      "action": "只觀察",
-      "themes": [
-        "AI電力/重電/電網"
-      ],
       "guardrail_tags": [],
       "guardrail_notes": [],
       "status_code": "pending_5d",
@@ -91227,7 +91228,7 @@
   ],
   "current_selection_backtest": {
     "as_of": "2026-07-22",
-    "generated_at": "2026-07-22T23:23:28+08:00",
+    "generated_at": "2026-07-22T23:45:37+08:00",
     "source": "dashboard_data + performance_data",
     "history_completed_5d": 331,
     "candidate_count": 5,
