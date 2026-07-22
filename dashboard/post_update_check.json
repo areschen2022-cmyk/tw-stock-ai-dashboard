@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T04:33:32+08:00",
+  "generated_at": "2026-07-23T05:05:15+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -23,18 +23,18 @@
         "row_count": 74,
         "source_date": "2026-07-22",
         "message": "74 stocks scanned for institutional flow",
-        "run_id": "29955445313",
-        "created_at": "2026-07-22 20:33:18"
+        "run_id": "29957519143",
+        "created_at": "2026-07-22 21:05:01"
       },
       {
         "update_date": "2026-07-22",
         "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4010,
-        "source_date": "2026-07-17",
-        "message": "26 divergence signals; previous=2026-07-09",
-        "run_id": "29955445313",
-        "created_at": "2026-07-22 20:32:48"
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "29957519143",
+        "created_at": "2026-07-22 21:04:33"
       },
       {
         "update_date": "2026-07-21",
@@ -122,7 +122,7 @@
     "daily_scores": 74,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 7
+    "recent_tdcc_update_rows": 6
   },
   "issues": [
     {
