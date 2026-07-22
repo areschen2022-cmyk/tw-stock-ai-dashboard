@@ -22,6 +22,7 @@ REQUIRED_DASHBOARD_FILES = [
     "backtest_review.json",
     "weekly_review.json",
     "backtest_30y.json",
+    "kronos_proxy_backtest.json",
     "cloud_skill_routes_status.json",
 ]
 MOJIBAKE_MARKERS = (
@@ -151,6 +152,7 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
     debug = payloads.get("debug_data.json") or {}
     backtest_review = payloads.get("backtest_review.json") or {}
     backtest_30y = payloads.get("backtest_30y.json") or {}
+    kronos_proxy = payloads.get("kronos_proxy_backtest.json") or {}
     skill_routes = payloads.get("cloud_skill_routes_status.json") or {}
 
     for name, payload in payloads.items():
@@ -234,6 +236,17 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
                     "long_horizon_backtest",
                     f"30-year backtest status is {long_status}",
                     "Run scripts/long_horizon_backtest.py and inspect dashboard/backtest_30y.json.",
+                )
+            )
+    if kronos_proxy:
+        kronos_status = str(kronos_proxy.get("status") or "")
+        if kronos_status != "ok":
+            issues.append(
+                _issue(
+                    "warning",
+                    "kronos_proxy_backtest",
+                    f"Kronos proxy backtest status is {kronos_status}",
+                    "Run scripts/kronos_proxy_backtest.py and inspect dashboard/kronos_proxy_backtest.json.",
                 )
             )
     if skill_routes:

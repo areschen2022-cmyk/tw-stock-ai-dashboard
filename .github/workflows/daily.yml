@@ -138,6 +138,7 @@ jobs:
           python scripts/backtest_review.py || echo "backtest_review failed; continuing dashboard update"
           python scripts/weekly_review.py || echo "weekly_review failed; continuing dashboard update"
           python scripts/long_horizon_backtest.py --years 30 || echo "long_horizon_backtest failed; continuing dashboard update"
+          python scripts/kronos_proxy_backtest.py --years 5 --min-score 50 || echo "kronos_proxy_backtest failed; continuing dashboard update"
           python scripts/cloud_skill_route_check.py || echo "cloud_skill_route_check failed; continuing dashboard update"
           python scripts/research_source_review.py || echo "research_source_review failed; continuing dashboard update"
 
@@ -157,6 +158,7 @@ jobs:
           cp -f dashboard/backtest_review.json docs/backtest_review.json
           cp -f dashboard/weekly_review.json docs/weekly_review.json
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json
+          cp -f dashboard/kronos_proxy_backtest.json docs/kronos_proxy_backtest.json
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
           cp -f dashboard/research_source_review.json docs/research_source_review.json
 
@@ -188,6 +190,7 @@ jobs:
           cp -f dashboard/backtest_review.json docs/backtest_review.json
           cp -f dashboard/weekly_review.json docs/weekly_review.json
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json
+          cp -f dashboard/kronos_proxy_backtest.json docs/kronos_proxy_backtest.json
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
           cp -f dashboard/research_source_review.json docs/research_source_review.json
           cp -f dashboard/post_update_check.json docs/post_update_check.json
@@ -361,6 +364,7 @@ jobs:
           cp -f dashboard/backtest_review.json docs/backtest_review.json || true
           cp -f dashboard/weekly_review.json docs/weekly_review.json || true
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json || true
+          cp -f dashboard/kronos_proxy_backtest.json docs/kronos_proxy_backtest.json || true
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json || true
           cp -f dashboard/post_update_check.json docs/post_update_check.json || true
           cp -f dashboard/verification_loop.json docs/verification_loop.json || true

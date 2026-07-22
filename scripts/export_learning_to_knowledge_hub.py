@@ -323,6 +323,61 @@ def build_research_source_points(research_review: dict) -> list[dict]:
     return _dedupe_by_id(points)
 
 
+def build_kronos_proxy_points(kronos_payload: dict) -> list[dict]:
+    as_of = _text(kronos_payload.get("as_of"), "")
+    source_ref = f"tw-stock-ai kronos_proxy_backtest.json {as_of}".strip()
+    phase2 = kronos_payload.get("phase2") or {}
+    summary = kronos_payload.get("summary") or {}
+    overall = summary.get("overall_5d") or {}
+    points: list[dict] = []
+
+    completed = _int(overall.get("completed"))
+    if completed > 0:
+        status = _text(phase2.get("status"), "unknown")
+        claim = (
+            f"Kronos proxy 技術偏向回測目前為 {status}："
+            f"完成 {completed} 筆，5 日勝率 {_fmt_pct(overall.get('win_rate'))}，"
+            f"5 日平均報酬 {_fmt_pct(overall.get('avg_return'))}。"
+        )
+        evidence = "；".join(str(item) for item in (phase2.get("recommended_integration") or [])[:3])
+        points.append(
+            _knowledge(
+                topic="台股 Kronos proxy 第二階段門檻",
+                claim=claim,
+                evidence=evidence,
+                tags=["台股", "Kronos", "技術偏向", "第二階段", status],
+                completed=completed,
+                avg_return_5d=overall.get("avg_return"),
+                win_rate_5d=overall.get("win_rate"),
+                source_ref=source_ref,
+            )
+        )
+
+    for row in summary.get("by_bias") or []:
+        completed = _int(row.get("completed"))
+        if completed <= 0:
+            continue
+        bias = _text(row.get("kronos_bias"), "unknown")
+        claim = (
+            f"Kronos proxy 偏向「{bias}」的 5 日勝率為 {_fmt_pct(row.get('win_rate'))}，"
+            f"5 日平均報酬 {_fmt_pct(row.get('avg_return'))}。"
+        )
+        evidence = f"signals={row.get('signals')}, completed={completed}, median={row.get('median_return')}"
+        points.append(
+            _knowledge(
+                topic=f"台股 Kronos proxy 偏向：{bias}",
+                claim=claim,
+                evidence=evidence,
+                tags=["台股", "Kronos", "技術偏向", bias],
+                completed=completed,
+                avg_return_5d=row.get("avg_return"),
+                win_rate_5d=row.get("win_rate"),
+                source_ref=source_ref,
+            )
+        )
+    return _dedupe_by_id(points)
+
+
 def _dedupe_by_id(items: list[dict]) -> list[dict]:
     by_id: dict[str, dict] = {}
     for item in items:
@@ -387,6 +442,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--performance", default="dashboard/performance_data.json")
     parser.add_argument("--weekly-review", default="dashboard/weekly_review.json")
     parser.add_argument("--research-source-review", default="dashboard/research_source_review.json")
+    parser.add_argument("--kronos-proxy", default="dashboard/kronos_proxy_backtest.json")
     parser.add_argument("--output", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -417,6 +473,10 @@ def main() -> int:
     research_review_path = Path(args.research_source_review)
     if research_review_path.exists():
         items.extend(build_research_source_points(json.loads(research_review_path.read_text(encoding="utf-8"))))
+        items = _dedupe_by_id(items)
+    kronos_path = Path(args.kronos_proxy)
+    if kronos_path.exists():
+        items.extend(build_kronos_proxy_points(json.loads(kronos_path.read_text(encoding="utf-8"))))
         items = _dedupe_by_id(items)
     if args.dry_run:
         print(json.dumps({"exported": len(items), "output": str(output), "sample": items[:3]}, ensure_ascii=False, indent=2))
