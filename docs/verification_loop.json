@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-22T23:12:13+08:00",
+  "generated_at": "2026-07-22T23:16:19+08:00",
   "status": "ok",
   "checks": {
     "compile": {
       "command": [
-        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
         "-m",
         "compileall",
         "src",
@@ -12,28 +12,28 @@
         "main.py",
         "scripts"
       ],
-      "started_at": "2026-07-22T23:12:12+08:00",
-      "ended_at": "2026-07-22T23:12:12+08:00",
+      "started_at": "2026-07-22T23:16:18+08:00",
+      "ended_at": "2026-07-22T23:16:18+08:00",
       "exit_code": 0,
       "ok": true,
-      "stdout_tail": "Listing 'src'...\nListing 'src\\\\ai'...\nListing 'src\\\\backtest'...\nListing 'src\\\\data_provider'...\nListing 'src\\\\indicators'...\nListing 'src\\\\intraday'...\nListing 'src\\\\news'...\nListing 'src\\\\notifier'...\nListing 'src\\\\report'...\nListing 'src\\\\scoring'...\nListing 'src\\\\storage'...\nListing 'tests'...\nListing 'scripts'...\n",
+      "stdout_tail": "Listing 'src'...\nListing 'src/ai'...\nListing 'src/backtest'...\nListing 'src/data_provider'...\nListing 'src/indicators'...\nListing 'src/intraday'...\nListing 'src/news'...\nListing 'src/notifier'...\nListing 'src/report'...\nListing 'src/scoring'...\nListing 'src/storage'...\nListing 'tests'...\nListing 'scripts'...\n",
       "stderr_tail": ""
     },
     "post_update": {
       "command": [
-        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
         "scripts/post_update_check.py"
       ],
-      "started_at": "2026-07-22T23:12:12+08:00",
-      "ended_at": "2026-07-22T23:12:12+08:00",
+      "started_at": "2026-07-22T23:16:18+08:00",
+      "ended_at": "2026-07-22T23:16:18+08:00",
       "exit_code": 0,
       "ok": true,
-      "stdout_tail": "post-update-check status=ok critical=0 warning=0 output=C:\\Users\\User\\Documents\\Codex\\_archive\\codex_workspaces_20260703_2350\\2026-05-11\\files-mentioned-by-the-user-taiwan\\tw-stock-ai\\dashboard\\post_update_check.json\n[info] traceability: Traceability diagnosis contains 2 item(s)\n",
+      "stdout_tail": "post-update-check status=ok critical=0 warning=0 output=/home/runner/work/tw-stock-ai-dashboard/tw-stock-ai-dashboard/dashboard/post_update_check.json\n[info] traceability: Traceability diagnosis contains 2 item(s)\n",
       "stderr_tail": ""
     },
     "freshness": {
       "ok": true,
-      "as_of": "2026-07-21",
+      "as_of": "2026-07-22",
       "post_update_status": "ok",
       "post_update_counts": {
         "critical": 0,
@@ -44,12 +44,12 @@
     "knowledge_hub": {
       "ok": true,
       "command": [
-        "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
         "scripts/export_learning_to_knowledge_hub.py",
         "--skip-missing"
       ],
       "exit_code": 0,
-      "stdout_tail": "knowledge export exported=59 inserted=0 updated=59 total=576 output=C:\\Users\\User\\trading_knowledge_hub\\data\\knowledge_points.jsonl\n",
+      "stdout_tail": "knowledge export exported=58 inserted=0 updated=58 total=486 output=/home/runner/work/tw-stock-ai-dashboard/tw-stock-ai-dashboard/data/knowledge_exports/taiwan_stock_learning.jsonl\n",
       "stderr_tail": ""
     }
   },
