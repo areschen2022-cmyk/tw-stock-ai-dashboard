@@ -1054,6 +1054,7 @@ def enrich_dashboard_payload(
         row["stability"] = stability
         row["stability_label"] = stability.get("stability_label") or "新進名單"
         row["stability_reason"] = stability.get("stability_reason") or "近期尚無連續推薦紀錄。"
+        row["exit_plan"] = _exit_plan(row)
     if recommendation_stability is not None:
         payload["recommendation_stability"] = recommendation_stability
     payload["action_lists"] = _action_lists(

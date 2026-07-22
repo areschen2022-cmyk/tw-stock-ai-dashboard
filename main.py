@@ -49,6 +49,11 @@ from src.report.potential_radar import build_potential_radar_candidates, load_po
 from src.report.retail_divergence import SIGNAL_CLEAN, SIGNAL_OVERHEATED, empty_retail_divergence, summarize_retail_divergence
 from src.report.report_builder import build_report
 from src.scoring.backtest_guard import apply_backtest_guard, load_backtest_guard
+from src.scoring.decision_gates import (
+    apply_dashboard_decision_gates,
+    normalize_ai_pick_action,
+    weak_themes_from_backtest_guard,
+)
 from src.scoring.knowledge_adjustment import apply_knowledge_adjustment, load_knowledge_context
 from src.scoring.score_engine import ScoreEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -590,6 +595,19 @@ def main() -> int:
         exit_risks,
         retail_divergence=retail_divergence,
     )
+    repeated_signal_context = store.recommendation_stability(as_of, days=60)
+    dashboard_payload["repeated_signal_context"] = {
+        "as_of": repeated_signal_context.get("as_of"),
+        "days": repeated_signal_context.get("days"),
+        "summary": repeated_signal_context.get("summary", {}),
+        "top": repeated_signal_context.get("top", [])[:8],
+    }
+    apply_dashboard_decision_gates(
+        dashboard_payload,
+        exit_risks=exit_risks,
+        repeated_signal_context=repeated_signal_context,
+        weak_themes=weak_themes_from_backtest_guard(backtest_guard),
+    )
     us_stock_context = load_optional_json(ROOT / "data" / "us_stock_context.json")
     if us_stock_context:
         dashboard_payload["us_stock_context"] = us_stock_context
@@ -607,7 +625,7 @@ def main() -> int:
     ai_cfg = config.get("ai_council", {})
     ai_min_agree_count = int(ai_cfg.get("min_agree_count", 5))
     ai_min_model_count = int(ai_cfg.get("min_model_count", ai_min_agree_count))
-    ai_pick_action = str(ai_cfg.get("pick_action", "可追"))
+    ai_pick_action = normalize_ai_pick_action(ai_cfg.get("pick_action", "可追"))
     ai_fallback_count = int(ai_cfg.get("fallback_pick_count", 3))
     ai_picks, ai_using_fallback = select_ai_picks(
         ai_reviews,
