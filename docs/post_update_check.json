@@ -1,30 +1,40 @@
 {
-  "generated_at": "2026-07-24T06:03:29+08:00",
+  "generated_at": "2026-07-26T00:17:39+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
     "warning": 0,
-    "info": 1
+    "info": 2
   },
   "context": {
-    "as_of": "2026-07-23",
-    "weekly_as_of": "2026-07-23",
-    "performance_as_of": "2026-07-23",
-    "potential_as_of": "2026-07-23",
-    "rows": 77,
-    "valid": 77,
+    "as_of": "2026-07-24",
+    "weekly_as_of": "2026-07-24",
+    "performance_as_of": "2026-07-24",
+    "potential_as_of": "2026-07-24",
+    "rows": 72,
+    "valid": 72,
     "chase": 0,
     "pullback": 5,
     "data_updates": [
       {
+        "update_date": "2026-07-24",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 72,
+        "source_date": "2026-07-24",
+        "message": "72 stocks scanned for institutional flow",
+        "run_id": "30165285609",
+        "created_at": "2026-07-25 16:17:28"
+      },
+      {
         "update_date": "2026-07-23",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 77,
+        "row_count": 76,
         "source_date": "2026-07-23",
-        "message": "77 stocks scanned for institutional flow",
-        "run_id": "30048307585",
-        "created_at": "2026-07-23 22:03:14"
+        "message": "76 stocks scanned for institutional flow",
+        "run_id": "30052916454",
+        "created_at": "2026-07-23 23:21:50"
       },
       {
         "update_date": "2026-07-23",
@@ -105,34 +115,31 @@
         "message": "26 divergence signals; previous=2026-07-09",
         "run_id": "29704914967",
         "created_at": "2026-07-19 21:46:05"
-      },
-      {
-        "update_date": "2026-07-17",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 97,
-        "source_date": "2026-07-17",
-        "message": "97 stocks scanned for institutional flow",
-        "run_id": "29707768559",
-        "created_at": "2026-07-19 23:21:50"
       }
     ]
   },
   "database": {
-    "daily_scores": 77,
+    "daily_scores": 72,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 7
+    "recent_tdcc_update_rows": 5
   },
   "issues": [
     {
       "severity": "info",
+      "area": "ai",
+      "message": "AI council health: 不穩定",
+      "suggestion": "Keep AI as a secondary review signal and verify DEEPSEEK_API_KEY/OpenRouter settings."
+    },
+    {
+      "severity": "info",
       "area": "traceability",
-      "message": "Traceability diagnosis contains 2 item(s)",
+      "message": "Traceability diagnosis contains 3 item(s)",
       "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
     }
   ],
   "next_optimizations": [
+    "Stabilize AI review by using one paid primary model plus a cheap backup model.",
     "Tune action thresholds only after checking whether zero chase candidates repeats for several days."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
