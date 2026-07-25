@@ -431,6 +431,10 @@
         <h2>危險名單回測</h2>
         <div class="note">驗證危險名單提醒後 5 日內是否真的轉弱；命中率越高，代表避險規則越有效。</div>
         <div class="metrics compact-metrics" id="exitRiskMetrics"></div>
+        <table style="margin-bottom:12px;">
+          <thead><tr><th>跌因</th><th>提醒</th><th>已驗證</th><th>3日命中率</th><th>5日命中率</th><th>5日平均</th><th>狀態</th></tr></thead>
+          <tbody id="downsideStats"></tbody>
+        </table>
         <table>
           <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>原因</th></tr></thead>
           <tbody id="exitRiskBacktest"></tbody>
@@ -4341,9 +4345,9 @@
         "signal_combo": "成熟|題材+K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%",
-          "K線轉強 近30日完成 30 筆，5日勝率 30.0%，平均 -6.0%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%",
+          "K線轉強 近30日完成 28 筆，5日勝率 35.7%，平均 -5.7%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -4469,9 +4473,9 @@
         "signal_combo": "過熱/延伸|K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -4599,9 +4603,9 @@
         "signal_combo": "過熱/延伸|題材+K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "低位醞釀 近30日完成 40 筆，5日勝率 42.5%，平均 -1.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "低位醞釀 近30日完成 40 筆，5日勝率 40.0%，平均 -1.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -4729,9 +4733,9 @@
         "signal_combo": "過熱/延伸|題材+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -4859,9 +4863,9 @@
         "signal_combo": "過熱/延伸|題材+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -6489,9 +6493,9 @@
         "signal_combo": "成熟|題材+K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%",
-          "K線轉強 近30日完成 30 筆，5日勝率 30.0%，平均 -6.0%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%",
+          "K線轉強 近30日完成 28 筆，5日勝率 35.7%，平均 -5.7%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -6618,9 +6622,9 @@
         "signal_combo": "過熱/延伸|題材+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -6747,9 +6751,9 @@
         "signal_combo": "過熱/延伸|題材+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -6874,9 +6878,9 @@
         "signal_combo": "過熱/延伸|K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "強勢等拉回 近30日完成 73 筆，5日勝率 30.1%，平均 -4.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "強勢等拉回 近30日完成 69 筆，5日勝率 29.0%，平均 -4.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -7003,9 +7007,9 @@
         "signal_combo": "過熱/延伸|題材+K線+法人同步",
         "feedback_penalty": 4,
         "feedback_notes": [
-          "低位醞釀 近30日完成 40 筆，5日勝率 42.5%，平均 -1.7%",
-          "過熱/延伸 近30日完成 60 筆，5日勝率 30.0%，平均 -6.2%",
-          "法人同步 近30日完成 132 筆，5日勝率 33.3%，平均 -5.5%"
+          "低位醞釀 近30日完成 40 筆，5日勝率 40.0%，平均 -1.9%",
+          "過熱/延伸 近30日完成 62 筆，5日勝率 30.6%，平均 -5.9%",
+          "法人同步 近30日完成 136 筆，5日勝率 33.8%，平均 -5.3%"
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
@@ -28829,19 +28833,34 @@
         "label": "待觀察",
         "signals": 459,
         "completed": 211,
-        "true_warning_rate_5d": 64.92890995260665
+        "true_warnings": 137,
+        "false_warnings": 74,
+        "true_warning_rate_3d": 60.58091286307054,
+        "true_warning_rate_5d": 64.92890995260665,
+        "avg_return_5d": -2.6626317811659086,
+        "sample_label": "可校準"
       },
       {
         "label": "籌碼倒貨",
         "signals": 8,
         "completed": 0,
-        "true_warning_rate_5d": null
+        "true_warnings": 0,
+        "false_warnings": 0,
+        "true_warning_rate_3d": null,
+        "true_warning_rate_5d": null,
+        "avg_return_5d": null,
+        "sample_label": "累積中"
       },
       {
         "label": "散戶過熱",
         "signals": 6,
         "completed": 0,
-        "true_warning_rate_5d": null
+        "true_warnings": 0,
+        "false_warnings": 0,
+        "true_warning_rate_3d": null,
+        "true_warning_rate_5d": null,
+        "avg_return_5d": null,
+        "sample_label": "累積中"
       }
     ],
     "true_warnings": [
@@ -29207,7 +29226,6 @@
         "original_action": "可追蹤突破",
         "adjusted_action": "等拉回",
         "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 進場條",
           "Taiwan stock low win-rate breakdown: 進場條"
         ],
         "positive_matches": [],
@@ -29234,7 +29252,6 @@
         "original_action": "可追蹤突破",
         "adjusted_action": "等拉回",
         "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 進場條",
           "Taiwan stock low win-rate breakdown: 進場條"
         ],
         "positive_matches": [],
@@ -29261,7 +29278,6 @@
         "original_action": "可追蹤突破",
         "adjusted_action": "等拉回",
         "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 進場條",
           "Taiwan stock low win-rate breakdown: 進場條"
         ],
         "positive_matches": [],
@@ -29369,6 +29385,7 @@
         "original_action": "只觀察",
         "adjusted_action": "只觀察",
         "negative_matches": [
+          "Taiwan stock adaptive feedback: 操作:只觀察",
           "Taiwan stock adaptive feedback: 操作:只觀察"
         ],
         "positive_matches": [],
@@ -92799,7 +92816,7 @@
   },
   "current_selection_backtest": {
     "as_of": "2026-07-24",
-    "generated_at": "2026-07-26T00:17:29+08:00",
+    "generated_at": "2026-07-26T00:30:28+08:00",
     "source": "dashboard_data + performance_data",
     "history_completed_5d": 271,
     "candidate_count": 6,
@@ -93400,6 +93417,18 @@
         metric("5日命中率", exitStats.true_warning_rate_5d?.toFixed(1), "%"),
         metric("提醒後平均", exitStats.avg_return_5d?.toFixed(1), "%"),
       ].join("");
+      const downsideRow = r => `<tr>
+        <td data-label="跌因"><b>${esc(r.label || "待觀察")}</b></td>
+        <td data-label="提醒">${esc(r.signals ?? 0)}</td>
+        <td data-label="已驗證">${esc(r.completed ?? 0)}</td>
+        <td data-label="3日命中率">${fmtNeutralPct(r.true_warning_rate_3d)}</td>
+        <td data-label="5日命中率">${fmtNeutralPct(r.true_warning_rate_5d)}</td>
+        <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+        <td data-label="狀態"><span class="tag ${r.sample_label === "可校準" ? "tag-good" : "tag-default"}">${esc(r.sample_label || "累積中")}</span></td>
+      </tr>`;
+      document.querySelector("#downsideStats").innerHTML = (exitRisk.downside_stats || []).length
+        ? exitRisk.downside_stats.map(downsideRow).join("")
+        : `<tr><td data-label="跌因命中率" colspan="7">跌因樣本仍在累積中</td></tr>`;
       const exitRiskRow = r => `<tr>
         <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
         <td data-label="訊號日">${esc(r.signal_date)}</td>
