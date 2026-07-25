@@ -137,6 +137,8 @@ def test_exit_risk_summary_tracks_warning_outcomes(tmp_path) -> None:
                 "price": 100.0,
                 "reasons": ["法人連賣", "跌破MA5"],
                 "action": "減碼觀察",
+                "downside_category": "chip_distribution",
+                "downside_label": "籌碼倒貨",
             }
         ],
         day0,
@@ -150,6 +152,11 @@ def test_exit_risk_summary_tracks_warning_outcomes(tmp_path) -> None:
     assert summary["stats"]["signals"] == 1
     assert summary["stats"]["completed"] == 1
     assert summary["stats"]["true_warning_rate_5d"] == 100
+    assert summary["downside_stats"][0]["label"] == "籌碼倒貨"
+    assert summary["downside_stats"][0]["true_warning_rate_3d"] == 100
+    assert summary["downside_stats"][0]["true_warning_rate_5d"] == 100
+    assert summary["downside_stats"][0]["avg_return_5d"] == -8.0
+    assert summary["downside_stats"][0]["sample_label"] == "累積中"
     assert summary["true_warnings"][0]["stock_id"] == "2408"
     assert summary["true_warnings"][0]["outcome"] == "strong_true_warning"
 

@@ -3555,6 +3555,10 @@ def _performance_html() -> str:
         <h2>危險名單回測</h2>
         <div class="note">驗證危險名單提醒後 5 日內是否真的轉弱；命中率越高，代表避險規則越有效。</div>
         <div class="metrics compact-metrics" id="exitRiskMetrics"></div>
+        <table style="margin-bottom:12px;">
+          <thead><tr><th>跌因</th><th>提醒</th><th>已驗證</th><th>3日命中率</th><th>5日命中率</th><th>5日平均</th><th>狀態</th></tr></thead>
+          <tbody id="downsideStats"></tbody>
+        </table>
         <table>
           <thead><tr><th>股票</th><th>訊號日</th><th>等級</th><th>5日報酬</th><th>原因</th></tr></thead>
           <tbody id="exitRiskBacktest"></tbody>
@@ -3835,6 +3839,18 @@ def _performance_html() -> str:
         metric("5日命中率", exitStats.true_warning_rate_5d?.toFixed(1), "%"),
         metric("提醒後平均", exitStats.avg_return_5d?.toFixed(1), "%"),
       ].join("");
+      const downsideRow = r => `<tr>
+        <td data-label="跌因"><b>${esc(r.label || "待觀察")}</b></td>
+        <td data-label="提醒">${esc(r.signals ?? 0)}</td>
+        <td data-label="已驗證">${esc(r.completed ?? 0)}</td>
+        <td data-label="3日命中率">${fmtNeutralPct(r.true_warning_rate_3d)}</td>
+        <td data-label="5日命中率">${fmtNeutralPct(r.true_warning_rate_5d)}</td>
+        <td data-label="5日平均">${fmtPct(r.avg_return_5d)}</td>
+        <td data-label="狀態"><span class="tag ${r.sample_label === "可校準" ? "tag-good" : "tag-default"}">${esc(r.sample_label || "累積中")}</span></td>
+      </tr>`;
+      document.querySelector("#downsideStats").innerHTML = (exitRisk.downside_stats || []).length
+        ? exitRisk.downside_stats.map(downsideRow).join("")
+        : `<tr><td data-label="跌因命中率" colspan="7">跌因樣本仍在累積中</td></tr>`;
       const exitRiskRow = r => `<tr>
         <td data-label="股票"><a href="https://www.wantgoo.com/stock/${esc(r.stock_id)}" target="_blank" rel="noopener noreferrer">${esc(r.stock_id)} ${esc(r.name)}</a></td>
         <td data-label="訊號日">${esc(r.signal_date)}</td>

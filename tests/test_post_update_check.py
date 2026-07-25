@@ -4,7 +4,7 @@ import json
 import sqlite3
 from datetime import date
 
-from scripts.post_update_check import run_check
+from scripts.post_update_check import _ai_health_label, run_check
 
 
 def _write_json(path, payload: dict) -> None:
@@ -117,6 +117,11 @@ def test_post_update_check_reports_mojibake_payload(tmp_path) -> None:
 
     assert result["status"] == "bad"
     assert any(item["area"] == "encoding" for item in result["issues"])
+
+
+def test_ai_health_label_normalizes_legacy_and_unknown_values() -> None:
+    assert _ai_health_label({"label": "stable", "score": 100}) == "穩定"
+    assert _ai_health_label({"label": "broken-text", "score": 44}) == "不穩定"
 
 
 def test_post_update_check_reports_docs_sync_mismatch(tmp_path) -> None:

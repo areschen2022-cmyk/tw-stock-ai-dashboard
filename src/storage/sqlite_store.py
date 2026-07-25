@@ -1909,13 +1909,44 @@ class SQLiteStore:
         downside_stats: dict[str, dict] = {}
         for item in items:
             label = str(item.get("downside_label") or "待觀察")
-            bucket = downside_stats.setdefault(label, {"label": label, "signals": 0, "completed": 0, "true_warning_rate_5d": None, "_hits": []})
+            bucket = downside_stats.setdefault(
+                label,
+                {
+                    "label": label,
+                    "signals": 0,
+                    "completed": 0,
+                    "true_warnings": 0,
+                    "false_warnings": 0,
+                    "true_warning_rate_3d": None,
+                    "true_warning_rate_5d": None,
+                    "avg_return_5d": None,
+                    "sample_label": "樣本不足",
+                    "_hits_3d": [],
+                    "_hits_5d": [],
+                    "_returns_5d": [],
+                },
+            )
             bucket["signals"] += 1
             if item.get("return_5d") is not None:
                 bucket["completed"] += 1
-                bucket["_hits"].append(float(item.get("return_5d") or 0) < 0)
+                hit_5d = float(item.get("return_5d") or 0) < 0
+                bucket["true_warnings"] += 1 if hit_5d else 0
+                bucket["false_warnings"] += 0 if hit_5d else 1
+                bucket["_hits_5d"].append(hit_5d)
+                bucket["_returns_5d"].append(item.get("return_5d"))
+            if item.get("return_3d") is not None:
+                bucket["_hits_3d"].append(float(item.get("return_3d") or 0) < 0)
         for bucket in downside_stats.values():
-            bucket["true_warning_rate_5d"] = _rate(bucket.pop("_hits"))
+            bucket["true_warning_rate_3d"] = _rate(bucket.pop("_hits_3d"))
+            bucket["true_warning_rate_5d"] = _rate(bucket.pop("_hits_5d"))
+            bucket["avg_return_5d"] = _avg(bucket.pop("_returns_5d"))
+            completed_count = int(bucket.get("completed") or 0)
+            if completed_count >= 20:
+                bucket["sample_label"] = "可校準"
+            elif completed_count >= 5:
+                bucket["sample_label"] = "可觀察"
+            else:
+                bucket["sample_label"] = "累積中"
         return {
             "items": items[:20],
             "stats": {

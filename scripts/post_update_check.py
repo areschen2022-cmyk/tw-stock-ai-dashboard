@@ -95,6 +95,29 @@ def _int(value) -> int:
         return 0
 
 
+def _ai_health_label(health: dict) -> str:
+    label = str((health or {}).get("label") or "").strip()
+    label_map = {
+        "stable": "穩定",
+        "degraded": "降級可用",
+        "unstable": "不穩定",
+        "disabled": "未啟用",
+        "no_candidates": "無候選",
+    }
+    if label in label_map:
+        return label_map[label]
+    if label in {"穩定", "降級可用", "不穩定", "未啟用", "無候選", "未設定"}:
+        return label
+    score = _int((health or {}).get("score"))
+    if score >= 80:
+        return "穩定"
+    if score >= 50:
+        return "降級可用"
+    if label or score > 0:
+        return "不穩定"
+    return ""
+
+
 def _count_by_severity(issues: list[dict]) -> dict:
     return {
         "critical": sum(1 for item in issues if item.get("severity") == "critical"),
@@ -318,7 +341,7 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
         )
 
     ai_health = (((dashboard.get("ai_council") or {}).get("status") or {}).get("health") or {})
-    ai_label = str(ai_health.get("label") or "")
+    ai_label = _ai_health_label(ai_health)
     unstable_ai_labels = {"\u672a\u555f\u7528", "\u4e0d\u7a69\u5b9a", "\u964d\u7d1a\u53ef\u7528"}
     if ai_label in unstable_ai_labels:
         issues.append(
