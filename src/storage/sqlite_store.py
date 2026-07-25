@@ -222,6 +222,13 @@ class SQLiteStore:
                 )
                 """
             )
+            exit_columns = {row[1] for row in conn.execute("PRAGMA table_info(exit_risk_signals)").fetchall()}
+            for column, definition in [
+                ("downside_category", "TEXT"),
+                ("downside_label", "TEXT"),
+            ]:
+                if column not in exit_columns:
+                    conn.execute(f"ALTER TABLE exit_risk_signals ADD COLUMN {column} {definition}")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS capital_flow_signals (
@@ -1159,8 +1166,9 @@ class SQLiteStore:
                     """
                     INSERT OR REPLACE INTO exit_risk_signals (
                         signal_date, stock_id, name, level, risk_score, current_score,
-                        previous_score, entry_price, reasons_json, action
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        previous_score, entry_price, reasons_json, action,
+                        downside_category, downside_label
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -1173,6 +1181,8 @@ class SQLiteStore:
                         item.get("price"),
                         json.dumps(item.get("reasons") or [], ensure_ascii=False),
                         str(item.get("action") or ""),
+                        str(item.get("downside_category") or ""),
+                        str(item.get("downside_label") or ""),
                     ),
                 )
 
@@ -1866,7 +1876,7 @@ class SQLiteStore:
                 """
                 SELECT signal_date, stock_id, name, level, risk_score, current_score,
                        previous_score, entry_price, reasons_json, action,
-                       return_3d, return_5d, outcome
+                       return_3d, return_5d, outcome, downside_category, downside_label
                 FROM exit_risk_signals
                 WHERE signal_date >= ? AND signal_date <= ?
                 ORDER BY signal_date DESC, risk_score DESC
@@ -1888,12 +1898,24 @@ class SQLiteStore:
                 "return_3d": row[10],
                 "return_5d": row[11],
                 "outcome": row[12],
+                "downside_category": row[13] or "",
+                "downside_label": row[14] or "",
             }
             for row in rows
         ]
         completed = [item for item in items if item.get("return_5d") is not None]
         true_warnings = [item for item in completed if float(item.get("return_5d") or 0) < 0]
         false_warnings = [item for item in completed if float(item.get("return_5d") or 0) >= 0]
+        downside_stats: dict[str, dict] = {}
+        for item in items:
+            label = str(item.get("downside_label") or "待觀察")
+            bucket = downside_stats.setdefault(label, {"label": label, "signals": 0, "completed": 0, "true_warning_rate_5d": None, "_hits": []})
+            bucket["signals"] += 1
+            if item.get("return_5d") is not None:
+                bucket["completed"] += 1
+                bucket["_hits"].append(float(item.get("return_5d") or 0) < 0)
+        for bucket in downside_stats.values():
+            bucket["true_warning_rate_5d"] = _rate(bucket.pop("_hits"))
         return {
             "items": items[:20],
             "stats": {
@@ -1904,6 +1926,10 @@ class SQLiteStore:
                 "true_warnings": len(true_warnings),
                 "false_warnings": len(false_warnings),
             },
+            "downside_stats": sorted(
+                downside_stats.values(),
+                key=lambda item: (-int(item.get("signals") or 0), str(item.get("label") or "")),
+            ),
             "true_warnings": sorted(true_warnings, key=lambda item: float(item.get("return_5d") or 0))[:8],
             "false_warnings": sorted(false_warnings, key=lambda item: float(item.get("return_5d") or 0), reverse=True)[:8],
         }

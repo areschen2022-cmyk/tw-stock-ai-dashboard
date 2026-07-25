@@ -43,6 +43,7 @@ from src.report.dashboard import (
     write_theme_history,
     write_weekly_overview,
 )
+from src.report.downside_attribution import annotate_exit_risks, build_downside_attribution
 from src.report.exit_risk import build_exit_risks
 from src.report.monitoring import detect_alerts
 from src.report.potential_radar import build_potential_radar_candidates, load_potential_feedback
@@ -565,6 +566,8 @@ def main() -> int:
     )
     retail_divergence = summarize_retail_divergence(retail_rows) if retail_rows else empty_retail_divergence(as_of)
     exit_risks = merge_retail_exit_risks(exit_risks, retail_rows, config.get("stock_names", {}))
+    exit_risks = annotate_exit_risks(exit_risks)
+    downside_attribution = build_downside_attribution(as_of, exit_risks, alerts=alerts)
     store.save_exit_risks(exit_risks, as_of)
     store.update_exit_risk_forward_returns(as_of)
     store.save_watch_candidates(results, as_of, config.get("stock_names", {}))
@@ -595,6 +598,7 @@ def main() -> int:
         exit_risks,
         retail_divergence=retail_divergence,
     )
+    dashboard_payload["downside_attribution"] = downside_attribution
     repeated_signal_context = store.recommendation_stability(as_of, days=60)
     dashboard_payload["repeated_signal_context"] = {
         "as_of": repeated_signal_context.get("as_of"),
@@ -683,6 +687,7 @@ def main() -> int:
     store.update_potential_forward_returns(as_of)
     store.update_knowledge_forward_returns(as_of)
     performance_payload = store.performance_summary(as_of, days=30)
+    performance_payload["downside_attribution"] = downside_attribution
     current_selection_backtest = build_current_selection_backtest(dashboard_payload, performance_payload)
     dashboard_payload["current_selection_backtest"] = {
         "candidate_count": current_selection_backtest.get("candidate_count", 0),
@@ -755,6 +760,10 @@ def main() -> int:
             f"▸ <b>{_h(item.get('stock_id'))} {_h(item.get('name'))}</b>｜{_h(item.get('level'))}｜{_h('、'.join(item.get('reasons', [])[:1]))}"
             for item in exit_risks[: limits["max_exit_items"]]
         ) or "▸ 無紅黃警戒"
+        downside_text = str(
+            (dashboard_payload.get("downside_attribution") or {}).get("summary")
+            or "目前未偵測明顯個股跌因"
+        )
         health = dashboard_payload.get("health", {})
         schedule_delay = health.get("schedule_delay_minutes")
         schedule_text = "未記錄"
@@ -781,6 +790,7 @@ def main() -> int:
                 alert_text,
                 "",
                 "🛡 <b>危險名單</b>",
+                f"跌因：{_h(downside_text)}",
                 exit_text,
                 "",
                 f"🔗 <a href=\"{safe_dashboard_url}\">開啟監控頁</a>",
