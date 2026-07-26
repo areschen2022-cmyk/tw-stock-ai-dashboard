@@ -1,11 +1,11 @@
 {
   "as_of": "2026-07-24",
-  "generated_at": "2026-07-26T00:30:28+08:00",
-  "dashboard_generated_at": "2026-07-26T00:30:28+08:00",
+  "generated_at": "2026-07-27T04:34:47+08:00",
+  "dashboard_generated_at": "2026-07-27T04:34:43+08:00",
   "source_status": {
     "label": "正常",
-    "api": 3,
-    "cache": 3276,
+    "api": 14,
+    "cache": 3336,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -78,15 +78,14 @@
   "data_quality": {
     "label": "high",
     "label_text": "高",
-    "score": 90,
+    "score": 100,
     "source_score": 100,
     "coverage": 100.0,
     "recovered_fetches": 121,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 121 次",
-      "AI 模型不穩定"
+      "已由備援/補抓補回 121 次"
     ],
     "event_summary": {
       "empty": 1,
@@ -370,36 +369,36 @@
     "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。"
   },
   "bundle_coverage": {
-    "stocks": 72,
+    "stocks": 75,
     "datasets": {
       "prices": {
         "minimum": 20,
         "missing": [],
-        "count": 72,
+        "count": 75,
         "coverage_pct": 100.0
       },
       "institutional": {
         "minimum": 1,
         "missing": [],
-        "count": 72,
+        "count": 75,
         "coverage_pct": 100.0
       },
       "margin": {
         "minimum": 1,
         "missing": [],
-        "count": 72,
+        "count": 75,
         "coverage_pct": 100.0
       },
       "revenue": {
         "minimum": 1,
         "missing": [],
-        "count": 72,
+        "count": 75,
         "coverage_pct": 100.0
       },
       "revenue_15m": {
         "minimum": 15,
         "missing": [],
-        "count": 72,
+        "count": 75,
         "coverage_pct": 100.0
       }
     },
@@ -409,10 +408,10 @@
     "enabled": true,
     "mode": "daily_layered",
     "target_total_listed": 1056,
-    "selected_count": 72,
-    "coverage_pct": 6.8,
+    "selected_count": 75,
+    "coverage_pct": 7.1,
     "core_count": 10,
-    "active_theme_count": 37,
+    "active_theme_count": 40,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
     "market_universe_available": 1973,
@@ -421,9 +420,9 @@
     "weekly_full_scan_weekday": 0,
     "active_themes": [
       "ai_server",
-      "defense_ai",
-      "defense_policy",
+      "power_grid",
       "memory",
+      "energy_grid",
       "cooling_power"
     ]
   },
@@ -664,14 +663,14 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 3 | 快取 3276 | 限流 0"
+        "note": "API 14 | 快取 3336 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
-        "value": "72/72 檔",
-        "note": "S+ 2 | S 1 | A 3"
+        "value": "75/75 檔",
+        "note": "S+ 2 | S 0 | A 3"
       },
       {
         "key": "watch",
@@ -684,15 +683,15 @@
         "key": "potential",
         "label": "潛力雷達",
         "status": "ok",
-        "value": "179 筆",
+        "value": "178 筆",
         "note": "完成 140 | 5日勝率 38.6%"
       },
       {
         "key": "ai",
         "label": "AI 複核",
-        "status": "warn",
-        "value": "不穩定",
-        "note": "模型 0/1 | 同意門檻 1"
+        "status": "ok",
+        "value": "穩定",
+        "note": "模型 1/1 | 同意門檻 1"
       },
       {
         "key": "retry",
@@ -710,14 +709,14 @@
       }
     ],
     "summary": {
-      "scanned": 72,
-      "valid": 72,
+      "scanned": 75,
+      "valid": 75,
       "watch_signals": 371,
       "watch_completed": 271,
-      "potential_signals": 179,
+      "potential_signals": 178,
       "potential_completed": 140,
       "data_coverage": {
-        "bundle_stocks": 72,
+        "bundle_stocks": 75,
         "all_critical_complete": true,
         "datasets": {
           "prices": {
@@ -744,9 +743,9 @@
       },
       "universe": {
         "mode": "daily_layered",
-        "selected_count": 72,
+        "selected_count": 75,
         "target_total_listed": 1056,
-        "coverage_pct": 6.8,
+        "coverage_pct": 7.1,
         "market_universe_available": 1973
       }
     },
@@ -756,16 +755,8 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=3; cache=3276; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=14; cache=3336; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
-      },
-      {
-        "key": "ai",
-        "status": "warn",
-        "label": "AI 複核",
-        "reason": "AI 複核模型未完全穩定或成功數不足。",
-        "evidence": "successful=0; requested=1; failed=1; timed_out=0",
-        "next_action": "確認 DeepSeek/OpenRouter Secret、模型名稱、timeout 與回傳 JSON 格式。"
       },
       {
         "key": "retry",
@@ -779,24 +770,24 @@
     "history": [
       {
         "run_date": "2026-07-24",
-        "generated_at": "2026-07-26T00:30:28+08:00",
+        "generated_at": "2026-07-27T04:34:47+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
-        "ai_status": "warn",
+        "ai_status": "ok",
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
-          "scanned": 72,
-          "valid": 72,
+          "scanned": 75,
+          "valid": 75,
           "watch_signals": 371,
           "watch_completed": 271,
-          "potential_signals": 179,
+          "potential_signals": 178,
           "potential_completed": 140,
           "data_coverage": {
-            "bundle_stocks": 72,
+            "bundle_stocks": 75,
             "all_critical_complete": true,
             "datasets": {
               "prices": {
@@ -823,9 +814,9 @@
           },
           "universe": {
             "mode": "daily_layered",
-            "selected_count": 72,
+            "selected_count": 75,
             "target_total_listed": 1056,
-            "coverage_pct": 6.8,
+            "coverage_pct": 7.1,
             "market_universe_available": 1973
           }
         },
@@ -835,14 +826,14 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 3 | 快取 3276 | 限流 0"
+            "note": "API 14 | 快取 3336 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
-            "value": "72/72 檔",
-            "note": "S+ 2 | S 1 | A 3"
+            "value": "75/75 檔",
+            "note": "S+ 2 | S 0 | A 3"
           },
           {
             "key": "watch",
@@ -855,15 +846,15 @@
             "key": "potential",
             "label": "潛力雷達",
             "status": "ok",
-            "value": "179 筆",
+            "value": "178 筆",
             "note": "完成 140 | 5日勝率 38.6%"
           },
           {
             "key": "ai",
             "label": "AI 複核",
-            "status": "warn",
-            "value": "不穩定",
-            "note": "模型 0/1 | 同意門檻 1"
+            "status": "ok",
+            "value": "穩定",
+            "note": "模型 1/1 | 同意門檻 1"
           },
           {
             "key": "retry",
@@ -2237,19 +2228,21 @@
   },
   "ai": {
     "health": {
-      "label": "不穩定",
-      "score": 0,
+      "label": "穩定",
+      "score": 100,
       "requested": 1,
-      "success": 0,
-      "failed": 1,
+      "success": 1,
+      "failed": 0,
       "timed_out": 0,
-      "available_ratio": 0.0,
+      "available_ratio": 1.0,
       "timeout_ratio": 0.0
     },
     "requested_models": 1,
-    "successful_models": 0,
+    "successful_models": 1,
     "failed_model_names": [],
-    "success_model_names": []
+    "success_model_names": [
+      "deepseek-chat"
+    ]
   },
   "performance": {
     "stats": {
@@ -2262,9 +2255,9 @@
       "a_win_rate_5d": 38.63636363636363
     },
     "potential_radar": {
-      "signals": 179,
+      "signals": 178,
       "completed": 140,
-      "pending": 39,
+      "pending": 38,
       "win_rate_5d": 38.57142857142858,
       "avg_return_5d": -2.404308465531597,
       "avg_return_10d": 0.10379285810933792,
