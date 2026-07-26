@@ -1,11 +1,11 @@
 {
   "as_of": "2026-07-24",
-  "generated_at": "2026-07-27T05:27:51+08:00",
-  "dashboard_generated_at": "2026-07-27T05:27:47+08:00",
+  "generated_at": "2026-07-27T05:55:37+08:00",
+  "dashboard_generated_at": "2026-07-27T05:55:33+08:00",
   "source_status": {
     "label": "正常",
     "api": 3,
-    "cache": 3743,
+    "cache": 3442,
     "fallback": 1,
     "quota": 0,
     "error": 0,
@@ -369,36 +369,36 @@
     "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。"
   },
   "bundle_coverage": {
-    "stocks": 83,
+    "stocks": 76,
     "datasets": {
       "prices": {
         "minimum": 20,
         "missing": [],
-        "count": 83,
+        "count": 76,
         "coverage_pct": 100.0
       },
       "institutional": {
         "minimum": 1,
         "missing": [],
-        "count": 83,
+        "count": 76,
         "coverage_pct": 100.0
       },
       "margin": {
         "minimum": 1,
         "missing": [],
-        "count": 83,
+        "count": 76,
         "coverage_pct": 100.0
       },
       "revenue": {
         "minimum": 1,
         "missing": [],
-        "count": 83,
+        "count": 76,
         "coverage_pct": 100.0
       },
       "revenue_15m": {
         "minimum": 15,
         "missing": [],
-        "count": 83,
+        "count": 76,
         "coverage_pct": 100.0
       }
     },
@@ -408,10 +408,10 @@
     "enabled": true,
     "mode": "daily_layered",
     "target_total_listed": 1056,
-    "selected_count": 83,
-    "coverage_pct": 7.9,
+    "selected_count": 76,
+    "coverage_pct": 7.2,
     "core_count": 10,
-    "active_theme_count": 48,
+    "active_theme_count": 41,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
     "market_universe_available": 1973,
@@ -420,10 +420,10 @@
     "weekly_full_scan_weekday": 0,
     "active_themes": [
       "ai_server",
+      "network_optical_communication",
       "memory",
       "cooling_power",
-      "advanced_packaging",
-      "materials_recovery"
+      "silicon_photonics"
     ]
   },
   "retry": {
@@ -663,13 +663,13 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 3 | 快取 3743 | 限流 0"
+        "note": "API 3 | 快取 3442 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
-        "value": "83/83 檔",
+        "value": "76/76 檔",
         "note": "S+ 2 | S 0 | A 4"
       },
       {
@@ -677,7 +677,7 @@
         "label": "進場追蹤",
         "status": "ok",
         "value": "370 筆",
-        "note": "完成 271 | 5日勝率 40.6%"
+        "note": "完成 272 | 5日勝率 40.4%"
       },
       {
         "key": "potential",
@@ -709,14 +709,14 @@
       }
     ],
     "summary": {
-      "scanned": 83,
-      "valid": 83,
+      "scanned": 76,
+      "valid": 76,
       "watch_signals": 370,
-      "watch_completed": 271,
+      "watch_completed": 272,
       "potential_signals": 178,
       "potential_completed": 140,
       "data_coverage": {
-        "bundle_stocks": 83,
+        "bundle_stocks": 76,
         "all_critical_complete": true,
         "datasets": {
           "prices": {
@@ -743,9 +743,9 @@
       },
       "universe": {
         "mode": "daily_layered",
-        "selected_count": 83,
+        "selected_count": 76,
         "target_total_listed": 1056,
-        "coverage_pct": 7.9,
+        "coverage_pct": 7.2,
         "market_universe_available": 1973
       }
     },
@@ -755,7 +755,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=3; cache=3743; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=3442; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -770,7 +770,7 @@
     "history": [
       {
         "run_date": "2026-07-24",
-        "generated_at": "2026-07-27T05:27:51+08:00",
+        "generated_at": "2026-07-27T05:55:37+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -780,14 +780,14 @@
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
-          "scanned": 83,
-          "valid": 83,
+          "scanned": 76,
+          "valid": 76,
           "watch_signals": 370,
-          "watch_completed": 271,
+          "watch_completed": 272,
           "potential_signals": 178,
           "potential_completed": 140,
           "data_coverage": {
-            "bundle_stocks": 83,
+            "bundle_stocks": 76,
             "all_critical_complete": true,
             "datasets": {
               "prices": {
@@ -814,9 +814,9 @@
           },
           "universe": {
             "mode": "daily_layered",
-            "selected_count": 83,
+            "selected_count": 76,
             "target_total_listed": 1056,
-            "coverage_pct": 7.9,
+            "coverage_pct": 7.2,
             "market_universe_available": 1973
           }
         },
@@ -826,13 +826,13 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 3 | 快取 3743 | 限流 0"
+            "note": "API 3 | 快取 3442 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
-            "value": "83/83 檔",
+            "value": "76/76 檔",
             "note": "S+ 2 | S 0 | A 4"
           },
           {
@@ -840,7 +840,7 @@
             "label": "進場追蹤",
             "status": "ok",
             "value": "370 筆",
-            "note": "完成 271 | 5日勝率 40.6%"
+            "note": "完成 272 | 5日勝率 40.4%"
           },
           {
             "key": "potential",
@@ -2247,9 +2247,9 @@
   "performance": {
     "stats": {
       "signals": 370,
-      "completed": 271,
-      "win_rate_5d": 40.59040590405904,
-      "avg_return_5d": -1.2835370950184035,
+      "completed": 272,
+      "win_rate_5d": 40.44117647058824,
+      "avg_return_5d": -1.2958740000283797,
       "avg_return_10d": null,
       "stop_hit_rate": 37.283236994219656,
       "a_win_rate_5d": 38.63636363636363
@@ -2260,7 +2260,7 @@
       "pending": 38,
       "win_rate_5d": 38.57142857142858,
       "avg_return_5d": -2.404308465531597,
-      "avg_return_10d": 0.06610924783385472,
+      "avg_return_10d": -0.1092620801866952,
       "big_winner_count": 42,
       "false_positive_count": 81
     }
