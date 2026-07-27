@@ -1,21 +1,31 @@
 {
-  "generated_at": "2026-07-27T05:55:46+08:00",
+  "generated_at": "2026-07-27T14:32:08+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
     "warning": 0,
-    "info": 1
+    "info": 2
   },
   "context": {
-    "as_of": "2026-07-24",
-    "weekly_as_of": "2026-07-24",
-    "performance_as_of": "2026-07-24",
-    "potential_as_of": "2026-07-24",
-    "rows": 76,
-    "valid": 76,
+    "as_of": "2026-07-27",
+    "weekly_as_of": "2026-07-27",
+    "performance_as_of": "2026-07-27",
+    "potential_as_of": "2026-07-27",
+    "rows": 132,
+    "valid": 132,
     "chase": 0,
     "pullback": 5,
     "data_updates": [
+      {
+        "update_date": "2026-07-27",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 132,
+        "source_date": "2026-07-27",
+        "message": "132 stocks scanned for institutional flow",
+        "run_id": "30242936350",
+        "created_at": "2026-07-27 06:31:54"
+      },
       {
         "update_date": "2026-07-26",
         "dataset": "tdcc_retail_holders",
@@ -30,11 +40,11 @@
         "update_date": "2026-07-24",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 76,
+        "row_count": 83,
         "source_date": "2026-07-24",
-        "message": "76 stocks scanned for institutional flow",
-        "run_id": "30222016277",
-        "created_at": "2026-07-26 21:55:33"
+        "message": "83 stocks scanned for institutional flow",
+        "run_id": "30225045221",
+        "created_at": "2026-07-26 23:21:41"
       },
       {
         "update_date": "2026-07-23",
@@ -105,26 +115,22 @@
         "message": "127 stocks scanned for institutional flow",
         "run_id": "29782110617",
         "created_at": "2026-07-20 21:58:52"
-      },
-      {
-        "update_date": "2026-07-20",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4010,
-        "source_date": "2026-07-17",
-        "message": "26 divergence signals; previous=2026-07-09",
-        "run_id": "29782110617",
-        "created_at": "2026-07-20 21:58:15"
       }
     ]
   },
   "database": {
-    "daily_scores": 76,
+    "daily_scores": 132,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 6
   },
   "issues": [
+    {
+      "severity": "info",
+      "area": "us_stock_context",
+      "message": "US stock context is not decision-usable: 過期",
+      "suggestion": "Sync a fresh us-stock-ai dashboard JSON before using US-stock picks as a Taiwan-stock decision input."
+    },
     {
       "severity": "info",
       "area": "traceability",
