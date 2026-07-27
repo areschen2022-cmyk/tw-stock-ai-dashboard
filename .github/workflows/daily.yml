@@ -122,6 +122,17 @@ jobs:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
         run: python retail_divergence_job.py --max-stocks 160 || echo "Weekly TDCC retail-holder update skipped"
 
+      - name: Import US stock context
+        continue-on-error: true
+        env:
+          US_STOCK_CONTEXT_URL: ${{ vars.US_STOCK_CONTEXT_URL || secrets.US_STOCK_CONTEXT_URL }}
+        run: |
+          if [ -n "$US_STOCK_CONTEXT_URL" ]; then
+            python scripts/import_us_stock_context.py --source-url "$US_STOCK_CONTEXT_URL"
+          else
+            echo "US_STOCK_CONTEXT_URL is not set; keeping existing US stock context."
+          fi
+
       - name: Generate dashboard without Telegram
         env:
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}

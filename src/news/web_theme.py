@@ -14,6 +14,7 @@ from src.news.catalyst_confidence import CatalystConfidence, classify_theme_cata
 from src.news.deepseek_theme_reviewer import ThemeReview, apply_theme_review_adjustments, review_theme_headlines
 from src.news.headline_classifier import classify_headlines
 from src.news.policy_signal import PolicySignal, classify_policy_headlines
+from src.news.primary_market import PrimaryMarketSignal, classify_primary_market_headlines
 from src.news.theme_discovery import discover_emerging_themes
 
 try:
@@ -46,6 +47,7 @@ class ThemeSignal:
     ai_reviews: dict[str, ThemeReview] = field(default_factory=dict)
     discovered_themes: list[dict] = field(default_factory=list)
     policy: PolicySignal | None = None
+    primary_market: PrimaryMarketSignal | None = None
     source_count: int = 0
     failed_count: int = 0
 
@@ -271,6 +273,18 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
                     for headline in policy_signal.matched_headlines[theme]:
                         if headline not in matched[theme]:
                             matched[theme].append(headline)
+    primary_market_signal = classify_primary_market_headlines(deduped_scoring)
+    primary_cfg = news_cfg.get("primary_market_radar", {}) or {}
+    if primary_cfg.get("enabled", True):
+        max_primary_boost = int(primary_cfg.get("max_theme_boost", 12))
+        for theme, boost in primary_market_signal.theme_boosts.items():
+            if theme in keyword_map or theme in config.get("theme_pools", {}):
+                scores[theme] = int(scores.get(theme, 0)) + min(int(boost), max_primary_boost)
+                if theme in primary_market_signal.matched_headlines:
+                    matched.setdefault(theme, [])
+                    for headline in primary_market_signal.matched_headlines[theme]:
+                        if headline not in matched[theme]:
+                            matched[theme].append(headline)
     catalyst_confidence = classify_theme_catalysts(matched)
     theme_pools = config.get("theme_pools", {})
     ai_review_result = review_theme_headlines(
@@ -335,6 +349,7 @@ def fetch_theme_signal(config: dict, store=None, as_of=None) -> ThemeSignal:
         ai_reviews=ai_review_result.reviews,
         discovered_themes=discovered_themes,
         policy=policy_signal,
+        primary_market=primary_market_signal,
         source_count=source_count,
         failed_count=failed_count,
     )

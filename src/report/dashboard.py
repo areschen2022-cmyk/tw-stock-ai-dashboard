@@ -1006,6 +1006,17 @@ def build_dashboard_payload(
                 "us_events": [],
                 "tw_events": [],
             },
+            "primary_market": {
+                "summary": theme_signal.primary_market.summary,
+                "theme_boosts": theme_signal.primary_market.theme_boosts,
+                "matched_headlines": theme_signal.primary_market.matched_headlines,
+                "events": theme_signal.primary_market.events,
+            } if theme_signal and theme_signal.primary_market else {
+                "summary": "初級市場：未納入",
+                "theme_boosts": {},
+                "matched_headlines": {},
+                "events": [],
+            },
             "discovery": theme_signal.discovered_themes if theme_signal else [],
             "chain_map": _theme_chain_payload(config),
         },

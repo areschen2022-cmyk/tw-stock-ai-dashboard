@@ -1,6 +1,6 @@
 import json
 
-from scripts.import_us_stock_context import build_us_stock_context, write_context
+from scripts.import_us_stock_context import build_us_stock_context, build_us_stock_context_from_url, write_context
 
 
 def test_build_us_stock_context_keeps_numeric_market_and_symbols(tmp_path):
@@ -51,3 +51,26 @@ def test_write_us_stock_context_handles_missing_source(tmp_path):
 
     assert context["status"] == "missing"
     assert output.exists()
+
+
+def test_build_us_stock_context_from_url_accepts_dashboard_payload(monkeypatch):
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {
+                "generated_at": "2026-07-27T08:00:00+08:00",
+                "market": {"SPY": 720, "QQQ": 610, "SMH": 330},
+                "top10": [{"symbol": "NVDA", "score": 88, "grade": "A"}],
+            }
+
+    monkeypatch.setattr("scripts.import_us_stock_context.requests.get", lambda *args, **kwargs: Response())
+
+    context = build_us_stock_context_from_url("https://example.test/us/dashboard_data.json")
+
+    assert context["status"] == "ok"
+    assert context["source"] == "us-stock-ai-url"
+    assert context["source_url"] == "https://example.test/us/dashboard_data.json"
+    assert context["source_generated_at"] == "2026-07-27T08:00:00+08:00"
+    assert context["candidates"][0]["symbol"] == "NVDA"

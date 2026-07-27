@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+import requests
 
 
 TAIPEI = ZoneInfo("Asia/Taipei")
@@ -23,6 +26,19 @@ def _read_json(path: Path) -> dict:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _read_json_url(url: str, timeout: int = 20) -> dict:
+    if not url:
+        return {}
+    response = requests.get(
+        url,
+        timeout=timeout,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; tw-stock-ai/1.0)"},
+    )
+    response.raise_for_status()
+    payload = response.json()
     return payload if isinstance(payload, dict) else {}
 
 
@@ -55,10 +71,16 @@ def _symbol_rows(rows: list[dict], limit: int = 20) -> list[dict]:
     return output
 
 
-def build_us_stock_context(source_root: Path) -> dict:
-    dashboard = _read_json(source_root / "docs" / "dashboard_data.json")
-    performance = _read_json(source_root / "docs" / "performance_data.json")
-    hub = _read_json(source_root / "data" / "trading_hub_context.json")
+def build_us_stock_context_from_payloads(
+    dashboard: dict,
+    performance: dict | None = None,
+    hub: dict | None = None,
+    *,
+    source: str,
+    source_url: str = "",
+) -> dict:
+    performance = performance or {}
+    hub = hub or {}
 
     market = {
         key: _num(value)
@@ -78,7 +100,8 @@ def build_us_stock_context(source_root: Path) -> dict:
     status = "ok" if dashboard else "missing"
     return {
         "status": status,
-        "source": source_root.name or "us-stock-ai",
+        "source": source,
+        "source_url": source_url,
         "generated_at": _now(),
         "source_generated_at": dashboard.get("generated_at"),
         "market": market,
@@ -105,8 +128,37 @@ def build_us_stock_context(source_root: Path) -> dict:
     }
 
 
-def write_context(source_root: Path, output: Path) -> dict:
-    context = build_us_stock_context(source_root)
+def build_us_stock_context(source_root: Path) -> dict:
+    dashboard = _read_json(source_root / "docs" / "dashboard_data.json")
+    performance = _read_json(source_root / "docs" / "performance_data.json")
+    hub = _read_json(source_root / "data" / "trading_hub_context.json")
+    return build_us_stock_context_from_payloads(
+        dashboard,
+        performance,
+        hub,
+        source=source_root.name or "us-stock-ai",
+    )
+
+
+def build_us_stock_context_from_url(source_url: str) -> dict:
+    payload = _read_json_url(source_url)
+    if payload.get("status") in {"ok", "missing"} and isinstance(payload.get("candidates"), list):
+        context = dict(payload)
+        context["generated_at"] = _now()
+        context["source"] = context.get("source") or "us-stock-ai-url"
+        context["source_url"] = source_url
+        return context
+    return build_us_stock_context_from_payloads(
+        payload,
+        {},
+        {},
+        source="us-stock-ai-url",
+        source_url=source_url,
+    )
+
+
+def write_context(source_root: Path, output: Path, source_url: str = "") -> dict:
+    context = build_us_stock_context_from_url(source_url) if source_url else build_us_stock_context(source_root)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(context, ensure_ascii=False, indent=2), encoding="utf-8")
     return context
@@ -115,10 +167,11 @@ def write_context(source_root: Path, output: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Import a compact US-stock context for Taiwan stock AI.")
     parser.add_argument("--source-root", default=str(DEFAULT_US_ROOT))
+    parser.add_argument("--source-url", default=os.getenv("US_STOCK_CONTEXT_URL", ""))
     parser.add_argument("--output", default=str(ROOT / "data" / "us_stock_context.json"))
     args = parser.parse_args()
 
-    context = write_context(Path(args.source_root), Path(args.output))
+    context = write_context(Path(args.source_root), Path(args.output), source_url=str(args.source_url or ""))
     print(
         "us_stock_context "
         f"status={context['status']} "
