@@ -124,6 +124,21 @@ def test_ai_health_label_normalizes_legacy_and_unknown_values() -> None:
     assert _ai_health_label({"label": "broken-text", "score": 44}) == "不穩定"
 
 
+def test_post_update_check_notes_stale_us_stock_context(tmp_path) -> None:
+    _prepare_dashboard_files(tmp_path)
+    _prepare_db(tmp_path)
+    path = tmp_path / "dashboard" / "dashboard_data.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["us_stock_context"] = {"status": "ok", "decision_usable": False, "freshness_label": "過期"}
+    _write_json(path, payload)
+    _write_json(tmp_path / "docs" / "dashboard_data.json", payload)
+
+    result = run_check(tmp_path, tmp_path / "dashboard" / "post_update_check.json")
+
+    assert result["status"] == "ok"
+    assert any(item["area"] == "us_stock_context" for item in result["issues"])
+
+
 def test_post_update_check_reports_docs_sync_mismatch(tmp_path) -> None:
     _prepare_dashboard_files(tmp_path)
     _prepare_db(tmp_path)

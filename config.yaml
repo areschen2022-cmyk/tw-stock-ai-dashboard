@@ -243,6 +243,14 @@ exit_risk:
   score_drop: 15
   margin_rise_pct: 0.08
   price_drop_5d_pct: -5.0
+  downside_calibration:
+    enabled: true
+    lookback_days: 30
+    min_completed: 20
+    high_hit_rate: 60
+    low_hit_rate: 45
+    high_add_points: 2
+    low_subtract_points: 1
 
 ai_council:
   enabled: true

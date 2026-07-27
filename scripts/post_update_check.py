@@ -353,6 +353,17 @@ def _check_payloads(payloads: dict[str, dict], issues: list[dict]) -> dict:
             )
         )
 
+    us_context = dashboard.get("us_stock_context") or {}
+    if us_context and not us_context.get("decision_usable", False):
+        issues.append(
+            _issue(
+                "info",
+                "us_stock_context",
+                f"US stock context is not decision-usable: {us_context.get('freshness_label') or us_context.get('status')}",
+                "Sync a fresh us-stock-ai dashboard JSON before using US-stock picks as a Taiwan-stock decision input.",
+            )
+        )
+
     perf_stats = performance.get("stats") or {}
     if _int(perf_stats.get("signals")) == 0:
         issues.append(

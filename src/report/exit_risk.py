@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 import pandas as pd
 
+from src.report.downside_attribution import classify_downside_reasons
 from src.scoring.score_engine import StockScore
 from src.storage.sqlite_store import SQLiteStore
 
@@ -42,6 +43,7 @@ def build_exit_risks(
     score_drop_limit = int(cfg.get("score_drop", 15))
     margin_rise_pct = float(cfg.get("margin_rise_pct", 0.08))
     price_drop_5d_pct = float(cfg.get("price_drop_5d_pct", -5.0))
+    calibration = _downside_calibration_map(store, as_of, cfg)
     retail_rows = store.latest_retail_holder_signals(limit=int(cfg.get("retail_signal_limit", 400)))
     retail_by_stock = {str(row.get("stock_id")): row for row in retail_rows}
 
@@ -99,6 +101,16 @@ def build_exit_risks(
         else:
             prev_score = None
 
+        downside = classify_downside_reasons(reasons)
+        calibration_points, calibration_reason = _calibration_adjustment(
+            str(downside.get("label") or ""),
+            calibration,
+            cfg,
+        )
+        if calibration_points:
+            points = max(points + calibration_points, 0)
+            reasons = [calibration_reason, *reasons]
+
         if points >= 5:
             level = "紅色警戒"
             action = "準備減碼或停利，跌破停損不硬凹"
@@ -124,6 +136,48 @@ def build_exit_risks(
 
     risks.sort(key=lambda item: (item.level != "紅色警戒", -item.risk_score, item.current_score))
     return [item.to_dict() for item in risks[:max_items]]
+
+
+def _downside_calibration_map(store: SQLiteStore, as_of: date, cfg: dict) -> dict[str, dict]:
+    calibration_cfg = cfg.get("downside_calibration", {}) or {}
+    if not calibration_cfg.get("enabled", True):
+        return {}
+    lookback_days = int(calibration_cfg.get("lookback_days", 30))
+    summary = store.exit_risk_summary(as_of - timedelta(days=1), days=lookback_days)
+    return {
+        str(row.get("label") or ""): row
+        for row in summary.get("downside_stats", [])
+        if str(row.get("label") or "")
+    }
+
+
+def _calibration_adjustment(label: str, calibration: dict[str, dict], cfg: dict) -> tuple[int, str]:
+    calibration_cfg = cfg.get("downside_calibration", {}) or {}
+    min_completed = int(calibration_cfg.get("min_completed", 20))
+    high_hit_rate = float(calibration_cfg.get("high_hit_rate", 60))
+    low_hit_rate = float(calibration_cfg.get("low_hit_rate", 45))
+    high_add_points = int(calibration_cfg.get("high_add_points", 2))
+    low_subtract_points = int(calibration_cfg.get("low_subtract_points", 1))
+
+    row = calibration.get(label) or {}
+    completed = int(row.get("completed") or 0)
+    if completed < min_completed:
+        return 0, ""
+
+    hit_rate = row.get("true_warning_rate_5d")
+    if hit_rate is None:
+        return 0, ""
+    hit_rate = float(hit_rate)
+    avg_return = row.get("avg_return_5d")
+    avg_return_text = ""
+    if avg_return is not None:
+        avg_return_text = f"，5日均 {float(avg_return):+.1f}%"
+
+    if hit_rate >= high_hit_rate:
+        return high_add_points, f"跌因命中率高 +{high_add_points}（{label} {completed} 筆，5日 {hit_rate:.1f}%{avg_return_text}）"
+    if hit_rate < low_hit_rate:
+        return -low_subtract_points, f"跌因命中率低 -{low_subtract_points}（{label} {completed} 筆，5日 {hit_rate:.1f}%{avg_return_text}）"
+    return 0, ""
 
 
 def _institutional_sell_risk(institutional: pd.DataFrame) -> tuple[int, list[str]]:

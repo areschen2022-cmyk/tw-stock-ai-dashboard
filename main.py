@@ -82,6 +82,37 @@ def load_optional_json(path: Path) -> dict:
     return payload if isinstance(payload, dict) else {}
 
 
+def normalize_us_stock_context(context: dict, as_of: date, max_age_days: int = 3) -> dict:
+    if not context:
+        return {}
+    normalized = dict(context)
+    source_date = _parse_iso_date(str(normalized.get("source_generated_at") or ""))
+    if not source_date:
+        source_date = _parse_iso_date(str(normalized.get("generated_at") or "")[:10])
+
+    normalized["decision_usable"] = False
+    normalized["freshness_label"] = "無日期"
+    normalized["freshness_days"] = None
+    if source_date:
+        age_days = (as_of - source_date).days
+        normalized["freshness_days"] = age_days
+        if 0 <= age_days <= max_age_days and normalized.get("status") == "ok":
+            normalized["decision_usable"] = True
+            normalized["freshness_label"] = "可參考"
+        else:
+            normalized["freshness_label"] = "過期"
+    return normalized
+
+
+def _parse_iso_date(value: str) -> date | None:
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(value[:10])
+    except ValueError:
+        return None
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Taiwan stock AI screener MVP")
     parser.add_argument("--config", default=str(ROOT / "config.yaml"))
@@ -614,7 +645,7 @@ def main() -> int:
     )
     us_stock_context = load_optional_json(ROOT / "data" / "us_stock_context.json")
     if us_stock_context:
-        dashboard_payload["us_stock_context"] = us_stock_context
+        dashboard_payload["us_stock_context"] = normalize_us_stock_context(us_stock_context, as_of)
     attach_delivery_status(dashboard_payload, store, delivery_date)
     ai_status = {}
     ai_reviews = run_ai_council(

@@ -8,6 +8,7 @@ from main import (
     bundle_coverage_report,
     default_as_of,
     delivery_date_for_run,
+    normalize_us_stock_context,
     select_theme_pools,
 )
 
@@ -37,6 +38,16 @@ def test_delivery_date_falls_back_to_current_taipei_date(monkeypatch) -> None:
     monkeypatch.delenv("SCHEDULED_TARGET_TAIPEI", raising=False)
 
     assert delivery_date_for_run(datetime(2026, 5, 25, 9, 0, tzinfo=TAIPEI)).isoformat() == "2026-05-25"
+
+
+def test_us_stock_context_is_only_decision_usable_when_fresh() -> None:
+    fresh = normalize_us_stock_context({"status": "ok", "source_generated_at": "2026-07-24"}, date(2026, 7, 27))
+    stale = normalize_us_stock_context({"status": "ok", "source_generated_at": "2026-07-20"}, date(2026, 7, 27))
+
+    assert fresh["decision_usable"] is True
+    assert fresh["freshness_label"] == "可參考"
+    assert stale["decision_usable"] is False
+    assert stale["freshness_label"] == "過期"
 
 
 def test_empty_active_themes_do_not_select_all_theme_pools() -> None:
