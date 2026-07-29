@@ -1,24 +1,24 @@
 {
-  "as_of": "2026-07-28",
-  "generated_at": "2026-07-29T05:59:42+08:00",
+  "as_of": "2026-07-29",
+  "generated_at": "2026-07-30T04:33:42+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
-    "daily_signals": 335,
-    "daily_completed": 241,
-    "daily_win_rate_5d": 39.41908713692946,
-    "daily_avg_return_5d": -1.8786052292495778,
-    "potential_signals": 158,
-    "potential_completed": 119,
-    "potential_win_rate_5d": 35.294117647058826,
-    "potential_avg_return_5d": -3.751975016007483,
+    "daily_signals": 339,
+    "daily_completed": 251,
+    "daily_win_rate_5d": 38.645418326693225,
+    "daily_avg_return_5d": -2.0436559681125788,
+    "potential_signals": 159,
+    "potential_completed": 123,
+    "potential_win_rate_5d": 34.959349593495936,
+    "potential_avg_return_5d": -3.7508496284714767,
     "backtest_risk_level": "needs_review",
-    "backtest_completed": 241
+    "backtest_completed": 251
   },
   "best": {
     "potential_stage": {
       "label": "轉強初動",
-      "signals": 34,
+      "signals": 35,
       "completed": 27,
       "win_rate_5d": 51.85185185185185,
       "avg_return_5d": 0.6855202254838498,
@@ -35,33 +35,33 @@
     "weekly_themes": [
       {
         "theme": "記憶體/HBM",
-        "week_score": 263,
+        "week_score": 309,
         "trend": "急升🔥",
-        "today": 63
+        "today": 72
       },
       {
         "theme": "AI伺服器",
-        "week_score": 254,
-        "trend": "升溫↑",
-        "today": 40
+        "week_score": 246,
+        "trend": "持平→",
+        "today": 32
       },
       {
         "theme": "AI國防/軍工",
-        "week_score": 239,
+        "week_score": 229,
         "trend": "升溫↑",
-        "today": 30
+        "today": 28
       },
       {
         "theme": "防禦與政策",
-        "week_score": 231,
+        "week_score": 227,
         "trend": "升溫↑",
-        "today": 31
+        "today": 32
       },
       {
-        "theme": "網通光通訊",
-        "week_score": 220,
+        "theme": "先進封裝/CoWoS",
+        "week_score": 225,
         "trend": "升溫↑",
-        "today": 40
+        "today": 39
       }
     ]
   },
@@ -69,9 +69,9 @@
     "potential_stage": {
       "label": "強勢等拉回",
       "signals": 86,
-      "completed": 60,
-      "win_rate_5d": 28.333333333333332,
-      "avg_return_5d": -5.586714041120315,
+      "completed": 64,
+      "win_rate_5d": 28.125,
+      "avg_return_5d": -5.469879997880003,
       "stop_hit_rate": null
     },
     "potential_factor": {
@@ -132,9 +132,9 @@
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 119,
-        "avg_return_5d": -10.407332117752848,
-        "stop_hit_rate": 65.54621848739495,
+        "count": 125,
+        "avg_return_5d": -10.456946632112645,
+        "stop_hit_rate": 64.8,
         "examples": [
           {
             "stock_id": "6271",
@@ -147,18 +147,18 @@
             "return_5d": -31.343283582089555
           },
           {
-            "stock_id": "6182",
-            "name": "合晶",
-            "return_5d": -28.759894459102902
+            "stock_id": "6488",
+            "name": "環球晶",
+            "return_5d": -30.32258064516129
           }
         ],
         "lesson": "隔日開盤若沒有量價延續，強訊號也要降級處理。"
       },
       {
         "label": "題材失靈",
-        "count": 106,
-        "avg_return_5d": -7.812235661150222,
-        "stop_hit_rate": 61.32075471698113,
+        "count": 110,
+        "avg_return_5d": -7.76158033104395,
+        "stop_hit_rate": 60.0,
         "examples": [
           {
             "stock_id": "2484",
@@ -180,8 +180,8 @@
       },
       {
         "label": "停損觸發",
-        "count": 95,
-        "avg_return_5d": -11.075678213969123,
+        "count": 98,
+        "avg_return_5d": -11.302089111499772,
         "stop_hit_rate": 100.0,
         "examples": [
           {
@@ -195,9 +195,9 @@
             "return_5d": -31.343283582089555
           },
           {
-            "stock_id": "6182",
-            "name": "合晶",
-            "return_5d": -28.759894459102902
+            "stock_id": "6488",
+            "name": "環球晶",
+            "return_5d": -30.32258064516129
           }
         ],
         "lesson": "先檢查停損距離與波動是否匹配，避免一開盤就被洗出。"
@@ -233,7 +233,7 @@
     {
       "type": "deweight",
       "target": "每日可追訊號",
-      "reason": "5日勝率 39.4% 低於 50%，下週需提高開盤量價確認門檻。"
+      "reason": "5日勝率 38.6% 低於 50%，下週需提高開盤量價確認門檻。"
     },
     {
       "type": "investigate",
@@ -243,7 +243,7 @@
     {
       "type": "deweight",
       "target": "潛力雷達：強勢等拉回",
-      "reason": "完成 60 筆但 5日平均 -5.6%，下週只列觀察或降權。"
+      "reason": "完成 64 筆但 5日平均 -5.5%，下週只列觀察或降權。"
     },
     {
       "type": "carry_forward",
