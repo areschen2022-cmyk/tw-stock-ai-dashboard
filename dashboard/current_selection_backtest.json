@@ -1,78 +1,24 @@
 {
   "as_of": "2026-07-31",
-  "generated_at": "2026-08-03T05:27:05+08:00",
+  "generated_at": "2026-08-03T05:51:30+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 230,
-  "candidate_count": 4,
-  "referenceable_count": 4,
+  "candidate_count": 6,
+  "referenceable_count": 5,
   "strong_reference_count": 0,
-  "weak_reference_count": 4,
+  "weak_reference_count": 5,
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": -4.52,
-    "avg_reference_win_rate_5d": 31.0,
+    "avg_reference_return_5d": -3.38,
+    "avg_reference_win_rate_5d": 29.8,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
   "strong_references": [],
   "weak_references": [
-    {
-      "stock_id": "3231",
-      "name": "緯創",
-      "score": 93,
-      "grade": "S",
-      "action": "等拉回",
-      "entry_decision": "等拉回",
-      "decision_light": "yellow",
-      "themes": [],
-      "trigger_tags": [
-        "法人共振",
-        "技術偏多",
-        "營收加速",
-        "海外順風",
-        "放量不漲",
-        "智慧庫修正",
-        "進場觸發轉嚴格",
-        "60日重複降權",
-        "整理不足降權"
-      ],
-      "historical_profile": {
-        "completed": 86,
-        "win_rate_5d": 26.744186046511626,
-        "avg_return_5d": -5.63,
-        "stop_hit_rate": 34.883720930232556,
-        "confidence": "高",
-        "match_type": "component_fallback",
-        "same_profile_completed": 0
-      },
-      "components": {
-        "grade": {
-          "completed": 26,
-          "win_rate_5d": 46.15384615384615,
-          "avg_return_5d": -2.73,
-          "stop_hit_rate": 30.76923076923077,
-          "confidence": "中"
-        },
-        "action": {
-          "completed": 77,
-          "win_rate_5d": 25.97402597402597,
-          "avg_return_5d": -5.98,
-          "stop_hit_rate": 35.064935064935064,
-          "confidence": "高"
-        },
-        "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
-          "confidence": "低"
-        }
-      },
-      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
-    },
     {
       "stock_id": "2451",
       "name": "創見",
@@ -118,6 +64,111 @@
           "avg_return_5d": null,
           "stop_hit_rate": null,
           "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "3013",
+      "name": "晟銘電",
+      "score": 78,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "AI伺服器"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "營收加速",
+        "海外順風",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 14,
+        "win_rate_5d": 21.428571428571427,
+        "avg_return_5d": -3.26,
+        "stop_hit_rate": 21.428571428571427,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 14
+      },
+      "components": {
+        "grade": {
+          "completed": 68,
+          "win_rate_5d": 30.88235294117647,
+          "avg_return_5d": -4.47,
+          "stop_hit_rate": 35.294117647058826,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 77,
+          "win_rate_5d": 25.97402597402597,
+          "avg_return_5d": -5.98,
+          "stop_hit_rate": 35.064935064935064,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "6669",
+      "name": "緯穎",
+      "score": 76,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "AI伺服器"
+      ],
+      "trigger_tags": [
+        "題材升溫",
+        "投信買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 14,
+        "win_rate_5d": 21.428571428571427,
+        "avg_return_5d": -3.26,
+        "stop_hit_rate": 21.428571428571427,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 14
+      },
+      "components": {
+        "grade": {
+          "completed": 68,
+          "win_rate_5d": 30.88235294117647,
+          "avg_return_5d": -4.47,
+          "stop_hit_rate": 35.294117647058826,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 77,
+          "win_rate_5d": 25.97402597402597,
+          "avg_return_5d": -5.98,
+          "stop_hit_rate": 35.064935064935064,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
@@ -174,13 +225,16 @@
     {
       "stock_id": "2317",
       "name": "鴻海",
-      "score": 66,
+      "score": 72,
       "grade": "B",
       "action": "只觀察",
       "entry_decision": "量價不確認取消",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "AI伺服器"
+      ],
       "trigger_tags": [
+        "題材升溫",
         "法人共振",
         "營收加速",
         "海外順風",
@@ -189,13 +243,13 @@
         "智慧庫修正"
       ],
       "historical_profile": {
-        "completed": 136,
-        "win_rate_5d": 33.82352941176471,
-        "avg_return_5d": -3.09,
-        "stop_hit_rate": 47.794117647058826,
-        "confidence": "高",
-        "match_type": "component_fallback",
-        "same_profile_completed": 0
+        "completed": 28,
+        "win_rate_5d": 42.857142857142854,
+        "avg_return_5d": -1.04,
+        "stop_hit_rate": 28.57142857142857,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 28
       },
       "components": {
         "grade": {
@@ -213,11 +267,11 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
-          "confidence": "低"
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
@@ -227,13 +281,16 @@
     {
       "stock_id": "3231",
       "name": "緯創",
-      "score": 93,
-      "grade": "S",
+      "score": 99,
+      "grade": "S+",
       "action": "等拉回",
       "entry_decision": "等拉回",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "AI伺服器"
+      ],
       "trigger_tags": [
+        "題材強共振",
         "法人共振",
         "技術偏多",
         "營收加速",
@@ -245,20 +302,20 @@
         "整理不足降權"
       ],
       "historical_profile": {
-        "completed": 86,
-        "win_rate_5d": 26.744186046511626,
-        "avg_return_5d": -5.63,
-        "stop_hit_rate": 34.883720930232556,
-        "confidence": "高",
+        "completed": 7,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -8.34,
+        "stop_hit_rate": 28.57142857142857,
+        "confidence": "低",
         "match_type": "component_fallback",
-        "same_profile_completed": 0
+        "same_profile_completed": 7
       },
       "components": {
         "grade": {
-          "completed": 26,
-          "win_rate_5d": 46.15384615384615,
-          "avg_return_5d": -2.73,
-          "stop_hit_rate": 30.76923076923077,
+          "completed": 12,
+          "win_rate_5d": 25.0,
+          "avg_return_5d": -2.85,
+          "stop_hit_rate": 33.33333333333333,
           "confidence": "中"
         },
         "action": {
@@ -269,14 +326,14 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
-          "confidence": "低"
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
         }
       },
-      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
     },
     {
       "stock_id": "2451",
@@ -323,6 +380,111 @@
           "avg_return_5d": null,
           "stop_hit_rate": null,
           "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "3013",
+      "name": "晟銘電",
+      "score": 78,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "AI伺服器"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "營收加速",
+        "海外順風",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 14,
+        "win_rate_5d": 21.428571428571427,
+        "avg_return_5d": -3.26,
+        "stop_hit_rate": 21.428571428571427,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 14
+      },
+      "components": {
+        "grade": {
+          "completed": 68,
+          "win_rate_5d": 30.88235294117647,
+          "avg_return_5d": -4.47,
+          "stop_hit_rate": 35.294117647058826,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 77,
+          "win_rate_5d": 25.97402597402597,
+          "avg_return_5d": -5.98,
+          "stop_hit_rate": 35.064935064935064,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
+      "stock_id": "6669",
+      "name": "緯穎",
+      "score": 76,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "AI伺服器"
+      ],
+      "trigger_tags": [
+        "題材升溫",
+        "投信買超",
+        "技術偏多",
+        "營收加速",
+        "海外順風",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 14,
+        "win_rate_5d": 21.428571428571427,
+        "avg_return_5d": -3.26,
+        "stop_hit_rate": 21.428571428571427,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 14
+      },
+      "components": {
+        "grade": {
+          "completed": 68,
+          "win_rate_5d": 30.88235294117647,
+          "avg_return_5d": -4.47,
+          "stop_hit_rate": 35.294117647058826,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 77,
+          "win_rate_5d": 25.97402597402597,
+          "avg_return_5d": -5.98,
+          "stop_hit_rate": 35.064935064935064,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
@@ -379,13 +541,16 @@
     {
       "stock_id": "2317",
       "name": "鴻海",
-      "score": 66,
+      "score": 72,
       "grade": "B",
       "action": "只觀察",
       "entry_decision": "量價不確認取消",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "AI伺服器"
+      ],
       "trigger_tags": [
+        "題材升溫",
         "法人共振",
         "營收加速",
         "海外順風",
@@ -394,13 +559,13 @@
         "智慧庫修正"
       ],
       "historical_profile": {
-        "completed": 136,
-        "win_rate_5d": 33.82352941176471,
-        "avg_return_5d": -3.09,
-        "stop_hit_rate": 47.794117647058826,
-        "confidence": "高",
-        "match_type": "component_fallback",
-        "same_profile_completed": 0
+        "completed": 28,
+        "win_rate_5d": 42.857142857142854,
+        "avg_return_5d": -1.04,
+        "stop_hit_rate": 28.57142857142857,
+        "confidence": "中",
+        "match_type": "same_grade_action_theme",
+        "same_profile_completed": 28
       },
       "components": {
         "grade": {
@@ -418,11 +583,11 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
-          "confidence": "低"
+          "completed": 63,
+          "win_rate_5d": 34.92063492063492,
+          "avg_return_5d": -2.3,
+          "stop_hit_rate": 25.396825396825395,
+          "confidence": "高"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
