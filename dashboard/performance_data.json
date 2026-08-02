@@ -2,12 +2,12 @@
   "as_of": "2026-07-31",
   "days": 30,
   "stats": {
-    "signals": 306,
+    "signals": 307,
     "completed": 230,
     "win_rate_5d": 33.91304347826087,
     "avg_return_5d": -3.401619056544174,
     "avg_return_10d": null,
-    "stop_hit_rate": 41.05263157894737,
+    "stop_hit_rate": 41.25874125874126,
     "a_win_rate_5d": 30.88235294117647
   },
   "theme_stats": [
@@ -49,12 +49,12 @@
     },
     {
       "label": "記憶體/HBM",
-      "signals": 8,
+      "signals": 10,
       "completed": 7,
       "win_rate_5d": 14.285714285714285,
       "avg_return_5d": -11.234915915411108,
       "avg_return_10d": null,
-      "stop_hit_rate": 71.42857142857143
+      "stop_hit_rate": 62.5
     },
     {
       "label": "網通光通訊",
@@ -157,16 +157,16 @@
       "win_rate_5d": 31.70731707317073,
       "avg_return_5d": -3.5527922746171936,
       "avg_return_10d": null,
-      "stop_hit_rate": 49.6551724137931
+      "stop_hit_rate": 50.3448275862069
     },
     {
       "label": "等拉回",
-      "signals": 114,
+      "signals": 115,
       "completed": 77,
       "win_rate_5d": 25.97402597402597,
       "avg_return_5d": -5.9761956627096104,
       "avg_return_10d": null,
-      "stop_hit_rate": 35.92233009708738
+      "stop_hit_rate": 35.57692307692308
     },
     {
       "label": "可追蹤突破",
@@ -515,18 +515,18 @@
     ]
   },
   "data_quality": {
-    "signals": 306,
+    "signals": 307,
     "completed_5d": 230,
-    "pending_5d": 30,
+    "pending_5d": 31,
     "data_missing_5d": 46,
-    "completion_rate_5d": 75.16339869281046,
-    "entry_trigger_known": 285,
-    "entry_trigger_rate": 79.2982456140351,
-    "stop_known": 285,
-    "stop_hit_rate": 41.05263157894737,
+    "completion_rate_5d": 74.9185667752443,
+    "entry_trigger_known": 286,
+    "entry_trigger_rate": 79.37062937062937,
+    "stop_known": 286,
+    "stop_hit_rate": 41.25874125874126,
     "status_counts": {
       "completed_5d": 230,
-      "pending_5d": 30,
+      "pending_5d": 31,
       "data_missing": 46
     },
     "pending_examples": [
@@ -535,6 +535,13 @@
         "stock_id": "3231",
         "name": "緯創",
         "grade": "S+",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "grade": "S",
         "action": "等拉回"
       },
       {
@@ -578,13 +585,6 @@
         "name": "研華",
         "grade": "B",
         "action": "只觀察"
-      },
-      {
-        "signal_date": "2026-07-30",
-        "stock_id": "3231",
-        "name": "緯創",
-        "grade": "S",
-        "action": "等拉回"
       }
     ],
     "missing_examples": [
@@ -663,7 +663,7 @@
       "win_rate_5d": 33.87096774193548,
       "avg_return_5d": -3.0078058436388306,
       "avg_return_10d": null,
-      "stop_hit_rate": 47.26027397260274
+      "stop_hit_rate": 47.94520547945205
     },
     {
       "label": "75-84",
@@ -672,11 +672,11 @@
       "win_rate_5d": 30.88235294117647,
       "avg_return_5d": -4.474048479193839,
       "avg_return_10d": null,
-      "stop_hit_rate": 38.82352941176471
+      "stop_hit_rate": 38.372093023255815
     },
     {
       "label": "85-94",
-      "signals": 38,
+      "signals": 39,
       "completed": 26,
       "win_rate_5d": 46.15384615384615,
       "avg_return_5d": -2.7294623797878774,
@@ -721,7 +721,7 @@
     },
     {
       "grade": "S",
-      "signals": 38,
+      "signals": 39,
       "completed_3d": 30,
       "completed_5d": 26,
       "completed_10d": 0,
@@ -754,7 +754,7 @@
       "win_rate_3d": 36.84210526315789,
       "win_rate_5d": 33.87096774193548,
       "win_rate_10d": null,
-      "avg_return_3d": -2.1657724217148315,
+      "avg_return_3d": -2.197398297802608,
       "avg_return_5d": -3.0078058436388306,
       "avg_return_10d": null
     }
@@ -813,7 +813,7 @@
       {
         "category": "pending",
         "label": "等待驗證",
-        "count": 76,
+        "count": 77,
         "completed": 0,
         "avg_return_5d": null,
         "avg_return_10d": null
@@ -1565,17 +1565,19 @@
         "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。"
       },
       {
-        "signal_date": "2026-07-30",
-        "stock_id": "3231",
-        "name": "緯創",
+        "signal_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
         "grade": "S",
         "total_score": 94,
         "action": "等拉回",
-        "themes": [],
-        "entry_price": 169.5,
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "entry_price": 222.5,
         "return_3d": null,
         "return_5d": null,
-        "entry_triggered": true,
+        "entry_triggered": null,
         "stage": "early_turn",
         "stage_label": "轉強初動",
         "chase_risk": null,
@@ -1590,19 +1592,20 @@
         "tags": [
           "階段:轉強初動",
           "分數已成形",
-          "強度中高"
+          "強度中高",
+          "題材:記憶體/HBM"
         ],
         "reason": "條件正在累積，但尚未完成 5 日驗證；適合提前觀察，不等同進場。"
       },
       {
-        "signal_date": "2026-07-20",
-        "stock_id": "1216",
-        "name": "統一",
+        "signal_date": "2026-07-30",
+        "stock_id": "3231",
+        "name": "緯創",
         "grade": "S",
-        "total_score": 93,
+        "total_score": 94,
         "action": "等拉回",
         "themes": [],
-        "entry_price": 80.0,
+        "entry_price": 169.5,
         "return_3d": null,
         "return_5d": null,
         "entry_triggered": true,
@@ -1633,9 +1636,9 @@
   },
   "potential_radar": {
     "stats": {
-      "signals": 138,
+      "signals": 140,
       "completed": 109,
-      "pending": 29,
+      "pending": 31,
       "win_rate_5d": 29.357798165137616,
       "avg_return_5d": -5.468874087122494,
       "avg_return_10d": -4.5783583922842395,
@@ -1653,7 +1656,7 @@
       },
       {
         "category": "potential_pending",
-        "count": 30
+        "count": 32
       },
       {
         "category": "potential_success",
@@ -3655,6 +3658,266 @@
     "pending_candidates": [
       {
         "signal_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "grade": "S",
+        "total_score": 94,
+        "action": "等拉回",
+        "potential_score": 7,
+        "reason": "強勢等拉回｜潛力分 7｜K線轉強:突破整理 + 題材升溫:記憶體/HBM + 法人開始同步 + 量價開始轉強 + 強度中高｜追高風險，等回測確認",
+        "tags": [
+          "K線轉強:突破整理",
+          "題材升溫:記憶體/HBM",
+          "法人開始同步",
+          "量價開始轉強",
+          "強度中高",
+          "強勢但等拉回",
+          "強度已成形",
+          "追高風險，等回測確認",
+          "法人同步",
+          "成效降權:強勢等拉回",
+          "成效降權:過熱/延伸",
+          "生命週期:過熱/延伸"
+        ],
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "entry_price": 222.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "medium",
+        "chase_risk_label": "追高風險，等回測確認",
+        "research_score": 8,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "公司已對應到題材或供應鏈"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶籌碼",
+            "passed": false,
+            "reason": "散戶籌碼未明顯過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能活躍",
+            "passed": true,
+            "reason": "成交量有放大跡象"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "turnaround_confirmed",
+        "stock_type_label": "轉機確認型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "lifecycle_stage": "extended",
+        "lifecycle_stage_label": "過熱/延伸",
+        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
+        "smart_money": "sync",
+        "smart_money_label": "法人同步",
+        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
+        "smart_money_score": 88,
+        "branch_zscore_proxy": 4.5,
+        "institutional_follow": true,
+        "signal_combo": "過熱/延伸|題材+K線+法人同步",
+        "feedback_penalty": 4,
+        "feedback_notes": [
+          "強勢等拉回 近30日完成 55 筆，5日勝率 21.8%，平均 -7.4%",
+          "過熱/延伸 近30日完成 74 筆，5日勝率 29.7%，平均 -5.9%",
+          "法人同步 近30日完成 160 筆，5日勝率 31.9%，平均 -5.1%"
+        ],
+        "radar_layer": "confirmed_wait",
+        "radar_layer_label": "已轉強等回測",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強",
+        "occurrence_count": 2
+      },
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "2451",
+        "name": "創見",
+        "grade": "A",
+        "total_score": 81,
+        "action": "等拉回",
+        "potential_score": 5,
+        "reason": "強勢等拉回｜潛力分 5｜題材升溫:記憶體/HBM + 法人開始同步 + 強度中高 + 強勢但等拉回 + 尚未過熱強度｜尚未過熱",
+        "tags": [
+          "題材升溫:記憶體/HBM",
+          "法人開始同步",
+          "強度中高",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "法人同步",
+          "成效降權:強勢等拉回",
+          "成效降權:過熱/延伸",
+          "生命週期:過熱/延伸",
+          "資金型態:法人同步",
+          "訊號組合:過熱/延伸|題材+法人同步",
+          "研究快篩:順風研究"
+        ],
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "entry_price": 269.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 7,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "公司已對應到題材或供應鏈"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶籌碼",
+            "passed": false,
+            "reason": "散戶籌碼未明顯過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能活躍",
+            "passed": false,
+            "reason": "成交量有放大跡象"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "research_watch",
+        "stock_type_label": "研究觀察型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "lifecycle_stage": "extended",
+        "lifecycle_stage_label": "過熱/延伸",
+        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
+        "smart_money": "sync",
+        "smart_money_label": "法人同步",
+        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
+        "smart_money_score": 88,
+        "branch_zscore_proxy": 4.5,
+        "institutional_follow": true,
+        "signal_combo": "過熱/延伸|題材+法人同步",
+        "feedback_penalty": 4,
+        "feedback_notes": [
+          "強勢等拉回 近30日完成 55 筆，5日勝率 21.8%，平均 -7.4%",
+          "過熱/延伸 近30日完成 74 筆，5日勝率 29.7%，平均 -5.9%",
+          "法人同步 近30日完成 160 筆，5日勝率 31.9%，平均 -5.1%"
+        ],
+        "radar_layer": "confirmed_wait",
+        "radar_layer_label": "已轉強等回測",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強",
+        "occurrence_count": 1
+      },
+      {
+        "signal_date": "2026-07-31",
         "stock_id": "3013",
         "name": "晟銘電",
         "grade": "A",
@@ -3912,136 +4175,6 @@
         "days_to_promotion": null,
         "promotion_label": "尚未轉強",
         "occurrence_count": 9
-      },
-      {
-        "signal_date": "2026-07-30",
-        "stock_id": "8271",
-        "name": "宇瞻",
-        "grade": "A",
-        "total_score": 82,
-        "action": "等拉回",
-        "potential_score": 9,
-        "reason": "強勢等拉回｜潛力分 9｜K線轉強:突破整理 + 題材升溫:記憶體/HBM + 法人開始同步 + 量價開始轉強 + 強度中高｜尚未過熱",
-        "tags": [
-          "K線轉強:突破整理",
-          "題材升溫:記憶體/HBM",
-          "法人開始同步",
-          "量價開始轉強",
-          "強度中高",
-          "強勢但等拉回",
-          "尚未過熱強度",
-          "法人同步",
-          "成效降權:強勢等拉回",
-          "成效降權:過熱/延伸",
-          "生命週期:過熱/延伸",
-          "資金型態:法人同步"
-        ],
-        "themes": [
-          "記憶體/HBM"
-        ],
-        "entry_price": 222.5,
-        "stage": "pullback_watch",
-        "stage_label": "強勢等拉回",
-        "chase_risk": "low",
-        "chase_risk_label": "尚未過熱",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": true,
-            "reason": "公司已對應到題材或供應鏈"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": false,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶籌碼",
-            "passed": false,
-            "reason": "散戶籌碼未明顯過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能活躍",
-            "passed": true,
-            "reason": "成交量有放大跡象"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "half",
-        "position_hint_label": "半部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "lifecycle_stage": "extended",
-        "lifecycle_stage_label": "過熱/延伸",
-        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
-        "smart_money": "sync",
-        "smart_money_label": "法人同步",
-        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
-        "smart_money_score": 88,
-        "branch_zscore_proxy": 4.5,
-        "institutional_follow": true,
-        "signal_combo": "過熱/延伸|題材+K線+法人同步",
-        "feedback_penalty": 4,
-        "feedback_notes": [
-          "強勢等拉回 近30日完成 60 筆，5日勝率 28.3%，平均 -6.2%",
-          "過熱/延伸 近30日完成 71 筆，5日勝率 31.0%，平均 -5.8%",
-          "法人同步 近30日完成 152 筆，5日勝率 33.6%，平均 -5.0%"
-        ],
-        "radar_layer": "confirmed_wait",
-        "radar_layer_label": "已轉強等回測",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強",
-        "occurrence_count": 1
       },
       {
         "signal_date": "2026-07-28",
@@ -4559,142 +4692,14 @@
         "days_to_promotion": null,
         "promotion_label": "尚未轉強",
         "occurrence_count": 4
-      },
-      {
-        "signal_date": "2026-07-27",
-        "stock_id": "2615",
-        "name": "萬海",
-        "grade": "S",
-        "total_score": 90,
-        "action": "等拉回",
-        "potential_score": 5,
-        "reason": "強勢等拉回｜潛力分 5｜K線轉強:放量長紅 + 法人開始同步 + 量價開始轉強 + 強度中高 + 強勢但等拉回｜追高風險，等回測確認",
-        "tags": [
-          "K線轉強:放量長紅",
-          "法人開始同步",
-          "量價開始轉強",
-          "強度中高",
-          "強勢但等拉回",
-          "強度已成形",
-          "追高風險，等回測確認",
-          "法人同步",
-          "成效降權:強勢等拉回",
-          "成效降權:過熱/延伸",
-          "生命週期:過熱/延伸",
-          "資金型態:法人同步"
-        ],
-        "themes": [],
-        "entry_price": 87.0,
-        "stage": "pullback_watch",
-        "stage_label": "強勢等拉回",
-        "chase_risk": "medium",
-        "chase_risk_label": "追高風險，等回測確認",
-        "research_score": 8,
-        "research_label": "順風研究",
-        "research_factors": [
-          {
-            "key": "market_strength",
-            "label": "市場/強度",
-            "passed": true,
-            "reason": "分數或強度已到研究門檻"
-          },
-          {
-            "key": "theme",
-            "label": "產業題材",
-            "passed": false,
-            "reason": "公司已對應到題材或供應鏈"
-          },
-          {
-            "key": "catalyst",
-            "label": "催化劑",
-            "passed": true,
-            "reason": "題材熱度或催化正在升溫"
-          },
-          {
-            "key": "revenue",
-            "label": "營收加速",
-            "passed": true,
-            "reason": "營收或基本面有改善訊號"
-          },
-          {
-            "key": "valuation_risk",
-            "label": "估值風險",
-            "passed": true,
-            "reason": "未出現明顯估值或風險警訊"
-          },
-          {
-            "key": "institutional",
-            "label": "法人籌碼",
-            "passed": true,
-            "reason": "法人或籌碼面有支撐"
-          },
-          {
-            "key": "retail_clean",
-            "label": "散戶籌碼",
-            "passed": false,
-            "reason": "散戶籌碼未明顯過熱"
-          },
-          {
-            "key": "technical",
-            "label": "技術型態",
-            "passed": true,
-            "reason": "技術面或 K 線型態轉強"
-          },
-          {
-            "key": "volume",
-            "label": "量能活躍",
-            "passed": true,
-            "reason": "成交量有放大跡象"
-          },
-          {
-            "key": "overheat_guard",
-            "label": "過熱排除",
-            "passed": true,
-            "reason": "未進入明顯追高或型態風險區"
-          }
-        ],
-        "stock_type": "turnaround_confirmed",
-        "stock_type_label": "轉機確認型",
-        "position_hint": "normal",
-        "position_hint_label": "正常部位",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": "potential_pending",
-        "outcome_label": "觀察中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
-        "lifecycle_stage": "extended",
-        "lifecycle_stage_label": "過熱/延伸",
-        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
-        "smart_money": "sync",
-        "smart_money_label": "法人同步",
-        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
-        "smart_money_score": 88,
-        "branch_zscore_proxy": 4.5,
-        "institutional_follow": true,
-        "signal_combo": "過熱/延伸|K線+法人同步",
-        "feedback_penalty": 4,
-        "feedback_notes": [
-          "強勢等拉回 近30日完成 59 筆，5日勝率 27.1%，平均 -6.1%",
-          "過熱/延伸 近30日完成 64 筆，5日勝率 29.7%，平均 -6.5%",
-          "法人同步 近30日完成 142 筆，5日勝率 33.8%，平均 -5.1%"
-        ],
-        "radar_layer": "confirmed_wait",
-        "radar_layer_label": "已轉強等回測",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強",
-        "occurrence_count": 1
       }
     ],
     "factor_stats": [
       {
         "label": "順風研究",
-        "signals": 229,
+        "signals": 231,
         "completed": 193,
-        "pending": 36,
+        "pending": 38,
         "success_count": 64,
         "failure_count": 127,
         "win_rate_5d": 27.979274611398964,
@@ -4703,9 +4708,9 @@
       },
       {
         "label": "法人同步",
-        "signals": 208,
+        "signals": 211,
         "completed": 160,
-        "pending": 48,
+        "pending": 51,
         "success_count": 57,
         "failure_count": 103,
         "win_rate_5d": 31.874999999999996,
@@ -4714,9 +4719,9 @@
       },
       {
         "label": "法人開始同步",
-        "signals": 133,
+        "signals": 135,
         "completed": 106,
-        "pending": 27,
+        "pending": 29,
         "success_count": 36,
         "failure_count": 69,
         "win_rate_5d": 30.18867924528302,
@@ -4725,9 +4730,9 @@
       },
       {
         "label": "追高檢查:尚未過熱",
-        "signals": 131,
+        "signals": 132,
         "completed": 105,
-        "pending": 26,
+        "pending": 27,
         "success_count": 36,
         "failure_count": 68,
         "win_rate_5d": 29.523809523809526,
@@ -4736,9 +4741,9 @@
       },
       {
         "label": "半部位",
-        "signals": 116,
+        "signals": 118,
         "completed": 95,
-        "pending": 21,
+        "pending": 23,
         "success_count": 28,
         "failure_count": 67,
         "win_rate_5d": 23.157894736842106,
@@ -4747,9 +4752,9 @@
       },
       {
         "label": "尚未過熱強度",
-        "signals": 112,
+        "signals": 113,
         "completed": 89,
-        "pending": 23,
+        "pending": 24,
         "success_count": 29,
         "failure_count": 60,
         "win_rate_5d": 28.08988764044944,
@@ -4758,9 +4763,9 @@
       },
       {
         "label": "轉機確認型",
-        "signals": 108,
+        "signals": 109,
         "completed": 80,
-        "pending": 28,
+        "pending": 29,
         "success_count": 33,
         "failure_count": 45,
         "win_rate_5d": 31.25,
@@ -4769,9 +4774,9 @@
       },
       {
         "label": "題材觀察",
-        "signals": 91,
+        "signals": 93,
         "completed": 78,
-        "pending": 13,
+        "pending": 15,
         "success_count": 29,
         "failure_count": 49,
         "win_rate_5d": 32.05128205128205,
@@ -4780,9 +4785,9 @@
       },
       {
         "label": "過熱/延伸",
-        "signals": 100,
+        "signals": 102,
         "completed": 74,
-        "pending": 26,
+        "pending": 28,
         "success_count": 25,
         "failure_count": 49,
         "win_rate_5d": 29.72972972972973,
@@ -4791,9 +4796,9 @@
       },
       {
         "label": "題材升溫",
-        "signals": 85,
+        "signals": 87,
         "completed": 74,
-        "pending": 11,
+        "pending": 13,
         "success_count": 26,
         "failure_count": 48,
         "win_rate_5d": 29.72972972972973,
@@ -4813,9 +4818,9 @@
       },
       {
         "label": "量價開始轉強",
-        "signals": 82,
+        "signals": 83,
         "completed": 62,
-        "pending": 20,
+        "pending": 21,
         "success_count": 20,
         "failure_count": 41,
         "win_rate_5d": 29.03225806451613,
@@ -4824,9 +4829,9 @@
       },
       {
         "label": "潛力階段:強勢等拉回",
-        "signals": 73,
+        "signals": 75,
         "completed": 55,
-        "pending": 18,
+        "pending": 20,
         "success_count": 12,
         "failure_count": 43,
         "win_rate_5d": 21.818181818181817,
@@ -4835,9 +4840,9 @@
       },
       {
         "label": "強勢但等拉回",
-        "signals": 73,
+        "signals": 75,
         "completed": 55,
-        "pending": 18,
+        "pending": 20,
         "success_count": 12,
         "failure_count": 43,
         "win_rate_5d": 21.818181818181817,
@@ -4868,9 +4873,9 @@
       },
       {
         "label": "研究觀察型",
-        "signals": 41,
+        "signals": 42,
         "completed": 35,
-        "pending": 6,
+        "pending": 7,
         "success_count": 11,
         "failure_count": 24,
         "win_rate_5d": 31.428571428571427,
@@ -4879,9 +4884,9 @@
       },
       {
         "label": "K線轉強",
-        "signals": 49,
+        "signals": 50,
         "completed": 33,
-        "pending": 16,
+        "pending": 17,
         "success_count": 10,
         "failure_count": 22,
         "win_rate_5d": 27.27272727272727,
@@ -4890,9 +4895,9 @@
       },
       {
         "label": "強度中高",
-        "signals": 48,
+        "signals": 50,
         "completed": 30,
-        "pending": 18,
+        "pending": 20,
         "success_count": 13,
         "failure_count": 16,
         "win_rate_5d": 40.0,
@@ -4945,9 +4950,9 @@
       },
       {
         "label": "過熱/延伸|題材+法人同步",
-        "signals": 30,
+        "signals": 31,
         "completed": 29,
-        "pending": 1,
+        "pending": 2,
         "success_count": 13,
         "failure_count": 16,
         "win_rate_5d": 34.48275862068966,
@@ -4978,9 +4983,9 @@
       },
       {
         "label": "成效降權:過熱/延伸",
-        "signals": 29,
+        "signals": 31,
         "completed": 14,
-        "pending": 15,
+        "pending": 17,
         "success_count": 6,
         "failure_count": 8,
         "win_rate_5d": 42.857142857142854,
@@ -4989,9 +4994,9 @@
       },
       {
         "label": "成效降權:強勢等拉回",
-        "signals": 27,
+        "signals": 29,
         "completed": 13,
-        "pending": 14,
+        "pending": 16,
         "success_count": 5,
         "failure_count": 8,
         "win_rate_5d": 38.46153846153847,
@@ -5033,9 +5038,9 @@
       },
       {
         "label": "追高風險",
-        "signals": 14,
+        "signals": 16,
         "completed": 8,
-        "pending": 6,
+        "pending": 8,
         "success_count": 2,
         "failure_count": 6,
         "win_rate_5d": 25.0,
@@ -5110,9 +5115,9 @@
       },
       {
         "label": "強度已成形",
-        "signals": 8,
+        "signals": 9,
         "completed": 4,
-        "pending": 4,
+        "pending": 5,
         "success_count": 1,
         "failure_count": 3,
         "win_rate_5d": 25.0,
@@ -5277,9 +5282,9 @@
     "stage_stats": [
       {
         "label": "強勢等拉回",
-        "signals": 73,
+        "signals": 75,
         "completed": 55,
-        "pending": 18,
+        "pending": 20,
         "success_count": 12,
         "win_rate_5d": 21.818181818181817,
         "avg_return_5d": -7.439452171741227
@@ -5306,9 +5311,9 @@
     "layer_stats": [
       {
         "label": "已轉強等回測",
-        "signals": 124,
+        "signals": 126,
         "completed": 98,
-        "pending": 26,
+        "pending": 28,
         "success_count": 31,
         "failure_count": 66,
         "win_rate_5d": 28.57142857142857,
@@ -5341,9 +5346,9 @@
     "lifecycle_stats": [
       {
         "label": "過熱/延伸",
-        "signals": 100,
+        "signals": 102,
         "completed": 74,
-        "pending": 26,
+        "pending": 28,
         "success_count": 25,
         "failure_count": 49,
         "win_rate_5d": 29.72972972972973,
@@ -5376,9 +5381,9 @@
     "smart_money_stats": [
       {
         "label": "法人同步",
-        "signals": 106,
+        "signals": 108,
         "completed": 81,
-        "pending": 25,
+        "pending": 27,
         "success_count": 29,
         "failure_count": 52,
         "win_rate_5d": 32.098765432098766,
@@ -5411,9 +5416,9 @@
     "combo_stats": [
       {
         "label": "過熱/延伸|題材+法人同步",
-        "signals": 30,
+        "signals": 31,
         "completed": 29,
-        "pending": 1,
+        "pending": 2,
         "success_count": 13,
         "failure_count": 16,
         "win_rate_5d": 34.48275862068966,
@@ -5444,9 +5449,9 @@
       },
       {
         "label": "過熱/延伸|題材+K線+法人同步",
-        "signals": 13,
+        "signals": 14,
         "completed": 10,
-        "pending": 3,
+        "pending": 4,
         "success_count": 4,
         "failure_count": 6,
         "win_rate_5d": 40.0,
@@ -5543,14 +5548,14 @@
       }
     ],
     "promotion_funnel": {
-      "signals": 138,
-      "promoted": 73,
+      "signals": 140,
+      "promoted": 74,
       "completed": 109,
       "big_winners": 37,
       "promoted_winners": 32,
-      "conversion_rate": 52.89855072463768,
+      "conversion_rate": 52.85714285714286,
       "promoted_win_rate_5d": 41.53846153846154,
-      "avg_days_to_promotion": 3.5616438356164384,
+      "avg_days_to_promotion": 3.527027027027027,
       "examples": [
         {
           "signal_date": "2026-07-15",
@@ -5784,9 +5789,9 @@
       },
       {
         "label": "強度已成形",
-        "signals": 8,
+        "signals": 9,
         "completed": 4,
-        "pending": 4,
+        "pending": 5,
         "success_count": 1,
         "failure_count": 3,
         "win_rate_5d": 25.0,
@@ -5799,6 +5804,264 @@
       "目前需小心因素：過熱/延伸|散戶+K線+主力先行，完成 2 筆，5日平均 -18.6%，勝率 0.0%。"
     ],
     "items": [
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "grade": "S",
+        "total_score": 94,
+        "action": "等拉回",
+        "potential_score": 7,
+        "reason": "強勢等拉回｜潛力分 7｜K線轉強:突破整理 + 題材升溫:記憶體/HBM + 法人開始同步 + 量價開始轉強 + 強度中高｜追高風險，等回測確認",
+        "tags": [
+          "K線轉強:突破整理",
+          "題材升溫:記憶體/HBM",
+          "法人開始同步",
+          "量價開始轉強",
+          "強度中高",
+          "強勢但等拉回",
+          "強度已成形",
+          "追高風險，等回測確認",
+          "法人同步",
+          "成效降權:強勢等拉回",
+          "成效降權:過熱/延伸",
+          "生命週期:過熱/延伸"
+        ],
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "entry_price": 222.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "medium",
+        "chase_risk_label": "追高風險，等回測確認",
+        "research_score": 8,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "公司已對應到題材或供應鏈"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶籌碼",
+            "passed": false,
+            "reason": "散戶籌碼未明顯過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能活躍",
+            "passed": true,
+            "reason": "成交量有放大跡象"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "turnaround_confirmed",
+        "stock_type_label": "轉機確認型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "lifecycle_stage": "extended",
+        "lifecycle_stage_label": "過熱/延伸",
+        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
+        "smart_money": "sync",
+        "smart_money_label": "法人同步",
+        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
+        "smart_money_score": 88,
+        "branch_zscore_proxy": 4.5,
+        "institutional_follow": true,
+        "signal_combo": "過熱/延伸|題材+K線+法人同步",
+        "feedback_penalty": 4,
+        "feedback_notes": [
+          "強勢等拉回 近30日完成 55 筆，5日勝率 21.8%，平均 -7.4%",
+          "過熱/延伸 近30日完成 74 筆，5日勝率 29.7%，平均 -5.9%",
+          "法人同步 近30日完成 160 筆，5日勝率 31.9%，平均 -5.1%"
+        ],
+        "radar_layer": "confirmed_wait",
+        "radar_layer_label": "已轉強等回測",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "2451",
+        "name": "創見",
+        "grade": "A",
+        "total_score": 81,
+        "action": "等拉回",
+        "potential_score": 5,
+        "reason": "強勢等拉回｜潛力分 5｜題材升溫:記憶體/HBM + 法人開始同步 + 強度中高 + 強勢但等拉回 + 尚未過熱強度｜尚未過熱",
+        "tags": [
+          "題材升溫:記憶體/HBM",
+          "法人開始同步",
+          "強度中高",
+          "強勢但等拉回",
+          "尚未過熱強度",
+          "法人同步",
+          "成效降權:強勢等拉回",
+          "成效降權:過熱/延伸",
+          "生命週期:過熱/延伸",
+          "資金型態:法人同步",
+          "訊號組合:過熱/延伸|題材+法人同步",
+          "研究快篩:順風研究"
+        ],
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "entry_price": 269.5,
+        "stage": "pullback_watch",
+        "stage_label": "強勢等拉回",
+        "chase_risk": "low",
+        "chase_risk_label": "尚未過熱",
+        "research_score": 7,
+        "research_label": "順風研究",
+        "research_factors": [
+          {
+            "key": "market_strength",
+            "label": "市場/強度",
+            "passed": true,
+            "reason": "分數或強度已到研究門檻"
+          },
+          {
+            "key": "theme",
+            "label": "產業題材",
+            "passed": true,
+            "reason": "公司已對應到題材或供應鏈"
+          },
+          {
+            "key": "catalyst",
+            "label": "催化劑",
+            "passed": true,
+            "reason": "題材熱度或催化正在升溫"
+          },
+          {
+            "key": "revenue",
+            "label": "營收加速",
+            "passed": false,
+            "reason": "營收或基本面有改善訊號"
+          },
+          {
+            "key": "valuation_risk",
+            "label": "估值風險",
+            "passed": true,
+            "reason": "未出現明顯估值或風險警訊"
+          },
+          {
+            "key": "institutional",
+            "label": "法人籌碼",
+            "passed": true,
+            "reason": "法人或籌碼面有支撐"
+          },
+          {
+            "key": "retail_clean",
+            "label": "散戶籌碼",
+            "passed": false,
+            "reason": "散戶籌碼未明顯過熱"
+          },
+          {
+            "key": "technical",
+            "label": "技術型態",
+            "passed": true,
+            "reason": "技術面或 K 線型態轉強"
+          },
+          {
+            "key": "volume",
+            "label": "量能活躍",
+            "passed": false,
+            "reason": "成交量有放大跡象"
+          },
+          {
+            "key": "overheat_guard",
+            "label": "過熱排除",
+            "passed": true,
+            "reason": "未進入明顯追高或型態風險區"
+          }
+        ],
+        "stock_type": "research_watch",
+        "stock_type_label": "研究觀察型",
+        "position_hint": "half",
+        "position_hint_label": "半部位",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": "potential_pending",
+        "outcome_label": "觀察中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。",
+        "lifecycle_stage": "extended",
+        "lifecycle_stage_label": "過熱/延伸",
+        "lifecycle_reason": "分數或價格位置已偏高，僅追蹤不作為早期訊號。",
+        "smart_money": "sync",
+        "smart_money_label": "法人同步",
+        "smart_money_reason": "法人訊號已跟上，較偏確認型訊號。",
+        "smart_money_score": 88,
+        "branch_zscore_proxy": 4.5,
+        "institutional_follow": true,
+        "signal_combo": "過熱/延伸|題材+法人同步",
+        "feedback_penalty": 4,
+        "feedback_notes": [
+          "強勢等拉回 近30日完成 55 筆，5日勝率 21.8%，平均 -7.4%",
+          "過熱/延伸 近30日完成 74 筆，5日勝率 29.7%，平均 -5.9%",
+          "法人同步 近30日完成 160 筆，5日勝率 31.9%，平均 -5.1%"
+        ],
+        "radar_layer": "confirmed_wait",
+        "radar_layer_label": "已轉強等回測",
+        "promoted_signal_date": null,
+        "promoted_grade": null,
+        "promoted_score": null,
+        "days_to_promotion": null,
+        "promotion_label": "尚未轉強"
+      },
       {
         "signal_date": "2026-07-31",
         "stock_id": "3013",
@@ -6180,11 +6443,11 @@
         ],
         "radar_layer": "confirmed_wait",
         "radar_layer_label": "已轉強等回測",
-        "promoted_signal_date": null,
-        "promoted_grade": null,
-        "promoted_score": null,
-        "days_to_promotion": null,
-        "promotion_label": "尚未轉強"
+        "promoted_signal_date": "2026-07-31",
+        "promoted_grade": "S",
+        "promoted_score": 94,
+        "days_to_promotion": 1,
+        "promotion_label": "已轉強"
       },
       {
         "signal_date": "2026-07-29",
@@ -23070,18 +23333,18 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "6505",
-        "name": "台塑化",
+        "stock_id": "2344",
+        "name": "華邦電",
         "level": "紅色警戒",
-        "risk_score": 18,
-        "current_score": 47,
-        "previous_score": 66,
-        "entry_price": 74.8,
+        "risk_score": 19,
+        "current_score": 37,
+        "previous_score": 35,
+        "entry_price": 130.0,
         "reasons": [
           "法人賣、融資增、股價轉弱",
-          "外資近 3 日偏賣",
-          "外資 5 日合計賣超",
-          "法人賣超占成交量 19.6%"
+          "外資連 3 日賣超",
+          "投信近 3 日偏賣",
+          "外資 5 日合計賣超"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -23114,18 +23377,18 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "3264",
-        "name": "欣銓",
+        "stock_id": "2408",
+        "name": "南亞科",
         "level": "紅色警戒",
-        "risk_score": 17,
-        "current_score": 34,
-        "previous_score": 30,
-        "entry_price": 177.0,
+        "risk_score": 18,
+        "current_score": 29,
+        "previous_score": 35,
+        "entry_price": 353.5,
         "reasons": [
           "法人賣、融資增、股價轉弱",
           "外資連 3 日賣超",
-          "外資 5 日合計賣超",
-          "法人賣超占成交量 9.4%"
+          "投信近 3 日偏賣",
+          "外資 5 日合計賣超"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "return_3d": null,
@@ -23156,8 +23419,8 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "2449",
-        "name": "京元電子",
+        "stock_id": "6505",
+        "name": "台塑化",
         "level": "紅色警戒",
         "risk_score": 12,
         "current_score": null,
@@ -23176,8 +23439,8 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "2408",
-        "name": "南亞科",
+        "stock_id": "2449",
+        "name": "京元電子",
         "level": "紅色警戒",
         "risk_score": 12,
         "current_score": null,
@@ -23389,10 +23652,10 @@
     ],
     "stats": {
       "signals": 424,
-      "completed": 203,
-      "true_warning_rate_5d": 72.9064039408867,
-      "avg_return_5d": -5.156840447054011,
-      "true_warnings": 148,
+      "completed": 204,
+      "true_warning_rate_5d": 73.0392156862745,
+      "avg_return_5d": -5.220688377126384,
+      "true_warnings": 149,
       "false_warnings": 55
     },
     "downside_stats": [
@@ -23410,12 +23673,12 @@
       {
         "label": "籌碼倒貨",
         "signals": 48,
-        "completed": 6,
-        "true_warnings": 6,
+        "completed": 7,
+        "true_warnings": 7,
         "false_warnings": 0,
         "true_warning_rate_3d": 100.0,
         "true_warning_rate_5d": 100.0,
-        "avg_return_5d": -18.377141570833594,
+        "avg_return_5d": -18.349238229545676,
         "sample_label": "可觀察"
       },
       {
@@ -23781,15 +24044,15 @@
   },
   "knowledge_adjustment": {
     "signals": 1950,
-    "completed": 1199,
-    "downgraded": 46,
+    "completed": 1205,
+    "downgraded": 48,
     "downgraded_completed": 28,
     "protected_count": 20,
     "protection_rate_5d": 71.42857142857143,
     "positive_completed": 31,
     "positive_win_rate_5d": 6.451612903225806,
-    "avg_return_5d": -5.524828204970514,
-    "avg_return_10d": -9.596919162678757,
+    "avg_return_5d": -5.557265121851815,
+    "avg_return_10d": -9.597581137026472,
     "items": [
       {
         "signal_date": "2026-07-31",
@@ -23819,23 +24082,48 @@
       },
       {
         "signal_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "total_score": 94,
+        "grade": "S",
+        "label": "BUY_WATCH",
+        "entry_price": 222.5,
+        "source": "knowledge_export",
+        "original_action": "可追蹤突破",
+        "adjusted_action": "等拉回",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 進場條"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 進場條",
+          "操作由 可追蹤突破 降為 等拉回"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
         "stock_id": "2451",
         "name": "創見",
-        "total_score": 79,
+        "total_score": 81,
         "grade": "A",
         "label": "BUY_WATCH",
         "entry_price": 269.5,
         "source": "knowledge_export",
-        "original_action": "等拉回",
+        "original_action": "可追蹤突破",
         "adjusted_action": "等拉回",
         "negative_matches": [
-          "Taiwan stock weekly review action: 潛力雷達：",
-          "Taiwan stock adaptive feedback: 操作:等拉回",
-          "Taiwan stock weekly review action: 潛力雷達："
+          "Taiwan stock low win-rate breakdown: 進場條"
         ],
         "positive_matches": [],
         "notes": [
-          "智慧庫風險命中：Taiwan stock weekly review action: 潛力雷達：、Taiwan stock adaptive feedback: 操作:等拉回"
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 進場條",
+          "操作由 可追蹤突破 降為 等拉回"
         ],
         "return_3d": null,
         "return_5d": null,
@@ -24089,34 +24377,6 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "3450",
-        "name": "聯鈞",
-        "total_score": 59,
-        "grade": "C",
-        "label": "WAIT",
-        "entry_price": 364.5,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
         "stock_id": "2357",
         "name": "華碩",
         "total_score": 59,
@@ -24151,6 +24411,34 @@
         "grade": "C",
         "label": "WAIT",
         "entry_price": 40.7,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區",
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "2885",
+        "name": "元大金",
+        "total_score": 58,
+        "grade": "C",
+        "label": "WAIT",
+        "entry_price": 62.2,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -24229,6 +24517,34 @@
       },
       {
         "signal_date": "2026-07-31",
+        "stock_id": "3260",
+        "name": "威剛",
+        "total_score": 57,
+        "grade": "C",
+        "label": "WAIT",
+        "entry_price": 398.5,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區",
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
         "stock_id": "3443",
         "name": "創意",
         "total_score": 56,
@@ -24257,68 +24573,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "6442",
-        "name": "光聖",
-        "total_score": 55,
-        "grade": "C",
-        "label": "WAIT",
-        "entry_price": 1110.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
         "stock_id": "3293",
         "name": "鈊象",
         "total_score": 55,
         "grade": "C",
         "label": "WAIT",
         "entry_price": 776.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
-        "stock_id": "3260",
-        "name": "威剛",
-        "total_score": 55,
-        "grade": "C",
-        "label": "WAIT",
-        "entry_price": 398.5,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -24733,34 +24993,6 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "4977",
-        "name": "眾達-KY",
-        "total_score": 46,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 112.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
         "stock_id": "1590",
         "name": "亞德客-KY",
         "total_score": 46,
@@ -24817,12 +25049,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "4908",
-        "name": "前鼎",
-        "total_score": 44,
+        "stock_id": "2887",
+        "name": "台新新光金",
+        "total_score": 45,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 132.0,
+        "entry_price": 32.6,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -24879,6 +25111,34 @@
         "grade": "-",
         "label": "AVOID",
         "entry_price": 688.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區",
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
+        "stock_id": "3006",
+        "name": "晶豪科",
+        "total_score": 44,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 172.0,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -25153,34 +25413,6 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "6530",
-        "name": "創威",
-        "total_score": 38,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 67.6,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
         "stock_id": "5483",
         "name": "中美晶",
         "total_score": 37,
@@ -25209,12 +25441,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "3081",
-        "name": "聯亞",
-        "total_score": 36,
+        "stock_id": "2344",
+        "name": "華邦電",
+        "total_score": 37,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 1630.0,
+        "entry_price": 130.0,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -25293,12 +25525,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "6510",
-        "name": "精測",
+        "stock_id": "6770",
+        "name": "力積電",
         "total_score": 34,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 2495.0,
+        "entry_price": 50.4,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -25321,12 +25553,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "3363",
-        "name": "上詮",
+        "stock_id": "6510",
+        "name": "精測",
         "total_score": 34,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 480.5,
+        "entry_price": 2495.0,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -25601,34 +25833,6 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "3163",
-        "name": "波若威",
-        "total_score": 32,
-        "grade": "-",
-        "label": "AVOID",
-        "entry_price": 544.0,
-        "source": "knowledge_export",
-        "original_action": "避免追高",
-        "adjusted_action": "避免追高",
-        "negative_matches": [
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區",
-          "Taiwan stock low win-rate breakdown: 強度:",
-          "Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "positive_matches": [],
-        "notes": [
-          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
-        ],
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
-      },
-      {
-        "signal_date": "2026-07-31",
         "stock_id": "5521",
         "name": "工信工程",
         "total_score": 31,
@@ -25657,12 +25861,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "4979",
-        "name": "華星光",
-        "total_score": 31,
+        "stock_id": "6239",
+        "name": "力成",
+        "total_score": 30,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 370.0,
+        "entry_price": 233.0,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -25797,6 +26001,34 @@
       },
       {
         "signal_date": "2026-07-31",
+        "stock_id": "2408",
+        "name": "南亞科",
+        "total_score": 29,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 353.5,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區",
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
         "stock_id": "1301",
         "name": "台塑",
         "total_score": 29,
@@ -25853,12 +26085,12 @@
       },
       {
         "signal_date": "2026-07-31",
-        "stock_id": "6239",
-        "name": "力成",
+        "stock_id": "8299",
+        "name": "群聯",
         "total_score": 26,
         "grade": "-",
         "label": "AVOID",
-        "entry_price": 233.0,
+        "entry_price": 1640.0,
         "source": "knowledge_export",
         "original_action": "避免追高",
         "adjusted_action": "避免追高",
@@ -26077,6 +26309,34 @@
       },
       {
         "signal_date": "2026-07-31",
+        "stock_id": "6531",
+        "name": "愛普*",
+        "total_score": 22,
+        "grade": "-",
+        "label": "AVOID",
+        "entry_price": 858.0,
+        "source": "knowledge_export",
+        "original_action": "避免追高",
+        "adjusted_action": "避免追高",
+        "negative_matches": [
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區",
+          "Taiwan stock low win-rate breakdown: 強度:",
+          "Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "positive_matches": [],
+        "notes": [
+          "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
+        ],
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "outcome_category": null,
+        "outcome_label": null,
+        "outcome_reason": null
+      },
+      {
+        "signal_date": "2026-07-31",
         "stock_id": "6488",
         "name": "環球晶",
         "total_score": 22,
@@ -26209,9 +26469,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -27047,9 +27307,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -27299,9 +27559,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -27327,9 +27587,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -27971,9 +28231,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -28307,9 +28567,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-30",
@@ -31087,7 +31347,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": 2.064220183486239,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -31255,7 +31515,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": -18.922018348623855,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -31367,7 +31627,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": -18.867924528301888,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -32123,7 +32383,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": -18.75,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -32767,7 +33027,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": -0.6060606060606061,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -33075,7 +33335,7 @@
         "notes": [
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
-        "return_3d": null,
+        "return_3d": -18.578352180936996,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -36594,9 +36854,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-27",
@@ -37301,11 +37561,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -3.5294117647058822,
-        "return_5d": null,
+        "return_5d": 4.705882352941177,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-24",
@@ -37448,9 +37708,9 @@
         "return_3d": -5.152224824355972,
         "return_5d": -14.637002341920374,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-24",
@@ -37765,11 +38025,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -2.119700748129676,
-        "return_5d": null,
+        "return_5d": -11.845386533665836,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-24",
@@ -38057,9 +38317,9 @@
         "return_3d": -9.847596717467761,
         "return_5d": -13.247362250879249,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-24",
@@ -38171,11 +38431,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -6.796116504854369,
-        "return_5d": null,
+        "return_5d": -15.857605177993527,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-24",
@@ -38316,11 +38576,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -16.986301369863014,
-        "return_5d": null,
+        "return_5d": -10.136986301369863,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-24",
@@ -38811,9 +39071,9 @@
         "return_3d": -25.53191489361702,
         "return_5d": -22.836879432624112,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-24",
@@ -38840,9 +39100,9 @@
         "return_3d": -12.5,
         "return_5d": -7.386363636363637,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-24",
@@ -39072,9 +39332,9 @@
         "return_3d": -7.169811320754717,
         "return_5d": -16.22641509433962,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-24",
@@ -39157,11 +39417,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -9.415584415584423,
-        "return_5d": null,
+        "return_5d": -18.181818181818183,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-24",
@@ -39856,9 +40116,9 @@
         "return_3d": -17.572156196943972,
         "return_5d": -18.421052631578945,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-23",
@@ -39912,11 +40172,11 @@
           "智慧庫風險命中：Taiwan stock low win-rate breakdown: 強度:、Taiwan stock low win-rate breakdown: 分數區"
         ],
         "return_3d": -12.183908045977011,
-        "return_5d": null,
+        "return_5d": -20.919540229885058,
         "return_10d": null,
-        "outcome_category": "knowledge_pending",
-        "outcome_label": "累積中",
-        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
+        "outcome_category": "knowledge_warning_observed",
+        "outcome_label": "風險已觀察",
+        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
       },
       {
         "signal_date": "2026-07-23",
@@ -40088,9 +40348,9 @@
         "return_3d": -7.462686567164178,
         "return_5d": -16.417910447761194,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-23",
@@ -40117,9 +40377,9 @@
         "return_3d": -12.847222222222221,
         "return_5d": -8.333333333333332,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-23",
@@ -40581,9 +40841,9 @@
         "return_3d": -10.881542699724507,
         "return_5d": -6.887052341597796,
         "return_10d": null,
-        "outcome_category": "knowledge_warning_observed",
-        "outcome_label": "風險已觀察",
-        "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-23",
@@ -49199,9 +49459,9 @@
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
-        "outcome_category": null,
-        "outcome_label": null,
-        "outcome_reason": null
+        "outcome_category": "knowledge_pending",
+        "outcome_label": "累積中",
+        "outcome_reason": "尚未累積 5 日結果，先保留追蹤。"
       },
       {
         "signal_date": "2026-07-20",
@@ -50762,7 +51022,7 @@
         ],
         "return_3d": 2.402022756005057,
         "return_5d": 1.390644753476612,
-        "return_10d": null,
+        "return_10d": -10.619469026548673,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -51342,7 +51602,7 @@
         ],
         "return_3d": 7.282913165266107,
         "return_5d": 2.2408963585434174,
-        "return_10d": null,
+        "return_10d": -8.123249299719888,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -51371,7 +51631,7 @@
         ],
         "return_3d": -5.515239477503645,
         "return_5d": -10.595065312046449,
-        "return_10d": null,
+        "return_10d": -26.85050798258346,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -52067,7 +52327,7 @@
         ],
         "return_3d": 0.3225806451612903,
         "return_5d": -0.3225806451612903,
-        "return_10d": null,
+        "return_10d": -16.129032258064516,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -55919,7 +56179,7 @@
         ],
         "return_3d": 10.37463976945245,
         "return_5d": 22.478386167146976,
-        "return_10d": null,
+        "return_10d": 28.24207492795389,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -56673,7 +56933,7 @@
         ],
         "return_3d": -17.324561403508774,
         "return_5d": -4.605263157894736,
-        "return_10d": null,
+        "return_10d": -24.561403508771928,
         "outcome_category": "knowledge_warning_observed",
         "outcome_label": "風險已觀察",
         "outcome_reason": "智慧庫風險有命中但未調整操作，先累積後續樣本。"
@@ -60962,7 +61222,7 @@
         "notes": [
           "智慧庫風險命中：台股失敗歸因：停損觸發"
         ],
-        "return_3d": null,
+        "return_3d": -6.941431670281996,
         "return_5d": null,
         "return_10d": null,
         "outcome_category": "knowledge_pending",
@@ -78941,11 +79201,11 @@
       {
         "group": "theme",
         "label": "記憶體/HBM",
-        "signals": 8,
+        "signals": 10,
         "completed": 7,
         "win_rate_5d": 14.285714285714285,
         "avg_return_5d": -11.234915915411108,
-        "stop_hit_rate": 71.42857142857143
+        "stop_hit_rate": 62.5
       },
       {
         "group": "theme",
@@ -78968,11 +79228,11 @@
       {
         "group": "action",
         "label": "等拉回",
-        "signals": 114,
+        "signals": 115,
         "completed": 77,
         "win_rate_5d": 25.97402597402597,
         "avg_return_5d": -5.9761956627096104,
-        "stop_hit_rate": 35.92233009708738
+        "stop_hit_rate": 35.57692307692308
       }
     ],
     "notes": [
@@ -78994,7 +79254,25 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "AI伺服器題材強勁且法人買超，但放量不漲顯示短線有壓，宜等拉回再介入。",
+        "reason": "AI伺服器題材強勁且法人買超，但放量不漲顯示短線有壓，建議等拉回再介入。",
+        "return_3d": null,
+        "return_5d": null,
+        "return_10d": null,
+        "status": "進行中"
+      },
+      {
+        "review_date": "2026-07-31",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "score": 94,
+        "grade": "S",
+        "consensus_action": "等拉回",
+        "confidence": 0.55,
+        "model_count": 1,
+        "agreement_count": 1,
+        "pick_agreement_count": 0,
+        "is_ai_pick": false,
+        "reason": "記憶體/HBM題材發酵且技術突破，但基本面中性，追高風險較高，宜等拉回。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -79004,7 +79282,7 @@
         "review_date": "2026-07-31",
         "stock_id": "2451",
         "name": "創見",
-        "score": 79,
+        "score": 81,
         "grade": "A",
         "consensus_action": "等拉回",
         "confidence": 0.5,
@@ -79012,7 +79290,7 @@
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "法人買超且技術偏多，但基本面中性且無題材，追價空間有限，等拉回較佳。",
+        "reason": "記憶體題材帶動且法人買超，但基本面中性且股價已站上均線，等拉回較安全。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -79025,12 +79303,12 @@
         "score": 78,
         "grade": "A",
         "consensus_action": "等拉回",
-        "confidence": 0.55,
+        "confidence": 0.5,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "AI伺服器題材與營收成長加持，但成交量放大可能已反映利多，等拉回降低風險。",
+        "reason": "AI伺服器題材與營收成長支撐，但成交量放大可能已反映利多，等拉回再布局。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -79043,30 +79321,12 @@
         "score": 76,
         "grade": "A",
         "consensus_action": "等拉回",
-        "confidence": 0.5,
-        "model_count": 1,
-        "agreement_count": 1,
-        "pick_agreement_count": 0,
-        "is_ai_pick": false,
-        "reason": "投信買超且營收加速，但價格貼近MA20，追價空間有限，建議等拉回。",
-        "return_3d": null,
-        "return_5d": null,
-        "return_10d": null,
-        "status": "進行中"
-      },
-      {
-        "review_date": "2026-07-31",
-        "stock_id": "8039",
-        "name": "台虹",
-        "score": 75,
-        "grade": "A",
-        "consensus_action": "等拉回",
         "confidence": 0.45,
         "model_count": 1,
         "agreement_count": 1,
         "pick_agreement_count": 0,
         "is_ai_pick": false,
-        "reason": "外資買超且技術偏多，但營收月增異常高可能失真，且無題材，等拉回較安全。",
+        "reason": "AI伺服器題材升溫且投信買超，但價格貼近MA20，追價空間有限，建議等拉回。",
         "return_3d": null,
         "return_5d": null,
         "return_10d": null,
@@ -80919,27 +81179,27 @@
       {
         "key": "watch",
         "label": "今日操作訊號",
-        "signals": 306,
+        "signals": 307,
         "completed": 230,
         "win_rate_5d": 33.91304347826087,
         "avg_return_5d": -3.401619056544174,
         "avg_return_10d": null,
         "success_count": 78,
         "failure_count": 152,
-        "pending_count": 76,
+        "pending_count": 77,
         "note": "正式列入買進觀察後的 3/5/10 日驗證。"
       },
       {
         "key": "potential",
         "label": "潛力雷達",
-        "signals": 138,
+        "signals": 140,
         "completed": 109,
         "win_rate_5d": 29.357798165137616,
         "avg_return_5d": -5.468874087122494,
         "avg_return_10d": -4.5783583922842395,
         "success_count": 32,
         "failure_count": 77,
-        "pending_count": 29,
+        "pending_count": 31,
         "note": "尚未完全進入買點前的早期觀察驗證。"
       },
       {
@@ -81013,7 +81273,7 @@
       },
       {
         "label": "成效降權:過熱/延伸",
-        "signals": 29,
+        "signals": 31,
         "completed": 14,
         "win_rate_5d": 42.857142857142854,
         "avg_return_5d": -0.32492518584685015,
@@ -81058,7 +81318,7 @@
       },
       {
         "label": "成效降權:強勢等拉回",
-        "signals": 27,
+        "signals": 29,
         "completed": 13,
         "win_rate_5d": 38.46153846153847,
         "avg_return_5d": -1.7372919219579723,
@@ -81077,7 +81337,7 @@
     },
     "weak_factor": {
       "label": "成效降權:強勢等拉回",
-      "signals": 27,
+      "signals": 29,
       "completed": 13,
       "win_rate_5d": 38.46153846153847,
       "avg_return_5d": -1.7372919219579723,
@@ -81097,7 +81357,7 @@
     "avg_return_5d": -3.401619056544174,
     "best_grade": {
       "label": "S",
-      "signals": 38,
+      "signals": 39,
       "completed": 26,
       "win_rate_5d": 46.15384615384615,
       "avg_return_5d": -2.7294623797878774,
@@ -81115,7 +81375,7 @@
     },
     "best_score_band": {
       "label": "85-94",
-      "signals": 38,
+      "signals": 39,
       "completed": 26,
       "win_rate_5d": 46.15384615384615,
       "avg_return_5d": -2.7294623797878774,
@@ -81129,7 +81389,7 @@
       "win_rate_5d": 30.88235294117647,
       "avg_return_5d": -4.474048479193839,
       "avg_return_10d": null,
-      "stop_hit_rate": 38.82352941176471
+      "stop_hit_rate": 38.372093023255815
     },
     "best_theme": {
       "label": "原物料/低基期傳產",
@@ -81160,12 +81420,12 @@
     },
     "weak_action": {
       "label": "等拉回",
-      "signals": 114,
+      "signals": 115,
       "completed": 77,
       "win_rate_5d": 25.97402597402597,
       "avg_return_5d": -5.9761956627096104,
       "avg_return_10d": null,
-      "stop_hit_rate": 35.92233009708738
+      "stop_hit_rate": 35.57692307692308
     },
     "ai": {
       "signals": 105,
@@ -81200,7 +81460,7 @@
         "group": "操作",
         "label": "等拉回",
         "completed": 77,
-        "signals": 114,
+        "signals": 115,
         "win_rate_5d": 25.97402597402597,
         "avg_return_5d": -5.9761956627096104,
         "drag_score": 14.0197,
@@ -81226,7 +81486,7 @@
         "group": "題材",
         "label": "記憶體/HBM",
         "completed": 7,
-        "signals": 8,
+        "signals": 10,
         "win_rate_5d": 14.285714285714285,
         "avg_return_5d": -11.234915915411108,
         "drag_score": 12.3219,
@@ -81513,10 +81773,38 @@
     },
     {
       "signal_date": "2026-07-31",
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "grade": "S",
+      "total_score": 94,
+      "entry_price": 222.5,
+      "entry_triggered": null,
+      "return_3d": null,
+      "return_5d": null,
+      "return_10d": null,
+      "stop_hit": null,
+      "action": "等拉回",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "guardrail_tags": [],
+      "guardrail_notes": [],
+      "status_code": "pending_5d",
+      "status_label": "pending",
+      "status": "進行中",
+      "outcome_category": "pending",
+      "outcome_label": "等待驗證",
+      "outcome_reason": "尚未滿 5 個交易日，暫不判定成功或失敗。",
+      "lesson_tags": [
+        "等待驗證"
+      ]
+    },
+    {
+      "signal_date": "2026-07-31",
       "stock_id": "2451",
       "name": "創見",
       "grade": "A",
-      "total_score": 79,
+      "total_score": 81,
       "entry_price": 269.5,
       "entry_triggered": null,
       "return_3d": null,
@@ -81524,7 +81812,9 @@
       "return_10d": null,
       "stop_hit": null,
       "action": "等拉回",
-      "themes": [],
+      "themes": [
+        "記憶體/HBM"
+      ],
       "guardrail_tags": [],
       "guardrail_notes": [],
       "status_code": "pending_5d",
@@ -81708,11 +81998,11 @@
       "grade": "A",
       "total_score": 82,
       "entry_price": 222.5,
-      "entry_triggered": null,
+      "entry_triggered": true,
       "return_3d": null,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": null,
+      "stop_hit": false,
       "action": "等拉回",
       "themes": [
         "記憶體/HBM"
@@ -84955,10 +85245,10 @@
       "total_score": 69,
       "entry_price": 36.85,
       "entry_triggered": true,
-      "return_3d": -7.32700135685211,
+      "return_3d": -11.533242876526458,
       "return_5d": null,
       "return_10d": null,
-      "stop_hit": false,
+      "stop_hit": true,
       "action": "只觀察",
       "themes": [],
       "guardrail_tags": [],
@@ -90232,7 +90522,7 @@
       "category": "chip_distribution",
       "label": "籌碼倒貨",
       "count": 8,
-      "risk_score_sum": 159,
+      "risk_score_sum": 161,
       "examples": [
         {
           "stock_id": "2383",
@@ -90271,7 +90561,7 @@
         "category": "chip_distribution",
         "label": "籌碼倒貨",
         "count": 8,
-        "risk_score_sum": 159,
+        "risk_score_sum": 161,
         "examples": [
           {
             "stock_id": "2383",
@@ -90322,8 +90612,8 @@
             ]
           },
           {
-            "stock_id": "2408",
-            "name": "南亞科",
+            "stock_id": "6505",
+            "name": "台塑化",
             "level": "紅色警戒",
             "risk_score": 12,
             "reasons": [
@@ -90466,6 +90756,30 @@
         ]
       },
       {
+        "stock_id": "2344",
+        "name": "華邦電",
+        "level": "紅色警戒",
+        "risk_score": 19,
+        "current_score": 37,
+        "previous_score": 35,
+        "price": 130.0,
+        "reasons": [
+          "法人賣、融資增、股價轉弱",
+          "外資連 3 日賣超",
+          "投信近 3 日偏賣",
+          "外資 5 日合計賣超"
+        ],
+        "action": "準備減碼或停利，跌破停損不硬凹",
+        "downside_category": "chip_distribution",
+        "downside_label": "籌碼倒貨",
+        "downside_keywords": [
+          "法人賣",
+          "外資",
+          "投信",
+          "賣超"
+        ]
+      },
+      {
         "stock_id": "3131",
         "name": "弘塑",
         "level": "紅色警戒",
@@ -90490,42 +90804,18 @@
         ]
       },
       {
-        "stock_id": "6505",
-        "name": "台塑化",
+        "stock_id": "2408",
+        "name": "南亞科",
         "level": "紅色警戒",
         "risk_score": 18,
-        "current_score": 47,
-        "previous_score": 66,
-        "price": 74.8,
-        "reasons": [
-          "法人賣、融資增、股價轉弱",
-          "外資近 3 日偏賣",
-          "外資 5 日合計賣超",
-          "法人賣超占成交量 19.6%"
-        ],
-        "action": "準備減碼或停利，跌破停損不硬凹",
-        "downside_category": "chip_distribution",
-        "downside_label": "籌碼倒貨",
-        "downside_keywords": [
-          "法人賣",
-          "外資",
-          "賣超",
-          "融資增"
-        ]
-      },
-      {
-        "stock_id": "3264",
-        "name": "欣銓",
-        "level": "紅色警戒",
-        "risk_score": 17,
-        "current_score": 34,
-        "previous_score": 30,
-        "price": 177.0,
+        "current_score": 29,
+        "previous_score": 35,
+        "price": 353.5,
         "reasons": [
           "法人賣、融資增、股價轉弱",
           "外資連 3 日賣超",
-          "外資 5 日合計賣超",
-          "法人賣超占成交量 9.4%"
+          "投信近 3 日偏賣",
+          "外資 5 日合計賣超"
         ],
         "action": "準備減碼或停利，跌破停損不硬凹",
         "downside_category": "chip_distribution",
@@ -90533,8 +90823,8 @@
         "downside_keywords": [
           "法人賣",
           "外資",
-          "賣超",
-          "融資增"
+          "投信",
+          "賣超"
         ]
       },
       {
@@ -90554,8 +90844,8 @@
         ]
       },
       {
-        "stock_id": "2408",
-        "name": "南亞科",
+        "stock_id": "6505",
+        "name": "台塑化",
         "level": "紅色警戒",
         "risk_score": 12,
         "reasons": [
@@ -90638,10 +90928,10 @@
   },
   "current_selection_backtest": {
     "as_of": "2026-07-31",
-    "generated_at": "2026-08-03T05:51:30+08:00",
+    "generated_at": "2026-08-03T07:22:10+08:00",
     "source": "dashboard_data + performance_data",
     "history_completed_5d": 230,
-    "candidate_count": 6,
+    "candidate_count": 7,
     "referenceable_count": 5,
     "strong_reference_count": 0,
     "weak_reference_count": 5,
@@ -90651,43 +90941,48 @@
       "note": "Today's exact outcome still requires future 3/5/10 trading days."
     },
     "summary": {
-      "avg_reference_return_5d": -3.38,
-      "avg_reference_win_rate_5d": 29.8,
+      "avg_reference_return_5d": -3.64,
+      "avg_reference_win_rate_5d": 28.6,
       "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
     },
     "strong_references": [],
     "weak_references": [
       {
-        "stock_id": "2451",
-        "name": "創見",
-        "score": 79,
-        "grade": "A",
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "score": 94,
+        "grade": "S",
         "action": "等拉回",
         "entry_decision": "等拉回",
         "decision_light": "yellow",
-        "themes": [],
+        "themes": [
+          "記憶體/HBM"
+        ],
         "trigger_tags": [
+          "題材強共振",
           "法人共振",
-          "技術偏多",
+          "技術突破",
           "海外順風",
-          "智慧庫修正"
+          "突破整理",
+          "智慧庫修正",
+          "進場觸發轉嚴格"
         ],
         "historical_profile": {
-          "completed": 98,
-          "win_rate_5d": 31.63265306122449,
-          "avg_return_5d": -4.67,
-          "stop_hit_rate": 33.6734693877551,
+          "completed": 89,
+          "win_rate_5d": 25.842696629213485,
+          "avg_return_5d": -5.95,
+          "stop_hit_rate": 37.07865168539326,
           "confidence": "高",
           "match_type": "component_fallback",
           "same_profile_completed": 0
         },
         "components": {
           "grade": {
-            "completed": 68,
-            "win_rate_5d": 30.88235294117647,
-            "avg_return_5d": -4.47,
-            "stop_hit_rate": 35.294117647058826,
-            "confidence": "高"
+            "completed": 26,
+            "win_rate_5d": 46.15384615384615,
+            "avg_return_5d": -2.73,
+            "stop_hit_rate": 30.76923076923077,
+            "confidence": "中"
           },
           "action": {
             "completed": 77,
@@ -90697,10 +90992,10 @@
             "confidence": "高"
           },
           "theme": {
-            "completed": 0,
-            "win_rate_5d": null,
-            "avg_return_5d": null,
-            "stop_hit_rate": null,
+            "completed": 7,
+            "win_rate_5d": 14.285714285714285,
+            "avg_return_5d": -11.23,
+            "stop_hit_rate": 71.42857142857143,
             "confidence": "低"
           }
         },
@@ -90818,7 +91113,7 @@
         "grade": "A",
         "action": "等拉回",
         "entry_decision": "等拉回",
-        "decision_light": "yellow",
+        "decision_light": "gray",
         "themes": [],
         "trigger_tags": [
           "外資買超",
@@ -90974,28 +91269,87 @@
         "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
       },
       {
+        "stock_id": "8271",
+        "name": "宇瞻",
+        "score": 94,
+        "grade": "S",
+        "action": "等拉回",
+        "entry_decision": "等拉回",
+        "decision_light": "yellow",
+        "themes": [
+          "記憶體/HBM"
+        ],
+        "trigger_tags": [
+          "題材強共振",
+          "法人共振",
+          "技術突破",
+          "海外順風",
+          "突破整理",
+          "智慧庫修正",
+          "進場觸發轉嚴格"
+        ],
+        "historical_profile": {
+          "completed": 89,
+          "win_rate_5d": 25.842696629213485,
+          "avg_return_5d": -5.95,
+          "stop_hit_rate": 37.07865168539326,
+          "confidence": "高",
+          "match_type": "component_fallback",
+          "same_profile_completed": 0
+        },
+        "components": {
+          "grade": {
+            "completed": 26,
+            "win_rate_5d": 46.15384615384615,
+            "avg_return_5d": -2.73,
+            "stop_hit_rate": 30.76923076923077,
+            "confidence": "中"
+          },
+          "action": {
+            "completed": 77,
+            "win_rate_5d": 25.97402597402597,
+            "avg_return_5d": -5.98,
+            "stop_hit_rate": 35.064935064935064,
+            "confidence": "高"
+          },
+          "theme": {
+            "completed": 7,
+            "win_rate_5d": 14.285714285714285,
+            "avg_return_5d": -11.23,
+            "stop_hit_rate": 71.42857142857143,
+            "confidence": "低"
+          }
+        },
+        "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+      },
+      {
         "stock_id": "2451",
         "name": "創見",
-        "score": 79,
+        "score": 81,
         "grade": "A",
         "action": "等拉回",
         "entry_decision": "等拉回",
         "decision_light": "yellow",
-        "themes": [],
+        "themes": [
+          "記憶體/HBM"
+        ],
         "trigger_tags": [
+          "題材強共振",
           "法人共振",
           "技術偏多",
           "海外順風",
-          "智慧庫修正"
+          "智慧庫修正",
+          "進場觸發轉嚴格",
+          "整理不足降權"
         ],
         "historical_profile": {
-          "completed": 98,
-          "win_rate_5d": 31.63265306122449,
-          "avg_return_5d": -4.67,
-          "stop_hit_rate": 33.6734693877551,
-          "confidence": "高",
+          "completed": 3,
+          "win_rate_5d": 0.0,
+          "avg_return_5d": -11.41,
+          "stop_hit_rate": 66.66666666666666,
+          "confidence": "低",
           "match_type": "component_fallback",
-          "same_profile_completed": 0
+          "same_profile_completed": 3
         },
         "components": {
           "grade": {
@@ -91013,14 +91367,14 @@
             "confidence": "高"
           },
           "theme": {
-            "completed": 0,
-            "win_rate_5d": null,
-            "avg_return_5d": null,
-            "stop_hit_rate": null,
+            "completed": 7,
+            "win_rate_5d": 14.285714285714285,
+            "avg_return_5d": -11.23,
+            "stop_hit_rate": 71.42857142857143,
             "confidence": "低"
           }
         },
-        "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+        "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
       },
       {
         "stock_id": "3013",
@@ -91134,7 +91488,7 @@
         "grade": "A",
         "action": "等拉回",
         "entry_decision": "等拉回",
-        "decision_light": "yellow",
+        "decision_light": "gray",
         "themes": [],
         "trigger_tags": [
           "外資買超",

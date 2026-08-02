@@ -1,9 +1,9 @@
 {
   "as_of": "2026-07-31",
-  "generated_at": "2026-08-03T05:51:30+08:00",
+  "generated_at": "2026-08-03T07:22:10+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 230,
-  "candidate_count": 6,
+  "candidate_count": 7,
   "referenceable_count": 5,
   "strong_reference_count": 0,
   "weak_reference_count": 5,
@@ -13,43 +13,48 @@
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": -3.38,
-    "avg_reference_win_rate_5d": 29.8,
+    "avg_reference_return_5d": -3.64,
+    "avg_reference_win_rate_5d": 28.6,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
   "strong_references": [],
   "weak_references": [
     {
-      "stock_id": "2451",
-      "name": "創見",
-      "score": 79,
-      "grade": "A",
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "score": 94,
+      "grade": "S",
       "action": "等拉回",
       "entry_decision": "等拉回",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "記憶體/HBM"
+      ],
       "trigger_tags": [
+        "題材強共振",
         "法人共振",
-        "技術偏多",
+        "技術突破",
         "海外順風",
-        "智慧庫修正"
+        "突破整理",
+        "智慧庫修正",
+        "進場觸發轉嚴格"
       ],
       "historical_profile": {
-        "completed": 98,
-        "win_rate_5d": 31.63265306122449,
-        "avg_return_5d": -4.67,
-        "stop_hit_rate": 33.6734693877551,
+        "completed": 89,
+        "win_rate_5d": 25.842696629213485,
+        "avg_return_5d": -5.95,
+        "stop_hit_rate": 37.07865168539326,
         "confidence": "高",
         "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
         "grade": {
-          "completed": 68,
-          "win_rate_5d": 30.88235294117647,
-          "avg_return_5d": -4.47,
-          "stop_hit_rate": 35.294117647058826,
-          "confidence": "高"
+          "completed": 26,
+          "win_rate_5d": 46.15384615384615,
+          "avg_return_5d": -2.73,
+          "stop_hit_rate": 30.76923076923077,
+          "confidence": "中"
         },
         "action": {
           "completed": 77,
@@ -59,10 +64,10 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
+          "completed": 7,
+          "win_rate_5d": 14.285714285714285,
+          "avg_return_5d": -11.23,
+          "stop_hit_rate": 71.42857142857143,
           "confidence": "低"
         }
       },
@@ -180,7 +185,7 @@
       "grade": "A",
       "action": "等拉回",
       "entry_decision": "等拉回",
-      "decision_light": "yellow",
+      "decision_light": "gray",
       "themes": [],
       "trigger_tags": [
         "外資買超",
@@ -336,28 +341,87 @@
       "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
     },
     {
+      "stock_id": "8271",
+      "name": "宇瞻",
+      "score": 94,
+      "grade": "S",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "yellow",
+      "themes": [
+        "記憶體/HBM"
+      ],
+      "trigger_tags": [
+        "題材強共振",
+        "法人共振",
+        "技術突破",
+        "海外順風",
+        "突破整理",
+        "智慧庫修正",
+        "進場觸發轉嚴格"
+      ],
+      "historical_profile": {
+        "completed": 89,
+        "win_rate_5d": 25.842696629213485,
+        "avg_return_5d": -5.95,
+        "stop_hit_rate": 37.07865168539326,
+        "confidence": "高",
+        "match_type": "component_fallback",
+        "same_profile_completed": 0
+      },
+      "components": {
+        "grade": {
+          "completed": 26,
+          "win_rate_5d": 46.15384615384615,
+          "avg_return_5d": -2.73,
+          "stop_hit_rate": 30.76923076923077,
+          "confidence": "中"
+        },
+        "action": {
+          "completed": 77,
+          "win_rate_5d": 25.97402597402597,
+          "avg_return_5d": -5.98,
+          "stop_hit_rate": 35.064935064935064,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 7,
+          "win_rate_5d": 14.285714285714285,
+          "avg_return_5d": -11.23,
+          "stop_hit_rate": 71.42857142857143,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+    },
+    {
       "stock_id": "2451",
       "name": "創見",
-      "score": 79,
+      "score": 81,
       "grade": "A",
       "action": "等拉回",
       "entry_decision": "等拉回",
       "decision_light": "yellow",
-      "themes": [],
+      "themes": [
+        "記憶體/HBM"
+      ],
       "trigger_tags": [
+        "題材強共振",
         "法人共振",
         "技術偏多",
         "海外順風",
-        "智慧庫修正"
+        "智慧庫修正",
+        "進場觸發轉嚴格",
+        "整理不足降權"
       ],
       "historical_profile": {
-        "completed": 98,
-        "win_rate_5d": 31.63265306122449,
-        "avg_return_5d": -4.67,
-        "stop_hit_rate": 33.6734693877551,
-        "confidence": "高",
+        "completed": 3,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -11.41,
+        "stop_hit_rate": 66.66666666666666,
+        "confidence": "低",
         "match_type": "component_fallback",
-        "same_profile_completed": 0
+        "same_profile_completed": 3
       },
       "components": {
         "grade": {
@@ -375,14 +439,14 @@
           "confidence": "高"
         },
         "theme": {
-          "completed": 0,
-          "win_rate_5d": null,
-          "avg_return_5d": null,
-          "stop_hit_rate": null,
+          "completed": 7,
+          "win_rate_5d": 14.285714285714285,
+          "avg_return_5d": -11.23,
+          "stop_hit_rate": 71.42857142857143,
           "confidence": "低"
         }
       },
-      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
+      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
     },
     {
       "stock_id": "3013",
@@ -496,7 +560,7 @@
       "grade": "A",
       "action": "等拉回",
       "entry_decision": "等拉回",
-      "decision_light": "yellow",
+      "decision_light": "gray",
       "themes": [],
       "trigger_tags": [
         "外資買超",
