@@ -36,6 +36,7 @@ from src.report.dashboard import (
     build_traceability_summary,
     build_weekly_overview_payload,
     enrich_dashboard_payload,
+    refresh_decision_diagnostics,
     write_dashboard,
     write_debug,
     write_performance,
@@ -760,10 +761,12 @@ def main() -> int:
     notify_severity = notification_severity(dashboard_payload, alerts=alerts, exit_risks=exit_risks)
     limits = notification_limits(config)
     if report_mode(config, force_brief=args.telegram_summary) == "brief":
+        refresh_decision_diagnostics(dashboard_payload)
         s = dashboard_payload["summary"]
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
+        decision_diagnostic = dashboard_payload.get("decision_diagnostic", {})
 
         def _h(value: object, default: str = "") -> str:
             if value is None:
@@ -814,6 +817,7 @@ def main() -> int:
                 f"⏱ 延遲：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
                 "",
                 "🔥 <b>今日重點</b>",
+                f"操作診斷：{_h(decision_diagnostic.get('headline'), '依系統閘門篩選')}",
                 must_watch_text,
                 f"🤖 {ai_review_text}",
                 "",

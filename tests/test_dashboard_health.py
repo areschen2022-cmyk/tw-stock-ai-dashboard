@@ -11,6 +11,7 @@ from src.report.dashboard import (
     build_traceability_diagnosis,
     build_traceability_summary,
     build_weekly_overview_payload,
+    refresh_decision_diagnostics,
     write_potential,
 )
 from src.scoring.score_engine import StockScore
@@ -147,6 +148,34 @@ def test_market_tide_guardrail_downgrades_chase_light_in_headwind() -> None:
     assert row["decision_light"] == "yellow"
     assert row["decision_light_label"] == "黃燈等確認"
     assert row["tide_context"] == payload["market_tide"]["label"]
+
+
+def test_decision_diagnostic_explains_no_chase_when_history_is_weak() -> None:
+    payload = {
+        "action_lists": {
+            "chase": [],
+            "pullback": [{"stock_id": "2451", "name": "創見"}],
+            "risk": [],
+            "summary": {"chase": 0, "pullback": 1, "risk": 0},
+        },
+        "current_selection_backtest": {
+            "weak_reference_count": 1,
+            "strong_reference_count": 0,
+            "summary": {"avg_reference_win_rate_5d": 29.4, "avg_reference_return_5d": -4.49},
+        },
+        "decision_gates": {"entry_strict_adjusted": 1},
+        "data_quality": {"label": "high"},
+        "market_tide": {"label": "中性潮汐", "risk_level": "neutral"},
+        "decision_summary": {},
+    }
+
+    refresh_decision_diagnostics(payload)
+
+    diagnostic = payload["decision_diagnostic"]
+    assert diagnostic["severity"] == "warn"
+    assert "今日無綠燈" in diagnostic["headline"]
+    assert "候選歷史勝率 29.4%" in diagnostic["headline"]
+    assert payload["decision_summary"]["diagnostic"] == diagnostic
 
 
 def test_weekly_overview_marks_recent_tdcc_failure_as_recovered() -> None:

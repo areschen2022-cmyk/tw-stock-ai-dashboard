@@ -732,6 +732,116 @@ def _market_tide(
     }
 
 
+def _fmt_rate(value: object) -> str:
+    try:
+        if value is None or value == "":
+            return "—"
+        return f"{float(value):.1f}%"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _decision_diagnostic(payload: dict) -> dict:
+    """Explain why the morning list is actionable or blocked.
+
+    This is intentionally short and human-facing: it should help the user know
+    whether "no chase" means a data issue, weak history, or active risk gates.
+    """
+
+    action_lists = payload.get("action_lists") or {}
+    summary = action_lists.get("summary") or {}
+    chase = int(summary.get("chase") or 0)
+    pullback = int(summary.get("pullback") or 0)
+    risk = int(summary.get("risk") or 0)
+    current_backtest = payload.get("current_selection_backtest") or {}
+    current_summary = current_backtest.get("summary") or {}
+    gates = payload.get("decision_gates") or {}
+    data_quality = payload.get("data_quality") or {}
+    market_tide = payload.get("market_tide") or {}
+
+    win_rate = current_summary.get("avg_reference_win_rate_5d")
+    avg_return = current_summary.get("avg_reference_return_5d")
+    weak_refs = int(current_backtest.get("weak_reference_count") or 0)
+    strong_refs = int(current_backtest.get("strong_reference_count") or 0)
+
+    reasons: list[str] = []
+    if data_quality.get("label") in {"low", "偏低"}:
+        reasons.append("資料品質偏低，今日只適合觀察")
+    if risk:
+        reasons.append(f"危險名單 {risk} 檔")
+    if weak_refs and weak_refs >= strong_refs:
+        reasons.append(f"同條件歷史偏弱 {weak_refs} 檔")
+    if win_rate is not None:
+        try:
+            if float(win_rate) < 45:
+                reasons.append(f"候選歷史勝率 {_fmt_rate(win_rate)}")
+        except (TypeError, ValueError):
+            pass
+    if avg_return is not None:
+        try:
+            if float(avg_return) < 0:
+                reasons.append(f"候選 5 日均報酬 {_fmt_rate(avg_return)}")
+        except (TypeError, ValueError):
+            pass
+
+    gate_map = [
+        ("red_alert_blocked", "紅色警戒擋下"),
+        ("entry_strict_adjusted", "進場條件轉嚴格"),
+        ("repeat_downgraded", "重複訊號降權"),
+        ("base_downgraded", "整理不足降權"),
+        ("volume_downgraded", "量能不足降權"),
+        ("weak_theme_downgraded", "弱題材降權"),
+    ]
+    for key, label in gate_map:
+        count = int(gates.get(key) or 0)
+        if count:
+            reasons.append(f"{label} {count} 檔")
+
+    if market_tide.get("risk_level") in {"headwind", "neutral"} and market_tide.get("label"):
+        reasons.append(f"市場潮汐：{market_tide.get('label')}")
+
+    if chase:
+        severity = "good"
+        headline = f"今日有 {chase} 檔可追，仍需開盤量價確認。"
+        action = "只盯綠燈卡片；跳空超過進場上限、量能不足或跌破停損就放棄。"
+    elif pullback:
+        severity = "warn"
+        reason_text = "、".join(dict.fromkeys(reasons[:4])) or "近期同條件未達可追標準"
+        headline = f"今日無綠燈：{reason_text}。"
+        action = "不追第一筆；只看等拉回卡片，等 09:05 後價格仍在進場上限內且量價確認。"
+    else:
+        severity = "bad" if risk else "warn"
+        reason_text = "、".join(dict.fromkeys(reasons[:4])) or "沒有符合強度、風險與歷史條件的標的"
+        headline = f"今日不進場：{reason_text}。"
+        action = "保留現金，等下一次資料更新或風險解除。"
+
+    return {
+        "severity": severity,
+        "headline": headline,
+        "action": action,
+        "reasons": list(dict.fromkeys(reasons))[:8],
+        "unlock_conditions": [
+            "09:05 後仍在進場上限內",
+            "前 5 分鐘量價符合個股檢查表",
+            "未落入紅色警戒、散戶過熱或法人連賣",
+            "歷史同條件不再偏弱，或有更強的法人/營收/供應鏈佐證",
+        ],
+        "reference": {
+            "avg_reference_win_rate_5d": win_rate,
+            "avg_reference_return_5d": avg_return,
+            "weak_reference_count": weak_refs,
+            "strong_reference_count": strong_refs,
+        },
+    }
+
+
+def refresh_decision_diagnostics(payload: dict) -> dict:
+    diagnostic = _decision_diagnostic(payload)
+    payload["decision_diagnostic"] = diagnostic
+    payload.setdefault("decision_summary", {})["diagnostic"] = diagnostic
+    return payload
+
+
 def _decision_summary(
     rows: list[dict],
     action_lists: dict,
@@ -1122,6 +1232,7 @@ def enrich_dashboard_payload(
 
 def write_dashboard(payload: dict, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
+    refresh_decision_diagnostics(payload)
     json_text = json.dumps(payload, ensure_ascii=False, indent=2)
     (output_dir / "dashboard_data.json").write_text(json_text, encoding="utf-8")
     # Embed data inline so the file works when opened via file:// without a server
@@ -2524,6 +2635,8 @@ def _html() -> str:
         : marketTemperature();
       const topChase = (actionLists.chase || []).slice(0, 3).map(row => `${row.stock_id} ${row.name}`).join("、") || "今日暫無";
       const topRisk = (actionLists.risk || []).slice(0, 2).map(row => `${row.stock_id} ${row.name}`).join("、") || "目前無紅黃警戒";
+      const diagnostic = data.decision_diagnostic || decision.diagnostic || {};
+      const diagnosticCls = diagnostic.severity === "good" ? "good" : diagnostic.severity === "bad" ? "bad" : "warn";
       document.querySelector("#decisionSummary").innerHTML = `
         <div class="temperature-card ${temp.cls}">
           <b>${esc(temp.label)}</b>
@@ -2538,10 +2651,12 @@ def _html() -> str:
           <div class="decision-pill"><b>${esc(zh(QUALITY_TEXT, decision.data_quality, "-"))}</b><span>資料品質</span></div>
         </div>
         <div class="line"><b>${esc(postureText)}</b>｜主題焦點：${esc(decisionTopTheme)}</div>
+        ${diagnostic.headline ? `<div class="line ${diagnosticCls}"><b>操作診斷</b>｜${esc(diagnostic.headline)}</div>` : ""}
         <div class="line"><b>掃描範圍</b>｜本次 ${esc(scanCoverageText)} 檔，覆蓋約 ${esc(universeBrief.coverage_pct ?? "—")}%；以分層候選池篩選，不等於全市場逐檔深度掃描。</div>
         ${marketTide.position_hint ? `<div class="line"><b>潮汐護欄</b>｜${esc(marketTide.position_hint)}</div>` : ""}`;
       document.querySelector("#decisionBrief").innerHTML = `
         <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
+        ${diagnostic.headline ? `<div class="brief-row"><b>為何</b><span>${esc(diagnostic.headline)}</span></div>` : ""}
         <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
         <div class="brief-row"><b>信心來源</b><span>掃描 ${esc(scanCoverageText)}｜歷史強 ${esc(actionSummary.historical_strong ?? 0)}｜歷史弱 ${esc(actionSummary.historical_weak ?? 0)}</span></div>
         <div class="brief-row"><b>避開風險</b><span>${esc(topRisk)}</span></div>`;
@@ -2655,6 +2770,7 @@ def _html() -> str:
       const pullbackCards = (actionLists.pullback || []).slice(0, 2).map(row => decisionCard(row, "pullback")).join("");
       const avoidCards = (actionLists.risk || []).slice(0, 2).map(row => decisionCard(row, "avoid")).join("");
       document.querySelector("#actionLists").innerHTML = `
+        ${diagnostic.action ? `<div class="line ${diagnosticCls}"><b>今日執行</b>：${esc(diagnostic.action)}</div>` : ""}
         <details class="mini-detail open-check-guide">
           <summary>開盤時怎麼確認？</summary>
           <div class="line"><b>1. 等到 09:05</b>：先看前 5 分鐘，不在 09:00 第一筆追價。</div>
