@@ -1,20 +1,20 @@
 {
   "as_of": "2026-08-05",
-  "generated_at": "2026-08-06T06:09:12+08:00",
+  "generated_at": "2026-08-06T07:21:50+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 187,
-  "candidate_count": 15,
-  "referenceable_count": 7,
+  "candidate_count": 14,
+  "referenceable_count": 6,
   "strong_reference_count": 0,
-  "weak_reference_count": 6,
+  "weak_reference_count": 5,
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
     "note": "Today's exact outcome still requires future 3/5/10 trading days."
   },
   "summary": {
-    "avg_reference_return_5d": -2.94,
-    "avg_reference_win_rate_5d": 30.7,
+    "avg_reference_return_5d": -2.89,
+    "avg_reference_win_rate_5d": 30.9,
     "note": "Reference quality is best when same-profile samples are available; otherwise component fallback is used."
   },
   "strong_references": [],
@@ -282,58 +282,6 @@
           "avg_return_5d": null,
           "stop_hit_rate": null,
           "confidence": "低"
-        }
-      },
-      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
-    },
-    {
-      "stock_id": "6187",
-      "name": "萬潤",
-      "score": 69,
-      "grade": "B",
-      "action": "只觀察",
-      "entry_decision": "量價不確認取消",
-      "decision_light": "yellow",
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "trigger_tags": [
-        "題材關注",
-        "法人共振",
-        "海外順風",
-        "高位上影線",
-        "智慧庫修正"
-      ],
-      "historical_profile": {
-        "completed": 10,
-        "win_rate_5d": 30.0,
-        "avg_return_5d": -3.25,
-        "stop_hit_rate": 90.0,
-        "confidence": "中",
-        "match_type": "same_grade_action_theme",
-        "same_profile_completed": 10
-      },
-      "components": {
-        "grade": {
-          "completed": 92,
-          "win_rate_5d": 33.69565217391305,
-          "avg_return_5d": -3.65,
-          "stop_hit_rate": 54.347826086956516,
-          "confidence": "高"
-        },
-        "action": {
-          "completed": 94,
-          "win_rate_5d": 32.97872340425532,
-          "avg_return_5d": -3.91,
-          "stop_hit_rate": 54.25531914893617,
-          "confidence": "高"
-        },
-        "theme": {
-          "completed": 25,
-          "win_rate_5d": 32.0,
-          "avg_return_5d": -2.51,
-          "stop_hit_rate": 68.0,
-          "confidence": "中"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
@@ -787,6 +735,59 @@
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
     },
     {
+      "stock_id": "6285",
+      "name": "啟碁",
+      "score": 80,
+      "grade": "A",
+      "action": "等拉回",
+      "entry_decision": "等拉回",
+      "decision_light": "gray",
+      "themes": [
+        "低軌衛星/SpaceX",
+        "網通光通訊"
+      ],
+      "trigger_tags": [
+        "題材升溫",
+        "法人共振",
+        "營收加速",
+        "SpaceX營收佐證",
+        "智慧庫修正"
+      ],
+      "historical_profile": {
+        "completed": 2,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -6.18,
+        "stop_hit_rate": 0.0,
+        "confidence": "低",
+        "match_type": "component_fallback",
+        "same_profile_completed": 2
+      },
+      "components": {
+        "grade": {
+          "completed": 58,
+          "win_rate_5d": 32.758620689655174,
+          "avg_return_5d": -3.78,
+          "stop_hit_rate": 39.6551724137931,
+          "confidence": "高"
+        },
+        "action": {
+          "completed": 70,
+          "win_rate_5d": 30.0,
+          "avg_return_5d": -4.52,
+          "stop_hit_rate": 31.428571428571427,
+          "confidence": "高"
+        },
+        "theme": {
+          "completed": 7,
+          "win_rate_5d": 0.0,
+          "avg_return_5d": -8.98,
+          "stop_hit_rate": 71.42857142857143,
+          "confidence": "低"
+        }
+      },
+      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
+    },
+    {
       "stock_id": "2356",
       "name": "英業達",
       "score": 79,
@@ -892,59 +893,6 @@
       "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
     },
     {
-      "stock_id": "3037",
-      "name": "欣興",
-      "score": 77,
-      "grade": "A",
-      "action": "等拉回",
-      "entry_decision": "等拉回",
-      "decision_light": "gray",
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "trigger_tags": [
-        "題材關注",
-        "投信買超",
-        "技術偏多",
-        "營收加速",
-        "海外順風",
-        "智慧庫修正"
-      ],
-      "historical_profile": {
-        "completed": 4,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -10.2,
-        "stop_hit_rate": 50.0,
-        "confidence": "低",
-        "match_type": "component_fallback",
-        "same_profile_completed": 4
-      },
-      "components": {
-        "grade": {
-          "completed": 58,
-          "win_rate_5d": 32.758620689655174,
-          "avg_return_5d": -3.78,
-          "stop_hit_rate": 39.6551724137931,
-          "confidence": "高"
-        },
-        "action": {
-          "completed": 70,
-          "win_rate_5d": 30.0,
-          "avg_return_5d": -4.52,
-          "stop_hit_rate": 31.428571428571427,
-          "confidence": "高"
-        },
-        "theme": {
-          "completed": 25,
-          "win_rate_5d": 32.0,
-          "avg_return_5d": -2.51,
-          "stop_hit_rate": 68.0,
-          "confidence": "中"
-        }
-      },
-      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
-    },
-    {
       "stock_id": "3665",
       "name": "貿聯-KY",
       "score": 77,
@@ -989,58 +937,6 @@
           "avg_return_5d": null,
           "stop_hit_rate": null,
           "confidence": "低"
-        }
-      },
-      "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
-    },
-    {
-      "stock_id": "6187",
-      "name": "萬潤",
-      "score": 69,
-      "grade": "B",
-      "action": "只觀察",
-      "entry_decision": "量價不確認取消",
-      "decision_light": "yellow",
-      "themes": [
-        "先進封裝/CoWoS"
-      ],
-      "trigger_tags": [
-        "題材關注",
-        "法人共振",
-        "海外順風",
-        "高位上影線",
-        "智慧庫修正"
-      ],
-      "historical_profile": {
-        "completed": 10,
-        "win_rate_5d": 30.0,
-        "avg_return_5d": -3.25,
-        "stop_hit_rate": 90.0,
-        "confidence": "中",
-        "match_type": "same_grade_action_theme",
-        "same_profile_completed": 10
-      },
-      "components": {
-        "grade": {
-          "completed": 92,
-          "win_rate_5d": 33.69565217391305,
-          "avg_return_5d": -3.65,
-          "stop_hit_rate": 54.347826086956516,
-          "confidence": "高"
-        },
-        "action": {
-          "completed": 94,
-          "win_rate_5d": 32.97872340425532,
-          "avg_return_5d": -3.91,
-          "stop_hit_rate": 54.25531914893617,
-          "confidence": "高"
-        },
-        "theme": {
-          "completed": 25,
-          "win_rate_5d": 32.0,
-          "avg_return_5d": -2.51,
-          "stop_hit_rate": 68.0,
-          "confidence": "中"
         }
       },
       "interpretation": "同條件歷史偏弱，避免開盤直接追價。"
