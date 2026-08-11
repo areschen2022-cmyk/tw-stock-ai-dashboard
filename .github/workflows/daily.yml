@@ -8,6 +8,12 @@ on:
     # 04:30 / 05:00 Asia/Taipei, Monday-Friday: update GitHub Pages dashboard.
     - cron: "30 20 * * 0-4"
     - cron: "0 21 * * 0-4"
+    # 07:20 / 07:35 / 07:50 / 08:05 Asia/Taipei, Monday-Friday: Telegram fallback.
+    # Cloudflare Worker also dispatches these slots; delivery_log prevents duplicates.
+    - cron: "20 23 * * 0-4"
+    - cron: "35 23 * * 0-4"
+    - cron: "50 23 * * 0-4"
+    - cron: "5 0 * * 1-5"
   workflow_dispatch:
     inputs:
       task:
@@ -47,7 +53,7 @@ permissions:
 
 concurrency:
   group: tw-stock-ai-daily
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   dashboard-update:
@@ -66,9 +72,6 @@ jobs:
       )
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repo
@@ -291,11 +294,17 @@ jobs:
   morning-telegram:
     name: 08:05 send Telegram
     if: >-
+      github.event.schedule == '20 23 * * 0-4' ||
+      github.event.schedule == '35 23 * * 0-4' ||
+      github.event.schedule == '50 23 * * 0-4' ||
+      github.event.schedule == '5 0 * * 1-5' ||
+      (
       github.event_name == 'workflow_dispatch' &&
       (
         inputs.task == 'telegram' ||
         inputs.task == 'all' ||
         inputs.send_telegram == 'true'
+      )
       )
     runs-on: ubuntu-latest
     timeout-minutes: 20
