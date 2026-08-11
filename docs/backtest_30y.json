@@ -1,15 +1,15 @@
 {
-  "as_of": "2026-08-05",
-  "generated_at": "2026-08-06T06:09:14+08:00",
+  "as_of": "2026-08-11",
+  "generated_at": "2026-08-11T19:03:35+08:00",
   "status": "partial_coverage",
   "requested_years": 30,
   "requested_days": 10958,
   "coverage": {
     "actual_start": "2026-05-11",
-    "actual_end": "2026-08-05",
-    "actual_days": 87
+    "actual_end": "2026-08-11",
+    "actual_days": 93
   },
-  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 87 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
+  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 93 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
   "method": {
     "signal_source": "watch_signals",
     "return_basis": "5 trading-day forward return after signal entry price",
@@ -17,10 +17,10 @@
     "costs": "No commission/slippage model in this summary."
   },
   "overall": {
-    "signals": 1190,
-    "completed": 969,
-    "win_rate_5d": 46.75,
-    "avg_signal_return_5d": 0.53,
+    "signals": 1213,
+    "completed": 973,
+    "win_rate_5d": 46.87,
+    "avg_signal_return_5d": 0.5721,
     "best_return_5d": 61.6205,
     "worst_return_5d": -44.7853
   },
@@ -46,15 +46,15 @@
     {
       "period": "2026-07",
       "signals": 307,
-      "completed": 250,
-      "win_rate_5d": 33.6,
-      "avg_signal_return_5d": -3.4881,
+      "completed": 254,
+      "win_rate_5d": 34.25,
+      "avg_signal_return_5d": -3.2635,
       "best_return_5d": 42.0118,
       "worst_return_5d": -44.7853
     },
     {
       "period": "2026-08",
-      "signals": 36,
+      "signals": 59,
       "completed": 0,
       "win_rate_5d": null,
       "avg_signal_return_5d": null,
@@ -65,10 +65,10 @@
   "yearly_returns": [
     {
       "period": "2026",
-      "signals": 1190,
-      "completed": 969,
-      "win_rate_5d": 46.75,
-      "avg_signal_return_5d": 0.53,
+      "signals": 1213,
+      "completed": 973,
+      "win_rate_5d": 46.87,
+      "avg_signal_return_5d": 0.5721,
       "best_return_5d": 61.6205,
       "worst_return_5d": -44.7853
     }
@@ -85,30 +85,30 @@
     },
     {
       "label": "65-74",
-      "signals": 537,
-      "completed": 433,
-      "win_rate_5d": 46.18937644341801,
-      "avg_return_5d": 0.3463058212743375,
+      "signals": 549,
+      "completed": 435,
+      "win_rate_5d": 46.206896551724135,
+      "avg_return_5d": 0.366060533378884,
       "avg_return_10d": null,
-      "stop_hit_rate": 37.42574257425743
+      "stop_hit_rate": 36.41618497109826
     },
     {
       "label": "75-84",
-      "signals": 350,
-      "completed": 289,
-      "win_rate_5d": 44.29065743944637,
-      "avg_return_5d": 0.04943688095039847,
+      "signals": 357,
+      "completed": 290,
+      "win_rate_5d": 44.48275862068966,
+      "avg_return_5d": 0.11810788748842631,
       "avg_return_10d": null,
-      "stop_hit_rate": 33.63095238095239
+      "stop_hit_rate": 33.137829912023456
     },
     {
       "label": "85-94",
-      "signals": 173,
-      "completed": 137,
-      "win_rate_5d": 48.9051094890511,
-      "avg_return_5d": 0.4025670219501128,
+      "signals": 177,
+      "completed": 138,
+      "win_rate_5d": 49.275362318840585,
+      "avg_return_5d": 0.5001158608103352,
       "avg_return_10d": null,
-      "stop_hit_rate": 25.153374233128833
+      "stop_hit_rate": 24.550898203592812
     },
     {
       "label": "95-100",
@@ -117,18 +117,18 @@
       "win_rate_5d": 52.72727272727272,
       "avg_return_5d": 2.6739408879657844,
       "avg_return_10d": null,
-      "stop_hit_rate": 17.599999999999998
+      "stop_hit_rate": 17.1875
     }
   ],
   "theme_stats": [
     {
       "label": "AI伺服器",
-      "signals": 237,
-      "completed": 212,
-      "win_rate_5d": 48.113207547169814,
-      "avg_return_5d": 0.7161784807344482,
+      "signals": 248,
+      "completed": 213,
+      "win_rate_5d": 48.35680751173709,
+      "avg_return_5d": 0.8065439750830113,
       "avg_return_10d": null,
-      "stop_hit_rate": 29.910714285714285
+      "stop_hit_rate": 28.270042194092827
     },
     {
       "label": "先進封裝/CoWoS",
@@ -141,7 +141,7 @@
     },
     {
       "label": "記憶體/HBM",
-      "signals": 98,
+      "signals": 102,
       "completed": 95,
       "win_rate_5d": 40.0,
       "avg_return_5d": 2.5282442139315253,
@@ -150,12 +150,12 @@
     },
     {
       "label": "低軌衛星/SpaceX",
-      "signals": 61,
+      "signals": 62,
       "completed": 57,
       "win_rate_5d": 47.368421052631575,
       "avg_return_5d": 0.3751573888120584,
       "avg_return_10d": null,
-      "stop_hit_rate": 39.34426229508197
+      "stop_hit_rate": 38.70967741935484
     },
     {
       "label": "AI電力/重電/電網",
@@ -164,7 +164,7 @@
       "win_rate_5d": 52.0,
       "avg_return_5d": 0.5865155780748915,
       "avg_return_10d": null,
-      "stop_hit_rate": 41.37931034482759
+      "stop_hit_rate": 40.0
     },
     {
       "label": "被動元件",
@@ -186,12 +186,12 @@
     },
     {
       "label": "網通光通訊",
-      "signals": 18,
+      "signals": 20,
       "completed": 12,
       "win_rate_5d": 25.0,
       "avg_return_5d": -8.47027076240393,
       "avg_return_10d": null,
-      "stop_hit_rate": 69.23076923076923
+      "stop_hit_rate": 50.0
     },
     {
       "label": "金融降息/併購",
@@ -230,6 +230,15 @@
       "stop_hit_rate": 25.0
     },
     {
+      "label": "矽光子/CPO",
+      "signals": 11,
+      "completed": 6,
+      "win_rate_5d": 50.0,
+      "avg_return_5d": -1.076953772871023,
+      "avg_return_10d": null,
+      "stop_hit_rate": 22.22222222222222
+    },
+    {
       "label": "機器人/自動化",
       "signals": 10,
       "completed": 2,
@@ -248,15 +257,6 @@
       "stop_hit_rate": 66.66666666666666
     },
     {
-      "label": "矽光子/CPO",
-      "signals": 9,
-      "completed": 6,
-      "win_rate_5d": 50.0,
-      "avg_return_5d": -1.076953772871023,
-      "avg_return_10d": null,
-      "stop_hit_rate": 33.33333333333333
-    },
-    {
       "label": "電力能源/重電",
       "signals": 4,
       "completed": 4,
@@ -269,12 +269,12 @@
   "action_stats": [
     {
       "label": "只觀察",
-      "signals": 524,
-      "completed": 422,
-      "win_rate_5d": 45.26066350710901,
-      "avg_return_5d": 0.17848666388946402,
+      "signals": 536,
+      "completed": 423,
+      "win_rate_5d": 45.39007092198582,
+      "avg_return_5d": 0.21834821339141153,
       "avg_return_10d": null,
-      "stop_hit_rate": 37.32251521298174
+      "stop_hit_rate": 36.36363636363637
     },
     {
       "label": "可追蹤突破",
@@ -287,152 +287,152 @@
     },
     {
       "label": "等拉回",
-      "signals": 310,
-      "completed": 241,
-      "win_rate_5d": 41.49377593360996,
-      "avg_return_5d": -0.8929710098090365,
+      "signals": 321,
+      "completed": 243,
+      "win_rate_5d": 41.9753086419753,
+      "avg_return_5d": -0.7464101967174424,
       "avg_return_10d": null,
-      "stop_hit_rate": 35.86206896551724
+      "stop_hit_rate": 34.32343234323432
     },
     {
       "label": "避免追高",
       "signals": 19,
-      "completed": 18,
-      "win_rate_5d": 38.88888888888889,
-      "avg_return_5d": -0.524124213229358,
+      "completed": 19,
+      "win_rate_5d": 36.84210526315789,
+      "avg_return_5d": -0.9046445543850319,
       "avg_return_10d": null,
       "stop_hit_rate": 68.42105263157895
     }
   ],
   "data_quality": {
-    "signals": 1190,
-    "completed_5d": 969,
-    "pending_5d": 48,
-    "data_missing_5d": 173,
-    "completion_rate_5d": 81.42857142857143,
-    "entry_trigger_known": 1129,
-    "entry_trigger_rate": 71.92205491585474,
-    "stop_known": 1129,
-    "stop_hit_rate": 32.32949512843224,
+    "signals": 1213,
+    "completed_5d": 973,
+    "pending_5d": 51,
+    "data_missing_5d": 189,
+    "completion_rate_5d": 80.21434460016488,
+    "entry_trigger_known": 1155,
+    "entry_trigger_rate": 71.25541125541126,
+    "stop_known": 1155,
+    "stop_hit_rate": 31.601731601731604,
     "status_counts": {
-      "completed_5d": 969,
-      "pending_5d": 48,
-      "data_missing": 173
+      "completed_5d": 973,
+      "pending_5d": 51,
+      "data_missing": 189
     },
     "pending_examples": [
       {
-        "signal_date": "2026-08-05",
-        "stock_id": "3231",
-        "name": "緯創",
-        "grade": "S+",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-08-05",
-        "stock_id": "3653",
-        "name": "健策",
-        "grade": "S+",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-08-05",
-        "stock_id": "2301",
-        "name": "光寶科",
-        "grade": "S+",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-08-05",
-        "stock_id": "6669",
-        "name": "緯穎",
+        "signal_date": "2026-08-11",
+        "stock_id": "3017",
+        "name": "奇鋐",
         "grade": "S",
         "action": "等拉回"
       },
       {
-        "signal_date": "2026-08-05",
+        "signal_date": "2026-08-11",
         "stock_id": "2317",
         "name": "鴻海",
         "grade": "S",
         "action": "等拉回"
       },
       {
-        "signal_date": "2026-08-05",
+        "signal_date": "2026-08-11",
+        "stock_id": "3037",
+        "name": "欣興",
+        "grade": "S",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-11",
+        "stock_id": "2395",
+        "name": "研華",
+        "grade": "S",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-11",
+        "stock_id": "2408",
+        "name": "南亞科",
+        "grade": "A",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-11",
+        "stock_id": "2356",
+        "name": "英業達",
+        "grade": "A",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-11",
+        "stock_id": "3006",
+        "name": "晶豪科",
+        "grade": "A",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-11",
         "stock_id": "3706",
         "name": "神達",
-        "grade": "S",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-08-05",
-        "stock_id": "2059",
-        "name": "川湖",
-        "grade": "S",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-08-05",
-        "stock_id": "3017",
-        "name": "奇鋐",
         "grade": "A",
         "action": "等拉回"
       }
     ],
     "missing_examples": [
       {
-        "signal_date": "2026-07-29",
-        "stock_id": "2395",
-        "name": "研華",
-        "grade": "A",
+        "signal_date": "2026-08-04",
+        "stock_id": "3231",
+        "name": "緯創",
+        "grade": "S+",
         "action": "等拉回"
       },
       {
-        "signal_date": "2026-07-29",
-        "stock_id": "6414",
-        "name": "樺漢",
-        "grade": "B",
-        "action": "只觀察"
-      },
-      {
-        "signal_date": "2026-07-28",
-        "stock_id": "6414",
-        "name": "樺漢",
-        "grade": "A",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-07-27",
-        "stock_id": "2615",
-        "name": "萬海",
+        "signal_date": "2026-08-04",
+        "stock_id": "2317",
+        "name": "鴻海",
         "grade": "S",
         "action": "等拉回"
       },
       {
-        "signal_date": "2026-07-27",
-        "stock_id": "6166",
-        "name": "凌華",
-        "grade": "A",
+        "signal_date": "2026-08-04",
+        "stock_id": "6669",
+        "name": "緯穎",
+        "grade": "S",
         "action": "等拉回"
       },
       {
-        "signal_date": "2026-07-27",
-        "stock_id": "6414",
-        "name": "樺漢",
-        "grade": "A",
-        "action": "等拉回"
-      },
-      {
-        "signal_date": "2026-07-23",
-        "stock_id": "1326",
-        "name": "台化",
+        "signal_date": "2026-08-04",
+        "stock_id": "3653",
+        "name": "健策",
         "grade": "B",
         "action": "只觀察"
       },
       {
-        "signal_date": "2026-07-22",
-        "stock_id": "6414",
-        "name": "樺漢",
+        "signal_date": "2026-08-03",
+        "stock_id": "3231",
+        "name": "緯創",
         "grade": "S+",
         "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-03",
+        "stock_id": "2317",
+        "name": "鴻海",
+        "grade": "S",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-03",
+        "stock_id": "6669",
+        "name": "緯穎",
+        "grade": "S",
+        "action": "等拉回"
+      },
+      {
+        "signal_date": "2026-08-03",
+        "stock_id": "3653",
+        "name": "健策",
+        "grade": "B",
+        "action": "只觀察"
       }
     ]
   }
