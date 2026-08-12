@@ -143,7 +143,142 @@ def _weekly_themes(weekly: dict, max_items: int = 5) -> list[dict]:
     ]
 
 
-def _action_items(performance: dict, potential: dict, backtest: dict, guardrails: list[dict] | None = None) -> list[dict]:
+def _issue(code: str, severity: str, finding: str, evidence: str, recommendation: str) -> dict:
+    return {
+        "code": code,
+        "severity": severity,
+        "finding": finding,
+        "evidence": evidence,
+        "recommendation": recommendation,
+    }
+
+
+def _selection_logic_audit(
+    performance: dict,
+    potential: dict,
+    weekly: dict,
+    backtest: dict,
+    dashboard: dict | None = None,
+) -> dict:
+    """Weekly internal audit for whether the stock-picking logic is too strict or too loose.
+
+    This is intentionally kept out of the main UI. It feeds weekly_review.json
+    and the knowledge hub so future scoring changes can be based on evidence.
+    """
+    dashboard = dashboard or {}
+    perf_stats = performance.get("stats") or {}
+    pot_stats = potential.get("stats") or (potential.get("potential_radar") or {}).get("stats") or {}
+    traffic = (dashboard.get("traffic_lights") or {}).get("counts") or {}
+    action_summary = dashboard.get("action_summary") or {}
+    current_backtest = performance.get("current_selection_backtest") or dashboard.get("current_selection_backtest") or {}
+    weak_segments = ((backtest.get("weak") or {}).get("segments") or [])[:5]
+    low_win_rows = (performance.get("low_win_rate_breakdown") or {}).get("rows") or []
+
+    green = int(_num(traffic.get("green", action_summary.get("chase"))))
+    yellow = int(_num(traffic.get("yellow", action_summary.get("pullback"))))
+    red = int(_num(traffic.get("red", action_summary.get("risk"))))
+    daily_completed = int(_num(perf_stats.get("completed")))
+    daily_win = perf_stats.get("win_rate_5d")
+    potential_completed = int(_num(pot_stats.get("completed")))
+    potential_win = pot_stats.get("win_rate_5d")
+
+    issues: list[dict] = []
+    if green == 0 and yellow > 0:
+        issues.append(
+            _issue(
+                "no_green_with_watchlist",
+                "medium",
+                "本週有候選股但沒有綠燈可追，代表系統偏保守或盤勢未通過進場確認。",
+                f"green={green}, yellow={yellow}, red={red}",
+                "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。",
+            )
+        )
+    if red >= max(5, green + yellow):
+        issues.append(
+            _issue(
+                "risk_list_dominates",
+                "high",
+                "紅燈數量明顯高於可操作清單，盤面可能偏風險控管而非進攻。",
+                f"green={green}, yellow={yellow}, red={red}",
+                "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。",
+            )
+        )
+    if daily_completed >= 10 and daily_win is not None and _num(daily_win) < 50:
+        issues.append(
+            _issue(
+                "daily_signal_win_rate_below_50",
+                "high",
+                "每日選股已完成樣本的 5 日勝率低於 50%，需要拆解弱因子。",
+                f"completed={daily_completed}, win_rate_5d={_num(daily_win):.1f}%",
+                "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。",
+            )
+        )
+    if potential_completed >= 10 and potential_win is not None and _num(potential_win) < 50:
+        issues.append(
+            _issue(
+                "potential_radar_win_rate_below_50",
+                "medium",
+                "潛力雷達勝率低於 50%，代表提前偵測可能太鬆或等待時間不足。",
+                f"completed={potential_completed}, win_rate_5d={_num(potential_win):.1f}%",
+                "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。",
+            )
+        )
+    if current_backtest and int(_num(current_backtest.get("candidate_count"))) > 0:
+        ref_count = int(_num(current_backtest.get("referenceable_count")))
+        if ref_count == 0:
+            issues.append(
+                _issue(
+                    "current_candidates_no_reference",
+                    "medium",
+                    "今日候選股缺少可參考的歷史同條件樣本，決策信心應下降。",
+                    f"candidate_count={current_backtest.get('candidate_count')}, referenceable_count={ref_count}",
+                    "保留觀察但不要因單日分數高就追價；等待樣本累積或用相近題材/型態補充驗證。",
+                )
+            )
+    if weak_segments or low_win_rows:
+        sample = weak_segments[0] if weak_segments else low_win_rows[0]
+        issues.append(
+            _issue(
+                "weak_segments_available",
+                "info",
+                "已有弱區塊可供下週計分參考，應優先處理最大拖累因子。",
+                f"group={sample.get('group')}, label={sample.get('label')}, completed={sample.get('completed')}",
+                "把弱區塊接回 backtest_guard，只降權已完成樣本足夠且平均報酬為負的條件。",
+            )
+        )
+
+    if not issues:
+        status = "normal"
+        verdict = "本週未偵測到明顯選股邏輯錯誤，維持現有門檻並持續累積樣本。"
+    elif any(item["severity"] == "high" for item in issues):
+        status = "needs_review"
+        verdict = "本週選股邏輯需要檢討，先查風險控管與低勝率區塊，不建議直接放寬追價條件。"
+    else:
+        status = "watch"
+        verdict = "本週選股邏輯偏保守或樣本不足，先觀察候選股後續表現再調整。"
+
+    return {
+        "status": status,
+        "logic_verdict": verdict,
+        "traffic_counts": {"green": green, "yellow": yellow, "red": red},
+        "sample_state": {
+            "daily_completed": daily_completed,
+            "daily_win_rate_5d": daily_win,
+            "potential_completed": potential_completed,
+            "potential_win_rate_5d": potential_win,
+        },
+        "issues": issues,
+        "next_week_focus": [item["recommendation"] for item in issues if item["severity"] in {"high", "medium"}][:5],
+    }
+
+
+def _action_items(
+    performance: dict,
+    potential: dict,
+    backtest: dict,
+    guardrails: list[dict] | None = None,
+    logic_audit: dict | None = None,
+) -> list[dict]:
     actions: list[dict] = []
 
     win_rate = _num((performance.get("stats") or {}).get("win_rate_5d"))
@@ -197,6 +332,17 @@ def _action_items(performance: dict, potential: dict, backtest: dict, guardrails
             }
         )
 
+    for issue in (logic_audit or {}).get("issues") or []:
+        if issue.get("severity") not in {"high", "medium"}:
+            continue
+        actions.append(
+            {
+                "type": "logic_audit",
+                "target": issue.get("code"),
+                "reason": issue.get("recommendation"),
+            }
+        )
+
     return actions[:8]
 
 
@@ -206,6 +352,7 @@ def build_weekly_review(
     weekly: dict,
     backtest: dict,
     previous_review: dict | None = None,
+    dashboard: dict | None = None,
 ) -> dict:
     perf_stats = performance.get("stats") or {}
     pot_stats = potential.get("stats") or (potential.get("potential_radar") or {}).get("stats") or {}
@@ -222,6 +369,7 @@ def build_weekly_review(
         risk_level = "high_review"
 
     guardrail_rows = _guardrail_effectiveness(performance, previous_review)
+    logic_audit = _selection_logic_audit(performance, potential, weekly, backtest, dashboard)
 
     return {
         "as_of": performance.get("as_of") or weekly.get("as_of") or backtest.get("as_of"),
@@ -252,7 +400,8 @@ def build_weekly_review(
             "failure_attribution": ((backtest.get("weak") or {}).get("failure_attribution") or [])[:5],
         },
         "guardrail_effectiveness": guardrail_rows,
-        "next_week_actions": _action_items(performance, potential, backtest, guardrail_rows),
+        "selection_logic_audit": logic_audit,
+        "next_week_actions": _action_items(performance, potential, backtest, guardrail_rows, logic_audit),
         "rules": [
             "每週檢討只調整下週觀察與降權，不直接產生買賣建議。",
             "樣本低於 10 筆只列觀察，不做正式降權。",
@@ -271,6 +420,7 @@ def write_weekly_review(root: Path, output: Path) -> dict:
         _read_json(dashboard / "weekly_data.json"),
         _read_json(dashboard / "backtest_review.json"),
         previous_review,
+        _read_json(dashboard / "dashboard_data.json"),
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(review, ensure_ascii=False, indent=2), encoding="utf-8")

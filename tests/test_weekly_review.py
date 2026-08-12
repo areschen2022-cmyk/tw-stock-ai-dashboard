@@ -79,3 +79,31 @@ def test_weekly_review_flags_ineffective_guardrails() -> None:
     assert "暫停或調整" in weak["recommended_action"]
     assert strong["status"] == "working"
     assert any(item["type"] == "review_guardrail" for item in review["next_week_actions"])
+
+
+def test_weekly_review_audits_selection_logic_when_no_green_and_low_win_rate() -> None:
+    review = build_weekly_review(
+        {
+            "as_of": "2026-08-12",
+            "stats": {"signals": 40, "completed": 18, "win_rate_5d": 44.4, "avg_return_5d": -0.8},
+            "current_selection_backtest": {"candidate_count": 3, "referenceable_count": 0},
+        },
+        {"stats": {"signals": 30, "completed": 15, "win_rate_5d": 48.0, "avg_return_5d": -0.2}},
+        {},
+        {
+            "weak": {
+                "segments": [
+                    {"group": "theme", "label": "AI伺服器", "completed": 15, "win_rate_5d": 33.3}
+                ]
+            }
+        },
+        dashboard={"traffic_lights": {"counts": {"green": 0, "yellow": 4, "red": 6}}},
+    )
+
+    audit = review["selection_logic_audit"]
+    assert audit["status"] == "needs_review"
+    codes = {item["code"] for item in audit["issues"]}
+    assert "no_green_with_watchlist" in codes
+    assert "daily_signal_win_rate_below_50" in codes
+    assert "potential_radar_win_rate_below_50" in codes
+    assert any(item["type"] == "logic_audit" for item in review["next_week_actions"])

@@ -1,6 +1,6 @@
 {
   "as_of": "2026-08-11",
-  "generated_at": "2026-08-12T13:19:13+08:00",
+  "generated_at": "2026-08-12T13:54:19+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -229,6 +229,64 @@
     ]
   },
   "guardrail_effectiveness": [],
+  "selection_logic_audit": {
+    "status": "needs_review",
+    "logic_verdict": "本週選股邏輯需要檢討，先查風險控管與低勝率區塊，不建議直接放寬追價條件。",
+    "traffic_counts": {
+      "green": 0,
+      "yellow": 5,
+      "red": 5
+    },
+    "sample_state": {
+      "daily_completed": 100,
+      "daily_win_rate_5d": 32.0,
+      "potential_completed": 42,
+      "potential_win_rate_5d": 28.57142857142857
+    },
+    "issues": [
+      {
+        "code": "no_green_with_watchlist",
+        "severity": "medium",
+        "finding": "本週有候選股但沒有綠燈可追，代表系統偏保守或盤勢未通過進場確認。",
+        "evidence": "green=0, yellow=5, red=5",
+        "recommendation": "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。"
+      },
+      {
+        "code": "risk_list_dominates",
+        "severity": "high",
+        "finding": "紅燈數量明顯高於可操作清單，盤面可能偏風險控管而非進攻。",
+        "evidence": "green=0, yellow=5, red=5",
+        "recommendation": "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。"
+      },
+      {
+        "code": "daily_signal_win_rate_below_50",
+        "severity": "high",
+        "finding": "每日選股已完成樣本的 5 日勝率低於 50%，需要拆解弱因子。",
+        "evidence": "completed=100, win_rate_5d=32.0%",
+        "recommendation": "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。"
+      },
+      {
+        "code": "potential_radar_win_rate_below_50",
+        "severity": "medium",
+        "finding": "潛力雷達勝率低於 50%，代表提前偵測可能太鬆或等待時間不足。",
+        "evidence": "completed=42, win_rate_5d=28.6%",
+        "recommendation": "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
+      },
+      {
+        "code": "weak_segments_available",
+        "severity": "info",
+        "finding": "已有弱區塊可供下週計分參考，應優先處理最大拖累因子。",
+        "evidence": "group=theme, label=記憶體/HBM, completed=4",
+        "recommendation": "把弱區塊接回 backtest_guard，只降權已完成樣本足夠且平均報酬為負的條件。"
+      }
+    ],
+    "next_week_focus": [
+      "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。",
+      "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。",
+      "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。",
+      "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
+    ]
+  },
   "next_week_actions": [
     {
       "type": "deweight",
@@ -259,6 +317,16 @@
       "type": "carry_forward",
       "target": "停損觸發",
       "reason": "加嚴停損與追價條件"
+    },
+    {
+      "type": "logic_audit",
+      "target": "no_green_with_watchlist",
+      "reason": "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。"
+    },
+    {
+      "type": "logic_audit",
+      "target": "risk_list_dominates",
+      "reason": "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。"
     }
   ],
   "rules": [

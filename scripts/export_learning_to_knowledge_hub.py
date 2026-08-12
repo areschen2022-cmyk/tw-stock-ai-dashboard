@@ -278,6 +278,26 @@ def build_weekly_review_points(weekly_review: dict) -> list[dict]:
                 source_ref=source_ref,
             )
         )
+    logic_audit = weekly_review.get("selection_logic_audit") or {}
+    for issue in logic_audit.get("issues") or []:
+        code = _text(issue.get("code"), "logic_issue")
+        severity = _text(issue.get("severity"), "info")
+        finding = _text(issue.get("finding"), "")
+        recommendation = _text(issue.get("recommendation"), "")
+        claim = f"Weekly selection logic audit flagged {code} ({severity}): {finding}"
+        evidence = f"evidence={issue.get('evidence', '')}; recommendation={recommendation}"
+        points.append(
+            _knowledge(
+                topic=f"Taiwan stock selection logic audit: {code}",
+                claim=claim,
+                evidence=evidence,
+                tags=["taiwan_stock", "weekly_review", "selection_logic_audit", severity, code],
+                completed=20 if severity in {"high", "medium"} else 5,
+                avg_return_5d=None,
+                win_rate_5d=None,
+                source_ref=source_ref,
+            )
+        )
     return _dedupe_by_id(points)
 
 
