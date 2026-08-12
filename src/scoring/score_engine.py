@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -54,7 +54,7 @@ class StockScore:
 
     @property
     def trigger_summary(self) -> str:
-        """Human-readable summary: '題材升溫 + 外資買超 + 放量突破'"""
+        """Human-readable summary: '題材升溫 + 外資買超 + 放量突破'."""
         return " + ".join(self.trigger_tags) if self.trigger_tags else "綜合訊號"
 
     def to_dict(self) -> dict[str, Any]:
@@ -73,14 +73,8 @@ def _build_trigger_tags(
     opportunity_adj: int,
     themes: list[str],
 ) -> list[str]:
-    """Distil all sub-scores and reasons into concise human-readable trigger tags.
-
-    Tags are ordered: 題材 → 籌碼 → 技術 → 基本面 → 海外.
-    Phase 2 will append a '收盤資金流入' tag from the capital-flow module.
-    """
     tags: list[str] = []
 
-    # ── 題材面 ──────────────────────────────────────────────
     if themes:
         if opportunity_adj >= 10:
             tags.append("題材強共振")
@@ -89,7 +83,6 @@ def _build_trigger_tags(
         else:
             tags.append("題材關注")
 
-    # ── 籌碼面 ──────────────────────────────────────────────
     has_foreign = any("外資" in r for r in c_reasons)
     has_trust = any("投信" in r for r in c_reasons)
     if has_foreign and has_trust:
@@ -103,7 +96,6 @@ def _build_trigger_tags(
     elif c_score >= 10:
         tags.append("法人關注")
 
-    # ── 技術面 ──────────────────────────────────────────────
     if t_score > 0:
         t_text = " ".join(t_reasons)
         if "爆量" in t_text or ("量增" in t_text and "突破" in t_text):
@@ -115,13 +107,11 @@ def _build_trigger_tags(
         elif t_score >= 15:
             tags.append("技術偏多")
 
-    # ── 基本面 ──────────────────────────────────────────────
     if f_score >= 10:
         tags.append("營收加速")
     elif f_score >= 5:
         tags.append("營收回升")
 
-    # ── 海外連動 ─────────────────────────────────────────────
     if overseas_adj >= 5:
         tags.append("美股映射")
     elif overseas_adj >= 3:
@@ -154,6 +144,65 @@ def _atr_pct(prices: pd.DataFrame, period: int = 14) -> float | None:
     return round(float(atr / last_close * 100), 2)
 
 
+def _latest_price_date(prices: pd.DataFrame) -> date | None:
+    if prices.empty or "date" not in prices.columns:
+        return None
+    dates = pd.to_datetime(prices["date"], errors="coerce").dropna()
+    if dates.empty:
+        return None
+    return dates.dt.date.max()
+
+
+def _data_blocked_score(
+    *,
+    stock_id: str,
+    label: str,
+    warning: str,
+    market_adj: int,
+    overseas_adj: int,
+    opportunity_adj: int,
+    themes: list[str] | None,
+    theme_tiers: list[str] | None,
+) -> StockScore:
+    return StockScore(
+        stock_id=stock_id,
+        total_score=0,
+        label=label,
+        price=None,
+        technical_score=0,
+        chip_score=0,
+        fundamental_score=0,
+        risk_score=0,
+        market_adjustment=market_adj,
+        overseas_adjustment=overseas_adj,
+        opportunity_score=opportunity_adj,
+        themes=themes or [],
+        theme_tiers=theme_tiers or [],
+        action="只觀察",
+        entry_decision="資料不足",
+        entry_checklist=[warning],
+        entry_condition=warning,
+        stop_reference="資料不足",
+        stop_price=None,
+        entry_limit_price=None,
+        vol_5min_threshold=None,
+        warnings=[warning],
+    )
+
+
+def refresh_trade_plan_fields(score: StockScore, prices: pd.DataFrame) -> None:
+    """Rebuild entry/stop fields after score adjustments change total_score."""
+    plan = trade_plan(score.total_score, prices, score.reasons.get("risk", []))
+    score.action = plan["action"]
+    score.entry_decision = plan.get("entry_decision", plan["action"])
+    score.entry_checklist = plan.get("entry_checklist", [])
+    score.entry_condition = plan["entry"]
+    score.stop_reference = plan["stop"]
+    score.stop_price = plan.get("stop_price")
+    score.entry_limit_price = plan.get("entry_limit_price")
+    score.vol_5min_threshold = plan.get("vol_5min_threshold")
+
+
 class ScoreEngine:
     def __init__(self, config: dict) -> None:
         self.config = config
@@ -181,29 +230,28 @@ class ScoreEngine:
         prices = bundle.get("prices", pd.DataFrame())
         min_days = int(self.config.get("data", {}).get("min_data_days", 25))
         if prices.empty or len(prices) < min_days:
-            return StockScore(
+            return _data_blocked_score(
                 stock_id=stock_id,
-                total_score=0,
                 label="DATA_INSUFFICIENT",
-                price=None,
-                technical_score=0,
-                chip_score=0,
-                fundamental_score=0,
-                risk_score=0,
-                market_adjustment=market_adj,
-                overseas_adjustment=overseas_adj,
-                opportunity_score=opportunity_adj,
-                themes=themes or [],
-                theme_tiers=theme_tiers or [],
-                action="只觀察",
-                entry_decision="資料不足",
-                entry_checklist=["價格資料不足，今日不判斷進場"],
-                entry_condition="價格資料不足",
-                stop_reference="價格資料不足",
-                stop_price=None,
-                entry_limit_price=None,
-                vol_5min_threshold=None,
-                warnings=[f"價格資料少於 {min_days} 筆"],
+                warning=f"價格資料少於 {min_days} 筆",
+                market_adj=market_adj,
+                overseas_adj=overseas_adj,
+                opportunity_adj=opportunity_adj,
+                themes=themes,
+                theme_tiers=theme_tiers,
+            )
+
+        latest_date = _latest_price_date(prices)
+        if latest_date is not None and latest_date != as_of:
+            return _data_blocked_score(
+                stock_id=stock_id,
+                label="DATA_STALE",
+                warning=f"價格資料日期 {latest_date.isoformat()} 非本次掃描日 {as_of.isoformat()}，不列入今日可交易訊號",
+                market_adj=market_adj,
+                overseas_adj=overseas_adj,
+                opportunity_adj=opportunity_adj,
+                themes=themes,
+                theme_tiers=theme_tiers,
             )
 
         t_score, t_reasons = technical_score(prices)

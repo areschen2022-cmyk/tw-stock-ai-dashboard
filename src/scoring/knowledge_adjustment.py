@@ -8,7 +8,7 @@ from typing import Any
 from src.scoring.score_engine import StockScore
 
 
-TRUSTED_STATUSES = {"pending_validation", "backtest_supported", "live_supported", "adopted"}
+TRUSTED_STATUSES = {"backtest_supported", "live_supported", "adopted"}
 NEGATIVE_TERMS = {
     "失敗",
     "風險",
@@ -37,26 +37,27 @@ ACTION_DOWNGRADE = {
     "可追": "等拉回",
     "可追蹤突破": "等拉回",
 }
+SELF_GENERATED_REFS = {
+    "tw-stock-ai",
+    "performance_data",
+    "weekly_review",
+    "backtest_review",
+    "taiwan_stock_learning",
+    "knowledge_hub_export",
+}
 
 
 def load_knowledge_context(root: Path, limit: int = 80) -> dict[str, Any]:
-    """Load compact Trading Knowledge Hub context.
-
-    Priority:
-    1. data/trading_hub_context.json generated from the local MCP hub.
-    2. data/knowledge_exports/taiwan_stock_learning.jsonl committed by automation.
-
-    The loader is intentionally tolerant: malformed lines or legacy mojibake rows
-    are skipped instead of blocking the daily report.
-    """
+    """Load compact Trading Knowledge Hub context without self-reinforcing rows."""
     context_file = root / "data" / "trading_hub_context.json"
     if context_file.exists():
         try:
             payload = json.loads(context_file.read_text(encoding="utf-8"))
             rows = payload.get("rows") if isinstance(payload, dict) else []
             if isinstance(rows, list):
-                payload["rows"] = rows[:limit]
+                payload["rows"] = [row for row in rows if isinstance(row, dict) and not _is_self_generated(row)][:limit]
                 payload["source"] = "trading_hub_context"
+                payload["used_count"] = len(payload["rows"])
                 return payload
         except Exception:
             pass
@@ -72,7 +73,7 @@ def load_knowledge_context(root: Path, limit: int = 80) -> dict[str, Any]:
                 item = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if isinstance(item, dict):
+            if isinstance(item, dict) and not _is_self_generated(item):
                 parsed_rows.append(item)
         rows = sorted(parsed_rows, key=_row_sort_key, reverse=True)[:limit]
 
@@ -85,13 +86,7 @@ def load_knowledge_context(root: Path, limit: int = 80) -> dict[str, Any]:
 
 
 def apply_knowledge_adjustment(score: StockScore, context: dict[str, Any] | None) -> None:
-    """Use validated historical lessons to conservatively adjust operation action.
-
-    This layer does not modify total_score or grade. It may downgrade the trading
-    action when a high-confidence failure pattern is matched, and it records
-    positive matches as notes only. This keeps the UI simple while preserving
-    evidence for future postmortems.
-    """
+    """Use validated external lessons to conservatively adjust operation action."""
     rows = (context or {}).get("rows") or []
     if not rows:
         return
@@ -103,9 +98,9 @@ def apply_knowledge_adjustment(score: StockScore, context: dict[str, Any] | None
     for row in rows:
         if not isinstance(row, dict) or not _is_usable(row):
             continue
-        text = _row_text(row)
-        if not _matches_score(text, row.get("tags") or [], features):
+        if not _matches_score(row.get("tags") or [], features):
             continue
+        text = _row_text(row)
         topic = str(row.get("topic") or "智慧庫經驗")[:40]
         if _is_negative(row, text):
             negative_matches.append(topic)
@@ -125,6 +120,7 @@ def apply_knowledge_adjustment(score: StockScore, context: dict[str, Any] | None
         if adjusted_action != original_action:
             notes.append(f"操作由 {original_action} 降為 {adjusted_action}")
             score.action = adjusted_action
+            score.entry_decision = adjusted_action
     if positive_matches:
         notes.append(f"智慧庫正向經驗：{_join_topics(positive_matches)}")
 
@@ -163,7 +159,21 @@ def _score_features(score: StockScore) -> set[str]:
 def _is_usable(row: dict[str, Any]) -> bool:
     status = str(row.get("status") or "")
     confidence = _float(row.get("confidence"))
-    return status in TRUSTED_STATUSES or confidence >= 0.65
+    return status in TRUSTED_STATUSES or confidence >= 0.8
+
+
+def _is_self_generated(row: dict[str, Any]) -> bool:
+    source_ref = _normalize(str(row.get("source_ref") or ""))
+    source_type = _normalize(str(row.get("source_type") or ""))
+    topic = _normalize(str(row.get("topic") or ""))
+    tags = {_normalize(str(tag)) for tag in row.get("tags") or []}
+    if source_type in {"backtest", "system"} and any(ref in source_ref for ref in SELF_GENERATED_REFS):
+        return True
+    if any(ref in source_ref for ref in SELF_GENERATED_REFS):
+        return True
+    if "twstockai" in topic and ("backtest" in tags or "weeklyreview" in tags):
+        return True
+    return False
 
 
 def _row_text(row: dict[str, Any]) -> str:
@@ -177,7 +187,6 @@ def _row_text(row: dict[str, Any]) -> str:
 
 
 def _row_sort_key(row: dict[str, Any]) -> tuple[str, str, str]:
-    """Prefer the newest exported lessons so recent postmortems are actually used."""
     return (
         str(row.get("updated_at") or ""),
         str(row.get("created_at") or ""),
@@ -185,22 +194,17 @@ def _row_sort_key(row: dict[str, Any]) -> tuple[str, str, str]:
     )
 
 
-def _matches_score(text: str, tags: list[Any], features: set[str]) -> bool:
-    haystack = _normalize(text)
-    if any(feature and feature in haystack for feature in features):
-        return True
-    for tag in tags:
-        normalized = _normalize(str(tag))
-        if normalized and normalized in features:
-            return True
-    return False
+def _matches_score(tags: list[Any], features: set[str]) -> bool:
+    normalized_tags = {_normalize(str(tag)) for tag in tags if _normalize(str(tag))}
+    return bool(normalized_tags & features)
 
 
 def _is_negative(row: dict[str, Any], text: str) -> bool:
     normalized = _normalize(text)
     if any(_normalize(term) in normalized for term in NEGATIVE_TERMS):
         return True
-    return _avg_return(text) is not None and _avg_return(text) < 0
+    avg = _avg_return(text)
+    return avg is not None and avg < 0
 
 
 def _is_positive(row: dict[str, Any], text: str) -> bool:

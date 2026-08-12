@@ -68,7 +68,7 @@ def test_trigger_tags_chip_score_fallback_when_reason_text_is_unreadable() -> No
     """High chip score should still create a chip tag even when reason text is malformed."""
     tags = _build_trigger_tags(
         t_score=0, t_reasons=[],
-        c_score=18, c_reasons=["???"],
+        c_score=18, c_reasons=["malformed reason"],
         f_score=0,
         overseas_adj=0,
         opportunity_adj=0,

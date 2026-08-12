@@ -34,5 +34,5 @@ def test_trade_plan_marks_mid_score_as_cancel_without_volume_price_confirmation(
     plan = trade_plan(68, _prices(), [])
 
     assert plan["action"] == "只觀察"
-    assert plan["entry_decision"] == "量價不確認取消"
+    assert plan["entry_decision"] == "條件未同時滿足"
     assert any("未同時滿足就取消" in item for item in plan["entry_checklist"])

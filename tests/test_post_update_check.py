@@ -109,7 +109,8 @@ def test_post_update_check_reports_mojibake_payload(tmp_path) -> None:
     _prepare_db(tmp_path)
     payload_path = tmp_path / "dashboard" / "backtest_review.json"
     docs_path = tmp_path / "docs" / "backtest_review.json"
-    broken = {"as_of": "2026-06-18", "status": "ok", "best": {"theme": {"label": "?航蕭頩斤???"}}}
+    bad_text = "?" * 2 + chr(0x96FF)
+    broken = {"as_of": "2026-06-18", "status": "ok", "best": {"theme": {"label": bad_text}}}
     _write_json(payload_path, broken)
     _write_json(docs_path, broken)
 

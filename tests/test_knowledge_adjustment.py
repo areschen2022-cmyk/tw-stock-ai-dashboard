@@ -67,7 +67,7 @@ def test_knowledge_adjustment_positive_match_does_not_promote_action():
             {
                 "topic": "台股成功歸因：放量長紅",
                 "claim": "放量長紅在歷史樣本有效，平均報酬 +3.1%。",
-                "status": "pending_validation",
+                "status": "backtest_supported",
                 "confidence": 0.7,
                 "tags": ["放量長紅", "成功歸因"],
             }

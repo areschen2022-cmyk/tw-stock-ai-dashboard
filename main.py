@@ -57,7 +57,7 @@ from src.scoring.decision_gates import (
     weak_themes_from_backtest_guard,
 )
 from src.scoring.knowledge_adjustment import apply_knowledge_adjustment, load_knowledge_context
-from src.scoring.score_engine import ScoreEngine
+from src.scoring.score_engine import ScoreEngine, refresh_trade_plan_fields
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -360,13 +360,13 @@ def apply_selection_quality_adjustments(
         signal = retail_signal.get("signal")
         if signal == SIGNAL_CLEAN:
             adjustment += 5
-            notes.append("散戶人數下降且股價未弱，籌碼較乾淨")
+            notes.append("散戶人數下降且股價未弱，籌碼轉乾淨。")
             score.trigger_tags.append("散戶轉乾淨")
         elif signal == SIGNAL_OVERHEATED:
             adjustment -= 8
-            notes.append("散戶人數增加但股價不漲，疑似有人倒貨")
+            notes.append("散戶人數增加但股價未跟上，籌碼過熱。")
             score.trigger_tags.append("散戶過熱")
-            score.warnings.append("散戶背離轉弱")
+            score.warnings.append("散戶過熱")
 
     space_roles = [
         item for item in theme_details
@@ -376,10 +376,10 @@ def apply_selection_quality_adjustments(
     if space_roles:
         if score.fundamental_score >= 10:
             adjustment += 3
-            notes.append("SpaceX 題材具核心供應鏈角色，且營收成長有佐證")
-            score.trigger_tags.append("SpaceX營收佐證")
+            notes.append("SpaceX 供應鏈題材有基本面支撐。")
+            score.trigger_tags.append("SpaceX供應鏈")
         elif score.fundamental_score <= 0:
-            notes.append("SpaceX 題材有供應鏈角色，但營收佐證不足")
+            notes.append("SpaceX 題材暫缺營收支撐。")
 
     if not notes:
         return
@@ -390,7 +390,6 @@ def apply_selection_quality_adjustments(
     score.retail_signal = retail_signal or {}
     score.selection_quality_adjustment = adjustment
     score.selection_quality_notes = notes
-
 
 def merge_retail_exit_risks(exit_risks: list[dict], retail_rows: list[dict], stock_names: dict[str, str]) -> list[dict]:
     existing = {str(item.get("stock_id")) for item in exit_risks}
@@ -405,13 +404,12 @@ def merge_retail_exit_risks(exit_risks: list[dict], retail_rows: list[dict], sto
                 "name": stock_names.get(stock_id) or row.get("name") or "",
                 "level": "紅色警戒",
                 "risk_score": 12,
-                "reasons": ["散戶人數增加但股價不漲", "籌碼過熱疑似倒貨"],
-                "action": "準備減碼或暫停追高；跌破停損不硬凹",
+                "reasons": ["散戶過熱", "股價未跟上"],
+                "action": "準備減碼或停利，跌破停損不硬凹。",
             }
         )
         existing.add(stock_id)
     return merged
-
 
 def main() -> int:
     load_dotenv(ROOT / ".env")
@@ -443,9 +441,13 @@ def main() -> int:
         provider = FinMindClient()
     store = SQLiteStore(ROOT / "data" / "tw_stock_ai.sqlite3")
     delivery_date = delivery_date_for_run()
-    if args.send_telegram and not dry_run and store.has_delivered_today("telegram", delivery_date, "morning_report"):
-        logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
-        return 0
+    if args.send_telegram and not dry_run:
+        if store.has_delivered_today("telegram", delivery_date, "morning_report"):
+            logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
+            return 0
+        if store.has_active_delivery_claim("telegram", delivery_date, "morning_report"):
+            logging.info("Telegram morning report is already claimed by another run for %s; skipping.", delivery_date)
+            return 0
     engine = ScoreEngine(config)
     knowledge_context = load_knowledge_context(ROOT)
     if knowledge_context.get("rows"):
@@ -506,6 +508,16 @@ def main() -> int:
         provider,
         as_of,
     )
+    pending_limit = int(config.get("universe", {}).get("pending_outcome_limit", 120))
+    pending_ids = store.pending_outcome_stock_ids(as_of, limit=pending_limit)
+    pending_added = []
+    seen_ids = set(all_stock_ids)
+    for stock_id in pending_ids:
+        if stock_id not in seen_ids:
+            all_stock_ids.append(stock_id)
+            seen_ids.add(stock_id)
+            pending_added.append(stock_id)
+    universe_report["pending_outcome_added"] = len(pending_added)
     core_ids = set(config["stocks"])
     bundles = {}
     max_workers = int(config.get("runtime", {}).get("fetch_workers", 3))
@@ -525,6 +537,7 @@ def main() -> int:
 
     for stock_id in all_stock_ids:
         bundle = bundles.get(stock_id, {})
+        store.save_daily_prices_from_bundle(stock_id, bundle.get("prices"), as_of)
         overseas_adj = 0
         if overseas:
             overseas_adj = overseas.adjustment
@@ -559,6 +572,9 @@ def main() -> int:
             theme_details=stock_theme_details.get(stock_id, []),
             config=config,
         )
+        prices = bundle.get("prices")
+        if prices is not None and not getattr(prices, "empty", True):
+            refresh_trade_plan_fields(score, prices)
         apply_knowledge_adjustment(score, knowledge_context)
         apply_backtest_guard(score, backtest_guard)
         results.append(score)
@@ -766,9 +782,11 @@ def main() -> int:
         action_lists = dashboard_payload.get("action_lists", {})
         data_quality = dashboard_payload.get("data_quality", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
-        decision_diagnostic = dashboard_payload.get("decision_diagnostic", {})
         traffic = dashboard_payload.get("traffic_lights", {}) or {}
         traffic_counts = traffic.get("counts", {}) or {}
+        overseas_payload = dashboard_payload.get("overseas") or {}
+        theme_payload = dashboard_payload.get("themes") or {}
+        source_status = dashboard_payload.get("source_status") or {}
 
         def _h(value: object, default: str = "") -> str:
             if value is None:
@@ -776,86 +794,92 @@ def main() -> int:
             return html.escape(str(value), quote=False)
 
         def _compact_list(rows: list[dict], empty: str, limit: int = 3) -> str:
-            return "\n".join(
-                f"▸ <b>{_h(row.get('stock_id'))} {_h(row.get('name'))}</b>｜"
-                f"{_h(row.get('score', '-'))}/100｜{_h(row.get('grade', '-'))}｜"
-                f"{_h(row.get('entry_decision') or row.get('action'), '只觀察')}"
-                for row in rows[:limit]
-            ) or empty
+            lines = []
+            for row in rows[:limit]:
+                decision = row.get("entry_decision") or row.get("action") or "未定"
+                lines.append(
+                    f"- <b>{_h(row.get('stock_id'))} {_h(row.get('name'))}</b>："
+                    f"{_h(row.get('score', '-'))}/100｜{_h(row.get('grade', '-'))}｜{_h(decision)}"
+                )
+            return "\n".join(lines) or empty
 
         green_text = _compact_list(
             traffic.get("green") or action_lists.get("chase", []),
-            "▸ 綠燈 0：今天不追價",
+            "今日沒有綠燈可追標的。",
             limit=min(limits["max_pick_items"], 3),
         )
         yellow_text = _compact_list(
             traffic.get("yellow") or action_lists.get("pullback", []),
-            "▸ 黃燈 0：暫無等拉回名單",
+            "今日沒有等拉回標的。",
             limit=2,
         )
         ai_summary = action_lists.get("summary", {})
         ai_review_text = (
             f"AI 複核：同意 {ai_summary.get('ai_agree', 0)}｜"
             f"保留 {ai_summary.get('ai_hold', 0)}｜"
-            f"不建議 {ai_summary.get('ai_avoid', 0)}｜"
-            f"已複核 {ai_summary.get('ai_reviewed', 0)}"
+            f"避開 {ai_summary.get('ai_avoid', 0)}｜"
+            f"已審 {ai_summary.get('ai_reviewed', 0)}"
         )
-        alert_text = "\n".join(f"⚠️ {_h(item)}" for item in alerts[: limits["max_alert_items"]]) or "✅ 無重大異常"
+        alert_text = "\n".join(f"- {_h(item)}" for item in alerts[: limits["max_alert_items"]]) or "無重大異常提醒。"
         exit_text = "\n".join(
-            f"▸ <b>{_h(item.get('stock_id'))} {_h(item.get('name'))}</b>｜{_h(item.get('level'))}｜{_h('、'.join(item.get('reasons', [])[:1]))}"
+            f"- <b>{_h(item.get('stock_id'))} {_h(item.get('name'))}</b>：{_h(item.get('level'))}｜{_h('、'.join(item.get('reasons', [])[:1]))}"
             for item in exit_risks[: limits["max_exit_items"]]
-        ) or "▸ 無紅黃警戒"
-        downside_text = str(
-            (dashboard_payload.get("downside_attribution") or {}).get("summary")
-            or "目前未偵測明顯個股跌因"
-        )
+        ) or "暫無高風險名單。"
+        downside_text = str((dashboard_payload.get("downside_attribution") or {}).get("summary") or "尚無明顯跌因聚集。")
         health = dashboard_payload.get("health", {})
         schedule_delay = health.get("schedule_delay_minutes")
-        schedule_text = "未記錄"
-        if schedule_delay is not None:
-            schedule_text = f"{float(schedule_delay):.1f} 分"
+        schedule_text = "正常" if schedule_delay is None else f"{float(schedule_delay):.1f} 分鐘"
         default_dashboard_url = "https://areschen2022-cmyk.github.io/tw-stock-ai-dashboard/"
         dashboard_url = config.get("runtime", {}).get("dashboard_url") or default_dashboard_url
         safe_dashboard_url = html.escape(str(dashboard_url), quote=True)
         telegram_message = "\n".join(
             [
-                f"🇹🇼 <b>台股 AI 早報</b>｜{delivery_date.isoformat()}",
+                f"<b>台股 AI 早報</b>｜{delivery_date.isoformat()}",
                 f"資料日：{as_of.isoformat()}",
                 "",
-                f"🚦 <b>交易燈</b>：綠 {traffic_counts.get('green', 0)}｜黃 {traffic_counts.get('yellow', 0)}｜紅 {traffic_counts.get('red', 0)}",
-                _h(traffic.get("headline"), "依系統閘門篩選"),
-                f"執行：{_h(traffic.get('instruction'), '依卡片進場條件與停損執行')}",
+                f"<b>今日決策</b>：綠燈 {traffic_counts.get('green', 0)}｜黃燈 {traffic_counts.get('yellow', 0)}｜紅燈 {traffic_counts.get('red', 0)}",
+                _h(traffic.get("headline"), "等待開盤價量確認"),
+                f"操作：{_h(traffic.get('instruction'), '只做開盤確認，不追高。')}",
                 "",
-                "<b>綠燈可追</b>",
+                "<b>可追</b>",
                 green_text,
                 "",
-                "<b>黃燈盯盤</b>",
+                "<b>等拉回</b>",
                 yellow_text,
                 "",
-                f"🧭 風向：{_h(dashboard_payload.get('overseas', {}).get('label'))}｜題材：{_h(dashboard_payload.get('themes', {}).get('summary'))}",
-                f"📊 掃描 <b>{_h(s.get('scanned'))}</b> 檔｜S+ { _h(s.get('s_plus_grade')) }｜S { _h(s.get('s_grade')) }｜A { _h(s.get('a_grade')) }｜資料源：{_h(dashboard_payload.get('source_status', {}).get('label'))}",
-                f"⏱ 延遲：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
-                f"🤖 {ai_review_text}",
+                f"海外：{_h(overseas_payload.get('label'))}｜題材：{_h(theme_payload.get('summary'))}",
+                f"掃描 <b>{_h(s.get('scanned'))}</b> 檔｜S+ {_h(s.get('s_plus_grade'))}｜S {_h(s.get('s_grade'))}｜A {_h(s.get('a_grade'))}｜資料源 {_h(source_status.get('label'))}",
+                f"排程：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
+                ai_review_text,
                 "",
-                "🚨 <b>提醒</b>",
+                "<b>提醒</b>",
                 alert_text,
                 "",
-                "🛡 <b>危險名單</b>",
+                "<b>危險名單</b>",
                 f"跌因：{_h(downside_text)}",
                 exit_text,
                 "",
-                f"🔗 <a href=\"{safe_dashboard_url}\">開啟監控頁</a>",
-                "⚠️ 僅供研究追蹤，不是投資建議。",
+                f"<a href=\"{safe_dashboard_url}\">查看網站</a>",
+                "僅供研究追蹤，不是投資建議。",
             ]
         )
     if not should_send(config, notify_severity):
         logging.info("Telegram morning report severity=%s below configured threshold; skipping.", notify_severity)
         return 0
-    if not dry_run and store.has_delivered_today("telegram", delivery_date, "morning_report"):
-        logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
-        return 0
+    if not dry_run:
+        if store.has_delivered_today("telegram", delivery_date, "morning_report"):
+            logging.info("Telegram morning report already delivered for run date %s; skipping.", delivery_date)
+            return 0
+        if not store.claim_delivery("telegram", delivery_date, "morning_report", run_id=os.getenv("GITHUB_RUN_ID", "")):
+            logging.info("Telegram morning report already claimed for run date %s; skipping.", delivery_date)
+            return 0
     notifier = TelegramNotifier.from_env(dry_run=dry_run)
-    notifier.send(telegram_message)
+    try:
+        notifier.send(telegram_message)
+    except Exception:
+        if not dry_run:
+            store.clear_delivery_claim("telegram", delivery_date, "morning_report")
+        raise
     if not dry_run:
         store.record_delivery(
             "telegram",

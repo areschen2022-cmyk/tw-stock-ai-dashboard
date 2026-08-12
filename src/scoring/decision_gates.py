@@ -10,8 +10,6 @@ PULLBACK_ACTION = "等拉回"
 
 
 def normalize_ai_pick_action(value: Any, default: str = "可追") -> str:
-    """Return a safe AI pick action even if config text was saved with bad encoding."""
-
     text = str(value or "").strip()
     if not text or "\ufffd" in text or text not in ALLOWED_AI_PICK_ACTIONS:
         return default
@@ -25,13 +23,6 @@ def apply_dashboard_decision_gates(
     repeated_signal_context: dict[str, Any] | None = None,
     weak_themes: set[str] | None = None,
 ) -> dict[str, Any]:
-    """Apply hard execution gates to dashboard rows.
-
-    These gates intentionally do not change score or grade. They only change the
-    execution posture shown in the morning decision layer so strong-but-risky
-    names do not remain in the chase bucket.
-    """
-
     rows = payload.get("rows") or []
     exit_lookup = {
         str(item.get("stock_id")): item
@@ -52,38 +43,53 @@ def apply_dashboard_decision_gates(
         gate_tags: list[str] = []
 
         if stock_id in exit_lookup:
-            _set_avoid(row, "紅色警戒，不得列入可追")
-            gate_tags.append("紅色警戒禁追")
+            _set_avoid(row, "紅色警戒個股不得列入可追。")
+            gate_tags.append("紅色警戒")
             gate_reasons.append("紅色警戒")
+            was_chase_like = False
 
-        if "等拉回" in original_action and "開盤確認" in original_entry:
+        if original_action == PULLBACK_ACTION and _is_open_confirm(original_entry):
             row["entry_decision"] = PULLBACK_ACTION
             row["decision_light"] = "yellow"
-            row["decision_light_label"] = "黃燈等拉回"
-            row["decision_light_reason"] = _join_note(row.get("decision_light_reason"), "操作已降為等拉回，不再使用開盤追價確認")
-            gate_tags.append("進場觸發轉嚴格")
-            gate_reasons.append("進場觸發嚴格化")
+            row["decision_light_label"] = PULLBACK_ACTION
+            row["decision_light_reason"] = _join_note(
+                row.get("decision_light_reason"),
+                "原本就是等拉回，不能用開盤確認包裝成追價。",
+            )
+            gate_tags.append("進場確認不足")
+            gate_reasons.append("進場確認不足")
+
+        if was_chase_like and _is_open_confirm(original_entry):
+            row["entry_decision"] = PULLBACK_ACTION
+            row["decision_light"] = "yellow"
+            row["decision_light_label"] = PULLBACK_ACTION
+            row["decision_light_reason"] = _join_note(
+                row.get("decision_light_reason"),
+                "開盤確認不足，先等拉回或量價同時確認。",
+            )
+            gate_tags.append("進場確認不足")
+            gate_reasons.append("進場確認不足")
 
         if was_chase_like:
             repeated = repeated_lookup.get(stock_id) or {}
             recent_count = _int(repeated.get("recent_count"))
-            if recent_count > 3:
-                _downgrade_to_pullback(row, f"近60日重複訊號 {recent_count} 次，避免同股反覆追價")
-                gate_tags.append("60日重複降權")
-                gate_reasons.append("重複訊號過多")
+            if recent_count > 3 and _repeated_signal_is_weak(repeated):
+                _downgrade_to_pullback(row, f"近 60 日重複出現 {recent_count} 次，先降權避免追高。")
+                gate_tags.append("重複訊號降權")
+                gate_reasons.append("重複訊號")
 
         if was_chase_like and not _has_volume_confirmation(row):
-            _downgrade_to_pullback(row, "缺少 1.5x 以上放量確認，先等開盤量能")
-            gate_tags.append("量能未達硬門檻")
-            gate_reasons.append("量能不足")
+            _downgrade_to_pullback(row, "量能未確認大於 20 日均量 1.5 倍，不直接追價。")
+            gate_tags.append("量能未確認")
+            gate_reasons.append("量能未確認")
 
         if was_chase_like and not _has_consolidation_base(row):
-            _downgrade_to_pullback(row, "突破前整理證據不足，避免追已噴出段")
-            gate_tags.append("整理不足降權")
+            _downgrade_to_pullback(row, "突破前整理不足，避免已經噴一段後追價。")
+            gate_tags.append("整理不足")
             gate_reasons.append("整理不足")
 
         if was_chase_like and _has_weak_theme(row, weak_theme_set) and not _has_non_theme_confirmation(row):
-            _downgrade_to_pullback(row, "弱題材缺少法人、營收或供應鏈證據，不因題材升級")
+            _downgrade_to_pullback(row, "弱題材缺少法人、營收或供應鏈證據，不可升級可追。")
             gate_tags.append("弱題材未確認")
             gate_reasons.append("弱題材")
 
@@ -99,7 +105,8 @@ def apply_dashboard_decision_gates(
                 "reasons": list(dict.fromkeys(gate_reasons)),
                 "tags": gate_tags,
             }
-            row.pop("exit_plan", None)
+            if row.get("action") == RED_ACTION or row.get("entry_decision") == RED_ACTION:
+                row.pop("exit_plan", None)
             changed += 1
             for reason in set(gate_reasons):
                 reasons_count[reason] = reasons_count.get(reason, 0) + 1
@@ -109,15 +116,12 @@ def apply_dashboard_decision_gates(
     summary = {
         "applied": changed,
         "red_alert_blocked": reasons_count.get("紅色警戒", 0),
-        "repeat_downgraded": reasons_count.get("重複訊號過多", 0),
-        "volume_downgraded": reasons_count.get("量能不足", 0),
+        "repeat_downgraded": reasons_count.get("重複訊號", 0),
+        "volume_downgraded": reasons_count.get("量能未確認", 0),
         "base_downgraded": reasons_count.get("整理不足", 0),
         "weak_theme_downgraded": reasons_count.get("弱題材", 0),
-        "entry_strict_adjusted": reasons_count.get("進場觸發嚴格化", 0),
-        "policy": (
-            "紅色警戒不得可追；近60日重複>3次、缺放量、缺整理或弱題材無確認者降為等拉回；"
-            "AI/DeepSeek 只複核不加分。"
-        ),
+        "entry_strict_adjusted": reasons_count.get("進場確認不足", 0),
+        "policy": "紅色警戒不得可追；弱題材不得單靠題材升級；AI 只做複核不直接加分。",
     }
     payload["decision_gates"] = summary
     return summary
@@ -137,16 +141,20 @@ def weak_themes_from_backtest_guard(context: dict[str, Any] | None) -> set[str]:
 def _is_chase_like(row: dict[str, Any]) -> bool:
     action = str(row.get("action") or "")
     entry = str(row.get("entry_decision") or "")
-    return any(item in action for item in CHASE_ACTIONS) or "開盤確認" in entry or "可追" in entry
+    return any(item in action for item in CHASE_ACTIONS) or _is_open_confirm(entry) or "可追" in entry
+
+
+def _is_open_confirm(value: str) -> bool:
+    return "開盤確認" in str(value or "")
 
 
 def _set_avoid(row: dict[str, Any], note: str) -> None:
     row["action"] = RED_ACTION
     row["entry_decision"] = RED_ACTION
-    row["action_context"] = "未列入今日操作"
+    row["action_context"] = "風險過高"
     row["action_context_reason"] = note
     row["decision_light"] = "red"
-    row["decision_light_label"] = "紅燈控風險"
+    row["decision_light_label"] = "避開"
     row["decision_light_reason"] = note
 
 
@@ -155,18 +163,39 @@ def _downgrade_to_pullback(row: dict[str, Any], note: str) -> None:
         row["action"] = PULLBACK_ACTION
         row["entry_decision"] = PULLBACK_ACTION
         row["decision_light"] = "yellow"
-        row["decision_light_label"] = "黃燈等拉回"
+        row["decision_light_label"] = PULLBACK_ACTION
         row["decision_light_reason"] = _join_note(row.get("decision_light_reason"), note)
+
+
+def _repeated_signal_is_weak(repeated: dict[str, Any]) -> bool:
+    has_quality_metric = False
+    for key in ("win_rate_5d", "success_rate_5d", "hit_rate_5d"):
+        value = _float(repeated.get(key))
+        if value is not None:
+            has_quality_metric = True
+            return value < 50
+    for key in ("avg_return_5d", "return_5d"):
+        value = _float(repeated.get(key))
+        if value is not None:
+            has_quality_metric = True
+            return value < 0
+    if repeated.get("weak") or repeated.get("is_weak"):
+        return True
+    return not has_quality_metric
 
 
 def _has_volume_confirmation(row: dict[str, Any]) -> bool:
     text = _row_text(row)
-    return "放量長紅" in text or "量能確認" in text or "成交量放大" in text or "1.5x" in text
+    if any(term in text for term in ("量能不漲", "量縮", "量能未確認", "放量不漲")):
+        return False
+    return any(term in text for term in ("放量", "爆量", "量增", "量能轉強", "1.5x", "長紅", "成交量", "突破整理"))
 
 
 def _has_consolidation_base(row: dict[str, Any]) -> bool:
     text = _row_text(row)
-    return "突破整理" in text or "分數已成形" in text or "箱型整理" in text or "整理" in text
+    if any(term in text for term in ("追高", "過熱", "急拉", "乖離", "已噴", "衝高")):
+        return False
+    return any(term in text for term in ("整理", "平台", "盤整", "突破整理", "箱型", "底部", "20日", "橫盤", "收斂"))
 
 
 def _has_weak_theme(row: dict[str, Any], weak_themes: set[str]) -> bool:
@@ -179,7 +208,7 @@ def _has_weak_theme(row: dict[str, Any], weak_themes: set[str]) -> bool:
 
 def _has_non_theme_confirmation(row: dict[str, Any]) -> bool:
     text = _row_text(row)
-    if any(term in text for term in ("法人共振", "營收加速", "投信買超", "外資買超")):
+    if any(term in text for term in ("法人共振", "投信買超", "外資買超", "營收加速", "營收創高", "供應鏈", "訂單", "月營收")):
         return True
     for item in row.get("theme_chain") or []:
         if item.get("chain_layer_label") or item.get("role") or item.get("beneficiary_label"):
@@ -207,6 +236,7 @@ def _row_text(row: dict[str, Any]) -> str:
         "fundamental",
         "opportunity",
         "chain_summary",
+        "action_context",
     ):
         parts.append(str(row.get(key) or ""))
     for key in ("trigger_tags", "pattern_tags", "selection_quality_notes", "entry_checklist"):
@@ -228,3 +258,12 @@ def _int(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _float(value: Any) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None

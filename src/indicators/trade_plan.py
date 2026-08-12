@@ -3,148 +3,113 @@ from __future__ import annotations
 import pandas as pd
 
 
-def _vol_display(shares: float) -> str:
-    """Convert raw share volume to a human-readable 張 string (1 張 = 1,000 shares)."""
-    zhang = shares / 1000
-    if zhang >= 1:
-        return f"{zhang:.0f} 張"
-    return f"{shares:.0f} 股"
-
-
 def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) -> dict:
-    if prices.empty or len(prices) < 5:
+    if prices is None or prices.empty or len(prices) < 5:
         return {
             "action": "只觀察",
             "entry_decision": "資料不足",
             "entry_checklist": ["價格資料不足，今日不判斷進場"],
-            "entry": "價格資料不足，暫不設進場條件",
-            "stop": "價格資料不足",
+            "entry": "價格資料不足，不建立進場條件",
+            "stop": "資料不足",
             "stop_price": None,
             "entry_limit_price": None,
             "vol_5min_threshold": None,
         }
 
-    df = prices.sort_values("date")
-    close = df["close"].astype(float)
-    high = df["high"].astype(float) if "high" in df.columns else close
-    low = df["low"].astype(float) if "low" in df.columns else close
-    volume = df["volume"].astype(float) if "volume" in df.columns else pd.Series([0] * len(df))
+    close = pd.to_numeric(prices["close"], errors="coerce")
+    high = pd.to_numeric(prices.get("high", close), errors="coerce")
+    low = pd.to_numeric(prices.get("low", close), errors="coerce")
+    volume = pd.to_numeric(prices.get("volume", pd.Series(dtype=float)), errors="coerce")
 
-    latest_close = close.iloc[-1]
-    prev_high = high.iloc[-1]
-    prev_low = low.iloc[-1]
-
-    # Moving averages
-    ma5 = close.rolling(5).mean().iloc[-1]
-    _ma20_series = close.rolling(20).mean()
-    ma20_val = _ma20_series.iloc[-1] if len(close) >= 20 else None
-    ma20 = float(ma20_val) if (ma20_val is not None and not pd.isna(ma20_val)) else float(ma5)
-
-    # Volume stats
-    avg_volume = float(volume.tail(20).mean()) if len(volume) >= 20 else float(volume.mean())
-
-    # Stop reference: lowest of MA5, yesterday low, 3-day low
+    last_close = float(close.iloc[-1])
+    prev_high = float(high.iloc[-2]) if len(high) >= 2 else last_close
+    prev_low = float(low.iloc[-2]) if len(low) >= 2 else last_close
+    ma5 = float(close.tail(5).mean())
+    ma20 = float(close.tail(20).mean()) if len(close) >= 20 else float(close.mean())
     low3 = float(low.tail(3).min())
-    stop_ref = min(prev_low, low3, float(ma5))
+    recent_high20 = float(high.iloc[-21:-1].max()) if len(high) >= 21 else prev_high
+    near_recent_high = last_close >= recent_high20 * 0.98
+    near_ma20 = abs(last_close - ma20) / ma20 <= 0.03 if ma20 else False
+    avg_daily_volume = float(volume.tail(20).mean()) if not volume.empty else 0.0
+    vol_5min_threshold = avg_daily_volume * 0.05 if avg_daily_volume else None
+    vol_str = f"{vol_5min_threshold / 1000:.0f} 張" if vol_5min_threshold else "日均量 5%"
 
-    # ── 5-minute volume threshold ─────────────────────────────
-    # Taiwan session = 270 min; natural 5-min pace ≈ avg * 1.85%
-    # We target 2.7× natural pace (≈ 5% of daily avg) to confirm a "hot open"
-    vol_5min = avg_volume * 0.05
-    vol_str = _vol_display(vol_5min)
+    stop_ref = min(ma5, prev_low, low3)
+    has_red_risk = any("紅色警戒" in str(reason) or "風險" in str(reason) for reason in risk_reasons)
 
-    # ── Setup-type detection ──────────────────────────────────
-    near_recent_high = False
-    if len(close) >= 21:
-        recent_high_20 = float(close.iloc[-21:-1].max())
-        near_recent_high = latest_close >= recent_high_20 * 0.99
-
-    near_ma20 = abs(latest_close - ma20) / ma20 < 0.025 if ma20 > 0 else False
-
-    # ── Gap limit by score tier ───────────────────────────────
-    # Higher score = tighter gap tolerance (stock is already strong, no need to chase)
-    if total_score >= 80:
-        gap_pct, gap_label = 0.020, "+2%"
-    elif total_score >= 70:
-        gap_pct, gap_label = 0.025, "+2.5%"
-    else:
-        gap_pct, gap_label = 0.030, "+3%"
-    gap_limit = latest_close * (1 + gap_pct)
-
-    # ── Action & entry condition ──────────────────────────────
-    has_chase_risk = any("追價" in r or "貼近" in r for r in risk_reasons)
-
-    if total_score >= 80 and not has_chase_risk:
+    if has_red_risk:
+        action = "避免"
+        entry_decision = "風險過高"
+        entry = "風險訊號偏高，今日不建立進場。"
+        stop = f"若已持有，跌破 {stop_ref:.2f} 優先降風險"
+        checklist = ["紅色風險未解除前不進場"]
+        gap_limit = None
+    elif total_score >= 80:
         action = "可追蹤突破"
         entry_decision = "開盤確認"
+        gap_limit = round(last_close * 1.02, 2)
+        gap_label = "+2%"
+        setup = f"站穩昨高 {prev_high:.2f}"
         if near_recent_high:
-            setup = f"突破型：昨收已貼近20日高，開盤確認站穩昨高 {prev_high:.2f}"
-        else:
-            setup = f"強勢型：開盤站穩昨高 {prev_high:.2f}"
+            setup = f"近20日高點附近，{setup}"
         entry = (
-            f"{setup}，跳空不追超過 {gap_limit:.2f}（{gap_label}）；"
-            f"開盤前5分鐘量 >= {vol_str}（日均量5%）"
+            f"{setup}，跳空不超過 {gap_limit:.2f}（{gap_label}），"
+            f"開盤前5分鐘量 >= {vol_str}"
         )
-        stop = (
-            f"跌破 {stop_ref:.2f}（MA5 {ma5:.2f} / 昨低 {prev_low:.2f} / 近3日低 {low3:.2f} 三者取低）止損出場"
-        )
-        entry_checklist = [
+        stop = f"跌破 {stop_ref:.2f}（MA5 {ma5:.2f} / 昨低 {prev_low:.2f} / 近3日低 {low3:.2f} 三者取低）止損"
+        checklist = [
             f"站穩昨高 {prev_high:.2f}",
-            f"開盤不追超過 {gap_limit:.2f}（{gap_label}）",
+            f"不追超過 {gap_limit:.2f}（{gap_label}）",
             f"前5分鐘量 >= {vol_str}",
-            f"未跌破停損 {stop_ref:.2f}",
+            f"跌破 {stop_ref:.2f} 止損",
         ]
-
     elif total_score >= 75:
         action = "等拉回"
         entry_decision = "等拉回"
-        if near_ma20:
-            pullback_note = f"目前已在 MA20（{ma20:.2f}）附近"
-        else:
-            pullback_note = f"等回測 MA20（{ma20:.2f}）或近3日低（{low3:.2f}）"
+        gap_limit = round(last_close * 1.02, 2)
+        gap_label = "+2%"
+        pullback_note = f"靠近 MA20（{ma20:.2f}）可觀察承接" if near_ma20 else f"等回測 MA20（{ma20:.2f}）或近3日低點（{low3:.2f}）"
         entry = (
-            f"{pullback_note}，量縮整理後出現放量（前5分鐘 >= {vol_str}）再進場；"
-            f"不追超過 {gap_limit:.2f}（{gap_label}）"
+            f"{pullback_note}，轉強需同時看到開盤前5分鐘量 >= {vol_str}，"
+            f"不接受跳空追高超過 {gap_limit:.2f}（{gap_label}）"
         )
-        stop = (
-            f"收盤跌破 MA20（{ma20:.2f}）不回則止損，最寬參考 {stop_ref:.2f}"
-        )
-        entry_checklist = [
-            f"回測 MA20 {ma20:.2f} 或近3日低 {low3:.2f} 後守住",
-            f"反彈時前5分鐘量 >= {vol_str}",
-            f"不追超過 {gap_limit:.2f}（{gap_label}）",
+        stop = f"收盤跌破 MA20（{ma20:.2f}）或跌破 {stop_ref:.2f} 就停止觀察"
+        checklist = [
+            f"回測 MA20 {ma20:.2f} 或近3日低 {low3:.2f}",
+            f"轉強量 >= {vol_str}",
+            f"開盤不超過 {gap_limit:.2f}（{gap_label}）",
         ]
-
     elif total_score >= 65:
         action = "只觀察"
-        entry_decision = "量價不確認取消"
+        entry_decision = "條件未同時滿足"
+        gap_limit = round(last_close * 1.03, 2)
+        gap_label = "+3%"
         entry = (
-            f"觀察站穩 MA5（{ma5:.2f}）且開盤前5分鐘量 >= {vol_str}；"
-            f"條件同時滿足再考慮，不追超過 {gap_limit:.2f}（{gap_label}）"
+            f"觀察是否站回 MA5（{ma5:.2f}）且開盤前5分鐘量 >= {vol_str}；"
+            f"若跳空過高或量縮不追，價格上限 {gap_limit:.2f}（{gap_label}）"
         )
-        stop = f"跌破 {stop_ref:.2f} 不考慮進場"
-        entry_checklist = [
-            f"站穩 MA5 {ma5:.2f}",
+        stop = f"跌破 {stop_ref:.2f} 不再觀察"
+        checklist = [
+            f"站回 MA5 {ma5:.2f}",
             f"前5分鐘量 >= {vol_str}",
-            f"未同時滿足就取消，不預設進場",
+            "沒有放量前不進場",
+            "價格與量能未同時滿足就取消",
         ]
-
     else:
-        action = "避免追高"
+        action = "避免"
         entry_decision = "避免"
-        entry = (
-            f"訊號偏弱，不建議進場；等 MA20（{ma20:.2f}）企穩、量能回升後重新評估"
-        )
-        stop = f"觀察支撐 {stop_ref:.2f}"
-        entry_checklist = ["分數未達進場觀察門檻，不列入今日進場"]
+        gap_limit = None
+        entry = f"分數不足，等站回 MA20（{ma20:.2f}）且量能改善後再評估"
+        stop = f"觀察跌破 {stop_ref:.2f}"
+        checklist = ["分數不足，不進場"]
 
     return {
         "action": action,
         "entry_decision": entry_decision,
-        "entry_checklist": entry_checklist,
+        "entry_checklist": checklist,
         "entry": entry,
         "stop": stop,
-        "stop_price": round(float(stop_ref), 2),
-        "entry_limit_price": round(float(gap_limit), 2),
-        "vol_5min_threshold": round(float(vol_5min), 0),
+        "stop_price": round(float(stop_ref), 2) if stop_ref == stop_ref else None,
+        "entry_limit_price": gap_limit,
+        "vol_5min_threshold": round(float(vol_5min_threshold), 2) if vol_5min_threshold else None,
     }

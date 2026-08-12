@@ -13,7 +13,7 @@ def _row(stock_id="2408", **overrides):
         "grade": "S",
         "action": "可追蹤突破",
         "entry_decision": "開盤確認",
-        "trigger_tags": ["題材強共振", "法人共振", "營收加速", "放量長紅", "突破整理"],
+        "trigger_tags": ["題材強共振", "法人共振", "營收加速", "量能轉強", "突破整理"],
         "themes": ["記憶體/HBM"],
         "theme_tiers": ["記憶體/HBM:核心"],
         "theme_chain": [{"chain_layer_label": "核心", "role": "DRAM"}],
@@ -53,7 +53,7 @@ def test_repeated_signal_downgrades_to_pullback():
     assert summary["repeat_downgraded"] == 1
     assert row["action"] == "等拉回"
     assert row["entry_decision"] == "等拉回"
-    assert "60日重複降權" in row["trigger_tags"]
+    assert "重複訊號降權" in row["trigger_tags"]
 
 
 def test_missing_volume_or_base_downgrades_chase():
@@ -72,14 +72,14 @@ def test_pullback_action_forces_pullback_entry_decision():
     assert summary["entry_strict_adjusted"] == 1
     assert row["action"] == "等拉回"
     assert row["entry_decision"] == "等拉回"
-    assert "進場觸發轉嚴格" in row["trigger_tags"]
+    assert "進場確認不足" in row["trigger_tags"]
 
 
 def test_weak_theme_needs_non_theme_confirmation():
     payload = {
         "rows": [
             _row(
-                trigger_tags=["題材強共振", "放量長紅", "突破整理"],
+                trigger_tags=["題材強共振", "量能轉強", "突破整理"],
                 theme_chain=[],
             )
         ]
