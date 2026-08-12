@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 DEFAULT_HUB_FILE = Path("C:/Users/User/trading_knowledge_hub/data/knowledge_points.jsonl")
-HARD_CHECKS = {"compile", "tests", "post_update", "mojibake_scan", "verification_loop"}
+HARD_CHECKS = {"compile", "tests", "post_update", "schedule_health", "mojibake_scan", "verification_loop"}
 
 MOJIBAKE_MARKERS = [
     chr(0x5697),
@@ -168,6 +168,7 @@ def run_finalize(
         timeout=60,
     )
     checks["post_update"] = _run([sys.executable, "scripts/post_update_check.py"], cwd=root, timeout=120)
+    checks["schedule_health"] = _run([sys.executable, "scripts/schedule_health_check.py"], cwd=root, timeout=120)
     checks["mojibake_scan"] = scan_mojibake(root)
 
     export_command = [sys.executable, "scripts/export_learning_to_knowledge_hub.py"]
@@ -212,6 +213,8 @@ def _next_actions(checks: dict[str, dict]) -> list[str]:
         actions.append("檢查 dashboard/research_source_review.json，確認研究來源 id 與狀態設定；這是診斷項，不應阻止網站更新。")
     if not checks.get("post_update", {}).get("ok"):
         actions.append("打開 dashboard/post_update_check.json，優先修正 critical 或資料同步問題。")
+    if not checks.get("schedule_health", {}).get("ok"):
+        actions.append("打開 dashboard/schedule_health.json，確認 GitHub/Cloudflare 排程、dashboard 日期與 Telegram delivery_log。")
     if not checks.get("mojibake_scan", {}).get("ok"):
         actions.append("修正 mojibake_scan 命中的亂碼或編碼損壞檔案。")
     if not checks.get("knowledge_export", {}).get("ok"):
@@ -219,7 +222,7 @@ def _next_actions(checks: dict[str, dict]) -> list[str]:
     if not checks.get("verification_loop", {}).get("ok"):
         actions.append("檢查 dashboard/verification_loop.json，確認 dashboard/docs、freshness、knowledge hub 是否銜接。")
     if not actions:
-        actions.append("所有收尾檢查通過；下一步可優先把候選研究來源轉成離線 adapter，再逐步導入題材加權。")
+        actions.append("所有收尾檢查通過；下一步可優先把排程失敗 run 的 annotation 匯入週檢討。")
     return actions
 
 

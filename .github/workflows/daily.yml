@@ -174,6 +174,9 @@ jobs:
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
           cp -f dashboard/research_source_review.json docs/research_source_review.json
 
+      - name: Run schedule health check
+        run: python scripts/schedule_health_check.py
+
       - name: Run post-optimization finalizer
         run: python scripts/post_optimization_finalize.py --auto-hub --skip-tests
 
@@ -205,6 +208,7 @@ jobs:
           cp -f dashboard/kronos_proxy_backtest.json docs/kronos_proxy_backtest.json
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json
           cp -f dashboard/research_source_review.json docs/research_source_review.json
+          cp -f dashboard/schedule_health.json docs/schedule_health.json
           cp -f dashboard/post_update_check.json docs/post_update_check.json
           cp -f dashboard/verification_loop.json docs/verification_loop.json
           git config user.name "github-actions[bot]"
@@ -385,6 +389,7 @@ jobs:
           cp -f dashboard/backtest_30y.json docs/backtest_30y.json || true
           cp -f dashboard/kronos_proxy_backtest.json docs/kronos_proxy_backtest.json || true
           cp -f dashboard/cloud_skill_routes_status.json docs/cloud_skill_routes_status.json || true
+          cp -f dashboard/schedule_health.json docs/schedule_health.json || true
           cp -f dashboard/post_update_check.json docs/post_update_check.json || true
           cp -f dashboard/verification_loop.json docs/verification_loop.json || true
           git config user.name "github-actions[bot]"
