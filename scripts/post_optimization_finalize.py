@@ -169,6 +169,23 @@ def run_finalize(
     )
     checks["post_update"] = _run([sys.executable, "scripts/post_update_check.py"], cwd=root, timeout=120)
     checks["schedule_health"] = _run([sys.executable, "scripts/schedule_health_check.py"], cwd=root, timeout=120)
+    checks["github_failure_review"] = _run(
+        [sys.executable, "scripts/github_failure_review.py"],
+        cwd=root,
+        timeout=90,
+    )
+    checks["weekly_review_internal"] = _run(
+        [
+            sys.executable,
+            "scripts/weekly_review.py",
+            "--output",
+            "data/internal/weekly_review_internal.json",
+            "--github-failures",
+            "data/internal/github_failure_review.json",
+        ],
+        cwd=root,
+        timeout=60,
+    )
     checks["mojibake_scan"] = scan_mojibake(root)
 
     export_command = [sys.executable, "scripts/export_learning_to_knowledge_hub.py"]
@@ -206,25 +223,28 @@ def run_finalize(
 def _next_actions(checks: dict[str, dict]) -> list[str]:
     actions: list[str] = []
     if not checks.get("compile", {}).get("ok"):
-        actions.append("修正 Python 語法或 import 錯誤後再繼續優化。")
+        actions.append("修正 Python 語法或 import 錯誤後，再重新執行 compileall。")
     if "tests" in checks and not checks["tests"].get("ok"):
-        actions.append("檢查 pytest 失敗項目，先補回歸測試或修正行為。")
+        actions.append("查看 pytest 失敗測試，優先修正資料欄位、日期同步或排程相關回歸。")
     if not checks.get("research_source_review", {}).get("ok"):
-        actions.append("檢查 dashboard/research_source_review.json，確認研究來源 id 與狀態設定；這是診斷項，不應阻止網站更新。")
+        actions.append("查看 dashboard/research_source_review.json，確認研究來源 ID、權重與回測連動是否正常。")
     if not checks.get("post_update", {}).get("ok"):
-        actions.append("打開 dashboard/post_update_check.json，優先修正 critical 或資料同步問題。")
+        actions.append("打開 dashboard/post_update_check.json，修正 critical 項目後再更新網站。")
     if not checks.get("schedule_health", {}).get("ok"):
         actions.append("打開 dashboard/schedule_health.json，確認 GitHub/Cloudflare 排程、dashboard 日期與 Telegram delivery_log。")
+    if not checks.get("github_failure_review", {}).get("ok"):
+        actions.append("GitHub 失敗診斷無法產生；這是內部輔助檢查，不影響網站，但需確認 gh 權限。")
+    if not checks.get("weekly_review_internal", {}).get("ok"):
+        actions.append("內部週檢討無法整合 GitHub 失敗診斷；不影響公開網站，但會降低排程檢討完整度。")
     if not checks.get("mojibake_scan", {}).get("ok"):
-        actions.append("修正 mojibake_scan 命中的亂碼或編碼損壞檔案。")
+        actions.append("修正 mojibake_scan 命中的亂碼字串，避免報告或 Telegram 顯示異常。")
     if not checks.get("knowledge_export", {}).get("ok"):
-        actions.append("檢查知識庫輸出路徑與 export_learning_to_knowledge_hub.py 執行結果；這是學習回寫項，不應阻止網站更新。")
+        actions.append("檢查知識庫匯出路徑與 export_learning_to_knowledge_hub.py，避免學習紀錄未寫入。")
     if not checks.get("verification_loop", {}).get("ok"):
-        actions.append("檢查 dashboard/verification_loop.json，確認 dashboard/docs、freshness、knowledge hub 是否銜接。")
+        actions.append("查看 dashboard/verification_loop.json，確認 dashboard/docs freshness 與 knowledge hub 狀態。")
     if not actions:
-        actions.append("所有收尾檢查通過；下一步可優先把排程失敗 run 的 annotation 匯入週檢討。")
+        actions.append("所有固定檢查通過；GitHub run 失敗分類已可內部匯入週檢討。")
     return actions
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the required final checks after every tw-stock-ai optimization.")

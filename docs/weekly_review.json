@@ -1,6 +1,6 @@
 {
   "as_of": "2026-08-12",
-  "generated_at": "2026-08-12T16:57:22+08:00",
+  "generated_at": "2026-08-12T19:30:31+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -107,7 +107,7 @@
   "guardrail_effectiveness": [],
   "selection_logic_audit": {
     "status": "needs_review",
-    "logic_verdict": "本週選股邏輯需要檢討，先查風險控管與低勝率區塊，不建議直接放寬追價條件。",
+    "logic_verdict": "本週選股邏輯需要檢討，高風險項目應先降權或暫停升級。",
     "traffic_counts": {
       "green": 0,
       "yellow": 0,
@@ -123,45 +123,45 @@
       {
         "code": "daily_signal_win_rate_below_50",
         "severity": "high",
-        "finding": "每日選股已完成樣本的 5 日勝率低於 50%，需要拆解弱因子。",
+        "finding": "每日選股已完成樣本的 5 日勝率低於 50%，需要檢討進場條件與加分來源。",
         "evidence": "completed=100, win_rate_5d=32.0%",
-        "recommendation": "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。"
+        "recommendation": "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。"
       },
       {
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
-        "finding": "潛力雷達勝率低於 50%，代表提前偵測可能太鬆或等待時間不足。",
+        "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
         "evidence": "completed=42, win_rate_5d=28.6%",
-        "recommendation": "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
+        "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
         "code": "weak_segments_available",
         "severity": "info",
-        "finding": "已有弱區塊可供下週計分參考，應優先處理最大拖累因子。",
+        "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
         "evidence": "group=因子, label=過熱/延伸|K線+法人同步, completed=5",
-        "recommendation": "把弱區塊接回 backtest_guard，只降權已完成樣本足夠且平均報酬為負的條件。"
+        "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
     "next_week_focus": [
-      "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。",
-      "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
+      "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。",
+      "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
     ]
   },
   "next_week_actions": [
     {
       "type": "deweight",
-      "target": "每日可追訊號",
-      "reason": "5日勝率 32.0% 低於 50%，下週需提高開盤量價確認門檻。"
+      "target": "每日選股總體",
+      "reason": "5日勝率 32.0% 低於 50%，下週應降低弱訊號權重並檢查追價條件。"
     },
     {
       "type": "investigate",
       "target": "進場觸發條件",
-      "reason": "有觸發進場的樣本報酬低於未觸發樣本，需檢討是否追價或開盤條件太寬。"
+      "reason": "進場觸發後的平均報酬低於未觸發組，需檢查是否追高或突破確認太寬鬆。"
     },
     {
       "type": "deweight",
       "target": "潛力雷達：強勢等拉回",
-      "reason": "完成 29 筆但 5日平均 -6.6%，下週只列觀察或降權。"
+      "reason": "已完成 29 筆，5日平均 -6.6%，下週先降權。"
     },
     {
       "type": "carry_forward",
@@ -181,18 +181,18 @@
     {
       "type": "logic_audit",
       "target": "daily_signal_win_rate_below_50",
-      "reason": "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。"
+      "reason": "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。"
     },
     {
       "type": "logic_audit",
       "target": "potential_radar_win_rate_below_50",
-      "reason": "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
+      "reason": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
     }
   ],
   "rules": [
-    "每週檢討只調整下週觀察與降權，不直接產生買賣建議。",
-    "樣本低於 10 筆只列觀察，不做正式降權。",
-    "每日進場仍以今日監控的開盤價量、停損與風險名單為準。",
-    "降權規則若連續兩週無效，標記為需調整或暫停。"
+    "週檢討只提供下週調權建議，不直接改變當日交易決策。",
+    "樣本數低於 10 筆的分群不做硬性升降權。",
+    "每日選股、潛力雷達、危險名單分開檢討，避免把不同任務混在一起。",
+    "守門條件需連續累積成效後才調權，避免單週雜訊造成過度修正。"
   ]
 }

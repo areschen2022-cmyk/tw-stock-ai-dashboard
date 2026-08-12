@@ -25,7 +25,7 @@ def test_weekly_review_builds_internal_action_items() -> None:
         {
             "risk_level": "needs_review",
             "summary": {"completed": 8},
-            "adaptive_feedback": [{"target": "追高", "action": "降級觀察"}],
+            "adaptive_feedback": [{"target": "追價", "action": "降低追價權重"}],
         },
     )
 
@@ -33,7 +33,7 @@ def test_weekly_review_builds_internal_action_items() -> None:
     assert review["risk_level"] == "needs_review"
     assert review["best"]["potential_stage"]["label"] == "轉強初動"
     assert review["weak"]["potential_stage"]["label"] == "強勢等拉回"
-    assert any(item["target"] == "每日可追訊號" for item in review["next_week_actions"])
+    assert any(item["target"] == "每日選股總體" for item in review["next_week_actions"])
     assert any(item["target"] == "進場觸發條件" for item in review["next_week_actions"])
 
 
@@ -76,7 +76,7 @@ def test_weekly_review_flags_ineffective_guardrails() -> None:
     strong = guardrails["weekly_require_ai_agreement"]
     assert weak["status"] == "needs_review"
     assert weak["consecutive_review"] is True
-    assert "暫停或調整" in weak["recommended_action"]
+    assert "連續兩週" in weak["recommended_action"]
     assert strong["status"] == "working"
     assert any(item["type"] == "review_guardrail" for item in review["next_week_actions"])
 
@@ -107,3 +107,30 @@ def test_weekly_review_audits_selection_logic_when_no_green_and_low_win_rate() -
     assert "daily_signal_win_rate_below_50" in codes
     assert "potential_radar_win_rate_below_50" in codes
     assert any(item["type"] == "logic_audit" for item in review["next_week_actions"])
+
+
+def test_weekly_review_includes_github_failure_summary() -> None:
+    review = build_weekly_review(
+        {"as_of": "2026-08-12", "stats": {"win_rate_5d": 55, "completed": 20}},
+        {"stats": {"win_rate_5d": 55, "completed": 20}},
+        {},
+        {},
+        github_failures={
+            "status": "ok",
+            "summary": {"failed_run_count": 1, "categories": {"syntax_error": 1}},
+            "recent_failures": [
+                {
+                    "run_id": 123,
+                    "workflow": "Taiwan Stock AI Daily",
+                    "display_title": "daily",
+                    "root_cause": "syntax_error",
+                    "annotation_count": 2,
+                    "url": "https://github.com/example/runs/123",
+                }
+            ],
+        },
+    )
+
+    assert review["automation_failures"]["failed_run_count"] == 1
+    assert review["automation_failures"]["top_categories"][0]["category"] == "syntax_error"
+    assert any(item["type"] == "automation_failure" for item in review["next_week_actions"])
