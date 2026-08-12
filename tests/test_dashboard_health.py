@@ -456,3 +456,26 @@ def test_write_potential_creates_dedicated_page(tmp_path) -> None:
     assert "台股 AI 潛力雷達" in html
     assert "potential_data.json" in html
     assert "低位醞釀" in data
+
+
+def test_traffic_lights_explain_pullback_only_day() -> None:
+    payload = {
+        "action_lists": {
+            "chase": [],
+            "pullback": [{"stock_id": "3017", "name": "奇鋐", "score": 91, "grade": "S"}],
+            "risk": [{"stock_id": "2330", "name": "台積電"}],
+            "summary": {"chase": 0, "pullback": 1, "risk": 1},
+        },
+        "current_selection_backtest": {},
+        "decision_gates": {},
+        "data_quality": {"label": "high"},
+        "market_tide": {"label": "中性", "risk_level": "neutral"},
+        "decision_summary": {},
+    }
+
+    refresh_decision_diagnostics(payload)
+
+    lights = payload["traffic_lights"]
+    assert lights["primary"] == "yellow"
+    assert lights["counts"] == {"green": 0, "yellow": 1, "red": 1}
+    assert "不追第一筆" in lights["headline"]

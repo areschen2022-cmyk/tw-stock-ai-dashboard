@@ -767,6 +767,8 @@ def main() -> int:
         data_quality = dashboard_payload.get("data_quality", {})
         ai_health = dashboard_payload.get("ai_council", {}).get("status", {}).get("health", {})
         decision_diagnostic = dashboard_payload.get("decision_diagnostic", {})
+        traffic = dashboard_payload.get("traffic_lights", {}) or {}
+        traffic_counts = traffic.get("counts", {}) or {}
 
         def _h(value: object, default: str = "") -> str:
             if value is None:
@@ -775,13 +777,22 @@ def main() -> int:
 
         def _compact_list(rows: list[dict], empty: str, limit: int = 3) -> str:
             return "\n".join(
-                f"▸ <b>{_h(row.get('stock_id'))} {_h(row.get('name'))}</b>｜{_h(row.get('score', 0))}/100｜"
-                f"{_h(row.get('grade', '-'))}｜{_h(row.get('entry_decision') or row.get('action'), '只觀察')}｜"
-                f"{_h(row.get('ai_label'), 'AI 未複核')}"
+                f"▸ <b>{_h(row.get('stock_id'))} {_h(row.get('name'))}</b>｜"
+                f"{_h(row.get('score', '-'))}/100｜{_h(row.get('grade', '-'))}｜"
+                f"{_h(row.get('entry_decision') or row.get('action'), '只觀察')}"
                 for row in rows[:limit]
             ) or empty
 
-        must_watch_text = _compact_list(action_lists.get("chase", []), "▸ 今日暫無可追清單", limit=limits["max_pick_items"])
+        green_text = _compact_list(
+            traffic.get("green") or action_lists.get("chase", []),
+            "▸ 綠燈 0：今天不追價",
+            limit=min(limits["max_pick_items"], 3),
+        )
+        yellow_text = _compact_list(
+            traffic.get("yellow") or action_lists.get("pullback", []),
+            "▸ 黃燈 0：暫無等拉回名單",
+            limit=2,
+        )
         ai_summary = action_lists.get("summary", {})
         ai_review_text = (
             f"AI 複核：同意 {ai_summary.get('ai_agree', 0)}｜"
@@ -811,14 +822,19 @@ def main() -> int:
                 f"🇹🇼 <b>台股 AI 早報</b>｜{delivery_date.isoformat()}",
                 f"資料日：{as_of.isoformat()}",
                 "",
-                f"🧭 風向：{_h(dashboard_payload.get('overseas', {}).get('label'))}",
-                f"📰 題材：{_h(dashboard_payload.get('themes', {}).get('summary'))}",
-                f"📊 掃描 <b>{_h(s.get('scanned'))}</b> 檔｜S+ <b>{_h(s.get('s_plus_grade'))}</b>｜S <b>{_h(s.get('s_grade'))}</b>｜A <b>{_h(s.get('a_grade'))}</b>｜B <b>{_h(s.get('b_grade'))}</b>｜資料源：{_h(dashboard_payload.get('source_status', {}).get('label'))}",
-                f"⏱ 延遲：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
+                f"🚦 <b>交易燈</b>：綠 {traffic_counts.get('green', 0)}｜黃 {traffic_counts.get('yellow', 0)}｜紅 {traffic_counts.get('red', 0)}",
+                _h(traffic.get("headline"), "依系統閘門篩選"),
+                f"執行：{_h(traffic.get('instruction'), '依卡片進場條件與停損執行')}",
                 "",
-                "🔥 <b>今日重點</b>",
-                f"操作診斷：{_h(decision_diagnostic.get('headline'), '依系統閘門篩選')}",
-                must_watch_text,
+                "<b>綠燈可追</b>",
+                green_text,
+                "",
+                "<b>黃燈盯盤</b>",
+                yellow_text,
+                "",
+                f"🧭 風向：{_h(dashboard_payload.get('overseas', {}).get('label'))}｜題材：{_h(dashboard_payload.get('themes', {}).get('summary'))}",
+                f"📊 掃描 <b>{_h(s.get('scanned'))}</b> 檔｜S+ { _h(s.get('s_plus_grade')) }｜S { _h(s.get('s_grade')) }｜A { _h(s.get('a_grade')) }｜資料源：{_h(dashboard_payload.get('source_status', {}).get('label'))}",
+                f"⏱ 延遲：{_h(schedule_text)}｜資料品質：{_h(data_quality.get('label_text') or data_quality.get('label'), '未知')}｜AI：{_h(ai_health.get('label'), '未啟用')}",
                 f"🤖 {ai_review_text}",
                 "",
                 "🚨 <b>提醒</b>",

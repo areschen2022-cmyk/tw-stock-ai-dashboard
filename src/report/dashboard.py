@@ -350,6 +350,45 @@ def _action_lists(rows: list[dict], ai_picks: list[dict] | None = None, exit_ris
     }
 
 
+def _traffic_lights(action_lists: dict) -> dict:
+    """Create a compact first-read trading-light summary from action lists."""
+
+    green = list(action_lists.get("chase") or [])
+    yellow = list(action_lists.get("pullback") or [])
+    red = list(action_lists.get("risk") or [])
+
+    if green:
+        primary = "green"
+        posture = "can_trade"
+        headline = f"綠燈 {len(green)} 檔：只盯可追清單，仍需開盤量價確認。"
+        instruction = "09:05 後確認價格未超過進場上限、前 5 分鐘量能延續，才可執行；不符合就放棄。"
+    elif yellow:
+        primary = "yellow"
+        posture = "watch_pullback"
+        headline = f"綠燈 0、黃燈 {len(yellow)} 檔：今天以等拉回為主，不追第一筆。"
+        instruction = "只設定提醒，不在開盤追價；等回到進場區、量能未失速，再重新判斷。"
+    else:
+        primary = "red" if red else "gray"
+        posture = "stand_down"
+        headline = "綠燈 0、黃燈 0：今天以保護資金為主。"
+        instruction = "沒有明確進場條件時不硬做；保留資金等待下一次有效訊號。"
+
+    return {
+        "primary": primary,
+        "posture": posture,
+        "headline": headline,
+        "instruction": instruction,
+        "green": green,
+        "yellow": yellow,
+        "red": red,
+        "counts": {
+            "green": len(green),
+            "yellow": len(yellow),
+            "red": len(red),
+        },
+    }
+
+
 def _annotate_action_context(
     rows: list[dict],
     action_lists: dict,
@@ -836,6 +875,7 @@ def _decision_diagnostic(payload: dict) -> dict:
 
 
 def refresh_decision_diagnostics(payload: dict) -> dict:
+    payload["traffic_lights"] = _traffic_lights(payload.get("action_lists") or {})
     diagnostic = _decision_diagnostic(payload)
     payload["decision_diagnostic"] = diagnostic
     payload.setdefault("decision_summary", {})["diagnostic"] = diagnostic
@@ -2106,6 +2146,15 @@ def _html() -> str:
     #actionLists > .line.warn { background:#fffbeb; border:1px solid #f6d365; }
     .decision-summary-compact { border:1px solid var(--line); border-radius:12px; padding:10px; background:#fbfcfe; box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
     .decision-summary-compact .temperature-card { margin-bottom:7px; }
+    .traffic-lights { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
+    .traffic-light-card { border:1px solid var(--line); border-radius:12px; padding:10px; background:#fff; min-height:84px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .traffic-light-card b { display:block; font-size:19px; line-height:1.2; margin-bottom:3px; }
+    .traffic-light-card span { display:block; color:var(--muted); font-size:12px; }
+    .traffic-light-card.green { border-left:5px solid var(--good); background:#f6fef9; }
+    .traffic-light-card.yellow { border-left:5px solid var(--warn); background:#fffbeb; }
+    .traffic-light-card.red { border-left:5px solid var(--bad); background:#fff7f7; }
+    .traffic-instruction { border:1px solid #dbeafe; border-radius:10px; padding:9px 10px; background:#f8fbff; color:#334155; font-size:13px; line-height:1.45; margin:8px 0; }
+    .traffic-instruction b { color:#0b4a8b; }
     .decision-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:6px 0 8px; }
     .decision-pill { border:1px solid var(--line); border-radius:10px; padding:8px 9px; background:#fff; min-height:56px; box-shadow:0 1px 2px rgba(15,23,42,.04); }
     .decision-pill b { display:block; font-size:18px; line-height:1.2; }
@@ -2256,6 +2305,7 @@ def _html() -> str:
       .decision-card-grid { grid-template-columns:1fr; }
       .action-head { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .traffic-lights { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (max-width: 900px) {
       header { position:static; }
@@ -2264,6 +2314,7 @@ def _html() -> str:
       .dashboard-layout, .detail-grid, .status-grid { grid-template-columns:1fr; }
       .trace-grid { grid-template-columns:1fr; }
       .decision-strip { grid-template-columns:1fr 1fr; }
+      .traffic-lights { grid-template-columns:1fr; }
       .decision-prices { grid-template-columns:1fr 1fr; }
       .decision-exit { grid-template-columns:1fr; }
       .decision-card { min-height:auto; }
@@ -2596,6 +2647,8 @@ def _html() -> str:
         ["風險", actionSummary.risk ?? 0, "is-bad"]
       ].map(([k,v,c]) => `<div class="metric ${c}"><b>${v}</b><span>${k}</span></div>`).join("");
       const decision = data.decision_summary || {};
+      const traffic = data.traffic_lights || {};
+      const trafficCounts = traffic.counts || {};
       const marketTide = data.market_tide || {};
       function tideClass(level) {
         if (level === "favorable" || level === "selective") return "good";
@@ -2642,6 +2695,12 @@ def _html() -> str:
           <b>${esc(temp.label)}</b>
           <div class="small">${esc(temp.note)}</div>
         </div>
+        <div class="traffic-instruction"><b>交易燈</b>｜${esc(traffic.headline || "依可追、等拉回與危險名單分流。")} ${esc(traffic.instruction || "")}</div>
+        <div class="traffic-lights">
+          <div class="traffic-light-card green"><b>${esc(trafficCounts.green ?? actionSummary.chase ?? 0)}</b><span>綠燈可追｜只看開盤確認</span></div>
+          <div class="traffic-light-card yellow"><b>${esc(trafficCounts.yellow ?? actionSummary.pullback ?? 0)}</b><span>黃燈盯盤｜等拉回或再確認</span></div>
+          <div class="traffic-light-card red"><b>${esc(trafficCounts.red ?? actionSummary.risk ?? 0)}</b><span>紅燈避開｜風險未解除</span></div>
+        </div>
         <div class="decision-strip">
           <div class="decision-pill good"><b>${esc(actionSummary.chase ?? 0)}</b><span>可追</span></div>
           <div class="decision-pill warn"><b>${esc(actionSummary.pullback ?? 0)}</b><span>等拉回</span></div>
@@ -2655,7 +2714,8 @@ def _html() -> str:
         <div class="line"><b>掃描範圍</b>｜本次 ${esc(scanCoverageText)} 檔，覆蓋約 ${esc(universeBrief.coverage_pct ?? "—")}%；以分層候選池篩選，不等於全市場逐檔深度掃描。</div>
         ${marketTide.position_hint ? `<div class="line"><b>潮汐護欄</b>｜${esc(marketTide.position_hint)}</div>` : ""}`;
       document.querySelector("#decisionBrief").innerHTML = `
-        <div class="brief-row"><b>先看</b><span>${esc(temp.label)}｜可追 ${esc(actionSummary.chase ?? 0)} 檔、等拉回 ${esc(actionSummary.pullback ?? 0)} 檔</span></div>
+        <div class="brief-row"><b>先看</b><span>${esc(traffic.headline || `${temp.label}｜可追 ${actionSummary.chase ?? 0} 檔、等拉回 ${actionSummary.pullback ?? 0} 檔`)}</span></div>
+        <div class="brief-row"><b>怎麼做</b><span>${esc(traffic.instruction || "依卡片進場條件與停損執行。")}</span></div>
         ${diagnostic.headline ? `<div class="brief-row"><b>為何</b><span>${esc(diagnostic.headline)}</span></div>` : ""}
         <div class="brief-row"><b>優先名單</b><span>${esc(topChase)}</span></div>
         <div class="brief-row"><b>信心來源</b><span>掃描 ${esc(scanCoverageText)}｜歷史強 ${esc(actionSummary.historical_strong ?? 0)}｜歷史弱 ${esc(actionSummary.historical_weak ?? 0)}</span></div>
