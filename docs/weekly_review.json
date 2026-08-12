@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-08-11",
-  "generated_at": "2026-08-12T13:58:06+08:00",
+  "as_of": "2026-08-12",
+  "generated_at": "2026-08-12T16:40:21+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -34,34 +34,34 @@
     },
     "weekly_themes": [
       {
-        "theme": "記憶體/HBM",
-        "week_score": 268,
-        "trend": "-",
-        "today": 34
-      },
-      {
         "theme": "AI伺服器",
-        "week_score": 255,
-        "trend": "-",
-        "today": 34
+        "week_score": 263,
+        "trend": "升溫↑",
+        "today": 40
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 251,
-        "trend": "升溫↑",
-        "today": 39
-      },
-      {
-        "theme": "網通光通訊",
-        "week_score": 234,
+        "week_score": 247,
         "trend": "-",
         "today": 34
       },
       {
-        "theme": "矽光子/CPO",
-        "week_score": 232,
+        "theme": "網通光通訊",
+        "week_score": 243,
         "trend": "-",
-        "today": 35
+        "today": 39
+      },
+      {
+        "theme": "矽光子/CPO",
+        "week_score": 237,
+        "trend": "-",
+        "today": 36
+      },
+      {
+        "theme": "AI電力/重電/電網",
+        "week_score": 228,
+        "trend": "-",
+        "today": 33
       }
     ]
   },
@@ -75,156 +75,32 @@
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "分數已成形",
-      "signals": 15,
-      "completed": 13,
-      "win_rate_5d": 23.076923076923077,
-      "avg_return_5d": -8.34320374698049,
+      "label": "快篩:順風研究",
+      "signals": 18,
+      "completed": 16,
+      "win_rate_5d": 18.75,
+      "avg_return_5d": -9.91924962239662,
       "stop_hit_rate": null
     },
-    "backtest_segments": [
-      {
-        "group": "theme",
-        "label": "記憶體/HBM",
-        "signals": 7,
-        "completed": 4,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -15.05748004502371,
-        "stop_hit_rate": 57.14285714285714
-      },
-      {
-        "group": "theme",
-        "label": "先進封裝/CoWoS",
-        "signals": 9,
-        "completed": 6,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -11.121274376946241,
-        "stop_hit_rate": 50.0
-      },
-      {
-        "group": "grade",
-        "label": "B",
-        "signals": 79,
-        "completed": 42,
-        "win_rate_5d": 23.809523809523807,
-        "avg_return_5d": -7.8538538290454305,
-        "stop_hit_rate": null
-      },
-      {
-        "group": "action",
-        "label": "只觀察",
-        "signals": 82,
-        "completed": 42,
-        "win_rate_5d": 26.190476190476193,
-        "avg_return_5d": -7.296869120041952,
-        "stop_hit_rate": 44.61538461538462
-      },
-      {
-        "group": "theme",
-        "label": "網通光通訊",
-        "signals": 6,
-        "completed": 1,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -4.639175257731959,
-        "stop_hit_rate": 16.666666666666664
-      }
-    ],
+    "backtest_segments": [],
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 56,
-        "avg_return_5d": -12.240040440999525,
-        "stop_hit_rate": 58.92857142857143,
-        "examples": [
-          {
-            "stock_id": "3026",
-            "name": "禾伸堂",
-            "return_5d": -44.785276073619634
-          },
-          {
-            "stock_id": "5483",
-            "name": "中美晶",
-            "return_5d": -32.9059829059829
-          },
-          {
-            "stock_id": "3026",
-            "name": "禾伸堂",
-            "return_5d": -31.343283582089555
-          }
-        ],
-        "lesson": "隔日開盤若沒有量價延續，強訊號也要降級處理。"
-      },
-      {
-        "label": "題材失靈",
-        "count": 44,
-        "avg_return_5d": -7.323593663300895,
-        "stop_hit_rate": 47.72727272727273,
-        "examples": [
-          {
-            "stock_id": "2408",
-            "name": "南亞科",
-            "return_5d": -20.65095398428732
-          },
-          {
-            "stock_id": "8039",
-            "name": "台虹",
-            "return_5d": -20.625
-          },
-          {
-            "stock_id": "8150",
-            "name": "南茂",
-            "return_5d": -18.367346938775512
-          }
-        ],
-        "lesson": "新聞熱度不足以支撐價格時，要改看營收與法人是否同步。"
+        "count": 68,
+        "avg_return_5d": -11.498601617503112,
+        "lesson": "樣本仍需累積，先保留觀察。"
       },
       {
         "label": "停損觸發",
-        "count": 41,
-        "avg_return_5d": -12.604865195987616,
-        "stop_hit_rate": 100.0,
-        "examples": [
-          {
-            "stock_id": "3026",
-            "name": "禾伸堂",
-            "return_5d": -44.785276073619634
-          },
-          {
-            "stock_id": "5483",
-            "name": "中美晶",
-            "return_5d": -32.9059829059829
-          },
-          {
-            "stock_id": "3026",
-            "name": "禾伸堂",
-            "return_5d": -31.343283582089555
-          }
-        ],
-        "lesson": "先檢查停損距離與波動是否匹配，避免一開盤就被洗出。"
+        "count": 36,
+        "avg_return_5d": -15.19226049546338,
+        "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
       },
       {
-        "label": "進場條件保護",
-        "count": 3,
-        "avg_return_5d": -15.539445981657222,
-        "stop_hit_rate": 100.0,
-        "examples": [
-          {
-            "stock_id": "6488",
-            "name": "環球晶",
-            "return_5d": -20.414937759336098
-          },
-          {
-            "stock_id": "5483",
-            "name": "中美晶",
-            "return_5d": -16.099773242630384
-          },
-          {
-            "stock_id": "8039",
-            "name": "台虹",
-            "return_5d": -10.103626943005182
-          }
-        ],
-        "lesson": "沒有觸發進場且後續走弱，代表開盤條件有保護效果。"
+        "label": "追價過熱",
+        "count": 2,
+        "avg_return_5d": -8.108317054222635,
+        "lesson": "追價訊號需要降權，開盤跳空或高乖離時改等拉回。"
       }
     ]
   },
@@ -234,8 +110,8 @@
     "logic_verdict": "本週選股邏輯需要檢討，先查風險控管與低勝率區塊，不建議直接放寬追價條件。",
     "traffic_counts": {
       "green": 0,
-      "yellow": 5,
-      "red": 5
+      "yellow": 0,
+      "red": 0
     },
     "sample_state": {
       "daily_completed": 100,
@@ -244,20 +120,6 @@
       "potential_win_rate_5d": 28.57142857142857
     },
     "issues": [
-      {
-        "code": "no_green_with_watchlist",
-        "severity": "medium",
-        "finding": "本週有候選股但沒有綠燈可追，代表系統偏保守或盤勢未通過進場確認。",
-        "evidence": "green=0, yellow=5, red=5",
-        "recommendation": "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。"
-      },
-      {
-        "code": "risk_list_dominates",
-        "severity": "high",
-        "finding": "紅燈數量明顯高於可操作清單，盤面可能偏風險控管而非進攻。",
-        "evidence": "green=0, yellow=5, red=5",
-        "recommendation": "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。"
-      },
       {
         "code": "daily_signal_win_rate_below_50",
         "severity": "high",
@@ -276,13 +138,11 @@
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已有弱區塊可供下週計分參考，應優先處理最大拖累因子。",
-        "evidence": "group=theme, label=記憶體/HBM, completed=4",
+        "evidence": "group=因子, label=過熱/延伸|K線+法人同步, completed=5",
         "recommendation": "把弱區塊接回 backtest_guard，只降權已完成樣本足夠且平均報酬為負的條件。"
       }
     ],
     "next_week_focus": [
-      "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。",
-      "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。",
       "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。",
       "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
     ]
@@ -306,27 +166,27 @@
     {
       "type": "carry_forward",
       "target": "進場後轉弱",
-      "reason": "加嚴停損與追價條件"
-    },
-    {
-      "type": "carry_forward",
-      "target": "題材失靈",
-      "reason": "加嚴停損與追價條件"
+      "reason": "提高風險權重"
     },
     {
       "type": "carry_forward",
       "target": "停損觸發",
-      "reason": "加嚴停損與追價條件"
+      "reason": "提高風險權重"
+    },
+    {
+      "type": "carry_forward",
+      "target": "追價過熱",
+      "reason": "提高風險權重"
     },
     {
       "type": "logic_audit",
-      "target": "no_green_with_watchlist",
-      "reason": "檢查被擋原因是否集中在開盤量能、紅色警戒、或近期同條件勝率不佳；不要直接放寬所有門檻。"
+      "target": "daily_signal_win_rate_below_50",
+      "reason": "下週降低低勝率分數區間、弱題材、或失效進場條件的權重；只對樣本足夠的區塊動手。"
     },
     {
       "type": "logic_audit",
-      "target": "risk_list_dominates",
-      "reason": "下週優先檢查紅色警戒是否命中後續下跌；若命中率高，維持防守；若命中率低，調降該跌因權重。"
+      "target": "potential_radar_win_rate_below_50",
+      "reason": "把潛力股分成轉強初動、強勢等拉回、低位醞釀後分別校準，不要整包調整。"
     }
   ],
   "rules": [
