@@ -1,21 +1,31 @@
 {
-  "generated_at": "2026-08-14T05:41:26+08:00",
-  "status": "warn",
+  "generated_at": "2026-08-16T22:47:50+08:00",
+  "status": "ok",
   "counts": {
     "critical": 0,
-    "warning": 1,
-    "info": 3
+    "warning": 0,
+    "info": 2
   },
   "context": {
-    "as_of": "2026-08-13",
-    "weekly_as_of": "2026-08-13",
-    "performance_as_of": "2026-08-13",
-    "potential_as_of": "2026-08-13",
-    "rows": 147,
-    "valid": 147,
+    "as_of": "2026-08-14",
+    "weekly_as_of": "2026-08-14",
+    "performance_as_of": "2026-08-14",
+    "potential_as_of": "2026-08-14",
+    "rows": 149,
+    "valid": 149,
     "chase": 0,
-    "pullback": 0,
+    "pullback": 5,
     "data_updates": [
+      {
+        "update_date": "2026-08-14",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 149,
+        "source_date": "2026-08-14",
+        "message": "149 stocks scanned for institutional flow",
+        "run_id": "31953668861",
+        "created_at": "2026-08-16 14:47:29"
+      },
       {
         "update_date": "2026-08-13",
         "dataset": "institutional_flow",
@@ -23,8 +33,8 @@
         "row_count": 147,
         "source_date": "2026-08-13",
         "message": "147 stocks scanned for institutional flow",
-        "run_id": "31746534530",
-        "created_at": "2026-08-13 21:41:14"
+        "run_id": "31753468175",
+        "created_at": "2026-08-13 23:22:02"
       },
       {
         "update_date": "2026-08-13",
@@ -105,38 +115,16 @@
         "message": "84 stocks scanned for institutional flow",
         "run_id": "30959669116",
         "created_at": "2026-08-04 23:21:37"
-      },
-      {
-        "update_date": "2026-08-04",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4019,
-        "source_date": "2026-07-31",
-        "message": "25 divergence signals; previous=2026-07-24",
-        "run_id": "30955094543",
-        "created_at": "2026-08-04 22:07:53"
       }
     ]
   },
   "database": {
-    "daily_scores": 147,
+    "daily_scores": 149,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 5
+    "recent_tdcc_update_rows": 3
   },
   "issues": [
-    {
-      "severity": "info",
-      "area": "decision",
-      "message": "No chase or pullback candidates today",
-      "suggestion": "This can be normal. If repeated, review action thresholds."
-    },
-    {
-      "severity": "warning",
-      "area": "data_quality",
-      "message": "Data quality is not high: 中",
-      "suggestion": "Check fallback/retry attribution before treating this as a true data loss."
-    },
     {
       "severity": "info",
       "area": "us_stock_context",
