@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
 import logging
+import os
 from calendar import monthrange
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -46,9 +45,8 @@ class FinMindClient:
             month_start = cursor
             month_end = date(cursor.year, cursor.month, last_day)
             is_current = cursor.year == today.year and cursor.month == today.month
-            fetch_start = month_start
             fetch_end = min(month_end, end_date) if is_current else month_end
-            segments.append((cursor.year, cursor.month, fetch_start, fetch_end, is_current))
+            segments.append((cursor.year, cursor.month, month_start, fetch_end, is_current))
             cursor = date(cursor.year + int(cursor.month == 12), 1 if cursor.month == 12 else cursor.month + 1, 1)
         return segments
 
@@ -77,22 +75,50 @@ class FinMindClient:
             response = requests.get(self.BASE_URL, params=params, timeout=self.timeout)
         except requests.RequestException as exc:
             logging.warning("FinMind request failed for %s %s: %s", dataset, data_id, exc)
-            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), reason=str(exc)[:120])
+            self._count(
+                "error",
+                dataset=dataset,
+                data_id=data_id,
+                start_date=start_date.isoformat(),
+                end_date=end_date.isoformat(),
+                reason=str(exc)[:120],
+            )
             return pd.DataFrame()
         if response.status_code in {402, 429}:
             logging.warning("FinMind quota/permission issue for %s %s: %s", dataset, data_id, response.status_code)
-            self._count("quota", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), status_code=response.status_code)
+            self._count(
+                "quota",
+                dataset=dataset,
+                data_id=data_id,
+                start_date=start_date.isoformat(),
+                end_date=end_date.isoformat(),
+                status_code=response.status_code,
+            )
             return pd.DataFrame()
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), status_code=response.status_code)
+            self._count(
+                "error",
+                dataset=dataset,
+                data_id=data_id,
+                start_date=start_date.isoformat(),
+                end_date=end_date.isoformat(),
+                status_code=response.status_code,
+            )
             raise
         try:
             payload = response.json()
         except ValueError as exc:
             logging.warning("FinMind returned invalid json for %s %s: %s", dataset, data_id, exc)
-            self._count("error", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat(), reason="invalid_json")
+            self._count(
+                "error",
+                dataset=dataset,
+                data_id=data_id,
+                start_date=start_date.isoformat(),
+                end_date=end_date.isoformat(),
+                reason="invalid_json",
+            )
             return pd.DataFrame()
         if not payload.get("data"):
             self._count("empty", dataset=dataset, data_id=data_id, start_date=start_date.isoformat(), end_date=end_date.isoformat())

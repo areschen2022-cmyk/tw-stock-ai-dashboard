@@ -1,0 +1,1371 @@
+{
+  "as_of": "2026-08-14",
+  "generated_at": "2026-08-16T22:42:06+08:00",
+  "status": "ok",
+  "method": {
+    "name": "limit up/down event study",
+    "years": 1,
+    "universe_mode": "cache",
+    "offline_cache_only": true,
+    "limit_up_threshold_pct": 9.5,
+    "limit_down_threshold_pct": -9.5,
+    "lookahead_guard": "Only pre-event features use data before or on the limit move day; post 5/10 day returns are outcome labels only.",
+    "limitations": [
+      "This first pass uses local cached stocks, not guaranteed full Taiwan market coverage.",
+      "Rule labels describe recurring statistical conditions, not confirmed news causality.",
+      "5-year and 10-year studies should run after full historical cache expansion."
+    ]
+  },
+  "coverage": {
+    "stocks_requested": 221,
+    "stocks_usable": 219,
+    "events_total": 2485,
+    "earliest": "2025-07-10",
+    "latest": "2026-08-11",
+    "sample": [
+      {
+        "stock_id": "1101",
+        "name": "台泥",
+        "rows": 246,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1102",
+        "name": "亞泥",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1301",
+        "name": "台塑",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1303",
+        "name": "南亞",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1402",
+        "name": "",
+        "rows": 123,
+        "start": "2025-12-01",
+        "end": "2026-06-08"
+      },
+      {
+        "stock_id": "1503",
+        "name": "",
+        "rows": 123,
+        "start": "2025-12-01",
+        "end": "2026-06-08"
+      },
+      {
+        "stock_id": "1504",
+        "name": "東元",
+        "rows": 246,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1513",
+        "name": "中興電",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1514",
+        "name": "亞力",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1519",
+        "name": "華城",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1590",
+        "name": "亞德客-KY",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1597",
+        "name": "直得",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1605",
+        "name": "華新",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1609",
+        "name": "大亞",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1708",
+        "name": "",
+        "rows": 123,
+        "start": "2025-12-01",
+        "end": "2026-06-08"
+      },
+      {
+        "stock_id": "1718",
+        "name": "",
+        "rows": 123,
+        "start": "2025-12-01",
+        "end": "2026-06-08"
+      },
+      {
+        "stock_id": "1802",
+        "name": "台玻",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "1815",
+        "name": "富喬",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "2002",
+        "name": "中鋼",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      },
+      {
+        "stock_id": "2049",
+        "name": "上銀",
+        "rows": 247,
+        "start": "2025-07-10",
+        "end": "2026-07-16"
+      }
+    ]
+  },
+  "provider_status": {
+    "label": "正常",
+    "api": 0,
+    "cache": 2387,
+    "quota": 0,
+    "error": 0,
+    "empty": 0,
+    "events": []
+  },
+  "summary": {
+    "limit_up": {
+      "events": 2043,
+      "completed_5d": 1977,
+      "avg_post_5d_return": 4.36,
+      "continuation_5d_rate": 57.5,
+      "common_labels": [
+        {
+          "label": "趨勢在均線上",
+          "events": 1623,
+          "avg_volume_ratio_20": 2.32,
+          "avg_pre_20d_return": 31.03,
+          "avg_post_5d_return": 4.43,
+          "avg_post_10d_return": 8.44,
+          "continuation_5d_rate": 58.8
+        },
+        {
+          "label": "突破整理",
+          "events": 1264,
+          "avg_volume_ratio_20": 2.58,
+          "avg_pre_20d_return": 31.28,
+          "avg_post_5d_return": 3.92,
+          "avg_post_10d_return": 8.14,
+          "continuation_5d_rate": 58.3
+        },
+        {
+          "label": "題材續強",
+          "events": 1158,
+          "avg_volume_ratio_20": 1.82,
+          "avg_pre_20d_return": 41.59,
+          "avg_post_5d_return": 4.51,
+          "avg_post_10d_return": 8.62,
+          "continuation_5d_rate": 59.4
+        },
+        {
+          "label": "量能放大",
+          "events": 451,
+          "avg_volume_ratio_20": 2.3,
+          "avg_pre_20d_return": 21.34,
+          "avg_post_5d_return": 3.91,
+          "avg_post_10d_return": 7.45,
+          "continuation_5d_rate": 56.9
+        },
+        {
+          "label": "異常爆量",
+          "events": 427,
+          "avg_volume_ratio_20": 5.17,
+          "avg_pre_20d_return": 15.0,
+          "avg_post_5d_return": 2.78,
+          "avg_post_10d_return": 6.9,
+          "continuation_5d_rate": 49.8
+        },
+        {
+          "label": "跌深反彈",
+          "events": 361,
+          "avg_volume_ratio_20": 1.1,
+          "avg_pre_20d_return": 3.28,
+          "avg_post_5d_return": 6.06,
+          "avg_post_10d_return": 7.33,
+          "continuation_5d_rate": 60.4
+        },
+        {
+          "label": "盤整後發動",
+          "events": 152,
+          "avg_volume_ratio_20": 5.01,
+          "avg_pre_20d_return": 3.39,
+          "avg_post_5d_return": 5.36,
+          "avg_post_10d_return": 7.22,
+          "continuation_5d_rate": 54.1
+        },
+        {
+          "label": "未分類",
+          "events": 85,
+          "avg_volume_ratio_20": 1.14,
+          "avg_pre_20d_return": -0.18,
+          "avg_post_5d_return": 4.5,
+          "avg_post_10d_return": 7.65,
+          "continuation_5d_rate": 48.8
+        }
+      ],
+      "recent_examples": [
+        {
+          "stock_id": "6980",
+          "name": "鐳洋",
+          "date": "2026-08-10",
+          "side": "limit_up",
+          "close": 121.5,
+          "pct_change": 15.17,
+          "volume_ratio_20": 1.73,
+          "pre_5d_return": 0.48,
+          "pre_20d_return": -23.83,
+          "pre_20d_range": 43.51,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "4991",
+          "name": "",
+          "date": "2026-07-22",
+          "side": "limit_up",
+          "close": 420.5,
+          "pct_change": 9.93,
+          "volume_ratio_20": 1.04,
+          "pre_5d_return": -8.27,
+          "pre_20d_return": -32.18,
+          "pre_20d_range": 78.93,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "4991",
+          "name": "",
+          "date": "2026-07-21",
+          "side": "limit_up",
+          "close": 382.5,
+          "pct_change": 9.91,
+          "volume_ratio_20": 1.06,
+          "pre_5d_return": -22.75,
+          "pre_20d_return": -38.52,
+          "pre_20d_range": 78.93,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "7734",
+          "name": "",
+          "date": "2026-07-21",
+          "side": "limit_up",
+          "close": 3115.0,
+          "pct_change": 9.88,
+          "volume_ratio_20": 1.96,
+          "pre_5d_return": 2.35,
+          "pre_20d_return": -21.58,
+          "pre_20d_range": 49.8,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "量能放大",
+            "跌深反彈"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "2484",
+          "name": "希華",
+          "date": "2026-07-16",
+          "side": "limit_up",
+          "close": 89.6,
+          "pct_change": 9.94,
+          "volume_ratio_20": 0.92,
+          "pre_5d_return": -6.43,
+          "pre_20d_return": 11.19,
+          "pre_20d_range": 61.9,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "趨勢在均線上",
+            "跌深反彈"
+          ],
+          "themes": [
+            "石英元件/頻率控制"
+          ]
+        },
+        {
+          "stock_id": "3491",
+          "name": "昇達科",
+          "date": "2026-07-16",
+          "side": "limit_up",
+          "close": 1310.0,
+          "pct_change": 9.62,
+          "volume_ratio_20": 1.65,
+          "pre_5d_return": -8.08,
+          "pre_20d_return": -29.29,
+          "pre_20d_range": 51.08,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "6505",
+          "name": "台塑化",
+          "date": "2026-07-16",
+          "side": "limit_up",
+          "close": 80.0,
+          "pct_change": 9.89,
+          "volume_ratio_20": 5.44,
+          "pre_5d_return": 25.52,
+          "pre_20d_return": 36.59,
+          "pre_20d_range": 42.75,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "異常爆量",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "2313",
+          "name": "華通",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 248.0,
+          "pct_change": 9.98,
+          "volume_ratio_20": 1.53,
+          "pre_5d_return": -4.04,
+          "pre_20d_return": -14.26,
+          "pre_20d_range": 27.1,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "2344",
+          "name": "華邦電",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 180.5,
+          "pct_change": 9.73,
+          "volume_ratio_20": 0.44,
+          "pre_5d_return": -10.11,
+          "pre_20d_return": -4.36,
+          "pre_20d_range": 49.68,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": [
+            "記憶體/HBM"
+          ]
+        },
+        {
+          "stock_id": "3006",
+          "name": "晶豪科",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 239.0,
+          "pct_change": 9.89,
+          "volume_ratio_20": 0.93,
+          "pre_5d_return": -0.68,
+          "pre_20d_return": 0.23,
+          "pre_20d_range": 33.17,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "未分類"
+          ],
+          "themes": [
+            "記憶體/HBM"
+          ]
+        },
+        {
+          "stock_id": "3374",
+          "name": "",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 402.0,
+          "pct_change": 9.99,
+          "volume_ratio_20": 0.41,
+          "pre_5d_return": 13.51,
+          "pre_20d_return": 56.87,
+          "pre_20d_range": 65.07,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "3583",
+          "name": "辛耘",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 842.0,
+          "pct_change": 9.92,
+          "volume_ratio_20": 1.27,
+          "pre_5d_return": -10.93,
+          "pre_20d_return": -4.61,
+          "pre_20d_range": 31.57,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌深反彈"
+          ],
+          "themes": [
+            "先進封裝/CoWoS"
+          ]
+        },
+        {
+          "stock_id": "5351",
+          "name": "",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 104.5,
+          "pct_change": 9.77,
+          "volume_ratio_20": 1.14,
+          "pre_5d_return": 5.9,
+          "pre_20d_return": 7.33,
+          "pre_20d_range": 35.31,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "趨勢在均線上"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "6187",
+          "name": "萬潤",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 1080.0,
+          "pct_change": 9.64,
+          "volume_ratio_20": 0.87,
+          "pre_5d_return": -4.83,
+          "pre_20d_return": -9.22,
+          "pre_20d_range": 39.76,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "未分類"
+          ],
+          "themes": [
+            "先進封裝/CoWoS"
+          ]
+        },
+        {
+          "stock_id": "6505",
+          "name": "台塑化",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 72.8,
+          "pct_change": 9.97,
+          "volume_ratio_20": 3.65,
+          "pre_5d_return": 11.26,
+          "pre_20d_return": 25.38,
+          "pre_20d_range": 31.76,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "異常爆量",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "6770",
+          "name": "力積電",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 76.1,
+          "pct_change": 9.97,
+          "volume_ratio_20": 0.86,
+          "pre_5d_return": -4.68,
+          "pre_20d_return": 2.98,
+          "pre_20d_range": 40.85,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "未分類"
+          ],
+          "themes": [
+            "記憶體/HBM"
+          ]
+        },
+        {
+          "stock_id": "7734",
+          "name": "",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 3045.0,
+          "pct_change": 9.93,
+          "volume_ratio_20": 2.62,
+          "pre_5d_return": -6.26,
+          "pre_20d_return": -0.36,
+          "pre_20d_range": 49.8,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": 2.79,
+          "post_10d_return": null,
+          "labels": [
+            "量能放大",
+            "跌深反彈"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "8046",
+          "name": "南電",
+          "date": "2026-07-15",
+          "side": "limit_up",
+          "close": 1415.0,
+          "pct_change": 9.69,
+          "volume_ratio_20": 0.95,
+          "pre_5d_return": 20.0,
+          "pre_20d_return": 57.51,
+          "pre_20d_range": 60.84,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": [
+            "先進封裝/CoWoS"
+          ]
+        },
+        {
+          "stock_id": "1301",
+          "name": "台塑",
+          "date": "2026-07-13",
+          "side": "limit_up",
+          "close": 60.2,
+          "pct_change": 9.85,
+          "volume_ratio_20": 0.78,
+          "pre_5d_return": -8.21,
+          "pre_20d_return": 23.42,
+          "pre_20d_range": 48.49,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "趨勢在均線上",
+            "題材續強",
+            "跌深反彈"
+          ],
+          "themes": [
+            "原物料/低基期傳產"
+          ]
+        },
+        {
+          "stock_id": "1303",
+          "name": "南亞",
+          "date": "2026-07-13",
+          "side": "limit_up",
+          "close": 199.5,
+          "pct_change": 9.92,
+          "volume_ratio_20": 1.23,
+          "pre_5d_return": -7.87,
+          "pre_20d_return": 91.46,
+          "pre_20d_range": 114.82,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "趨勢在均線上",
+            "題材續強",
+            "跌深反彈"
+          ],
+          "themes": [
+            "原物料/低基期傳產"
+          ]
+        }
+      ]
+    },
+    "limit_down": {
+      "events": 442,
+      "completed_5d": 409,
+      "avg_post_5d_return": 4.3,
+      "continuation_5d_rate": 39.1,
+      "common_labels": [
+        {
+          "label": "高波動警訊",
+          "events": 401,
+          "avg_volume_ratio_20": 1.13,
+          "avg_pre_20d_return": 32.36,
+          "avg_post_5d_return": 4.53,
+          "avg_post_10d_return": 8.44,
+          "continuation_5d_rate": 38.9
+        },
+        {
+          "label": "高檔轉弱",
+          "events": 255,
+          "avg_volume_ratio_20": 1.12,
+          "avg_pre_20d_return": 51.0,
+          "avg_post_5d_return": 4.49,
+          "avg_post_10d_return": 10.75,
+          "continuation_5d_rate": 38.8
+        },
+        {
+          "label": "均線下方",
+          "events": 101,
+          "avg_volume_ratio_20": 1.29,
+          "avg_pre_20d_return": -5.66,
+          "avg_post_5d_return": 3.36,
+          "avg_post_10d_return": 1.47,
+          "continuation_5d_rate": 34.8
+        },
+        {
+          "label": "跌破整理",
+          "events": 70,
+          "avg_volume_ratio_20": 1.71,
+          "avg_pre_20d_return": -10.74,
+          "avg_post_5d_return": 0.44,
+          "avg_post_10d_return": -2.18,
+          "continuation_5d_rate": 44.4
+        },
+        {
+          "label": "放量倒貨",
+          "events": 59,
+          "avg_volume_ratio_20": 3.65,
+          "avg_pre_20d_return": 25.18,
+          "avg_post_5d_return": 2.83,
+          "avg_post_10d_return": 5.44,
+          "continuation_5d_rate": 44.6
+        },
+        {
+          "label": "弱勢續跌",
+          "events": 37,
+          "avg_volume_ratio_20": 1.58,
+          "avg_pre_20d_return": -23.33,
+          "avg_post_5d_return": -1.03,
+          "avg_post_10d_return": -2.02,
+          "continuation_5d_rate": 41.7
+        },
+        {
+          "label": "未分類",
+          "events": 10,
+          "avg_volume_ratio_20": 1.16,
+          "avg_pre_20d_return": 8.16,
+          "avg_post_5d_return": 3.46,
+          "avg_post_10d_return": 6.94,
+          "continuation_5d_rate": 50.0
+        }
+      ],
+      "recent_examples": [
+        {
+          "stock_id": "6980",
+          "name": "鐳洋",
+          "date": "2026-07-29",
+          "side": "limit_down",
+          "close": 99.0,
+          "pct_change": -10.0,
+          "volume_ratio_20": 2.96,
+          "pre_5d_return": -3.08,
+          "pre_20d_return": -16.35,
+          "pre_20d_range": 36.15,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": 11.62,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "放量倒貨",
+            "弱勢續跌",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "4991",
+          "name": "",
+          "date": "2026-07-17",
+          "side": "limit_down",
+          "close": 360.0,
+          "pct_change": -10.0,
+          "volume_ratio_20": 1.33,
+          "pre_5d_return": -17.01,
+          "pre_20d_return": -31.86,
+          "pre_20d_range": 48.54,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": 15.83,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "弱勢續跌",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "7734",
+          "name": "",
+          "date": "2026-07-17",
+          "side": "limit_down",
+          "close": 2850.0,
+          "pct_change": -9.81,
+          "volume_ratio_20": 1.58,
+          "pre_5d_return": 13.06,
+          "pre_20d_return": -1.86,
+          "pre_20d_range": 49.8,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": 21.4,
+          "post_10d_return": null,
+          "labels": [
+            "高波動警訊"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "2492",
+          "name": "華新科",
+          "date": "2026-07-16",
+          "side": "limit_down",
+          "close": 341.5,
+          "pct_change": -9.89,
+          "volume_ratio_20": 0.35,
+          "pre_5d_return": -24.5,
+          "pre_20d_return": -15.68,
+          "pre_20d_range": 74.09,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "弱勢續跌",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "6274",
+          "name": "台燿",
+          "date": "2026-07-16",
+          "side": "limit_down",
+          "close": 1295.0,
+          "pct_change": -9.76,
+          "volume_ratio_20": 1.62,
+          "pre_5d_return": -8.89,
+          "pre_20d_return": -8.6,
+          "pre_20d_range": 37.63,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "8046",
+          "name": "南電",
+          "date": "2026-07-16",
+          "side": "limit_down",
+          "close": 1275.0,
+          "pct_change": -9.89,
+          "volume_ratio_20": 0.94,
+          "pre_5d_return": 37.38,
+          "pre_20d_return": 64.53,
+          "pre_20d_range": 64.92,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "高波動警訊"
+          ],
+          "themes": [
+            "先進封裝/CoWoS"
+          ]
+        },
+        {
+          "stock_id": "3026",
+          "name": "禾伸堂",
+          "date": "2026-07-14",
+          "side": "limit_down",
+          "close": 815.0,
+          "pct_change": -9.94,
+          "volume_ratio_20": 1.9,
+          "pre_5d_return": -8.4,
+          "pre_20d_return": 30.22,
+          "pre_20d_range": 43.74,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "3090",
+          "name": "日電貿",
+          "date": "2026-07-14",
+          "side": "limit_down",
+          "close": 232.5,
+          "pct_change": -9.88,
+          "volume_ratio_20": 1.22,
+          "pre_5d_return": -19.0,
+          "pre_20d_return": 10.73,
+          "pre_20d_range": 51.45,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "3661",
+          "name": "世芯-KY",
+          "date": "2026-07-14",
+          "side": "limit_down",
+          "close": 3725.0,
+          "pct_change": -9.92,
+          "volume_ratio_20": 1.71,
+          "pre_5d_return": -11.08,
+          "pre_20d_return": 1.85,
+          "pre_20d_range": 26.49,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "均線下方"
+          ],
+          "themes": [
+            "AI伺服器"
+          ]
+        },
+        {
+          "stock_id": "6274",
+          "name": "台燿",
+          "date": "2026-07-14",
+          "side": "limit_down",
+          "close": 1395.0,
+          "pct_change": -10.0,
+          "volume_ratio_20": 0.87,
+          "pre_5d_return": -13.41,
+          "pre_20d_return": 5.08,
+          "pre_20d_range": 34.27,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "低軌衛星/SpaceX"
+          ]
+        },
+        {
+          "stock_id": "6789",
+          "name": "采鈺",
+          "date": "2026-07-14",
+          "side": "limit_down",
+          "close": 482.0,
+          "pct_change": -9.91,
+          "volume_ratio_20": 2.1,
+          "pre_5d_return": 1.33,
+          "pre_20d_return": 17.58,
+          "pre_20d_range": 26.17,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "放量倒貨"
+          ],
+          "themes": [
+            "先進封裝/CoWoS"
+          ]
+        },
+        {
+          "stock_id": "2492",
+          "name": "華新科",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 419.0,
+          "pct_change": -9.99,
+          "volume_ratio_20": 1.56,
+          "pre_5d_return": -17.02,
+          "pre_20d_return": 14.23,
+          "pre_20d_range": 73.62,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "3026",
+          "name": "禾伸堂",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 905.0,
+          "pct_change": -9.95,
+          "volume_ratio_20": 1.81,
+          "pre_5d_return": 11.79,
+          "pre_20d_return": 56.54,
+          "pre_20d_range": 77.12,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "3090",
+          "name": "日電貿",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 258.0,
+          "pct_change": -9.95,
+          "volume_ratio_20": 0.64,
+          "pre_5d_return": -7.88,
+          "pre_20d_return": 35.14,
+          "pre_20d_range": 78.48,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "6173",
+          "name": "信昌電",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 247.5,
+          "pct_change": -10.0,
+          "volume_ratio_20": 0.95,
+          "pre_5d_return": -13.79,
+          "pre_20d_return": 20.09,
+          "pre_20d_range": 73.44,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "6278",
+          "name": "台表科",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 180.5,
+          "pct_change": -9.52,
+          "volume_ratio_20": 1.1,
+          "pre_5d_return": -8.06,
+          "pre_20d_return": 6.12,
+          "pre_20d_range": 18.5,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "跌破整理",
+            "均線下方"
+          ],
+          "themes": [
+            "光電/面板"
+          ]
+        },
+        {
+          "stock_id": "8042",
+          "name": "金山電",
+          "date": "2026-07-13",
+          "side": "limit_down",
+          "close": 160.5,
+          "pct_change": -9.83,
+          "volume_ratio_20": 1.12,
+          "pre_5d_return": -13.8,
+          "pre_20d_return": 26.24,
+          "pre_20d_range": 78.74,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "均線下方",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        },
+        {
+          "stock_id": "4904",
+          "name": "",
+          "date": "2026-07-08",
+          "side": "limit_down",
+          "close": 93.2,
+          "pct_change": -9.51,
+          "volume_ratio_20": 1.71,
+          "pre_5d_return": -1.9,
+          "pre_20d_return": 1.98,
+          "pre_20d_range": 12.94,
+          "prior_above_ma20": false,
+          "breakout_20d": false,
+          "breakdown_20d": true,
+          "post_5d_return": 8.37,
+          "post_10d_return": 9.98,
+          "labels": [
+            "跌破整理",
+            "均線下方"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "1303",
+          "name": "南亞",
+          "date": "2026-07-07",
+          "side": "limit_down",
+          "close": 166.5,
+          "pct_change": -10.0,
+          "volume_ratio_20": 0.53,
+          "pre_5d_return": 22.11,
+          "pre_20d_return": 77.03,
+          "pre_20d_range": 114.82,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": 36.64,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "高波動警訊"
+          ],
+          "themes": [
+            "原物料/低基期傳產"
+          ]
+        },
+        {
+          "stock_id": "2327",
+          "name": "國巨",
+          "date": "2026-07-07",
+          "side": "limit_down",
+          "close": 905.0,
+          "pct_change": -9.95,
+          "volume_ratio_20": 1.05,
+          "pre_5d_return": -3.37,
+          "pre_20d_return": 30.69,
+          "pre_20d_range": 76.05,
+          "prior_above_ma20": true,
+          "breakout_20d": false,
+          "breakdown_20d": false,
+          "post_5d_return": -11.82,
+          "post_10d_return": null,
+          "labels": [
+            "高檔轉弱",
+            "高波動警訊"
+          ],
+          "themes": [
+            "被動元件"
+          ]
+        }
+      ]
+    },
+    "theme_summary": [
+      {
+        "theme": "低軌衛星/SpaceX",
+        "events": 365,
+        "limit_up": 301,
+        "limit_down": 64,
+        "avg_post_5d_return": 4.19
+      },
+      {
+        "theme": "被動元件",
+        "events": 216,
+        "limit_up": 184,
+        "limit_down": 32,
+        "avg_post_5d_return": 9.05
+      },
+      {
+        "theme": "先進封裝/CoWoS",
+        "events": 212,
+        "limit_up": 176,
+        "limit_down": 36,
+        "avg_post_5d_return": 4.67
+      },
+      {
+        "theme": "矽光子/CPO",
+        "events": 210,
+        "limit_up": 154,
+        "limit_down": 56,
+        "avg_post_5d_return": 3.86
+      },
+      {
+        "theme": "記憶體/HBM",
+        "events": 209,
+        "limit_up": 166,
+        "limit_down": 43,
+        "avg_post_5d_return": 4.45
+      },
+      {
+        "theme": "網通光通訊",
+        "events": 205,
+        "limit_up": 151,
+        "limit_down": 54,
+        "avg_post_5d_return": 4.66
+      },
+      {
+        "theme": "石英元件/頻率控制",
+        "events": 109,
+        "limit_up": 99,
+        "limit_down": 10,
+        "avg_post_5d_return": 3.02
+      },
+      {
+        "theme": "AI伺服器",
+        "events": 103,
+        "limit_up": 84,
+        "limit_down": 19,
+        "avg_post_5d_return": 0.35
+      },
+      {
+        "theme": "光電/面板",
+        "events": 92,
+        "limit_up": 78,
+        "limit_down": 14,
+        "avg_post_5d_return": 7.04
+      },
+      {
+        "theme": "AI電力/重電/電網",
+        "events": 84,
+        "limit_up": 68,
+        "limit_down": 16,
+        "avg_post_5d_return": -1.82
+      },
+      {
+        "theme": "原物料/低基期傳產",
+        "events": 81,
+        "limit_up": 66,
+        "limit_down": 15,
+        "avg_post_5d_return": 3.44
+      },
+      {
+        "theme": "能源與重電",
+        "events": 77,
+        "limit_up": 68,
+        "limit_down": 9,
+        "avg_post_5d_return": 2.58
+      }
+    ]
+  },
+  "findings": [
+    "近一年漲停前最常重複的條件是：趨勢在均線上、突破整理、題材續強、量能放大。先把這些條件轉成潛力股前置檢查，不要只等新聞爆量後才追。",
+    "近一年跌停前最常重複的條件是：高波動警訊、高檔轉弱、均線下方、跌破整理。這些條件可回接危險名單，避免把高風險股誤列可追。",
+    "下一階段應先擴充全市場 1 年快取，再跑 5 年與 10 年；不要直接拿目前 75 檔題材池代表全市場。"
+  ]
+}

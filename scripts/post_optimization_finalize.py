@@ -31,24 +31,10 @@ MOJIBAKE_MARKERS = [
     "?" + chr(0xF697),
 ]
 
-SCAN_DIRS = [
-    ".github",
-    "data",
-    "docs",
-    "scripts",
-    "src",
-    "tests",
-]
-SCAN_FILES = [
-    "AGENTS.md",
-    "README.md",
-    "config.yaml",
-    "main.py",
-]
+SCAN_DIRS = [".github", "data", "docs", "scripts", "src", "tests"]
+SCAN_FILES = ["AGENTS.md", "README.md", "config.yaml", "main.py"]
 SCAN_SUFFIXES = {".bat", ".html", ".md", ".py", ".yaml", ".yml"}
-SCAN_SKIP_FILES = {
-    "tests/test_post_update_check.py",
-}
+SCAN_SKIP_FILES = {"tests/test_post_update_check.py"}
 
 
 def _has_private_use_char(text: str) -> bool:
@@ -62,14 +48,7 @@ def _now() -> str:
 def _run(command: list[str], *, cwd: Path, timeout: int) -> dict:
     started = _now()
     try:
-        proc = subprocess.run(
-            command,
-            cwd=cwd,
-            text=True,
-            capture_output=True,
-            timeout=timeout,
-            check=False,
-        )
+        proc = subprocess.run(command, cwd=cwd, text=True, capture_output=True, timeout=timeout, check=False)
         return {
             "command": command,
             "started_at": started,
@@ -116,14 +95,7 @@ def scan_mojibake(root: Path) -> dict:
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError as exc:
-            hits.append(
-                {
-                    "path": rel_path,
-                    "line": 0,
-                    "marker": "decode_error",
-                    "snippet": str(exc),
-                }
-            )
+            hits.append({"path": rel_path, "line": 0, "marker": "decode_error", "snippet": str(exc)})
             continue
         for line_no, line in enumerate(text.splitlines(), start=1):
             marker = next((item for item in MOJIBAKE_MARKERS if item in line), None)
@@ -140,40 +112,18 @@ def scan_mojibake(root: Path) -> dict:
 
 
 def _knowledge_output_arg(path: Path | None) -> list[str]:
-    if path is None:
-        return []
-    return ["--knowledge-output", str(path)]
+    return [] if path is None else ["--knowledge-output", str(path)]
 
 
-def run_finalize(
-    root: Path,
-    *,
-    output: Path,
-    hub_file: Path | None,
-    skip_tests: bool,
-) -> dict:
+def run_finalize(root: Path, *, output: Path, hub_file: Path | None, skip_tests: bool) -> dict:
     checks: dict[str, dict] = {}
-
-    checks["compile"] = _run(
-        [sys.executable, "-m", "compileall", "src", "tests", "main.py", "scripts"],
-        cwd=root,
-        timeout=120,
-    )
+    checks["compile"] = _run([sys.executable, "-m", "compileall", "src", "tests", "main.py", "scripts"], cwd=root, timeout=120)
     if not skip_tests:
         checks["tests"] = _run([sys.executable, "-m", "pytest", "-q"], cwd=root, timeout=240)
-
-    checks["research_source_review"] = _run(
-        [sys.executable, "scripts/research_source_review.py"],
-        cwd=root,
-        timeout=60,
-    )
+    checks["research_source_review"] = _run([sys.executable, "scripts/research_source_review.py"], cwd=root, timeout=60)
     checks["post_update"] = _run([sys.executable, "scripts/post_update_check.py"], cwd=root, timeout=120)
     checks["schedule_health"] = _run([sys.executable, "scripts/schedule_health_check.py"], cwd=root, timeout=120)
-    checks["github_failure_review"] = _run(
-        [sys.executable, "scripts/github_failure_review.py"],
-        cwd=root,
-        timeout=90,
-    )
+    checks["github_failure_review"] = _run([sys.executable, "scripts/github_failure_review.py"], cwd=root, timeout=90)
     checks["weekly_review_internal"] = _run(
         [
             sys.executable,
@@ -186,6 +136,11 @@ def run_finalize(
         cwd=root,
         timeout=60,
     )
+    checks["limit_move_study"] = _run(
+        [sys.executable, "scripts/limit_move_study.py", "--years", "1", "--universe", "cache"],
+        cwd=root,
+        timeout=120,
+    )
     checks["mojibake_scan"] = scan_mojibake(root)
 
     export_command = [sys.executable, "scripts/export_learning_to_knowledge_hub.py"]
@@ -193,23 +148,14 @@ def run_finalize(
         export_command.extend(["--output", str(hub_file)])
     checks["knowledge_export"] = _run(export_command, cwd=root, timeout=90)
 
-    verification_command = [
-        sys.executable,
-        "scripts/verification_loop.py",
-        "--skip-dashboard-sync",
-    ]
+    verification_command = [sys.executable, "scripts/verification_loop.py", "--skip-dashboard-sync"]
     verification_command.extend(_knowledge_output_arg(hub_file))
     checks["verification_loop"] = _run(verification_command, cwd=root, timeout=180)
 
-    hard_failures = [
-        name
-        for name, item in checks.items()
-        if name in HARD_CHECKS and not item.get("ok", False)
-    ]
-    ok = not hard_failures
+    hard_failures = [name for name, item in checks.items() if name in HARD_CHECKS and not item.get("ok", False)]
     report = {
         "generated_at": _now(),
-        "status": "ok" if ok else "bad",
+        "status": "ok" if not hard_failures else "bad",
         "hub_file": str(hub_file) if hub_file is not None else "auto",
         "hard_failures": hard_failures,
         "checks": checks,
@@ -223,28 +169,31 @@ def run_finalize(
 def _next_actions(checks: dict[str, dict]) -> list[str]:
     actions: list[str] = []
     if not checks.get("compile", {}).get("ok"):
-        actions.append("修正 Python 語法或 import 錯誤後，再重新執行 compileall。")
+        actions.append("先修 Python 語法或 import 錯誤，重新執行 compileall。")
     if "tests" in checks and not checks["tests"].get("ok"):
-        actions.append("查看 pytest 失敗測試，優先修正資料欄位、日期同步或排程相關回歸。")
+        actions.append("先修 pytest 失敗項目，避免資料欄位或決策邏輯回歸。")
     if not checks.get("research_source_review", {}).get("ok"):
-        actions.append("查看 dashboard/research_source_review.json，確認研究來源 ID、權重與回測連動是否正常。")
+        actions.append("檢查 dashboard/research_source_review.json，確認新聞或題材來源是否失效。")
     if not checks.get("post_update", {}).get("ok"):
-        actions.append("打開 dashboard/post_update_check.json，修正 critical 項目後再更新網站。")
+        actions.append("檢查 dashboard/post_update_check.json，優先修 critical freshness 或 docs 同步問題。")
     if not checks.get("schedule_health", {}).get("ok"):
-        actions.append("打開 dashboard/schedule_health.json，確認 GitHub/Cloudflare 排程、dashboard 日期與 Telegram delivery_log。")
+        actions.append("檢查 dashboard/schedule_health.json，確認 GitHub/Cloudflare 排程與 Telegram delivery_log。")
     if not checks.get("github_failure_review", {}).get("ok"):
-        actions.append("GitHub 失敗診斷無法產生；這是內部輔助檢查，不影響網站，但需確認 gh 權限。")
+        actions.append("GitHub 失敗歸因未完成；確認 gh 認證或 Actions API 是否可用。")
     if not checks.get("weekly_review_internal", {}).get("ok"):
-        actions.append("內部週檢討無法整合 GitHub 失敗診斷；不影響公開網站，但會降低排程檢討完整度。")
+        actions.append("每週內部檢討產生失敗；檢查 performance_data 與 GitHub failure review 輸入。")
+    if not checks.get("limit_move_study", {}).get("ok"):
+        actions.append("漲跌停事件研究未完成；檢查本地價格快取或先縮小 --universe 範圍。")
     if not checks.get("mojibake_scan", {}).get("ok"):
-        actions.append("修正 mojibake_scan 命中的亂碼字串，避免報告或 Telegram 顯示異常。")
+        actions.append("mojibake_scan 發現亂碼；先修正檔案文字，避免 Telegram 或網頁顯示破碎。")
     if not checks.get("knowledge_export", {}).get("ok"):
-        actions.append("檢查知識庫匯出路徑與 export_learning_to_knowledge_hub.py，避免學習紀錄未寫入。")
+        actions.append("知識庫匯出失敗；檢查 export_learning_to_knowledge_hub.py 與目標路徑。")
     if not checks.get("verification_loop", {}).get("ok"):
-        actions.append("查看 dashboard/verification_loop.json，確認 dashboard/docs freshness 與 knowledge hub 狀態。")
+        actions.append("驗證迴圈失敗；檢查 dashboard/docs freshness 與 knowledge hub 寫入結果。")
     if not actions:
-        actions.append("所有固定檢查通過；GitHub run 失敗分類已可內部匯入週檢討。")
+        actions.append("目前自檢通過；下一步可檢查最近 GitHub run 與隔日自動推播。")
     return actions
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the required final checks after every tw-stock-ai optimization.")

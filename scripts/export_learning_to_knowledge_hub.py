@@ -417,6 +417,47 @@ def build_kronos_proxy_points(kronos_payload: dict) -> list[dict]:
     return _dedupe_by_id(points)
 
 
+def build_limit_move_study_points(payload: dict) -> list[dict]:
+    as_of = _text(payload.get("as_of"), "")
+    source_ref = f"tw-stock-ai limit_move_study.json {as_of}".strip()
+    points: list[dict] = []
+    summary = payload.get("summary") or {}
+    for side_key, side_label, success_direction in [
+        ("limit_up", "漲停", "續漲"),
+        ("limit_down", "跌停", "續跌"),
+    ]:
+        side = summary.get(side_key) or {}
+        for row in (side.get("common_labels") or [])[:10]:
+            events = _int(row.get("events"))
+            if events <= 0:
+                continue
+            label = _text(row.get("label"), "unknown")
+            claim = (
+                f"近一年{side_label}事件中，{label} 出現 {events} 次；"
+                f"後續 5 日平均報酬 {_fmt_pct(row.get('avg_post_5d_return'))}，"
+                f"5 日{success_direction}率 {_fmt_pct(row.get('continuation_5d_rate'))}。"
+            )
+            evidence = (
+                f"avg_volume_ratio_20={row.get('avg_volume_ratio_20')}, "
+                f"avg_pre_20d_return={row.get('avg_pre_20d_return')}, "
+                f"avg_post_10d_return={row.get('avg_post_10d_return')}, "
+                f"coverage={payload.get('coverage', {})}"
+            )
+            points.append(
+                _knowledge(
+                    topic=f"Taiwan stock {side_label} common condition: {label}",
+                    claim=claim,
+                    evidence=evidence,
+                    tags=["taiwan_stock", "limit_move_study", side_key, label],
+                    completed=events,
+                    avg_return_5d=row.get("avg_post_5d_return"),
+                    win_rate_5d=row.get("continuation_5d_rate"),
+                    source_ref=source_ref,
+                )
+            )
+    return _dedupe_by_id(points)
+
+
 def _dedupe_by_id(items: list[dict]) -> list[dict]:
     by_id: dict[str, dict] = {}
     for item in items:
@@ -482,6 +523,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--weekly-review", default="dashboard/weekly_review.json")
     parser.add_argument("--research-source-review", default="dashboard/research_source_review.json")
     parser.add_argument("--kronos-proxy", default="dashboard/kronos_proxy_backtest.json")
+    parser.add_argument("--limit-move-study", default="dashboard/limit_move_study.json")
     parser.add_argument("--output", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -516,6 +558,10 @@ def main() -> int:
     kronos_path = Path(args.kronos_proxy)
     if kronos_path.exists():
         items.extend(build_kronos_proxy_points(json.loads(kronos_path.read_text(encoding="utf-8"))))
+        items = _dedupe_by_id(items)
+    limit_move_path = Path(args.limit_move_study)
+    if limit_move_path.exists():
+        items.extend(build_limit_move_study_points(json.loads(limit_move_path.read_text(encoding="utf-8"))))
         items = _dedupe_by_id(items)
     if args.dry_run:
         print(json.dumps({"exported": len(items), "output": str(output), "sample": items[:3]}, ensure_ascii=False, indent=2))
