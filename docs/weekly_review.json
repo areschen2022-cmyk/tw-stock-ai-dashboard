@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-08-17",
-  "generated_at": "2026-08-18T13:00:26+08:00",
+  "as_of": "2026-08-18",
+  "generated_at": "2026-08-19T04:52:12+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -35,33 +35,33 @@
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 305,
+        "week_score": 290,
         "trend": "-",
-        "today": 34
+        "today": 39
       },
       {
         "theme": "網通光通訊",
-        "week_score": 263,
-        "trend": "-",
-        "today": 33
-      },
-      {
-        "theme": "AI電力/重電/電網",
-        "week_score": 251,
-        "trend": "-",
-        "today": 34
+        "week_score": 278,
+        "trend": "急升🔥",
+        "today": 51
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 245,
+        "week_score": 264,
+        "trend": "急升🔥",
+        "today": 51
+      },
+      {
+        "theme": "AI電力/重電/電網",
+        "week_score": 256,
         "trend": "升溫↑",
-        "today": 37
+        "today": 34
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 238,
-        "trend": "-",
-        "today": 30
+        "week_score": 229,
+        "trend": "升溫↑",
+        "today": 32
       }
     ]
   },
@@ -123,8 +123,8 @@
     "status": "needs_review",
     "logic_verdict": "本週選股邏輯需要檢討，高風險項目應先降權或暫停升級。",
     "traffic_counts": {
-      "green": 2,
-      "yellow": 5,
+      "green": 0,
+      "yellow": 0,
       "red": 5
     },
     "sample_state": {
@@ -134,6 +134,13 @@
       "potential_win_rate_5d": 31.57894736842105
     },
     "issues": [
+      {
+        "code": "risk_list_dominates",
+        "severity": "high",
+        "finding": "危險名單數量明顯高於可追與等拉回，代表風控壓力偏高。",
+        "evidence": "green=0, yellow=0, red=5",
+        "recommendation": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
+      },
       {
         "code": "daily_signal_win_rate_below_50",
         "severity": "high",
@@ -157,6 +164,7 @@
       }
     ],
     "next_week_focus": [
+      "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。",
       "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。",
       "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
     ]
@@ -194,13 +202,13 @@
     },
     {
       "type": "logic_audit",
-      "target": "daily_signal_win_rate_below_50",
-      "reason": "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。"
+      "target": "risk_list_dominates",
+      "reason": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
     },
     {
       "type": "logic_audit",
-      "target": "potential_radar_win_rate_below_50",
-      "reason": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
+      "target": "daily_signal_win_rate_below_50",
+      "reason": "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。"
     }
   ],
   "rules": [
