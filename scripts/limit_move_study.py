@@ -325,13 +325,21 @@ def build_study(root: Path, years: int, universe_mode: str, max_stocks: int | No
 
     usable = [row for row in coverage if row["rows"] >= 70]
     summary = summarize_events(all_events)
+    earliest = min((row["start"] for row in usable if row["start"]), default=None)
+    latest = max((row["end"] for row in usable if row["end"]), default=None)
+    effective_years = None
+    if earliest and latest:
+        effective_years = round((date.fromisoformat(latest) - date.fromisoformat(earliest)).days / 365.25, 2)
     return {
         "as_of": as_of.isoformat(),
         "generated_at": _now(),
         "status": "ok" if all_events else "no_events",
+        "years": years,
+        "effective_years": effective_years,
         "method": {
             "name": "limit up/down event study",
             "years": years,
+            "effective_years": effective_years,
             "universe_mode": universe_mode,
             "offline_cache_only": offline,
             "limit_up_threshold_pct": LIMIT_UP_THRESHOLD,
@@ -347,8 +355,8 @@ def build_study(root: Path, years: int, universe_mode: str, max_stocks: int | No
             "stocks_requested": len(universe),
             "stocks_usable": len(usable),
             "events_total": len(all_events),
-            "earliest": min((row["start"] for row in usable if row["start"]), default=None),
-            "latest": max((row["end"] for row in usable if row["end"]), default=None),
+            "earliest": earliest,
+            "latest": latest,
             "sample": usable[:20],
         },
         "provider_status": provider.source_status(),
@@ -363,10 +371,10 @@ def build_findings(summary: dict) -> list[str]:
     findings: list[str] = []
     if up_labels:
         top = "、".join(row["label"] for row in up_labels[:4])
-        findings.append(f"近一年漲停前最常重複的條件是：{top}。先把這些條件轉成潛力股前置檢查，不要只等新聞爆量後才追。")
+        findings.append(f"樣本期間漲停前最常重複的條件是：{top}。先把這些條件轉成潛力股前置檢查，不要只等新聞爆量後才追。")
     if down_labels:
         top = "、".join(row["label"] for row in down_labels[:4])
-        findings.append(f"近一年跌停前最常重複的條件是：{top}。這些條件可回接危險名單，避免把高風險股誤列可追。")
+        findings.append(f"樣本期間跌停前最常重複的條件是：{top}。這些條件可回接危險名單，避免把高風險股誤列可追。")
     if not findings:
         findings.append("本地快取樣本尚未找到足夠漲跌停事件；需要先擴充歷史價格快取。")
     findings.append("下一階段應先擴充全市場 1 年快取，再跑 5 年與 10 年；不要直接拿目前 75 檔題材池代表全市場。")
