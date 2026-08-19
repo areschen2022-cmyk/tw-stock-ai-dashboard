@@ -1,16 +1,26 @@
 {
-  "as_of": "2026-08-18",
-  "generated_at": "2026-08-19T07:42:40+08:00",
+  "as_of": "2026-08-19",
+  "generated_at": "2026-08-20T01:16:24+08:00",
   "source": "dashboard_data + performance_data",
   "history_completed_5d": 59,
   "candidate_count": 0,
   "referenceable_count": 0,
   "strong_reference_count": 0,
   "weak_reference_count": 0,
+  "rocket_metrics": {
+    "scope": "tracked_signals_proxy",
+    "note": "只統計已被系統記錄的訊號，不代表全市場飆股召回率；全市場 Rocket Recall 需另建完整股票池歷史。",
+    "completed_10d": 0,
+    "precision_10d_10pct": null,
+    "precision_10d_15pct": null,
+    "completed_5d": 59,
+    "precision_5d_5pct": 22.033898305084744,
+    "precision_5d_10pct": 16.94915254237288
+  },
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
-    "note": "Today's exact outcome still requires future 3/5/10 trading days."
+    "note": "Today's exact outcome still requires future 3/5/10 trading days. Rocket metrics are tracked-signal precision proxies, not all-market recall."
   },
   "summary": {
     "avg_reference_return_5d": null,
