@@ -43,6 +43,17 @@ def test_red_alert_blocks_chase_action():
     assert "exit_plan" not in row
 
 
+def test_open_confirmation_can_remain_green_when_gates_pass():
+    payload = {"rows": [_row("2408")]}
+    summary = apply_dashboard_decision_gates(payload)
+    row = payload["rows"][0]
+    assert summary["entry_strict_adjusted"] == 0
+    assert row["action"] == "可追蹤突破"
+    assert row["entry_decision"] == "開盤確認"
+    assert row["decision_light"] == "green"
+    assert row["decision_state"] == "ready_confirm"
+
+
 def test_repeated_signal_downgrades_to_pullback():
     payload = {"rows": [_row("2408")]}
     summary = apply_dashboard_decision_gates(

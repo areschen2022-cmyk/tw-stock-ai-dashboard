@@ -27,6 +27,7 @@ def test_current_selection_backtest_builds_reference_profile():
                 "action": "開盤確認",
                 "themes": ["電力能源/重電"],
                 "return_5d": 3.0,
+                "return_10d": 12.0,
                 "stop_hit": False,
             },
             {
@@ -36,6 +37,7 @@ def test_current_selection_backtest_builds_reference_profile():
                 "action": "開盤確認",
                 "themes": ["電力能源/重電"],
                 "return_5d": -1.0,
+                "return_10d": -3.0,
                 "stop_hit": True,
             },
         ]
@@ -49,6 +51,9 @@ def test_current_selection_backtest_builds_reference_profile():
     assert candidate["historical_profile"]["completed"] == 2
     assert candidate["historical_profile"]["avg_return_5d"] == 1.0
     assert candidate["historical_profile"]["win_rate_5d"] == 50.0
+    assert payload["rocket_metrics"]["scope"] == "tracked_signals_proxy"
+    assert payload["rocket_metrics"]["precision_10d_10pct"] == 50.0
+    assert payload["rocket_metrics"]["precision_10d_15pct"] == 0.0
 
 
 def test_current_selection_context_moves_weak_chase_to_pullback():

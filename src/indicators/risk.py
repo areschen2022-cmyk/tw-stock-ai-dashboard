@@ -19,10 +19,11 @@ def risk_score(
     reasons: list[str] = []
     if not prices.empty and len(prices) >= 20:
         close = prices.sort_values("date")["close"].astype(float)
-        distance = abs(close.iloc[-1] / close.rolling(20).mean().iloc[-1] - 1)
-        if distance < 0.03:
+        ma20 = close.rolling(20).mean().iloc[-1]
+        distance = close.iloc[-1] / ma20 - 1 if ma20 else 0
+        if distance > 0.12:
             score -= 5
-            reasons.append("價格貼近 MA20，追價空間較有限")
+            reasons.append(f"價格高於 MA20 {distance * 100:.1f}%，短線延伸風險升高")
         vol20 = close.pct_change().tail(20).std()
         vol120 = close.pct_change().tail(120).std()
         if pd.notna(vol120) and vol120 > 0 and vol20 > vol120 * 1.5:

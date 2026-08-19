@@ -35,7 +35,8 @@ def trade_plan(total_score: int, prices: pd.DataFrame, risk_reasons: list[str]) 
     vol_str = f"{vol_5min_threshold / 1000:.0f} 張" if vol_5min_threshold else "日均量 5%"
 
     stop_ref = min(ma5, prev_low, low3)
-    has_red_risk = any("紅色警戒" in str(reason) or "風險" in str(reason) for reason in risk_reasons)
+    risk_text = " ".join(str(reason) for reason in risk_reasons)
+    has_red_risk = any(term in risk_text for term in ("紅色警戒", "風險過高", "不得進場", "停止進場"))
 
     if has_red_risk:
         action = "避免"

@@ -23,12 +23,12 @@ def opportunity_score(
         close = df["close"].astype(float)
         volume = df["volume"].astype(float)
         vol_ma20 = volume.rolling(20).mean().iloc[-1]
-        if vol_ma20 > 0 and volume.iloc[-1] >= vol_ma20 * 2:
-            score += 10
-            reasons.append(f"成交量放大 {volume.iloc[-1] / vol_ma20:.1f} 倍")
-        if close.iloc[-1] >= close.iloc[-21:-1].max():
-            score += 8
-            reasons.append("突破近 20 日高點")
+        if vol_ma20 > 0 and volume.iloc[-1] >= vol_ma20 * 3:
+            score += 6
+            reasons.append(f"異常爆量 {volume.iloc[-1] / vol_ma20:.1f} 倍，僅列催化不追價")
+        if len(close) >= 61 and close.iloc[-1] >= close.iloc[-61:-1].max():
+            score += 6
+            reasons.append("突破近 60 日高點，屬中期確認訊號")
 
     if theme_details:
         tier_bonus = sum(TIER_BONUS.get(item.get("tier", "beneficiary"), 3) for item in theme_details)

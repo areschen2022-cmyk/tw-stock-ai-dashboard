@@ -54,10 +54,11 @@ def build_current_selection_backtest(dashboard_payload: dict, performance_payloa
         "referenceable_count": len(referenceable),
         "strong_reference_count": len(strong),
         "weak_reference_count": len(weak),
+        "rocket_metrics": _rocket_metrics(history),
         "method": {
             "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
             "min_reference_sample": MIN_REFERENCE_SAMPLE,
-            "note": "Today's exact outcome still requires future 3/5/10 trading days.",
+            "note": "Today's exact outcome still requires future 3/5/10 trading days. Rocket metrics are tracked-signal precision proxies, not all-market recall.",
         },
         "summary": _summary(referenceable),
         "strong_references": strong[:8],
@@ -266,6 +267,23 @@ def _stats(items: list[dict]) -> dict:
         "avg_return_5d": round(sum(returns) / completed, 2) if completed else None,
         "stop_hit_rate": _pct(sum(1 for value in stop_values if value), len(stop_values)),
         "confidence": _confidence_label(completed),
+    }
+
+
+def _rocket_metrics(history: list[dict]) -> dict:
+    with_10d = [item for item in history if item.get("return_10d") is not None]
+    with_5d = [item for item in history if item.get("return_5d") is not None]
+    ten_day_returns = [_num(item.get("return_10d")) for item in with_10d]
+    five_day_returns = [_num(item.get("return_5d")) for item in with_5d]
+    return {
+        "scope": "tracked_signals_proxy",
+        "note": "只統計已被系統記錄的訊號，不代表全市場飆股召回率；全市場 Rocket Recall 需另建完整股票池歷史。",
+        "completed_10d": len(ten_day_returns),
+        "precision_10d_10pct": _pct(sum(1 for value in ten_day_returns if value >= 10), len(ten_day_returns)),
+        "precision_10d_15pct": _pct(sum(1 for value in ten_day_returns if value >= 15), len(ten_day_returns)),
+        "completed_5d": len(five_day_returns),
+        "precision_5d_5pct": _pct(sum(1 for value in five_day_returns if value >= 5), len(five_day_returns)),
+        "precision_5d_10pct": _pct(sum(1 for value in five_day_returns if value >= 10), len(five_day_returns)),
     }
 
 

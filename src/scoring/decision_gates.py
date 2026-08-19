@@ -59,17 +59,6 @@ def apply_dashboard_decision_gates(
             gate_tags.append("進場確認不足")
             gate_reasons.append("進場確認不足")
 
-        if was_chase_like and _is_open_confirm(original_entry):
-            row["entry_decision"] = PULLBACK_ACTION
-            row["decision_light"] = "yellow"
-            row["decision_light_label"] = PULLBACK_ACTION
-            row["decision_light_reason"] = _join_note(
-                row.get("decision_light_reason"),
-                "開盤確認不足，先等拉回或量價同時確認。",
-            )
-            gate_tags.append("進場確認不足")
-            gate_reasons.append("進場確認不足")
-
         if was_chase_like:
             repeated = repeated_lookup.get(stock_id) or {}
             recent_count = _int(repeated.get("recent_count"))
@@ -112,6 +101,15 @@ def apply_dashboard_decision_gates(
                 reasons_count[reason] = reasons_count.get(reason, 0) + 1
         else:
             row["decision_gate"] = {"applied": False}
+            if was_chase_like and str(row.get("action") or "") != RED_ACTION:
+                if not row.get("decision_light"):
+                    row["decision_light"] = "green"
+                if not row.get("decision_light_label"):
+                    row["decision_light_label"] = "可盯"
+                if not row.get("decision_light_reason"):
+                    row["decision_light_reason"] = "強度足夠且通過量能、整理、題材與風險閘門；等待開盤觸發。"
+
+        _assign_decision_state(row)
 
     summary = {
         "applied": changed,
@@ -185,6 +183,9 @@ def _repeated_signal_is_weak(repeated: dict[str, Any]) -> bool:
 
 
 def _has_volume_confirmation(row: dict[str, Any]) -> bool:
+    tags = _structured_terms(row)
+    if tags.intersection({"放量突破", "量能轉強", "量增整理", "突破整理"}):
+        return True
     text = _row_text(row)
     if any(term in text for term in ("量能不漲", "量縮", "量能未確認", "放量不漲")):
         return False
@@ -192,6 +193,9 @@ def _has_volume_confirmation(row: dict[str, Any]) -> bool:
 
 
 def _has_consolidation_base(row: dict[str, Any]) -> bool:
+    tags = _structured_terms(row)
+    if tags.intersection({"突破整理", "箱型整理", "收斂整理", "K線轉強:突破整理", "底部轉強"}):
+        return True
     text = _row_text(row)
     if any(term in text for term in ("追高", "過熱", "急拉", "乖離", "已噴", "衝高")):
         return False
@@ -214,6 +218,42 @@ def _has_non_theme_confirmation(row: dict[str, Any]) -> bool:
         if item.get("chain_layer_label") or item.get("role") or item.get("beneficiary_label"):
             return True
     return False
+
+
+def _assign_decision_state(row: dict[str, Any]) -> None:
+    action = str(row.get("action") or "")
+    entry = str(row.get("entry_decision") or "")
+    light = str(row.get("decision_light") or "")
+
+    if light == "red" or action == RED_ACTION or entry == RED_ACTION:
+        row["decision_state"] = "blocked"
+        row["decision_state_label"] = "風控擋下"
+        return
+
+    if "等拉回" in action or "等拉回" in entry or light == "yellow":
+        row["decision_state"] = "pullback_wait"
+        row["decision_state_label"] = "等拉回"
+        return
+
+    if _is_open_confirm(entry) or action in CHASE_ACTIONS or "可追" in action:
+        row["decision_state"] = "ready_confirm"
+        row["decision_state_label"] = "開盤確認"
+        return
+
+    if str(row.get("grade") or "") in {"S+", "S", "A", "B"}:
+        row["decision_state"] = "discovery"
+        row["decision_state_label"] = "潛力觀察"
+        return
+
+    row["decision_state"] = "watch"
+    row["decision_state_label"] = "只觀察"
+
+
+def _structured_terms(row: dict[str, Any]) -> set[str]:
+    terms: set[str] = set()
+    for key in ("trigger_tags", "pattern_tags", "selection_quality_notes", "guardrail_tags"):
+        terms.update(str(item).strip() for item in row.get(key) or [] if str(item).strip())
+    return terms
 
 
 def _append_unique(row: dict[str, Any], key: str, values: list[str]) -> None:

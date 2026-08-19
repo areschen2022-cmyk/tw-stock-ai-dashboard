@@ -274,7 +274,10 @@ class ScoreEngine:
             pe_warning=float(self.config.get("risk", {}).get("pe_warning", 80)),
             pb_warning=float(self.config.get("risk", {}).get("pb_warning", 15)),
         )
-        total = max(min(t_score + c_score + f_score + r_score + market_adj + overseas_adj + opportunity_adj, 100), 0)
+        # Risk is a guardrail, not alpha. A clean risk check should be neutral
+        # instead of giving every stock a free +20 score boost.
+        risk_adjustment = r_score - 20
+        total = max(min(t_score + c_score + f_score + risk_adjustment + market_adj + overseas_adj + opportunity_adj, 100), 0)
         thresholds = self.config.get("thresholds", {})
         if total >= int(thresholds.get("buy_watch", 65)):
             label = "BUY_WATCH"

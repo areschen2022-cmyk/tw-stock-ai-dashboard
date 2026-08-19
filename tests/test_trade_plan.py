@@ -30,6 +30,13 @@ def test_trade_plan_separates_strength_from_entry_confirmation() -> None:
     assert any("不追超過" in item for item in plan["entry_checklist"])
 
 
+def test_trade_plan_does_not_treat_acceptable_risk_as_red_risk() -> None:
+    plan = trade_plan(88, _prices(), ["風險條件可接受"])
+
+    assert plan["action"] == "可追蹤突破"
+    assert plan["entry_decision"] == "開盤確認"
+
+
 def test_trade_plan_marks_mid_score_as_cancel_without_volume_price_confirmation() -> None:
     plan = trade_plan(68, _prices(), [])
 
