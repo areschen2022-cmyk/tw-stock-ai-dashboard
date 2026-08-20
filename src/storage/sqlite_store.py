@@ -11,6 +11,7 @@ import pandas as pd
 from src.backtest.signal_lab import grade_return_summary
 from src.scoring.score_engine import StockScore
 from src.scoring.grade import grade_label
+from src.scoring.versioning import DECISION_VERSION, SCORE_VERSION, UNIVERSE_VERSION
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 
@@ -73,6 +74,13 @@ class SQLiteStore:
                 conn.execute("ALTER TABLE daily_scores ADD COLUMN overseas_adjustment INTEGER NOT NULL DEFAULT 0")
             if "opportunity_score" not in columns:
                 conn.execute("ALTER TABLE daily_scores ADD COLUMN opportunity_score INTEGER NOT NULL DEFAULT 0")
+            for column, definition in [
+                ("score_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("decision_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("universe_version", "TEXT NOT NULL DEFAULT 'unknown'"),
+            ]:
+                if column not in columns:
+                    conn.execute(f"ALTER TABLE daily_scores ADD COLUMN {column} {definition}")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS watch_signals (
@@ -107,6 +115,13 @@ class SQLiteStore:
                 ("entry_triggered", "INTEGER"),
                 ("guardrail_tags_json", "TEXT NOT NULL DEFAULT '[]'"),
                 ("guardrail_notes_json", "TEXT NOT NULL DEFAULT '[]'"),
+                ("mfe_5d", "REAL"),
+                ("mfe_10d", "REAL"),
+                ("mae_5d", "REAL"),
+                ("mae_10d", "REAL"),
+                ("score_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("decision_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("universe_version", "TEXT NOT NULL DEFAULT 'unknown'"),
             ]:
                 if column not in watch_columns:
                     conn.execute(f"ALTER TABLE watch_signals ADD COLUMN {column} {definition}")
@@ -217,6 +232,11 @@ class SQLiteStore:
                 ("feedback_notes_json", "TEXT NOT NULL DEFAULT '[]'"),
                 ("radar_layer", "TEXT"),
                 ("radar_layer_label", "TEXT"),
+                ("discovery_score", "INTEGER NOT NULL DEFAULT 0"),
+                ("discovery_components_json", "TEXT NOT NULL DEFAULT '{}'"),
+                ("score_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("decision_version", "TEXT NOT NULL DEFAULT 'v1_unversioned'"),
+                ("universe_version", "TEXT NOT NULL DEFAULT 'unknown'"),
             ]:
                 if column not in radar_columns:
                     conn.execute(f"ALTER TABLE potential_radar_signals ADD COLUMN {column} {definition}")
@@ -1022,8 +1042,9 @@ class SQLiteStore:
                 INSERT OR REPLACE INTO daily_scores (
                     as_of_date, stock_id, total_score, label, price,
                     technical_score, chip_score, fundamental_score, risk_score,
-                    market_adjustment, overseas_adjustment, opportunity_score, reasons_json, warnings_json
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    market_adjustment, overseas_adjustment, opportunity_score, reasons_json, warnings_json,
+                    score_version, decision_version, universe_version
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     as_of.isoformat(),
@@ -1040,6 +1061,9 @@ class SQLiteStore:
                     score.opportunity_score,
                     json.dumps(score.reasons, ensure_ascii=False),
                     json.dumps(score.warnings, ensure_ascii=False),
+                    SCORE_VERSION,
+                    DECISION_VERSION,
+                    UNIVERSE_VERSION,
                 ),
             )
             self._save_daily_price_conn(conn, score, as_of, source="score")
@@ -1241,8 +1265,9 @@ class SQLiteStore:
                         signal_date, stock_id, name, total_score, label, action,
                         entry_price, entry_condition, stop_reference, themes_json,
                         stop_price, entry_limit_price, vol_5min_threshold, grade,
-                        guardrail_tags_json, guardrail_notes_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        guardrail_tags_json, guardrail_notes_json,
+                        score_version, decision_version, universe_version
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         as_of.isoformat(),
@@ -1261,6 +1286,9 @@ class SQLiteStore:
                         _grade(score.total_score),
                         json.dumps(score.guardrail_tags, ensure_ascii=False),
                         json.dumps(score.guardrail_notes, ensure_ascii=False),
+                        SCORE_VERSION,
+                        DECISION_VERSION,
+                        UNIVERSE_VERSION,
                     ),
                 )
 
@@ -1487,8 +1515,9 @@ class SQLiteStore:
                         position_hint_label, lifecycle_stage, lifecycle_stage_label,
                         lifecycle_reason, smart_money, smart_money_label, smart_money_reason,
                         smart_money_score, branch_zscore_proxy, institutional_follow, signal_combo,
-                        feedback_penalty, feedback_notes_json, radar_layer, radar_layer_label
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        feedback_penalty, feedback_notes_json, radar_layer, radar_layer_label,
+                        discovery_score, discovery_components_json, score_version, decision_version, universe_version
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(item.get("signal_date") or as_of.isoformat()),
@@ -1527,6 +1556,11 @@ class SQLiteStore:
                         json.dumps(item.get("feedback_notes") or [], ensure_ascii=False),
                         item.get("radar_layer"),
                         item.get("radar_layer_label"),
+                        item.get("discovery_score") or item.get("potential_score") or 0,
+                        json.dumps(item.get("discovery_components") or {}, ensure_ascii=False),
+                        SCORE_VERSION,
+                        DECISION_VERSION,
+                        UNIVERSE_VERSION,
                     ),
                 )
 
@@ -1662,6 +1696,10 @@ class SQLiteStore:
                 return_3d = _pct_return(price_3d, entry_price)
                 return_5d = _pct_return(price_5d, entry_price)
                 return_10d = _pct_return(price_10d, entry_price)
+                mfe_5d = _mfe_return(future_rows[:5], entry_price)
+                mfe_10d = _mfe_return(future_rows[:10], entry_price)
+                mae_5d = _mae_return(future_rows[:5], entry_price)
+                mae_10d = _mae_return(future_rows[:10], entry_price)
                 stop_hit = None
                 if stop_price is not None:
                     stop_hit = int(any(price <= float(stop_price) for price in lows[:5]))
@@ -1677,6 +1715,10 @@ class SQLiteStore:
                         return_3d = COALESCE(?, return_3d),
                         return_5d = COALESCE(?, return_5d),
                         return_10d = COALESCE(?, return_10d),
+                        mfe_5d = COALESCE(?, mfe_5d),
+                        mfe_10d = COALESCE(?, mfe_10d),
+                        mae_5d = COALESCE(?, mae_5d),
+                        mae_10d = COALESCE(?, mae_10d),
                         stop_hit = COALESCE(?, stop_hit),
                         entry_triggered = COALESCE(?, entry_triggered)
                     WHERE signal_date = ? AND stock_id = ?
@@ -1688,6 +1730,10 @@ class SQLiteStore:
                         return_3d,
                         return_5d,
                         return_10d,
+                        mfe_5d,
+                        mfe_10d,
+                        mae_5d,
+                        mae_10d,
                         stop_hit,
                         entry_triggered,
                         signal_date,
@@ -1801,7 +1847,9 @@ class SQLiteStore:
                 """
                 SELECT signal_date, stock_id, name, grade, total_score, entry_price,
                        entry_triggered, return_3d, return_5d, return_10d, stop_hit, action, themes_json,
-                       guardrail_tags_json, guardrail_notes_json
+                       guardrail_tags_json, guardrail_notes_json,
+                       mfe_5d, mfe_10d, mae_5d, mae_10d,
+                       score_version, decision_version, universe_version
                 FROM watch_signals
                 WHERE signal_date >= ?
                 ORDER BY signal_date DESC, total_score DESC
@@ -1814,6 +1862,8 @@ class SQLiteStore:
                 signal_date, stock_id, name, grade, total_score, entry_price,
                 entry_triggered, return_3d, return_5d, return_10d, stop_hit, action,
                 themes_json, guardrail_tags_json, guardrail_notes_json,
+                mfe_5d, mfe_10d, mae_5d, mae_10d,
+                score_version, decision_version, universe_version,
             ) = row
             status_code = _return_status_code(signal_date, return_5d, as_of, horizon_days=5)
             items.append(
@@ -1828,11 +1878,18 @@ class SQLiteStore:
                     "return_3d": return_3d,
                     "return_5d": return_5d,
                     "return_10d": return_10d,
+                    "mfe_5d": mfe_5d,
+                    "mfe_10d": mfe_10d,
+                    "mae_5d": mae_5d,
+                    "mae_10d": mae_10d,
                     "stop_hit": _bool_or_none(stop_hit),
                     "action": action,
                     "themes": json.loads(themes_json or "[]"),
                     "guardrail_tags": json.loads(guardrail_tags_json or "[]"),
                     "guardrail_notes": json.loads(guardrail_notes_json or "[]"),
+                    "score_version": score_version or "v1_unversioned",
+                    "decision_version": decision_version or "v1_unversioned",
+                    "universe_version": universe_version or "unknown",
                     "status_code": status_code,
                     "status_label": {
                         "completed_5d": "completed",
@@ -2712,6 +2769,24 @@ def _pct_return(price: float | None, entry: float | None) -> float | None:
     if price is None or not entry:
         return None
     return (float(price) - float(entry)) / float(entry) * 100
+
+
+def _mfe_return(rows: list[tuple], entry: float | None) -> float | None:
+    if not rows or not entry:
+        return None
+    highs = [float(row[3]) for row in rows if len(row) > 3 and row[3] is not None]
+    if not highs:
+        return None
+    return _pct_return(max(highs), entry)
+
+
+def _mae_return(rows: list[tuple], entry: float | None) -> float | None:
+    if not rows or not entry:
+        return None
+    lows = [float(row[2]) for row in rows if len(row) > 2 and row[2] is not None]
+    if not lows:
+        return None
+    return _pct_return(min(lows), entry)
 
 
 def _nth_trading_close(rows: list[tuple], n: int) -> float | None:

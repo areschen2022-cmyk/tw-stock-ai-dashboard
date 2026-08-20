@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from src.scoring.versioning import DECISION_VERSION, SCORE_VERSION, UNIVERSE_VERSION
+
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 MIN_REFERENCE_SAMPLE = 10
@@ -19,10 +21,14 @@ def build_current_selection_backtest(dashboard_payload: dict, performance_payloa
     """
 
     rows = list(dashboard_payload.get("rows") or [])
-    history = [
+    all_history = [
         item
         for item in (performance_payload.get("items") or [])
         if item.get("return_5d") is not None and item.get("signal_date") != dashboard_payload.get("as_of")
+    ]
+    history = [
+        item for item in all_history
+        if item.get("score_version") == SCORE_VERSION and item.get("decision_version") == DECISION_VERSION
     ]
     candidates = [_candidate_row(row, history) for row in rows if _is_candidate(row)]
     candidates.sort(key=lambda row: (_action_priority(row), row.get("score", 0)), reverse=True)
@@ -49,6 +55,10 @@ def build_current_selection_backtest(dashboard_payload: dict, performance_payloa
         "as_of": dashboard_payload.get("as_of"),
         "generated_at": datetime.now(TAIPEI).isoformat(timespec="seconds"),
         "source": "dashboard_data + performance_data",
+        "score_version": SCORE_VERSION,
+        "decision_version": DECISION_VERSION,
+        "universe_version": UNIVERSE_VERSION,
+        "history_completed_5d_all_versions": len(all_history),
         "history_completed_5d": len(history),
         "candidate_count": len(candidates),
         "referenceable_count": len(referenceable),
@@ -58,7 +68,7 @@ def build_current_selection_backtest(dashboard_payload: dict, performance_payloa
         "method": {
             "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
             "min_reference_sample": MIN_REFERENCE_SAMPLE,
-            "note": "Today's exact outcome still requires future 3/5/10 trading days. Rocket metrics are tracked-signal precision proxies, not all-market recall.",
+            "note": "V2 candidates are compared only with V2 history. V1/unversioned history is retained but never used as same-condition reference.",
         },
         "summary": _summary(referenceable),
         "strong_references": strong[:8],
@@ -139,8 +149,12 @@ def _candidate_row(row: dict, history: list[dict]) -> dict:
     theme_items = [item for item in history if _theme_overlap(themes, item.get("themes") or [])]
     fallback_pool = same_profile or _dedupe_items([*grade_items, *action_items, *theme_items])
 
-    profile = _stats(same_profile if len(same_profile) >= MIN_REFERENCE_SAMPLE else fallback_pool)
-    profile["match_type"] = "same_grade_action_theme" if len(same_profile) >= MIN_REFERENCE_SAMPLE else "component_fallback"
+    usable_pool = same_profile if len(same_profile) >= MIN_REFERENCE_SAMPLE else fallback_pool
+    profile = _stats(usable_pool)
+    if not history:
+        profile["match_type"] = "insufficient_v2_history"
+    else:
+        profile["match_type"] = "same_grade_action_theme" if len(same_profile) >= MIN_REFERENCE_SAMPLE else "component_fallback"
     profile["same_profile_completed"] = len(same_profile)
 
     return {
@@ -151,6 +165,9 @@ def _candidate_row(row: dict, history: list[dict]) -> dict:
         "action": action,
         "entry_decision": row.get("entry_decision"),
         "decision_light": row.get("decision_light"),
+        "score_version": SCORE_VERSION,
+        "decision_version": DECISION_VERSION,
+        "universe_version": UNIVERSE_VERSION,
         "themes": themes,
         "trigger_tags": row.get("trigger_tags") or [],
         "historical_profile": profile,
@@ -271,17 +288,24 @@ def _stats(items: list[dict]) -> dict:
 
 
 def _rocket_metrics(history: list[dict]) -> dict:
-    with_10d = [item for item in history if item.get("return_10d") is not None]
-    with_5d = [item for item in history if item.get("return_5d") is not None]
-    ten_day_returns = [_num(item.get("return_10d")) for item in with_10d]
-    five_day_returns = [_num(item.get("return_5d")) for item in with_5d]
+    with_10d = [item for item in history if _metric_value(item, "mfe_10d", "return_10d") is not None]
+    with_5d = [item for item in history if _metric_value(item, "mfe_5d", "return_5d") is not None]
+    ten_day_returns = [_num(_metric_value(item, "mfe_10d", "return_10d")) for item in with_10d]
+    five_day_returns = [_num(_metric_value(item, "mfe_5d", "return_5d")) for item in with_5d]
+    mae_5d = [_num(item.get("mae_5d")) for item in history if item.get("mae_5d") is not None]
+    mae_10d = [_num(item.get("mae_10d")) for item in history if item.get("mae_10d") is not None]
     return {
         "scope": "tracked_signals_proxy",
-        "note": "只統計已被系統記錄的訊號，不代表全市場飆股召回率；全市場 Rocket Recall 需另建完整股票池歷史。",
+        "score_version": SCORE_VERSION,
+        "note": "只統計已被系統記錄的 V2 訊號，不代表全市場飆股召回率；MFE/MAE 未回填時才使用收盤報酬近似。",
         "completed_10d": len(ten_day_returns),
+        "mfe_10d_avg": round(sum(ten_day_returns) / len(ten_day_returns), 2) if ten_day_returns else None,
+        "mae_10d_avg": round(sum(mae_10d) / len(mae_10d), 2) if mae_10d else None,
         "precision_10d_10pct": _pct(sum(1 for value in ten_day_returns if value >= 10), len(ten_day_returns)),
         "precision_10d_15pct": _pct(sum(1 for value in ten_day_returns if value >= 15), len(ten_day_returns)),
         "completed_5d": len(five_day_returns),
+        "mfe_5d_avg": round(sum(five_day_returns) / len(five_day_returns), 2) if five_day_returns else None,
+        "mae_5d_avg": round(sum(mae_5d) / len(mae_5d), 2) if mae_5d else None,
         "precision_5d_5pct": _pct(sum(1 for value in five_day_returns if value >= 5), len(five_day_returns)),
         "precision_5d_10pct": _pct(sum(1 for value in five_day_returns if value >= 10), len(five_day_returns)),
     }
@@ -300,6 +324,8 @@ def _summary(rows: list[dict]) -> dict:
 
 def _interpret(profile: dict) -> str:
     completed = int(profile.get("completed") or 0)
+    if profile.get("match_type") == "insufficient_v2_history":
+        return "V2 歷史樣本尚不足，不混用 V1；先只作追蹤。"
     if completed < MIN_REFERENCE_SAMPLE:
         return "樣本不足，不直接影響決策；只作追蹤參考。"
     avg_return = _num(profile.get("avg_return_5d"))
@@ -313,6 +339,8 @@ def _interpret(profile: dict) -> str:
 
 def _reference_label(candidate: dict) -> str:
     profile = candidate.get("historical_profile") or {}
+    if profile.get("match_type") == "insufficient_v2_history":
+        return "V2樣本不足"
     completed = int(profile.get("completed") or 0)
     if completed < MIN_REFERENCE_SAMPLE:
         return "樣本不足"
@@ -353,6 +381,13 @@ def _num(value) -> float:
         return float(value)
     except (TypeError, ValueError):
         return 0.0
+
+
+def _metric_value(item: dict, primary: str, fallback: str):
+    value = item.get(primary)
+    if value is not None:
+        return value
+    return item.get(fallback)
 
 
 def _normalize(value: str) -> str:

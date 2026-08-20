@@ -225,7 +225,7 @@ def _assign_decision_state(row: dict[str, Any]) -> None:
     entry = str(row.get("entry_decision") or "")
     light = str(row.get("decision_light") or "")
 
-    if light == "red" or action == RED_ACTION or entry == RED_ACTION:
+    if _is_true_blocked(row):
         row["decision_state"] = "blocked"
         row["decision_state_label"] = "風控擋下"
         return
@@ -247,6 +247,16 @@ def _assign_decision_state(row: dict[str, Any]) -> None:
 
     row["decision_state"] = "watch"
     row["decision_state_label"] = "只觀察"
+
+
+def _is_true_blocked(row: dict[str, Any]) -> bool:
+    if row.get("blocked_by_exit_risk") is True:
+        return True
+    gate = row.get("decision_gate") or {}
+    gate_reasons = " ".join(str(item) for item in gate.get("reasons") or [])
+    text = _row_text(row) + " " + gate_reasons
+    hard_terms = ("紅色警戒", "出場警訊", "危險分", "法人賣", "融資增", "股價轉弱", "exit risk")
+    return any(term in text for term in hard_terms)
 
 
 def _structured_terms(row: dict[str, Any]) -> set[str]:

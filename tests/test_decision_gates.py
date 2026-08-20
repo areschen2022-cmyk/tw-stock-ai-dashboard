@@ -54,6 +54,39 @@ def test_open_confirmation_can_remain_green_when_gates_pass():
     assert row["decision_state"] == "ready_confirm"
 
 
+def test_low_score_is_watch_not_blocked_even_if_legacy_light_red():
+    payload = {
+        "rows": [
+            _row(
+                "1234",
+                score=42,
+                grade="-",
+                action="只觀察",
+                entry_decision="只觀察",
+                decision_light="red",
+                decision_light_reason="分數不足",
+                trigger_tags=[],
+            )
+        ]
+    }
+    apply_dashboard_decision_gates(payload)
+    row = payload["rows"][0]
+    assert row["decision_state"] == "watch"
+    assert row["decision_state_label"] == "只觀察"
+
+
+def test_true_exit_risk_is_blocked():
+    payload = {"rows": [_row("5274", action="避免", entry_decision="避免", decision_light="red", blocked_by_exit_risk=True)]}
+    apply_dashboard_decision_gates(payload)
+    assert payload["rows"][0]["decision_state"] == "blocked"
+
+
+def test_early_potential_is_discovery_when_not_entry_ready():
+    payload = {"rows": [_row("2408", score=68, grade="B", action="只觀察", entry_decision="只觀察", decision_light="gray")]}
+    apply_dashboard_decision_gates(payload)
+    assert payload["rows"][0]["decision_state"] == "discovery"
+
+
 def test_repeated_signal_downgrades_to_pullback():
     payload = {"rows": [_row("2408")]}
     summary = apply_dashboard_decision_gates(

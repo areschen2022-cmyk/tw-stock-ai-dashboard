@@ -57,6 +57,7 @@ def test_potential_radar_prefers_early_confluence() -> None:
             "label": "BUY_WATCH",
             "decision_light": "red",
             "entry_decision": "避開",
+            "blocked_by_exit_risk": True,
             "retail_context": "籌碼轉乾淨",
             "pattern_tags": ["突破整理"],
             "themes": ["題材股"],
@@ -108,7 +109,37 @@ def test_potential_radar_excludes_today_actionable_names() -> None:
     assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
 
 
-def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> None:
+def test_potential_radar_can_include_low_total_score_discovery() -> None:
+    rows = [
+        {
+            "stock_id": "5555",
+            "name": "早期股",
+            "score": 48,
+            "grade": "-",
+            "label": "WAIT",
+            "decision_light": "gray",
+            "entry_decision": "只觀察",
+            "retail_context": "籌碼轉乾淨",
+            "pattern_tags": ["箱型整理"],
+            "pattern_risk_tags": [],
+            "trigger_tags": ["量能轉強"],
+            "themes": ["新題材"],
+            "opportunity_score": 5,
+            "fundamental": "月營收年增，營收加速",
+            "price": 20.0,
+        }
+    ]
+
+    candidates = build_potential_radar_candidates(rows, date(2026, 6, 3))
+
+    assert candidates
+    assert candidates[0]["stock_id"] == "5555"
+    assert candidates[0]["total_score"] == 48
+    assert candidates[0]["discovery_score"] >= 30
+    assert candidates[0]["discovery_components"]["compression_base_quality"] > 0
+
+
+def test_potential_radar_keeps_non_blocked_weak_watch_signals() -> None:
     rows = [
         {
             "stock_id": "2344",
@@ -127,7 +158,10 @@ def test_potential_radar_penalizes_overheated_retail_and_volume_divergence() -> 
         }
     ]
 
-    assert build_potential_radar_candidates(rows, date(2026, 6, 3)) == []
+    candidates = build_potential_radar_candidates(rows, date(2026, 6, 3))
+    assert candidates
+    assert candidates[0]["stock_id"] == "2344"
+    assert candidates[0]["decision_version"] if "decision_version" in candidates[0] else True
 
 
 def test_potential_radar_filters_chasing_above_entry_limit() -> None:

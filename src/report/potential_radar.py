@@ -5,6 +5,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from src.scoring.versioning import DECISION_VERSION, SCORE_VERSION, UNIVERSE_VERSION
+
 
 MIN_FEEDBACK_COMPLETED = 10
 WEAK_FEEDBACK_WIN_RATE = 45.0
@@ -55,17 +57,17 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         stock_id = str(row.get("stock_id") or "")
         if not stock_id or row.get("label") == "DATA_INSUFFICIENT":
             continue
-        if str(row.get("decision_light") or "") == "red":
+        if _blocked_by_exit_risk(row):
             continue
         if _is_actionable_today(row):
             continue
 
         score = _int(row.get("score"))
         grade = str(row.get("grade") or "")
-        if score < 55 or score >= 96:
+        if score >= 96:
             continue
 
-        points, tags = _score_row(row, score, grade)
+        points, tags, components = _discovery_score(row, score, grade)
         chase_risk = _chase_risk(row, score, grade)
         if chase_risk["level"] == "high":
             continue
@@ -116,9 +118,14 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
                 "signal_date": as_of.isoformat(),
                 "stock_id": stock_id,
                 "name": row.get("name") or "",
+                "score_version": SCORE_VERSION,
+                "decision_version": DECISION_VERSION,
+                "universe_version": UNIVERSE_VERSION,
                 "grade": grade,
                 "total_score": score,
                 "potential_score": points,
+                "discovery_score": points,
+                "discovery_components": components,
                 "action": row.get("entry_decision") or row.get("action") or "",
                 "themes": list(row.get("themes") or []),
                 "entry_price": row.get("price"),
@@ -175,6 +182,100 @@ def build_potential_radar_candidates(rows: list[dict], as_of: date, limit: int =
         if len(unique) >= limit:
             break
     return unique
+
+
+def _blocked_by_exit_risk(row: dict[str, Any]) -> bool:
+    text = _text(row.get("decision_light_reason"), row.get("action_context_reason"), *(row.get("warnings") or []), *(row.get("trigger_tags") or []))
+    if row.get("blocked_by_exit_risk") is True:
+        return True
+    return _has_any(text, ["紅色警戒", "出場警訊", "危險分", "法人賣", "融資增", "股價轉弱"])
+
+
+def _discovery_score(row: dict[str, Any], score: int, grade: str) -> tuple[int, list[str], dict[str, int]]:
+    """Independent early-potential score.
+
+    This intentionally does not require a high total_score. Total score answers
+    "can I trade it today"; discovery_score answers "is something forming early?"
+    """
+
+    points, legacy_tags = _score_row(row, score, grade)
+    text = _text(
+        row.get("trigger_summary"),
+        row.get("technical"),
+        row.get("chip"),
+        row.get("fundamental"),
+        row.get("risk"),
+        row.get("retail_context"),
+        row.get("retail_context_reason"),
+        row.get("opportunity"),
+        *(row.get("trigger_tags") or []),
+        *(row.get("pattern_tags") or []),
+    )
+    pattern_tags = [str(tag) for tag in row.get("pattern_tags") or [] if tag]
+    pattern_risks = [str(tag) for tag in row.get("pattern_risk_tags") or [] if tag]
+    themes = [str(theme) for theme in row.get("themes") or [] if theme]
+
+    components = {
+        "compression_base_quality": 0,
+        "rs_acceleration": 0,
+        "volume_structure": 0,
+        "institutional_acceleration": 0,
+        "revenue_acceleration": 0,
+        "theme_freshness_catalyst": 0,
+    }
+    tags: list[str] = []
+
+    if pattern_tags and not pattern_risks:
+        components["compression_base_quality"] += 15
+        tags.append(f"K線轉強:{pattern_tags[0]}")
+    if _has_any(text, ["整理", "箱型", "收斂", "底部", "盤整", "低位"]):
+        components["compression_base_quality"] += 10
+        tags.append("底部/整理品質")
+    components["compression_base_quality"] = min(25, components["compression_base_quality"])
+
+    if _has_any(text, ["轉強", "突破", "站上", "強度中高", "分數已成形"]):
+        components["rs_acceleration"] += 12
+        tags.append("相對強度轉強")
+    if grade in {"B", "A", "S"} or 60 <= score < 90:
+        components["rs_acceleration"] += 8
+        tags.append("強度逐步成形")
+    components["rs_acceleration"] = min(20, components["rs_acceleration"])
+
+    if _has_any(text, ["量能轉強", "量增", "放量", "爆量", "成交"]):
+        components["volume_structure"] += 10
+        tags.append("量能結構改善")
+    if _has_any(text, ["放量不漲", "量能不漲"]):
+        components["volume_structure"] -= 8
+        tags.append("量能不漲")
+    components["volume_structure"] = max(0, min(15, components["volume_structure"]))
+
+    if _has_any(text, ["法人共振", "法人開始同步", "外資買", "投信買"]):
+        components["institutional_acceleration"] += 12
+        tags.append("法人開始同步")
+    if _has_any(text, ["散戶減少", "籌碼轉乾淨", "散戶籌碼改善"]):
+        components["institutional_acceleration"] += 3
+        tags.append("散戶減少/籌碼轉乾淨")
+    components["institutional_acceleration"] = min(15, components["institutional_acceleration"])
+
+    if _has_any(text, ["營收加速", "營收創高", "營收年增", "月營收"]):
+        components["revenue_acceleration"] += 12
+        tags.append("營收加速")
+    if _int(row.get("fundamental_score")) >= 12:
+        components["revenue_acceleration"] += 3
+    components["revenue_acceleration"] = min(15, components["revenue_acceleration"])
+
+    if themes:
+        components["theme_freshness_catalyst"] += 6
+        tags.append(f"題材升溫:{themes[0]}")
+    if _int(row.get("opportunity_score")) >= 5 or _has_any(text, ["政策", "催化", "新訂單", "新聞"]):
+        components["theme_freshness_catalyst"] += 4
+    components["theme_freshness_catalyst"] = min(10, components["theme_freshness_catalyst"])
+
+    discovery = sum(max(0, value) for value in components.values())
+    if discovery == 0 and points > 0:
+        discovery = min(20, points * 2)
+        tags.extend(legacy_tags[:3])
+    return discovery, _dedupe(tags or legacy_tags), components
 
 
 def _weekly_potential_feedback(path: Path) -> dict[str, dict[str, Any]]:

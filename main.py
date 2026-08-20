@@ -518,6 +518,10 @@ def main() -> int:
             seen_ids.add(stock_id)
             pending_added.append(stock_id)
     universe_report["pending_outcome_added"] = len(pending_added)
+    configured_full_market = int(config.get("universe", {}).get("full_market_universe", 1056))
+    universe_report["full_market_universe"] = configured_full_market
+    universe_report["stage1_scanned"] = len(all_stock_ids)
+    universe_report["stage1_coverage_pct"] = round(len(all_stock_ids) / configured_full_market * 100, 2) if configured_full_market else None
     core_ids = set(config["stocks"])
     bundles = {}
     max_workers = int(config.get("runtime", {}).get("fetch_workers", 3))
@@ -594,6 +598,13 @@ def main() -> int:
     source_status = provider.source_status()
     source_status["bundle_coverage"] = bundle_coverage_report(bundles)
     source_status["universe"] = universe_report
+    source_status["stage_coverage"] = {
+        "full_market_universe": universe_report.get("full_market_universe"),
+        "stage1_scanned": universe_report.get("stage1_scanned"),
+        "stage1_coverage_pct": universe_report.get("stage1_coverage_pct"),
+        "stage2_enriched": len([bundle for bundle in bundles.values() if bundle]),
+        "stage2_coverage_pct": round(len([bundle for bundle in bundles.values() if bundle]) / configured_full_market * 100, 2) if configured_full_market else None,
+    }
     watch_reviews = store.watch_reviews(as_of)
     exit_risks = build_exit_risks(
         results,
