@@ -1,26 +1,35 @@
 {
   "as_of": "2026-08-19",
-  "generated_at": "2026-08-20T07:42:54+08:00",
+  "generated_at": "2026-08-20T10:23:43+08:00",
   "source": "dashboard_data + performance_data",
-  "history_completed_5d": 59,
+  "score_version": "v2",
+  "decision_version": "v2",
+  "universe_version": "tw_stock_universe_v2",
+  "history_completed_5d_all_versions": 59,
+  "history_completed_5d": 0,
   "candidate_count": 0,
   "referenceable_count": 0,
   "strong_reference_count": 0,
   "weak_reference_count": 0,
   "rocket_metrics": {
     "scope": "tracked_signals_proxy",
-    "note": "只統計已被系統記錄的訊號，不代表全市場飆股召回率；全市場 Rocket Recall 需另建完整股票池歷史。",
+    "score_version": "v2",
+    "note": "只統計已被系統記錄的 V2 訊號，不代表全市場飆股召回率；MFE/MAE 未回填時才使用收盤報酬近似。",
     "completed_10d": 0,
+    "mfe_10d_avg": null,
+    "mae_10d_avg": null,
     "precision_10d_10pct": null,
     "precision_10d_15pct": null,
-    "completed_5d": 59,
-    "precision_5d_5pct": 22.033898305084744,
-    "precision_5d_10pct": 16.94915254237288
+    "completed_5d": 0,
+    "mfe_5d_avg": null,
+    "mae_5d_avg": null,
+    "precision_5d_5pct": null,
+    "precision_5d_10pct": null
   },
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
     "min_reference_sample": 10,
-    "note": "Today's exact outcome still requires future 3/5/10 trading days. Rocket metrics are tracked-signal precision proxies, not all-market recall."
+    "note": "V2 candidates are compared only with V2 history. V1/unversioned history is retained but never used as same-condition reference."
   },
   "summary": {
     "avg_reference_return_5d": null,
