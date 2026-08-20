@@ -1,62 +1,62 @@
 {
-  "as_of": "2026-08-19",
-  "generated_at": "2026-08-20T10:23:44+08:00",
+  "as_of": "2026-08-20",
+  "generated_at": "2026-08-21T04:58:43+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
-    "signals": 155,
-    "completed": 59,
-    "win_rate_5d": 35.59322033898305,
-    "avg_return_5d": -3.0091275835284157,
-    "stop_hit_rate": 28.104575163398692,
-    "data_completion_rate_5d": 38.1,
-    "ai_win_rate_5d": 37.93103448275862,
+    "signals": 146,
+    "completed": 54,
+    "win_rate_5d": 29.629629629629626,
+    "avg_return_5d": -4.06540494557651,
+    "stop_hit_rate": 28.27586206896552,
+    "data_completion_rate_5d": 37.0,
+    "ai_win_rate_5d": 30.76923076923077,
     "potential_win_rate_5d": 31.57894736842105
   },
   "best": {
     "score_band": {
       "label": "85-94",
-      "signals": 33,
-      "completed": 12,
-      "win_rate_5d": 58.333333333333336,
-      "avg_return_5d": 0.5939995082474379,
-      "stop_hit_rate": 15.625
+      "signals": 29,
+      "completed": 10,
+      "win_rate_5d": 50.0,
+      "avg_return_5d": -1.0614853459376459,
+      "stop_hit_rate": 14.285714285714285
     },
     "theme": {
       "label": "AI伺服器",
-      "signals": 68,
-      "completed": 32,
-      "win_rate_5d": 43.75,
-      "avg_return_5d": 0.6725318642042831,
-      "stop_hit_rate": 20.588235294117645
+      "signals": 67,
+      "completed": 31,
+      "win_rate_5d": 41.935483870967744,
+      "avg_return_5d": 0.2666341622824317,
+      "stop_hit_rate": 20.8955223880597
     },
     "action": {
       "label": "等拉回",
-      "signals": 84,
-      "completed": 34,
-      "win_rate_5d": 35.294117647058826,
-      "avg_return_5d": -1.0961095160738132,
-      "stop_hit_rate": 20.73170731707317
+      "signals": 77,
+      "completed": 31,
+      "win_rate_5d": 29.03225806451613,
+      "avg_return_5d": -1.7943856683948385,
+      "stop_hit_rate": 19.736842105263158
     },
     "source_layer": {},
     "factor_layer": {},
     "segments": [
       {
         "label": "整體完成樣本",
-        "completed": 59,
-        "win_rate_5d": 35.59322033898305,
-        "avg_return_5d": -3.0091275835284157
+        "completed": 54,
+        "win_rate_5d": 29.629629629629626,
+        "avg_return_5d": -4.06540494557651
       }
     ]
   },
   "weak": {
     "score_band": {
       "label": "65-74",
-      "signals": 54,
-      "completed": 22,
-      "win_rate_5d": 36.36363636363637,
-      "avg_return_5d": -6.3561310557193424,
-      "stop_hit_rate": 35.18518518518518
+      "signals": 52,
+      "completed": 20,
+      "win_rate_5d": 30.0,
+      "avg_return_5d": -8.173499534252512,
+      "stop_hit_rate": 36.53846153846153
     },
     "theme": {
       "label": "記憶體/HBM",
@@ -101,24 +101,24 @@
   "learning": {
     "success_factors": [
       {
-        "label": "進場觸發",
-        "count": 14,
-        "avg_return_5d": 9.785039151792692
-      },
-      {
         "label": "等拉回",
-        "count": 12,
-        "avg_return_5d": 8.97056784394874
+        "count": 9,
+        "avg_return_5d": 9.92095355040606
       },
       {
-        "label": "高強度",
-        "count": 8,
-        "avg_return_5d": 7.267750065196831
+        "label": "進場觸發",
+        "count": 9,
+        "avg_return_5d": 10.555245388015846
       },
       {
         "label": "進場未觸發",
         "count": 7,
         "avg_return_5d": 7.1372289021011825
+      },
+      {
+        "label": "高強度",
+        "count": 6,
+        "avg_return_5d": 6.733192160538156
       },
       {
         "label": "停損觸發",
@@ -151,23 +151,23 @@
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 35.6%，平均報酬 -3.0%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 29.6%，平均報酬 -4.1%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "65-74 分區拖累：完成 22 筆，5日勝率 36.4%，平均 -6.4%。",
+      "65-74 分區拖累：完成 20 筆，5日勝率 30.0%，平均 -8.2%。",
       "主要失敗歸因：進場後轉弱 38 筆，5日平均 -9.6%。"
     ],
     "guard_segments": []
   },
   "win_rate_diagnosis": {
     "triggered": true,
-    "headline": "5日勝率 35.6%，低於 50% 門檻。",
+    "headline": "5日勝率 29.6%，低於 50% 門檻。",
     "likely_causes": [
       {
         "label": "65-74",
-        "sample": 22,
-        "win_rate_5d": 36.36363636363637,
-        "avg_return_5d": -6.3561310557193424,
-        "stop_hit_rate": 35.18518518518518,
+        "sample": 20,
+        "win_rate_5d": 30.0,
+        "avg_return_5d": -8.173499534252512,
+        "stop_hit_rate": 36.53846153846153,
         "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
       },
       {
@@ -212,16 +212,16 @@
       }
     ],
     "recommended_actions": [
-      "65-74：樣本 22 且 5日平均為負，先降權或改列觀察。",
+      "65-74：樣本 20 且 5日平均為負，先降權或改列觀察。",
       "進場後轉弱：樣本 38 且 5日平均為負，先降權或改列觀察。"
     ]
   },
   "monthly_returns": [
     {
       "month": "2026-07",
-      "signals": 59,
-      "win_rate_5d": 35.59322033898305,
-      "avg_return_5d": -3.0091275835284157,
+      "signals": 54,
+      "win_rate_5d": 29.629629629629626,
+      "avg_return_5d": -4.06540494557651,
       "best_return_5d": 22.625400213447172,
       "worst_return_5d": -32.9059829059829
     }
@@ -230,54 +230,54 @@
     {
       "group": "操作",
       "label": "等拉回",
-      "completed": 34,
-      "win_rate_5d": 35.294117647058826,
-      "avg_return_5d": -1.0961095160738132,
+      "completed": 31,
+      "win_rate_5d": 29.03225806451613,
+      "avg_return_5d": -1.7943856683948385,
       "priority": "降權觀察",
       "sample_label": "樣本充足"
     },
     {
       "group": "題材",
       "label": "AI伺服器",
-      "completed": 32,
-      "win_rate_5d": 43.75,
-      "avg_return_5d": 0.6725318642042831,
+      "completed": 31,
+      "win_rate_5d": 41.935483870967744,
+      "avg_return_5d": 0.2666341622824317,
       "priority": "降權觀察",
       "sample_label": "樣本充足"
     },
     {
       "group": "操作",
       "label": "只觀察",
-      "completed": 23,
-      "win_rate_5d": 39.130434782608695,
-      "avg_return_5d": -5.39365955535746,
+      "completed": 21,
+      "win_rate_5d": 33.33333333333333,
+      "avg_return_5d": -7.032822725354586,
       "priority": "降權觀察",
       "sample_label": "觀察中"
     },
     {
       "group": "題材",
       "label": "未標記",
-      "completed": 21,
-      "win_rate_5d": 23.809523809523807,
-      "avg_return_5d": -8.07949803880896,
+      "completed": 19,
+      "win_rate_5d": 15.789473684210526,
+      "avg_return_5d": -9.86380559859652,
       "priority": "降權觀察",
       "sample_label": "觀察中"
     },
     {
       "group": "題材",
       "label": "AI國防/軍工",
-      "completed": 5,
-      "win_rate_5d": 40.0,
-      "avg_return_5d": -1.7478268566876156,
+      "completed": 3,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -6.57808857808858,
       "priority": "降權觀察",
       "sample_label": "樣本不足"
     },
     {
       "group": "題材",
       "label": "防禦與政策",
-      "completed": 5,
-      "win_rate_5d": 40.0,
-      "avg_return_5d": -1.7478268566876156,
+      "completed": 3,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -6.57808857808858,
       "priority": "降權觀察",
       "sample_label": "樣本不足"
     },
@@ -332,8 +332,8 @@
       "priority": "medium",
       "source": "校準建議",
       "target": "操作:等拉回",
-      "sample": 34,
-      "avg_return_5d": -1.0961095160738132,
+      "sample": 31,
+      "avg_return_5d": -1.7943856683948385,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
@@ -341,8 +341,8 @@
       "priority": "medium",
       "source": "校準建議",
       "target": "題材:AI伺服器",
-      "sample": 32,
-      "avg_return_5d": 0.6725318642042831,
+      "sample": 31,
+      "avg_return_5d": 0.2666341622824317,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
@@ -350,8 +350,8 @@
       "priority": "medium",
       "source": "校準建議",
       "target": "操作:只觀察",
-      "sample": 23,
-      "avg_return_5d": -5.39365955535746,
+      "sample": 21,
+      "avg_return_5d": -7.032822725354586,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
