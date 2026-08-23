@@ -1,99 +1,99 @@
 {
-  "as_of": "2026-08-20",
-  "generated_at": "2026-08-21T05:23:54+08:00",
+  "as_of": "2026-08-21",
+  "generated_at": "2026-08-24T04:51:01+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
-    "daily_signals": 146,
-    "daily_completed": 54,
-    "daily_win_rate_5d": 29.629629629629626,
-    "daily_avg_return_5d": -4.06540494557651,
-    "potential_signals": 74,
+    "daily_signals": 133,
+    "daily_completed": 49,
+    "daily_win_rate_5d": 28.57142857142857,
+    "daily_avg_return_5d": -3.3583105796126302,
+    "potential_signals": 84,
     "potential_completed": 19,
     "potential_win_rate_5d": 31.57894736842105,
-    "potential_avg_return_5d": -2.156931844442312,
+    "potential_avg_return_5d": -1.4958905301403107,
     "backtest_risk_level": "needs_review",
-    "backtest_completed": 54
+    "backtest_completed": 49
   },
   "best": {
     "potential_stage": {
       "label": "強勢等拉回",
-      "signals": 45,
+      "signals": 43,
       "completed": 17,
       "win_rate_5d": 29.411764705882355,
-      "avg_return_5d": -2.8978907516965293,
+      "avg_return_5d": -2.1590798710060586,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "題材升溫",
-      "signals": 56,
+      "signals": 57,
       "completed": 15,
       "win_rate_5d": 33.33333333333333,
-      "avg_return_5d": -0.6094635952527386,
+      "avg_return_5d": 0.22785540286312855,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 289,
+        "week_score": 265,
         "trend": "-",
-        "today": 33
-      },
-      {
-        "theme": "網通光通訊",
-        "week_score": 256,
-        "trend": "升溫↑",
-        "today": 37
+        "today": 31
       },
       {
         "theme": "AI電力/重電/電網",
-        "week_score": 246,
+        "week_score": 223,
         "trend": "-",
-        "today": 26
+        "today": 24
       },
       {
         "theme": "記憶體/HBM",
-        "week_score": 241,
-        "trend": "升溫↑",
-        "today": 46
+        "week_score": 221,
+        "trend": "降溫↓",
+        "today": 11
       },
       {
-        "theme": "矽光子/CPO",
-        "week_score": 239,
+        "theme": "網通光通訊",
+        "week_score": 211,
+        "trend": "降溫↓",
+        "today": 5
+      },
+      {
+        "theme": "先進封裝/CoWoS",
+        "week_score": 206,
         "trend": "-",
-        "today": 35
+        "today": 22
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "強勢等拉回",
-      "signals": 45,
+      "signals": 43,
       "completed": 17,
       "win_rate_5d": 29.411764705882355,
-      "avg_return_5d": -2.8978907516965293,
+      "avg_return_5d": -2.1590798710060586,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "法人同步",
-      "signals": 42,
-      "completed": 18,
-      "win_rate_5d": 27.77777777777778,
-      "avg_return_5d": -3.5337280698806164,
+      "label": "強勢等拉回",
+      "signals": 43,
+      "completed": 17,
+      "win_rate_5d": 29.411764705882355,
+      "avg_return_5d": -2.1590798710060586,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 38,
-        "avg_return_5d": -9.591833628104803,
+        "count": 35,
+        "avg_return_5d": -9.215706110594965,
         "lesson": "樣本仍需累積，先保留觀察。"
       },
       {
         "label": "停損觸發",
-        "count": 18,
-        "avg_return_5d": -12.992104348339833,
+        "count": 16,
+        "avg_return_5d": -12.157016724867038,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
       },
       {
@@ -112,7 +112,7 @@
       "completed": 0,
       "win_rate_5d": null,
       "avg_return_5d": null,
-      "stop_hit_rate": 18.181818181818183,
+      "stop_hit_rate": 27.27272727272727,
       "status": "needs_more_samples",
       "previous_status": "needs_more_samples",
       "consecutive_review": false,
@@ -128,8 +128,8 @@
       "red": 5
     },
     "sample_state": {
-      "daily_completed": 54,
-      "daily_win_rate_5d": 29.629629629629626,
+      "daily_completed": 49,
+      "daily_win_rate_5d": 28.57142857142857,
       "potential_completed": 19,
       "potential_win_rate_5d": 31.57894736842105
     },
@@ -145,7 +145,7 @@
         "code": "daily_signal_win_rate_below_50",
         "severity": "high",
         "finding": "每日選股已完成樣本的 5 日勝率低於 50%，需要檢討進場條件與加分來源。",
-        "evidence": "completed=54, win_rate_5d=29.6%",
+        "evidence": "completed=49, win_rate_5d=28.6%",
         "recommendation": "降低低勝率來源的權重，優先檢查重複訊號、弱題材升級與追價條件。"
       },
       {
@@ -173,7 +173,7 @@
     {
       "type": "deweight",
       "target": "每日選股總體",
-      "reason": "5日勝率 29.6% 低於 50%，下週應降低弱訊號權重並檢查追價條件。"
+      "reason": "5日勝率 28.6% 低於 50%，下週應降低弱訊號權重並檢查追價條件。"
     },
     {
       "type": "investigate",
@@ -183,7 +183,7 @@
     {
       "type": "deweight",
       "target": "潛力雷達：強勢等拉回",
-      "reason": "已完成 17 筆，5日平均 -2.9%，下週先降權。"
+      "reason": "已完成 17 筆，5日平均 -2.2%，下週先降權。"
     },
     {
       "type": "carry_forward",
