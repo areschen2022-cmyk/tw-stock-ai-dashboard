@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T05:25:00+08:00",
+  "generated_at": "2026-08-26T04:58:34+08:00",
   "status": "warn",
   "counts": {
     "critical": 0,
@@ -7,15 +7,35 @@
     "info": 3
   },
   "context": {
-    "as_of": "2026-08-24",
-    "weekly_as_of": "2026-08-24",
-    "performance_as_of": "2026-08-24",
-    "potential_as_of": "2026-08-24",
-    "rows": 172,
-    "valid": 172,
+    "as_of": "2026-08-25",
+    "weekly_as_of": "2026-08-25",
+    "performance_as_of": "2026-08-25",
+    "potential_as_of": "2026-08-25",
+    "rows": 139,
+    "valid": 139,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-08-25",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 139,
+        "source_date": "2026-08-25",
+        "message": "139 stocks scanned for institutional flow",
+        "run_id": "32898128278",
+        "created_at": "2026-08-25 20:58:11"
+      },
+      {
+        "update_date": "2026-08-25",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 4034,
+        "source_date": "2026-08-21",
+        "message": "36 divergence signals; previous=2026-08-14",
+        "run_id": "32898128278",
+        "created_at": "2026-08-25 20:57:14"
+      },
       {
         "update_date": "2026-08-24",
         "dataset": "institutional_flow",
@@ -23,8 +43,8 @@
         "row_count": 172,
         "source_date": "2026-08-24",
         "message": "172 stocks scanned for institutional flow",
-        "run_id": "32779142250",
-        "created_at": "2026-08-24 21:24:37"
+        "run_id": "32790432920",
+        "created_at": "2026-08-24 23:42:22"
       },
       {
         "update_date": "2026-08-24",
@@ -95,34 +115,14 @@
         "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
         "run_id": "32303272786",
         "created_at": "2026-08-19 21:22:53"
-      },
-      {
-        "update_date": "2026-08-18",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 152,
-        "source_date": "2026-08-18",
-        "message": "152 stocks scanned for institutional flow",
-        "run_id": "32198232325",
-        "created_at": "2026-08-18 23:42:40"
-      },
-      {
-        "update_date": "2026-08-18",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4028,
-        "source_date": "2026-08-14",
-        "message": "38 divergence signals; previous=2026-08-07",
-        "run_id": "32186942448",
-        "created_at": "2026-08-18 21:18:56"
       }
     ]
   },
   "database": {
-    "daily_scores": 172,
+    "daily_scores": 139,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 6
+    "recent_tdcc_update_rows": 7
   },
   "issues": [
     {
