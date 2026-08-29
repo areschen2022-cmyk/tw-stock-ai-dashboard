@@ -1,99 +1,99 @@
 {
-  "as_of": "2026-08-27",
-  "generated_at": "2026-08-28T13:05:08+08:00",
+  "as_of": "2026-08-28",
+  "generated_at": "2026-08-29T11:47:00+08:00",
   "status": "ok",
   "risk_level": "normal",
   "summary": {
-    "daily_signals": 94,
-    "daily_completed": 77,
-    "daily_win_rate_5d": 72.72727272727273,
-    "daily_avg_return_5d": 10.375543966123471,
-    "potential_signals": 114,
-    "potential_completed": 22,
-    "potential_win_rate_5d": 72.72727272727273,
-    "potential_avg_return_5d": 12.669066006794372,
+    "daily_signals": 88,
+    "daily_completed": 84,
+    "daily_win_rate_5d": 67.85714285714286,
+    "daily_avg_return_5d": 9.398996615054033,
+    "potential_signals": 124,
+    "potential_completed": 24,
+    "potential_win_rate_5d": 79.16666666666666,
+    "potential_avg_return_5d": 13.203696291679949,
     "backtest_risk_level": "constructive",
-    "backtest_completed": 77
+    "backtest_completed": 84
   },
   "best": {
     "potential_stage": {
       "label": "強勢等拉回",
-      "signals": 26,
-      "completed": 19,
-      "win_rate_5d": 73.68421052631578,
-      "avg_return_5d": 12.60537034065425,
+      "signals": 24,
+      "completed": 20,
+      "win_rate_5d": 80.0,
+      "avg_return_5d": 12.445511668818533,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "強度中高",
-      "signals": 25,
-      "completed": 19,
-      "win_rate_5d": 78.94736842105263,
-      "avg_return_5d": 14.62875307827185,
+      "label": "資金型態:法人同步",
+      "signals": 19,
+      "completed": 16,
+      "win_rate_5d": 75.0,
+      "avg_return_5d": 15.830756384252707,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 263,
+        "week_score": 274,
         "trend": "升溫↑",
-        "today": 42
+        "today": 44
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 247,
+        "week_score": 244,
         "trend": "-",
-        "today": 28
-      },
-      {
-        "theme": "記憶體/HBM",
-        "week_score": 235,
-        "trend": "升溫↑",
-        "today": 34
+        "today": 27
       },
       {
         "theme": "網通光通訊",
         "week_score": 235,
         "trend": "-",
+        "today": 27
+      },
+      {
+        "theme": "記憶體/HBM",
+        "week_score": 229,
+        "trend": "-",
         "today": 30
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 212,
+        "week_score": 206,
         "trend": "-",
-        "today": 30
+        "today": 27
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "強勢等拉回",
-      "signals": 26,
-      "completed": 19,
-      "win_rate_5d": 73.68421052631578,
-      "avg_return_5d": 12.60537034065425,
+      "signals": 24,
+      "completed": 20,
+      "win_rate_5d": 80.0,
+      "avg_return_5d": 12.445511668818533,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "研究快篩:順風研究",
-      "signals": 13,
-      "completed": 11,
-      "win_rate_5d": 63.63636363636363,
-      "avg_return_5d": 10.693902213167483,
+      "label": "散戶減少/籌碼轉乾淨",
+      "signals": 26,
+      "completed": 10,
+      "win_rate_5d": 80.0,
+      "avg_return_5d": 10.739469638641333,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 21,
-        "avg_return_5d": -5.692158604940369,
+        "count": 27,
+        "avg_return_5d": -6.4458525408075165,
         "lesson": "樣本仍需累積，先保留觀察。"
       },
       {
         "label": "停損觸發",
-        "count": 11,
-        "avg_return_5d": -6.731980311504762,
+        "count": 15,
+        "avg_return_5d": -8.05649527140576,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
       },
       {
@@ -109,14 +109,14 @@
       "tag": "weekly_entry_condition_caution",
       "label": "weekly_entry_condition_caution",
       "signals": 11,
-      "completed": 4,
-      "win_rate_5d": 50.0,
-      "avg_return_5d": -3.1733753265478613,
+      "completed": 11,
+      "win_rate_5d": 36.36363636363637,
+      "avg_return_5d": -4.11285789140942,
       "stop_hit_rate": 45.45454545454545,
-      "status": "needs_more_samples",
+      "status": "needs_review",
       "previous_status": "needs_more_samples",
       "consecutive_review": false,
-      "recommended_action": "樣本不足，先保留紀錄，不調整權重。"
+      "recommended_action": "本週效果偏弱，列入下週觀察；暫不加權，等更多樣本確認。"
     }
   ],
   "selection_logic_audit": {
@@ -128,10 +128,10 @@
       "red": 5
     },
     "sample_state": {
-      "daily_completed": 77,
-      "daily_win_rate_5d": 72.72727272727273,
-      "potential_completed": 22,
-      "potential_win_rate_5d": 72.72727272727273
+      "daily_completed": 84,
+      "daily_win_rate_5d": 67.85714285714286,
+      "potential_completed": 24,
+      "potential_win_rate_5d": 79.16666666666666
     },
     "issues": [
       {
@@ -181,6 +181,11 @@
       "type": "carry_forward",
       "target": "追價過熱",
       "reason": "提高風險權重"
+    },
+    {
+      "type": "review_guardrail",
+      "target": "守門條件：weekly_entry_condition_caution",
+      "reason": "本週效果偏弱，列入下週觀察；暫不加權，等更多樣本確認。"
     },
     {
       "type": "logic_audit",
