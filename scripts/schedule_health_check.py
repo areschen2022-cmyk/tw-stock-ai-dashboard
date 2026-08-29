@@ -4,7 +4,7 @@ import argparse
 import json
 import sqlite3
 import subprocess
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -20,7 +20,13 @@ GITHUB_TELEGRAM_CRONS = {
     "50 23 * * 0-4": "07:50",
 }
 CLOUDFLARE_TELEGRAM_CRONS = {
+    "20 23 * * SUN-THU": "07:20",
+    "35 23 * * SUN-THU": "07:35",
     "5 0 * * MON-FRI": "08:05",
+}
+CLOUDFLARE_DASHBOARD_CRONS = {
+    "30 20 * * SUN-THU": "04:30",
+    "0 21 * * SUN-THU": "05:00",
 }
 CORE_DASHBOARD_PAYLOADS = [
     "dashboard_data.json",
@@ -117,6 +123,7 @@ def check_workflow_config(root: Path, issues: list[dict]) -> dict:
     found = {
         "github_dashboard": [],
         "github_telegram": [],
+        "cloudflare_dashboard": [],
         "cloudflare_telegram": [],
     }
     for cron in GITHUB_DASHBOARD_CRONS:
@@ -143,6 +150,18 @@ def check_workflow_config(root: Path, issues: list[dict]) -> dict:
                     "Restore the 07:20/07:35/07:50 Asia/Taipei GitHub fallback schedules.",
                 )
             )
+    for cron in CLOUDFLARE_DASHBOARD_CRONS:
+        if cron in wrangler_text:
+            found["cloudflare_dashboard"].append(cron)
+        else:
+            issues.append(
+                _issue(
+                    "critical",
+                    "cloudflare_schedule",
+                    f"Missing Cloudflare dashboard cron in wrangler.toml: {cron}",
+                    "Deploy the Worker with the 04:30/05:00 Asia/Taipei dashboard schedules.",
+                )
+            )
     for cron in CLOUDFLARE_TELEGRAM_CRONS:
         if cron in wrangler_text:
             found["cloudflare_telegram"].append(cron)
@@ -152,7 +171,7 @@ def check_workflow_config(root: Path, issues: list[dict]) -> dict:
                     "critical",
                     "cloudflare_schedule",
                     f"Missing Cloudflare Telegram cron in wrangler.toml: {cron}",
-                    "Deploy the Worker with the 08:05 Asia/Taipei fallback schedule.",
+                    "Deploy the Worker with the 07:20/07:35/08:05 Asia/Taipei Telegram fallback schedules.",
                 )
             )
     if "5 0 * * 1-5" in workflow_text or "5 0 * * MON-FRI" in workflow_text:
@@ -270,8 +289,16 @@ def check_delivery_log(
             )
         )
         return {"available": False, "delivered": False}
-    delivered = bool(row and row[2] == "sent")
+    sent_at = row[0] if row else ""
+    sent_dt = _parse_datetime(sent_at)
+    latest_expected_dt = datetime.combine(datetime.fromisoformat(delivery_date).date(), time(8, 5), tzinfo=TAIPEI)
+    on_time_deadline = datetime.combine(datetime.fromisoformat(delivery_date).date(), time(8, 30), tzinfo=TAIPEI)
+    sent_in_future = bool(sent_dt and sent_dt > now + timedelta(minutes=2))
+    delivered = bool(row and row[2] == "sent" and not sent_in_future)
     pending = bool(row and row[2] == "pending")
+    delivery_delay_minutes = None
+    if sent_dt:
+        delivery_delay_minutes = round((sent_dt - latest_expected_dt).total_seconds() / 60, 1)
     if strict_telegram and _is_trading_weekday(now) and now.time() >= time(8, 30) and not delivered:
         issues.append(
             _issue(
@@ -290,14 +317,25 @@ def check_delivery_log(
                 "If this remains pending, clear stale claims or inspect the failed send run.",
             )
         )
+    elif strict_telegram and delivered and sent_dt and sent_dt > on_time_deadline:
+        issues.append(
+            _issue(
+                "warning",
+                "telegram_delivery",
+                f"Telegram morning_report for {delivery_date} was delivered late at {sent_dt.isoformat(timespec='seconds')}.",
+                "Restore Cloudflare Worker dispatch so the report is sent before 08:30 Asia/Taipei even when GitHub schedule is delayed.",
+            )
+        )
     return {
         "available": True,
         "delivery_date": delivery_date,
         "delivered": delivered,
         "pending": pending,
-        "sent_at": row[0] if row else "",
+        "sent_at": sent_at,
         "run_id": row[1] if row else "",
         "status": row[2] if row else "missing",
+        "delivery_delay_minutes": delivery_delay_minutes,
+        "on_time": bool(delivered and sent_dt and sent_dt <= on_time_deadline),
     }
 
 
@@ -397,15 +435,15 @@ def _next_actions(issues: list[dict]) -> list[str]:
     areas = {item.get("area") for item in issues}
     actions = []
     if "github_schedule" in areas:
-        actions.append("修正 .github/workflows/daily.yml 的 dashboard/Telegram 排程。")
+        actions.append("Fix .github/workflows/daily.yml dashboard/Telegram schedules.")
     if "cloudflare_schedule" in areas:
-        actions.append("修正 cloudflare-worker/wrangler.toml 後重新 wrangler deploy。")
+        actions.append("Fix cloudflare-worker/wrangler.toml, then redeploy the Worker.")
     if "dashboard_payload" in areas or "dashboard_freshness" in areas:
-        actions.append("先確認 main.py 是否產生最新 dashboard JSON，再檢查 Pages 發布。")
+        actions.append("Confirm main.py writes fresh dashboard JSON, then check Pages deployment.")
     if "telegram_delivery" in areas:
-        actions.append("檢查 delivery_log、Cloudflare dispatch、GitHub fallback 與 Telegram secrets。")
+        actions.append("Check delivery_log, Cloudflare dispatch, GitHub fallback, and Telegram secrets.")
     if not actions:
-        actions.append("排程健康檢查通過；下一步可把失敗 run 的 annotation 匯入週檢討。")
+        actions.append("Schedule health check passed; next step can archive failed-run annotations into weekly review.")
     return actions
 
 
