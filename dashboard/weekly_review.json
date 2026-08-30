@@ -1,6 +1,6 @@
 {
   "as_of": "2026-08-28",
-  "generated_at": "2026-08-29T11:47:00+08:00",
+  "generated_at": "2026-08-31T06:55:00+08:00",
   "status": "ok",
   "risk_level": "normal",
   "summary": {
@@ -35,33 +35,33 @@
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 274,
-        "trend": "升溫↑",
-        "today": 44
+        "week_score": 257,
+        "trend": "-",
+        "today": 27
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 244,
+        "week_score": 245,
         "trend": "-",
-        "today": 27
-      },
-      {
-        "theme": "網通光通訊",
-        "week_score": 235,
-        "trend": "-",
-        "today": 27
+        "today": 28
       },
       {
         "theme": "記憶體/HBM",
-        "week_score": 229,
+        "week_score": 224,
         "trend": "-",
-        "today": 30
+        "today": 25
+      },
+      {
+        "theme": "網通光通訊",
+        "week_score": 220,
+        "trend": "降溫↓",
+        "today": 12
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 206,
+        "week_score": 211,
         "trend": "-",
-        "today": 27
+        "today": 32
       }
     ]
   },
@@ -76,7 +76,7 @@
     },
     "potential_factor": {
       "label": "散戶減少/籌碼轉乾淨",
-      "signals": 26,
+      "signals": 28,
       "completed": 10,
       "win_rate_5d": 80.0,
       "avg_return_5d": 10.739469638641333,
@@ -114,9 +114,9 @@
       "avg_return_5d": -4.11285789140942,
       "stop_hit_rate": 45.45454545454545,
       "status": "needs_review",
-      "previous_status": "needs_more_samples",
-      "consecutive_review": false,
-      "recommended_action": "本週效果偏弱，列入下週觀察；暫不加權，等更多樣本確認。"
+      "previous_status": "needs_review",
+      "consecutive_review": true,
+      "recommended_action": "連續兩週效果偏弱，先降低此守門條件權重，並檢查是否過度過濾好訊號。"
     }
   ],
   "selection_logic_audit": {
@@ -145,7 +145,7 @@
         "code": "current_candidates_no_reference",
         "severity": "medium",
         "finding": "今日候選股缺少可比較的歷史同條件樣本，決策可信度較低。",
-        "evidence": "candidate_count=1, referenceable_count=0",
+        "evidence": "candidate_count=2, referenceable_count=0",
         "recommendation": "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
       },
       {
@@ -185,7 +185,7 @@
     {
       "type": "review_guardrail",
       "target": "守門條件：weekly_entry_condition_caution",
-      "reason": "本週效果偏弱，列入下週觀察；暫不加權，等更多樣本確認。"
+      "reason": "連續兩週效果偏弱，先降低此守門條件權重，並檢查是否過度過濾好訊號。"
     },
     {
       "type": "logic_audit",
