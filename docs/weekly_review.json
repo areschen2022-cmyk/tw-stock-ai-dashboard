@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-09-01",
-  "generated_at": "2026-09-02T06:57:55+08:00",
+  "as_of": "2026-09-02",
+  "generated_at": "2026-09-03T06:47:55+08:00",
   "status": "ok",
   "risk_level": "normal",
   "summary": {
@@ -8,59 +8,59 @@
     "daily_completed": 70,
     "daily_win_rate_5d": 64.28571428571429,
     "daily_avg_return_5d": 8.304713573353872,
-    "potential_signals": 142,
-    "potential_completed": 29,
-    "potential_win_rate_5d": 79.3103448275862,
-    "potential_avg_return_5d": 13.038898243890893,
+    "potential_signals": 154,
+    "potential_completed": 52,
+    "potential_win_rate_5d": 78.84615384615384,
+    "potential_avg_return_5d": 13.271586235529895,
     "backtest_risk_level": "constructive",
     "backtest_completed": 70
   },
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 122,
-      "completed": 11,
-      "win_rate_5d": 81.81818181818183,
-      "avg_return_5d": 14.524925337916722,
+      "signals": 134,
+      "completed": 34,
+      "win_rate_5d": 79.41176470588235,
+      "avg_return_5d": 13.875547467405955,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "低位醞釀",
-      "signals": 122,
-      "completed": 11,
-      "win_rate_5d": 81.81818181818183,
-      "avg_return_5d": 14.524925337916722,
+      "label": "半部位",
+      "signals": 36,
+      "completed": 14,
+      "win_rate_5d": 92.85714285714286,
+      "avg_return_5d": 22.4736264114883,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 279,
-        "trend": "升溫↑",
-        "today": 46
+        "week_score": 272,
+        "trend": "-",
+        "today": 37
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 248,
-        "trend": "升溫↑",
-        "today": 30
+        "week_score": 264,
+        "trend": "急升🔥",
+        "today": 50
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 236,
-        "trend": "-",
-        "today": 33
+        "week_score": 244,
+        "trend": "升溫↑",
+        "today": 38
       },
       {
         "theme": "網通光通訊",
-        "week_score": 226,
-        "trend": "升溫↑",
-        "today": 31
+        "week_score": 242,
+        "trend": "急升🔥",
+        "today": 47
       },
       {
         "theme": "原物料/低基期傳產",
-        "week_score": 202,
-        "trend": "-",
+        "week_score": 203,
+        "trend": "升溫↑",
         "today": 28
       }
     ]
@@ -75,11 +75,11 @@
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "散戶減少/籌碼轉乾淨",
-      "signals": 34,
-      "completed": 10,
-      "win_rate_5d": 80.0,
-      "avg_return_5d": 9.741154208419713,
+      "label": "成長確認型",
+      "signals": 14,
+      "completed": 13,
+      "win_rate_5d": 76.92307692307693,
+      "avg_return_5d": 11.005623862332225,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -114,29 +114,38 @@
     }
   ],
   "selection_logic_audit": {
-    "status": "watch",
-    "logic_verdict": "本週選股邏輯需觀察，先不大改規則，但下週要追蹤弱項是否延續。",
+    "status": "needs_review",
+    "logic_verdict": "本週選股邏輯需要檢討，高風險項目應先降權或暫停升級。",
     "traffic_counts": {
       "green": 0,
       "yellow": 0,
-      "red": 4
+      "red": 5
     },
     "sample_state": {
       "daily_completed": 70,
       "daily_win_rate_5d": 64.28571428571429,
-      "potential_completed": 29,
-      "potential_win_rate_5d": 79.3103448275862
+      "potential_completed": 52,
+      "potential_win_rate_5d": 78.84615384615384
     },
     "issues": [
+      {
+        "code": "risk_list_dominates",
+        "severity": "high",
+        "finding": "危險名單數量明顯高於可追與等拉回，代表風控壓力偏高。",
+        "evidence": "green=0, yellow=0, red=5",
+        "recommendation": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
+      },
       {
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=因子, label=K線+法人開始同步, completed=1",
+        "evidence": "group=因子, label=停損觸發, completed=15",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
-    "next_week_focus": []
+    "next_week_focus": [
+      "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
+    ]
   },
   "next_week_actions": [
     {
@@ -163,6 +172,11 @@
       "type": "review_guardrail",
       "target": "守門條件：weekly_entry_condition_caution",
       "reason": "連續兩週效果偏弱，先降低此守門條件權重，並檢查是否過度過濾好訊號。"
+    },
+    {
+      "type": "logic_audit",
+      "target": "risk_list_dominates",
+      "reason": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
     }
   ],
   "rules": [
