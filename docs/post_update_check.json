@@ -1,30 +1,50 @@
 {
-  "generated_at": "2026-09-04T06:58:08+08:00",
-  "status": "warn",
+  "generated_at": "2026-09-07T06:16:07+08:00",
+  "status": "ok",
   "counts": {
     "critical": 0,
-    "warning": 1,
+    "warning": 0,
     "info": 3
   },
   "context": {
-    "as_of": "2026-09-03",
-    "weekly_as_of": "2026-09-03",
-    "performance_as_of": "2026-09-03",
-    "potential_as_of": "2026-09-03",
-    "rows": 142,
-    "valid": 142,
+    "as_of": "2026-09-04",
+    "weekly_as_of": "2026-09-04",
+    "performance_as_of": "2026-09-04",
+    "potential_as_of": "2026-09-04",
+    "rows": 143,
+    "valid": 143,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
       {
+        "update_date": "2026-09-06",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 4051,
+        "source_date": "2026-09-04",
+        "message": "46 divergence signals; previous=2026-08-28",
+        "run_id": "34063382068",
+        "created_at": "2026-09-06 22:14:41"
+      },
+      {
+        "update_date": "2026-09-04",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 143,
+        "source_date": "2026-09-04",
+        "message": "143 stocks scanned for institutional flow",
+        "run_id": "34063382068",
+        "created_at": "2026-09-06 22:15:36"
+      },
+      {
         "update_date": "2026-09-03",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 142,
+        "row_count": 146,
         "source_date": "2026-09-03",
-        "message": "142 stocks scanned for institutional flow",
-        "run_id": "33815303878",
-        "created_at": "2026-09-03 22:57:40"
+        "message": "146 stocks scanned for institutional flow",
+        "run_id": "33824337158",
+        "created_at": "2026-09-04 01:06:21"
       },
       {
         "update_date": "2026-09-03",
@@ -95,34 +115,14 @@
         "message": "34 divergence signals; previous=2026-08-21",
         "run_id": "33340769257",
         "created_at": "2026-08-30 23:04:11"
-      },
-      {
-        "update_date": "2026-08-28",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 152,
-        "source_date": "2026-08-28",
-        "message": "152 stocks scanned for institutional flow",
-        "run_id": "33347462406",
-        "created_at": "2026-08-31 01:26:54"
-      },
-      {
-        "update_date": "2026-08-28",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4034,
-        "source_date": "2026-08-21",
-        "message": "36 divergence signals; previous=2026-08-14",
-        "run_id": "33143580268",
-        "created_at": "2026-08-28 05:04:16"
       }
     ]
   },
   "database": {
-    "daily_scores": 142,
+    "daily_scores": 143,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 8
+    "recent_tdcc_update_rows": 6
   },
   "issues": [
     {
@@ -130,12 +130,6 @@
       "area": "decision",
       "message": "No chase or pullback candidates today",
       "suggestion": "This can be normal. If repeated, review action thresholds."
-    },
-    {
-      "severity": "warning",
-      "area": "data_quality",
-      "message": "Data quality is not high: 中",
-      "suggestion": "Check fallback/retry attribution before treating this as a true data loss."
     },
     {
       "severity": "info",
