@@ -1,20 +1,20 @@
 {
   "as_of": "2026-09-04",
-  "generated_at": "2026-09-07T06:39:29+08:00",
-  "dashboard_generated_at": "2026-09-07T06:39:19+08:00",
+  "generated_at": "2026-09-07T09:10:02+08:00",
+  "dashboard_generated_at": "2026-09-07T09:09:54+08:00",
   "source_status": {
-    "label": "正常",
-    "api": 4,
-    "cache": 5609,
-    "fallback": 5,
+    "label": "部分限流",
+    "api": 45,
+    "cache": 5444,
+    "fallback": 34,
     "quota": 0,
-    "error": 0,
-    "empty": 2,
+    "error": 1,
+    "empty": 31,
     "official_snapshots": {
       "tpex_quotes": {
-        "date": "2026-09-04",
-        "valid": true,
-        "rows": 10963,
+        "date": "",
+        "valid": false,
+        "rows": 0,
         "source": "official"
       },
       "institutional": {
@@ -70,7 +70,7 @@
       "universe": {
         "date": "2026-09-04",
         "valid": true,
-        "rows": 1972,
+        "rows": 1085,
         "source": "official"
       }
     }
@@ -81,31 +81,18 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 127,
+    "recovered_fetches": 156,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 127 次"
+      "官方快照未通過日期/內容檢查 1 項",
+      "已由備援/補抓補回 156 次"
     ],
     "event_summary": {
-      "empty": 3,
-      "fallback": 3
+      "empty": 5,
+      "fallback": 5
     },
     "details": [
-      {
-        "type": "empty",
-        "dataset": "STOCK_DAY",
-        "data_id": "TAIEX",
-        "period": "2026-03",
-        "reason": ""
-      },
-      {
-        "type": "fallback",
-        "dataset": "stock_prices",
-        "data_id": "TAIEX",
-        "period": "",
-        "reason": "twse_month_missing"
-      },
       {
         "type": "fallback",
         "dataset": "revenue",
@@ -129,6 +116,20 @@
       },
       {
         "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "8255",
+        "period": "2026-03",
+        "reason": ""
+      },
+      {
+        "type": "fallback",
+        "dataset": "stock_prices",
+        "data_id": "8255",
+        "period": "",
+        "reason": "twse_month_missing"
+      },
+      {
+        "type": "empty",
         "dataset": "TaiwanStockMarginPurchaseShortSale",
         "data_id": "6980",
         "period": "2026-03-01",
@@ -141,20 +142,6 @@
       "blocked": 0,
       "recovered": 6,
       "items": [
-        {
-          "dataset": "STOCK_DAY",
-          "data_id": "TAIEX",
-          "period": "2026-03",
-          "type": "empty",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "stock_prices",
-          "data_id": "TAIEX",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
         {
           "dataset": "revenue",
           "data_id": "7769",
@@ -177,6 +164,20 @@
           "next_step": "recovered_by_fallback"
         },
         {
+          "dataset": "STOCK_DAY",
+          "data_id": "8255",
+          "period": "2026-03",
+          "type": "empty",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "8255",
+          "period": "",
+          "type": "fallback",
+          "next_step": "recovered_by_fallback"
+        },
+        {
           "dataset": "TaiwanStockMarginPurchaseShortSale",
           "data_id": "6980",
           "period": "2026-03-01",
@@ -187,9 +188,9 @@
     },
     "official_snapshots": {
       "tpex_quotes": {
-        "date": "2026-09-04",
-        "valid": true,
-        "rows": 10963,
+        "date": "",
+        "valid": false,
+        "rows": 0,
         "source": "official"
       },
       "institutional": {
@@ -235,12 +236,12 @@
         "source": "official"
       }
     },
-    "official_valid": 8,
-    "official_invalid": 0
+    "official_valid": 7,
+    "official_invalid": 1
   },
   "data_source_health": {
-    "label": "可用但待補",
-    "blocking_count": 0,
+    "label": "需檢查",
+    "blocking_count": 1,
     "historical_failed_count": 18,
     "failed_recovered_ratio": 0.1286,
     "pending_count": 35,
@@ -248,13 +249,13 @@
     "recovered_count": 122,
     "effective_error": 0,
     "effective_empty": 0,
-    "official_valid": 8,
-    "official_invalid": 0,
+    "official_valid": 7,
+    "official_invalid": 1,
     "official_snapshots": {
       "tpex_quotes": {
-        "date": "2026-09-04",
-        "valid": true,
-        "rows": 10963,
+        "date": "",
+        "valid": false,
+        "rows": 0,
         "source": "official"
       },
       "institutional": {
@@ -474,16 +475,16 @@
     "active_theme_count": 49,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
-    "market_universe_available": 1972,
+    "market_universe_available": 1085,
     "daily_market_limit": 25,
     "weekly_market_limit": 60,
     "weekly_full_scan_weekday": 0,
     "active_themes": [
       "silicon_photonics",
+      "advanced_packaging",
       "ai_server",
-      "network_optical_communication",
-      "power_grid",
-      "advanced_packaging"
+      "memory",
+      "network_optical_communication"
     ],
     "pending_outcome_added": 61,
     "full_market_universe": 1056,
@@ -733,9 +734,9 @@
       {
         "key": "source",
         "label": "資料源",
-        "status": "warn",
-        "value": "正常",
-        "note": "API 4 | 快取 5609 | 限流 0"
+        "status": "bad",
+        "value": "部分限流",
+        "note": "API 45 | 快取 5444 | 限流 0"
       },
       {
         "key": "score",
@@ -818,16 +819,16 @@
         "selected_count": 84,
         "target_total_listed": 1056,
         "coverage_pct": 8.0,
-        "market_universe_available": 1972
+        "market_universe_available": 1085
       }
     },
     "diagnosis": [
       {
         "key": "source",
-        "status": "warn",
+        "status": "bad",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=4; cache=5609; quota=0; error=0",
+        "evidence": "source=部分限流; quality=high; api=45; cache=5444; quota=0; error=1",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -842,9 +843,9 @@
     "history": [
       {
         "run_date": "2026-09-04",
-        "generated_at": "2026-09-07T06:39:29+08:00",
-        "overall_status": "warn",
-        "source_status": "warn",
+        "generated_at": "2026-09-07T09:10:01+08:00",
+        "overall_status": "bad",
+        "source_status": "bad",
         "score_status": "ok",
         "watch_status": "ok",
         "potential_status": "ok",
@@ -889,16 +890,16 @@
             "selected_count": 84,
             "target_total_listed": 1056,
             "coverage_pct": 8.0,
-            "market_universe_available": 1972
+            "market_universe_available": 1085
           }
         },
         "steps": [
           {
             "key": "source",
             "label": "資料源",
-            "status": "warn",
-            "value": "正常",
-            "note": "API 4 | 快取 5609 | 限流 0"
+            "status": "bad",
+            "value": "部分限流",
+            "note": "API 45 | 快取 5444 | 限流 0"
           },
           {
             "key": "score",
