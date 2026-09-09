@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-09-08",
-  "generated_at": "2026-09-09T07:08:23+08:00",
+  "as_of": "2026-09-09",
+  "generated_at": "2026-09-10T06:43:03+08:00",
   "status": "ok",
   "risk_level": "normal",
   "summary": {
@@ -8,25 +8,25 @@
     "daily_completed": 37,
     "daily_win_rate_5d": 59.45945945945946,
     "daily_avg_return_5d": 2.93509578209173,
-    "potential_signals": 192,
-    "potential_completed": 100,
-    "potential_win_rate_5d": 63.0,
-    "potential_avg_return_5d": 6.558028080200594,
+    "potential_signals": 204,
+    "potential_completed": 109,
+    "potential_win_rate_5d": 57.798165137614674,
+    "potential_avg_return_5d": 5.008333473475422,
     "backtest_risk_level": "constructive",
     "backtest_completed": 37
   },
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 182,
-      "completed": 91,
-      "win_rate_5d": 60.43956043956044,
-      "avg_return_5d": 6.126471974247466,
+      "signals": 194,
+      "completed": 100,
+      "win_rate_5d": 55.00000000000001,
+      "avg_return_5d": 4.476144902452811,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "半部位",
-      "signals": 41,
+      "signals": 38,
       "completed": 23,
       "win_rate_5d": 73.91304347826086,
       "avg_return_5d": 14.698662579161516,
@@ -35,51 +35,51 @@
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 260,
-        "trend": "降溫↓",
-        "today": 20
+        "week_score": 244,
+        "trend": "-",
+        "today": 18
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 230,
+        "week_score": 206,
         "trend": "降溫↓",
         "today": 12
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 195,
+        "week_score": 184,
         "trend": "降溫↓",
-        "today": 0
+        "today": 7
       },
       {
         "theme": "記憶體/HBM",
-        "week_score": 175,
-        "trend": "降溫↓",
-        "today": 3
-      },
-      {
-        "theme": "網通光通訊",
-        "week_score": 171,
+        "week_score": 170,
         "trend": "降溫↓",
         "today": 0
+      },
+      {
+        "theme": "散熱/液冷",
+        "week_score": 157,
+        "trend": "升溫↑",
+        "today": 14
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 182,
-      "completed": 91,
-      "win_rate_5d": 60.43956043956044,
-      "avg_return_5d": 6.126471974247466,
+      "signals": 194,
+      "completed": 100,
+      "win_rate_5d": 55.00000000000001,
+      "avg_return_5d": 4.476144902452811,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "強度逐步成形",
-      "signals": 24,
-      "completed": 11,
-      "win_rate_5d": 27.27272727272727,
-      "avg_return_5d": -1.1894537547670565,
+      "signals": 26,
+      "completed": 12,
+      "win_rate_5d": 25.0,
+      "avg_return_5d": -1.7232440009415322,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -124,8 +124,8 @@
     "sample_state": {
       "daily_completed": 37,
       "daily_win_rate_5d": 59.45945945945946,
-      "potential_completed": 100,
-      "potential_win_rate_5d": 63.0
+      "potential_completed": 109,
+      "potential_win_rate_5d": 57.798165137614674
     },
     "issues": [
       {
@@ -139,7 +139,7 @@
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=因子, label=停損觸發, completed=11",
+        "evidence": "group=因子, label=題材+量能+K線+法人前導不足, completed=2",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
