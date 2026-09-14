@@ -1,13 +1,13 @@
 {
-  "as_of": "2026-09-14",
-  "generated_at": "2026-09-14T06:49:27+08:00",
+  "as_of": "2026-09-15",
+  "generated_at": "2026-09-15T07:22:14+08:00",
   "status": "ok",
   "years": 1,
-  "effective_years": 0.78,
+  "effective_years": 0.79,
   "method": {
     "name": "limit up/down event study",
     "years": 1,
-    "effective_years": 0.78,
+    "effective_years": 0.79,
     "universe_mode": "cache",
     "offline_cache_only": true,
     "limit_up_threshold_pct": 9.5,
@@ -20,11 +20,11 @@
     ]
   },
   "coverage": {
-    "stocks_requested": 215,
-    "stocks_usable": 212,
-    "events_total": 2377,
+    "stocks_requested": 216,
+    "stocks_usable": 213,
+    "events_total": 2391,
     "earliest": "2025-12-01",
-    "latest": "2026-09-11",
+    "latest": "2026-09-14",
     "sample": [
       {
         "stock_id": "1301",
@@ -171,7 +171,7 @@
   "provider_status": {
     "label": "正常",
     "api": 0,
-    "cache": 1646,
+    "cache": 1653,
     "quota": 0,
     "error": 0,
     "empty": 0,
@@ -179,64 +179,73 @@
   },
   "summary": {
     "limit_up": {
-      "events": 1885,
-      "completed_5d": 1802,
-      "avg_post_5d_return": 4.31,
-      "continuation_5d_rate": 57.5,
+      "events": 1898,
+      "completed_5d": 1811,
+      "avg_post_5d_return": 4.29,
+      "continuation_5d_rate": 57.4,
       "common_labels": [
         {
           "label": "趨勢在均線上",
-          "events": 1424,
-          "avg_volume_ratio_20": 2.01,
-          "avg_pre_20d_return": 31.73,
-          "avg_post_5d_return": 4.1,
-          "avg_post_10d_return": 8.29,
-          "continuation_5d_rate": 57.4
+          "events": 1435,
+          "avg_volume_ratio_20": 2.03,
+          "avg_pre_20d_return": 31.67,
+          "avg_post_5d_return": 4.09,
+          "avg_post_10d_return": 8.26,
+          "continuation_5d_rate": 57.3
         },
         {
           "label": "突破整理",
-          "events": 1052,
-          "avg_volume_ratio_20": 2.21,
-          "avg_pre_20d_return": 33.89,
-          "avg_post_5d_return": 3.34,
-          "avg_post_10d_return": 7.43,
-          "continuation_5d_rate": 56.6
+          "events": 1061,
+          "avg_volume_ratio_20": 2.24,
+          "avg_pre_20d_return": 33.79,
+          "avg_post_5d_return": 3.33,
+          "avg_post_10d_return": 7.41,
+          "continuation_5d_rate": 56.5
         },
         {
           "label": "題材續強",
-          "events": 1041,
-          "avg_volume_ratio_20": 1.64,
-          "avg_pre_20d_return": 42.22,
-          "avg_post_5d_return": 3.81,
-          "avg_post_10d_return": 8.58,
-          "continuation_5d_rate": 56.8
+          "events": 1048,
+          "avg_volume_ratio_20": 1.65,
+          "avg_pre_20d_return": 42.17,
+          "avg_post_5d_return": 3.79,
+          "avg_post_10d_return": 8.54,
+          "continuation_5d_rate": 56.7
         },
         {
           "label": "跌深反彈",
-          "events": 428,
+          "events": 430,
           "avg_volume_ratio_20": 1.06,
-          "avg_pre_20d_return": -3.93,
-          "avg_post_5d_return": 6.15,
-          "avg_post_10d_return": 9.63,
-          "continuation_5d_rate": 62.6
+          "avg_pre_20d_return": -3.98,
+          "avg_post_5d_return": 6.1,
+          "avg_post_10d_return": 9.54,
+          "continuation_5d_rate": 62.3
         },
         {
           "label": "量能放大",
-          "events": 378,
+          "events": 381,
           "avg_volume_ratio_20": 2.32,
-          "avg_pre_20d_return": 20.1,
-          "avg_post_5d_return": 3.29,
-          "avg_post_10d_return": 6.53,
-          "continuation_5d_rate": 54.4
+          "avg_pre_20d_return": 19.9,
+          "avg_post_5d_return": 3.25,
+          "avg_post_10d_return": 6.45,
+          "continuation_5d_rate": 54.1
         },
         {
           "label": "異常爆量",
-          "events": 282,
-          "avg_volume_ratio_20": 5.02,
-          "avg_pre_20d_return": 15.58,
-          "avg_post_5d_return": 2.35,
-          "avg_post_10d_return": 6.57,
-          "continuation_5d_rate": 48.9
+          "events": 288,
+          "avg_volume_ratio_20": 5.05,
+          "avg_pre_20d_return": 15.57,
+          "avg_post_5d_return": 2.37,
+          "avg_post_10d_return": 6.67,
+          "continuation_5d_rate": 48.7
+        },
+        {
+          "label": "盤整後發動",
+          "events": 80,
+          "avg_volume_ratio_20": 4.69,
+          "avg_pre_20d_return": 3.33,
+          "avg_post_5d_return": 4.72,
+          "avg_post_10d_return": 5.98,
+          "continuation_5d_rate": 54.5
         },
         {
           "label": "未分類",
@@ -246,18 +255,33 @@
           "avg_post_5d_return": 5.31,
           "avg_post_10d_return": 8.91,
           "continuation_5d_rate": 52.6
-        },
-        {
-          "label": "盤整後發動",
-          "events": 79,
-          "avg_volume_ratio_20": 4.67,
-          "avg_pre_20d_return": 3.41,
-          "avg_post_5d_return": 4.55,
-          "avg_post_10d_return": 5.9,
-          "continuation_5d_rate": 53.9
         }
       ],
       "recent_examples": [
+        {
+          "stock_id": "8227",
+          "name": "",
+          "date": "2026-09-11",
+          "side": "limit_up",
+          "close": 239.0,
+          "pct_change": 9.89,
+          "volume_ratio_20": 4.09,
+          "pre_5d_return": 38.98,
+          "pre_20d_return": 38.1,
+          "pre_20d_range": 50.0,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "異常爆量",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": []
+        },
         {
           "stock_id": "6173",
           "name": "信昌電",
@@ -284,6 +308,30 @@
           ]
         },
         {
+          "stock_id": "8227",
+          "name": "",
+          "date": "2026-09-10",
+          "side": "limit_up",
+          "close": 217.5,
+          "pct_change": 9.85,
+          "volume_ratio_20": 7.53,
+          "pre_5d_return": 23.36,
+          "pre_20d_return": 24.53,
+          "pre_20d_range": 36.55,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "異常爆量",
+            "趨勢在均線上",
+            "題材續強"
+          ],
+          "themes": []
+        },
+        {
           "stock_id": "6980",
           "name": "鐳洋",
           "date": "2026-09-09",
@@ -306,6 +354,52 @@
           "themes": [
             "低軌衛星/SpaceX"
           ]
+        },
+        {
+          "stock_id": "8227",
+          "name": "",
+          "date": "2026-09-09",
+          "side": "limit_up",
+          "close": 198.0,
+          "pct_change": 10.0,
+          "volume_ratio_20": 9.17,
+          "pre_5d_return": 9.76,
+          "pre_20d_return": 13.92,
+          "pre_20d_range": 24.14,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "異常爆量",
+            "趨勢在均線上"
+          ],
+          "themes": []
+        },
+        {
+          "stock_id": "8227",
+          "name": "",
+          "date": "2026-09-08",
+          "side": "limit_up",
+          "close": 180.0,
+          "pct_change": 9.76,
+          "volume_ratio_20": 2.11,
+          "pre_5d_return": 4.79,
+          "pre_20d_return": 13.89,
+          "pre_20d_range": 19.72,
+          "prior_above_ma20": true,
+          "breakout_20d": true,
+          "breakdown_20d": false,
+          "post_5d_return": null,
+          "post_10d_return": null,
+          "labels": [
+            "突破整理",
+            "量能放大",
+            "趨勢在均線上"
+          ],
+          "themes": []
         },
         {
           "stock_id": "1815",
@@ -654,137 +748,32 @@
             "題材續強"
           ],
           "themes": []
-        },
-        {
-          "stock_id": "6510",
-          "name": "精測",
-          "date": "2026-09-01",
-          "side": "limit_up",
-          "close": 3125.0,
-          "pct_change": 9.84,
-          "volume_ratio_20": 1.84,
-          "pre_5d_return": 7.36,
-          "pre_20d_return": 7.16,
-          "pre_20d_range": 20.62,
-          "prior_above_ma20": true,
-          "breakout_20d": true,
-          "breakdown_20d": false,
-          "post_5d_return": 15.84,
-          "post_10d_return": null,
-          "labels": [
-            "突破整理",
-            "量能放大",
-            "趨勢在均線上"
-          ],
-          "themes": [
-            "先進封裝/CoWoS"
-          ]
-        },
-        {
-          "stock_id": "3324",
-          "name": "雙鴻",
-          "date": "2026-08-31",
-          "side": "limit_up",
-          "close": 1250.0,
-          "pct_change": 9.65,
-          "volume_ratio_20": 3.07,
-          "pre_5d_return": 17.65,
-          "pre_20d_return": 26.39,
-          "pre_20d_range": 27.34,
-          "prior_above_ma20": true,
-          "breakout_20d": true,
-          "breakdown_20d": false,
-          "post_5d_return": 15.2,
-          "post_10d_return": null,
-          "labels": [
-            "突破整理",
-            "異常爆量",
-            "趨勢在均線上",
-            "題材續強"
-          ],
-          "themes": [
-            "AI伺服器",
-            "散熱/液冷"
-          ]
-        },
-        {
-          "stock_id": "4908",
-          "name": "前鼎",
-          "date": "2026-08-31",
-          "side": "limit_up",
-          "close": 209.0,
-          "pct_change": 10.0,
-          "volume_ratio_20": 2.83,
-          "pre_5d_return": 24.18,
-          "pre_20d_return": 43.94,
-          "pre_20d_range": 47.41,
-          "prior_above_ma20": true,
-          "breakout_20d": true,
-          "breakdown_20d": false,
-          "post_5d_return": 6.7,
-          "post_10d_return": null,
-          "labels": [
-            "突破整理",
-            "量能放大",
-            "趨勢在均線上",
-            "題材續強"
-          ],
-          "themes": [
-            "矽光子/CPO",
-            "網通光通訊"
-          ]
-        },
-        {
-          "stock_id": "6980",
-          "name": "鐳洋",
-          "date": "2026-08-31",
-          "side": "limit_up",
-          "close": 144.0,
-          "pct_change": 14.29,
-          "volume_ratio_20": 2.62,
-          "pre_5d_return": 8.62,
-          "pre_20d_return": 20.0,
-          "pre_20d_range": 25.74,
-          "prior_above_ma20": true,
-          "breakout_20d": true,
-          "breakdown_20d": false,
-          "post_5d_return": -16.67,
-          "post_10d_return": null,
-          "labels": [
-            "突破整理",
-            "量能放大",
-            "趨勢在均線上",
-            "題材續強"
-          ],
-          "themes": [
-            "低軌衛星/SpaceX"
-          ]
         }
       ]
     },
     "limit_down": {
-      "events": 492,
-      "completed_5d": 463,
-      "avg_post_5d_return": 4.81,
-      "continuation_5d_rate": 37.4,
+      "events": 493,
+      "completed_5d": 464,
+      "avg_post_5d_return": 4.8,
+      "continuation_5d_rate": 37.5,
       "common_labels": [
         {
           "label": "高波動警訊",
-          "events": 454,
+          "events": 455,
           "avg_volume_ratio_20": 1.09,
-          "avg_pre_20d_return": 24.87,
-          "avg_post_5d_return": 5.09,
-          "avg_post_10d_return": 9.44,
-          "continuation_5d_rate": 37.0
+          "avg_pre_20d_return": 24.93,
+          "avg_post_5d_return": 5.08,
+          "avg_post_10d_return": 9.38,
+          "continuation_5d_rate": 37.1
         },
         {
           "label": "高檔轉弱",
-          "events": 243,
+          "events": 244,
           "avg_volume_ratio_20": 1.07,
           "avg_pre_20d_return": 51.22,
-          "avg_post_5d_return": 4.56,
-          "avg_post_10d_return": 10.88,
-          "continuation_5d_rate": 38.1
+          "avg_post_5d_return": 4.53,
+          "avg_post_10d_return": 10.76,
+          "continuation_5d_rate": 38.4
         },
         {
           "label": "均線下方",
