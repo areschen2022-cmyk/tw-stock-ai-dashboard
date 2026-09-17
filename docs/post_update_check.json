@@ -1,30 +1,50 @@
 {
-  "generated_at": "2026-09-17T07:31:05+08:00",
+  "generated_at": "2026-09-18T07:01:00+08:00",
   "status": "warn",
   "counts": {
     "critical": 0,
-    "warning": 1,
+    "warning": 2,
     "info": 3
   },
   "context": {
-    "as_of": "2026-09-16",
-    "weekly_as_of": "2026-09-16",
-    "performance_as_of": "2026-09-16",
-    "potential_as_of": "2026-09-16",
+    "as_of": "2026-09-17",
+    "weekly_as_of": "2026-09-17",
+    "performance_as_of": "2026-09-17",
+    "potential_as_of": "2026-09-17",
     "rows": 131,
     "valid": 131,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
       {
-        "update_date": "2026-09-16",
+        "update_date": "2026-09-17",
         "dataset": "institutional_flow",
         "status": "ok",
         "row_count": 131,
-        "source_date": "2026-09-16",
+        "source_date": "2026-09-17",
         "message": "131 stocks scanned for institutional flow",
-        "run_id": "35162452143",
-        "created_at": "2026-09-16 23:30:43"
+        "run_id": "35284642751",
+        "created_at": "2026-09-17 23:00:37"
+      },
+      {
+        "update_date": "2026-09-17",
+        "dataset": "tdcc_retail_holders",
+        "status": "ok",
+        "row_count": 4055,
+        "source_date": "2026-09-11",
+        "message": "35 divergence signals; previous=2026-09-04",
+        "run_id": "35284642751",
+        "created_at": "2026-09-17 22:59:59"
+      },
+      {
+        "update_date": "2026-09-16",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 130,
+        "source_date": "2026-09-16",
+        "message": "130 stocks scanned for institutional flow",
+        "run_id": "35170883174",
+        "created_at": "2026-09-17 01:33:04"
       },
       {
         "update_date": "2026-09-16",
@@ -95,26 +115,6 @@
         "message": "139 stocks scanned for institutional flow",
         "run_id": "34795250044",
         "created_at": "2026-09-14 01:15:38"
-      },
-      {
-        "update_date": "2026-09-10",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 142,
-        "source_date": "2026-09-10",
-        "message": "142 stocks scanned for institutional flow",
-        "run_id": "34549726827",
-        "created_at": "2026-09-11 01:15:27"
-      },
-      {
-        "update_date": "2026-09-10",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4051,
-        "source_date": "2026-09-04",
-        "message": "46 divergence signals; previous=2026-08-28",
-        "run_id": "34539602975",
-        "created_at": "2026-09-10 22:54:40"
       }
     ]
   },
@@ -144,9 +144,15 @@
       "suggestion": "Sync a fresh us-stock-ai dashboard JSON before using US-stock picks as a Taiwan-stock decision input."
     },
     {
+      "severity": "warning",
+      "area": "performance",
+      "message": "No watch signal records in performance data",
+      "suggestion": "Check save_watch_candidates and update_forward_returns."
+    },
+    {
       "severity": "info",
       "area": "traceability",
-      "message": "Traceability diagnosis contains 2 item(s)",
+      "message": "Traceability diagnosis contains 3 item(s)",
       "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
     }
   ],

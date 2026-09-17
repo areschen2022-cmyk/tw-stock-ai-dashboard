@@ -1,313 +1,58 @@
 {
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-17T07:30:52+08:00",
+  "as_of": "2026-09-17",
+  "generated_at": "2026-09-18T07:00:46+08:00",
   "status": "ok",
   "risk_level": "sample_too_small",
   "summary": {
-    "signals": 10,
-    "completed": 10,
-    "win_rate_5d": 40.0,
-    "avg_return_5d": -1.493376563162118,
-    "stop_hit_rate": 40.0,
+    "signals": 0,
+    "completed": 0,
+    "win_rate_5d": null,
+    "avg_return_5d": null,
+    "stop_hit_rate": null,
     "data_completion_rate_5d": 100.0,
-    "ai_win_rate_5d": 60.0,
-    "potential_win_rate_5d": 43.859649122807014
+    "ai_win_rate_5d": null,
+    "potential_win_rate_5d": 40.55555555555556
   },
   "best": {
-    "score_band": {
-      "label": "85-94",
-      "signals": 4,
-      "completed": 4,
-      "win_rate_5d": 50.0,
-      "avg_return_5d": 0.7585670010527908,
-      "stop_hit_rate": 25.0
-    },
-    "theme": {
-      "label": "矽光子/CPO",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 15.454545454545453,
-      "stop_hit_rate": 0.0
-    },
-    "action": {
-      "label": "等拉回",
-      "signals": 3,
-      "completed": 3,
-      "win_rate_5d": 66.66666666666666,
-      "avg_return_5d": 5.871389955896997,
-      "stop_hit_rate": 0.0
-    },
+    "score_band": {},
+    "theme": {},
+    "action": {},
     "source_layer": {},
     "factor_layer": {},
-    "segments": [
-      {
-        "label": "整體完成樣本",
-        "completed": 10,
-        "win_rate_5d": 40.0,
-        "avg_return_5d": -1.493376563162118
-      }
-    ]
+    "segments": []
   },
   "weak": {
-    "score_band": {
-      "label": "75-84",
-      "signals": 6,
-      "completed": 6,
-      "win_rate_5d": 33.33333333333333,
-      "avg_return_5d": -2.994672272638725,
-      "stop_hit_rate": 50.0
-    },
-    "theme": {
-      "label": "未標記",
-      "signals": 6,
-      "completed": 6,
-      "win_rate_5d": 16.666666666666664,
-      "avg_return_5d": -5.8947413866375,
-      "stop_hit_rate": 66.66666666666666
-    },
-    "action": {
-      "label": "可追蹤突破",
-      "signals": 7,
-      "completed": 7,
-      "win_rate_5d": 28.57142857142857,
-      "avg_return_5d": -4.6497050713303105,
-      "stop_hit_rate": 57.14285714285714
-    },
+    "score_band": {},
+    "theme": {},
+    "action": {},
     "source_layer": {},
     "factor_layer": {},
     "segments": [],
-    "failure_attribution": [
-      {
-        "label": "進場後轉弱",
-        "count": 6,
-        "avg_return_5d": -7.325371530409806,
-        "lesson": "樣本仍需累積，先保留觀察。"
-      },
-      {
-        "label": "停損觸發",
-        "count": 4,
-        "avg_return_5d": -9.061296732234426,
-        "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
-      }
-    ]
+    "failure_attribution": []
   },
   "learning": {
-    "success_factors": [
-      {
-        "label": "進場觸發",
-        "count": 3,
-        "avg_return_5d": 4.5213060320973995
-      },
-      {
-        "label": "weekly_entry_condition_caution",
-        "count": 2,
-        "avg_return_5d": 3.4486257148127653
-      },
-      {
-        "label": "高強度",
-        "count": 2,
-        "avg_return_5d": 3.4486257148127653
-      },
-      {
-        "label": "等拉回",
-        "count": 2,
-        "avg_return_5d": 11.06060606060606
-      },
-      {
-        "label": "進場未觸發",
-        "count": 1,
-        "avg_return_5d": 15.454545454545453
-      }
-    ],
-    "failure_factors": [
-      {
-        "label": "進場後轉弱",
-        "count": 6,
-        "avg_return_5d": -7.325371530409806
-      },
-      {
-        "label": "停損觸發",
-        "count": 4,
-        "avg_return_5d": -9.061296732234426
-      },
-      {
-        "label": "高分失敗",
-        "count": 1,
-        "avg_return_5d": -3.200000000000003
-      }
-    ],
+    "success_factors": [],
+    "failure_factors": [],
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 40.0%，平均報酬 -1.5%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 0.0%，平均報酬 0.0%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "操作型態拖累：可追蹤突破 5日平均 -4.6%。",
-      "主要失敗歸因：進場後轉弱 6 筆，5日平均 -7.3%。"
+      "近期整體勝率或平均報酬偏弱，但尚未形成足夠集中的可歸因區塊。"
     ],
     "guard_segments": []
   },
   "win_rate_diagnosis": {
     "triggered": true,
-    "headline": "5日勝率 40.0%，低於 50% 門檻。",
-    "likely_causes": [
-      {
-        "label": "75-84",
-        "sample": 6,
-        "win_rate_5d": 33.33333333333333,
-        "avg_return_5d": -2.994672272638725,
-        "stop_hit_rate": 50.0,
-        "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
-      },
-      {
-        "label": "未標記",
-        "sample": 6,
-        "win_rate_5d": 16.666666666666664,
-        "avg_return_5d": -5.8947413866375,
-        "stop_hit_rate": 66.66666666666666,
-        "reason": "題材表現拖累，短期不宜只因新聞熱度加分。"
-      },
-      {
-        "label": "可追蹤突破",
-        "sample": 7,
-        "win_rate_5d": 28.57142857142857,
-        "avg_return_5d": -4.6497050713303105,
-        "stop_hit_rate": 57.14285714285714,
-        "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
-      },
-      {
-        "label": "進場後轉弱",
-        "sample": 6,
-        "win_rate_5d": null,
-        "avg_return_5d": -7.325371530409806,
-        "stop_hit_rate": null,
-        "reason": "樣本仍需累積，先保留觀察。"
-      },
-      {
-        "label": "停損觸發",
-        "sample": 4,
-        "win_rate_5d": null,
-        "avg_return_5d": -9.061296732234426,
-        "stop_hit_rate": null,
-        "reason": "停損有效，需檢討是否進場太晚或波動過大。"
-      }
-    ],
+    "headline": "5日勝率 0.0%，低於 50% 門檻。",
+    "likely_causes": [],
     "recommended_actions": [
       "整體勝率低於 50%，但尚未有單一穩定拖累因子；先維持小部位並累積樣本。"
     ]
   },
-  "monthly_returns": [
-    {
-      "month": "2026-08",
-      "signals": 10,
-      "win_rate_5d": 40.0,
-      "avg_return_5d": -1.493376563162118,
-      "best_return_5d": 15.454545454545453,
-      "worst_return_5d": -14.83050847457627
-    }
-  ],
-  "review_actions": [
-    {
-      "group": "操作",
-      "label": "可追蹤突破",
-      "completed": 7,
-      "win_rate_5d": 28.57142857142857,
-      "avg_return_5d": -4.6497050713303105,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "未標記",
-      "completed": 6,
-      "win_rate_5d": 16.666666666666664,
-      "avg_return_5d": -5.8947413866375,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "防禦與政策",
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -4.5070422535211305,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "操作",
-      "label": "等拉回",
-      "completed": 3,
-      "win_rate_5d": 66.66666666666666,
-      "avg_return_5d": 5.871389955896997,
-      "priority": "加權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "AI伺服器",
-      "completed": 2,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 4.743589743589744,
-      "priority": "加權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "矽光子/CPO",
-      "completed": 1,
-      "win_rate_5d": 100.0,
-      "avg_return_5d": 15.454545454545453,
-      "priority": "加權觀察",
-      "sample_label": "樣本不足"
-    }
-  ],
+  "monthly_returns": [],
+  "review_actions": [],
   "adaptive_feedback": [
-    {
-      "priority": "high",
-      "source": "失敗歸因",
-      "target": "進場後轉弱",
-      "sample": 6,
-      "avg_return_5d": -7.325371530409806,
-      "action": "提高風險權重",
-      "reason": "樣本仍需累積，先保留觀察。"
-    },
-    {
-      "priority": "high",
-      "source": "失敗歸因",
-      "target": "停損觸發",
-      "sample": 4,
-      "avg_return_5d": -9.061296732234426,
-      "action": "提高風險權重",
-      "reason": "停損有效，需檢討是否進場太晚或波動過大。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "操作:可追蹤突破",
-      "sample": 7,
-      "avg_return_5d": -4.6497050713303105,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "題材:未標記",
-      "sample": 6,
-      "avg_return_5d": -5.8947413866375,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "題材:防禦與政策",
-      "sample": 1,
-      "avg_return_5d": -4.5070422535211305,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
     {
       "priority": "medium",
       "source": "訊號因子",
