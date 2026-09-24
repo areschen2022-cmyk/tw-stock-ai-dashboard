@@ -1,15 +1,15 @@
 {
-  "as_of": "2026-09-23",
-  "generated_at": "2026-09-24T07:25:51+08:00",
+  "as_of": "2026-09-24",
+  "generated_at": "2026-09-25T07:19:54+08:00",
   "status": "partial_coverage",
   "requested_years": 30,
   "requested_days": 10958,
   "coverage": {
     "actual_start": "2026-05-11",
-    "actual_end": "2026-08-17",
-    "actual_days": 99
+    "actual_end": "2026-09-23",
+    "actual_days": 136
   },
-  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 99 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
+  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 136 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
   "method": {
     "signal_source": "watch_signals",
     "return_basis": "5 trading-day forward return after signal entry price",
@@ -17,7 +17,7 @@
     "costs": "No commission/slippage model in this summary."
   },
   "overall": {
-    "signals": 1226,
+    "signals": 1227,
     "completed": 1105,
     "win_rate_5d": 48.78,
     "avg_signal_return_5d": 2.5506,
@@ -60,12 +60,21 @@
       "avg_signal_return_5d": 7.8397,
       "best_return_5d": 60.25,
       "worst_return_5d": -14.8305
+    },
+    {
+      "period": "2026-09",
+      "signals": 1,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_signal_return_5d": null,
+      "best_return_5d": null,
+      "worst_return_5d": null
     }
   ],
   "yearly_returns": [
     {
       "period": "2026",
-      "signals": 1226,
+      "signals": 1227,
       "completed": 1105,
       "win_rate_5d": 48.78,
       "avg_signal_return_5d": 2.5506,
@@ -94,12 +103,12 @@
     },
     {
       "label": "75-84",
-      "signals": 368,
+      "signals": 369,
       "completed": 327,
       "win_rate_5d": 45.56574923547401,
       "avg_return_5d": 1.2920328458348824,
       "avg_return_10d": null,
-      "stop_hit_rate": 35.73407202216066
+      "stop_hit_rate": 35.91160220994475
     },
     {
       "label": "85-94",
@@ -240,12 +249,12 @@
     },
     {
       "label": "記憶體/HBM",
-      "signals": 98,
+      "signals": 99,
       "completed": 97,
       "win_rate_5d": 40.20618556701031,
       "avg_return_5d": 2.571129916489144,
       "avg_return_10d": null,
-      "stop_hit_rate": 39.795918367346935
+      "stop_hit_rate": 40.4040404040404
     },
     {
       "label": "金融降息/併購",
@@ -296,12 +305,12 @@
     },
     {
       "label": "等拉回",
-      "signals": 322,
+      "signals": 323,
       "completed": 289,
       "win_rate_5d": 44.636678200692046,
       "avg_return_5d": 1.062562183160054,
       "avg_return_10d": null,
-      "stop_hit_rate": 36.27760252365931
+      "stop_hit_rate": 36.477987421383645
     },
     {
       "label": "避免追高",
@@ -319,13 +328,19 @@
     "completion_rate_5d": 90.1,
     "status_counts": {
       "completed_5d": 1105,
-      "pending_5d": 0,
+      "pending_5d": 1,
       "data_missing": 121
     },
     "missing": 121,
-    "pending": 0,
+    "pending": 1,
     "completed": 1105,
-    "pending_examples": [],
+    "pending_examples": [
+      {
+        "stock_id": "8299",
+        "name": "群聯",
+        "signal_date": "2026-09-23"
+      }
+    ],
     "missing_examples": [
       {
         "stock_id": "8271",
