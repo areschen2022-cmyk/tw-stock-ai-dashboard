@@ -1,12 +1,12 @@
 {
-  "as_of": "2026-10-01",
-  "generated_at": "2026-10-02T10:20:35+08:00",
+  "as_of": "2026-10-02",
+  "generated_at": "2026-10-05T07:32:44+08:00",
   "source": "dashboard_data + performance_data",
   "score_version": "v2",
   "decision_version": "v2",
   "universe_version": "tw_stock_universe_v2",
-  "history_completed_5d_all_versions": 0,
-  "history_completed_5d": 0,
+  "history_completed_5d_all_versions": 1,
+  "history_completed_5d": 1,
   "candidate_count": 1,
   "referenceable_count": 0,
   "strong_reference_count": 0,
@@ -15,16 +15,16 @@
     "scope": "tracked_signals_proxy",
     "score_version": "v2",
     "note": "只統計已被系統記錄的 V2 訊號，不代表全市場飆股召回率；MFE/MAE 未回填時才使用收盤報酬近似。",
-    "completed_10d": 0,
-    "mfe_10d_avg": null,
-    "mae_10d_avg": null,
-    "precision_10d_10pct": null,
-    "precision_10d_15pct": null,
-    "completed_5d": 0,
-    "mfe_5d_avg": null,
-    "mae_5d_avg": null,
-    "precision_5d_5pct": null,
-    "precision_5d_10pct": null
+    "completed_10d": 1,
+    "mfe_10d_avg": 0.0,
+    "mae_10d_avg": -6.09,
+    "precision_10d_10pct": 0.0,
+    "precision_10d_15pct": 0.0,
+    "completed_5d": 1,
+    "mfe_5d_avg": 0.0,
+    "mae_5d_avg": -6.09,
+    "precision_5d_5pct": 0.0,
+    "precision_5d_10pct": 0.0
   },
   "method": {
     "matching": "same action + same grade + any shared theme, fallback to grade/action/theme components",
@@ -40,9 +40,9 @@
   "weak_references": [],
   "candidates": [
     {
-      "stock_id": "3189",
-      "name": "景碩",
-      "score": 68,
+      "stock_id": "3105",
+      "name": "穩懋",
+      "score": 74,
       "grade": "B",
       "action": "只觀察",
       "entry_decision": "條件未同時滿足",
@@ -51,14 +51,15 @@
       "decision_version": "v2",
       "universe_version": "tw_stock_universe_v2",
       "themes": [
-        "先進封裝/CoWoS"
+        "低軌衛星/SpaceX"
       ],
       "trigger_tags": [
         "題材強共振",
         "法人共振",
         "技術突破",
-        "突破整理",
-        "散戶轉乾淨"
+        "營收加速",
+        "散戶轉乾淨",
+        "SpaceX供應鏈"
       ],
       "historical_profile": {
         "completed": 0,
@@ -66,7 +67,7 @@
         "avg_return_5d": null,
         "stop_hit_rate": null,
         "confidence": "低",
-        "match_type": "insufficient_v2_history",
+        "match_type": "component_fallback",
         "same_profile_completed": 0
       },
       "components": {
@@ -92,7 +93,7 @@
           "confidence": "低"
         }
       },
-      "interpretation": "V2 歷史樣本尚不足，不混用 V1；先只作追蹤。"
+      "interpretation": "樣本不足，不直接影響決策；只作追蹤參考。"
     }
   ]
 }

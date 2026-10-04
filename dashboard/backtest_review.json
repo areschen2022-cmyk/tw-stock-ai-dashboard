@@ -1,64 +1,242 @@
 {
-  "as_of": "2026-10-01",
-  "generated_at": "2026-10-02T08:28:10+08:00",
+  "as_of": "2026-10-02",
+  "generated_at": "2026-10-05T07:32:45+08:00",
   "status": "ok",
   "risk_level": "sample_too_small",
   "summary": {
     "signals": 1,
-    "completed": 0,
-    "win_rate_5d": null,
-    "avg_return_5d": null,
+    "completed": 1,
+    "win_rate_5d": 0.0,
+    "avg_return_5d": -5.417607223476298,
     "stop_hit_rate": 100.0,
-    "data_completion_rate_5d": 0.0,
-    "ai_win_rate_5d": null,
-    "potential_win_rate_5d": 36.95652173913043
+    "data_completion_rate_5d": 100.0,
+    "ai_win_rate_5d": 0.0,
+    "potential_win_rate_5d": 40.65934065934066
   },
   "best": {
-    "score_band": {},
-    "theme": {},
-    "action": {},
+    "score_band": {
+      "label": "75-84",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
+    "theme": {
+      "label": "記憶體/HBM",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
+    "action": {
+      "label": "等拉回",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
     "source_layer": {},
     "factor_layer": {},
-    "segments": []
+    "segments": [
+      {
+        "label": "整體完成樣本",
+        "completed": 1,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -5.417607223476298
+      }
+    ]
   },
   "weak": {
-    "score_band": {},
-    "theme": {},
-    "action": {},
+    "score_band": {
+      "label": "75-84",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
+    "theme": {
+      "label": "記憶體/HBM",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
+    "action": {
+      "label": "等拉回",
+      "signals": 1,
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "stop_hit_rate": 100.0
+    },
     "source_layer": {},
     "factor_layer": {},
     "segments": [],
-    "failure_attribution": []
+    "failure_attribution": [
+      {
+        "label": "停損觸發",
+        "count": 1,
+        "avg_return_5d": -5.417607223476298,
+        "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
+      },
+      {
+        "label": "進場後轉弱",
+        "count": 1,
+        "avg_return_5d": -5.417607223476298,
+        "lesson": "樣本仍需累積，先保留觀察。"
+      }
+    ]
   },
   "learning": {
     "success_factors": [],
-    "failure_factors": [],
+    "failure_factors": [
+      {
+        "label": "停損觸發",
+        "count": 1,
+        "avg_return_5d": -5.417607223476298
+      },
+      {
+        "label": "進場後轉弱",
+        "count": 1,
+        "avg_return_5d": -5.417607223476298
+      }
+    ],
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 0.0%，平均報酬 0.0%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 0.0%，平均報酬 -5.4%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "近期整體勝率或平均報酬偏弱，但尚未形成足夠集中的可歸因區塊。"
+      "主要失敗歸因：停損觸發 1 筆，5日平均 -5.4%。"
     ],
     "guard_segments": []
   },
   "win_rate_diagnosis": {
     "triggered": true,
     "headline": "5日勝率 0.0%，低於 50% 門檻。",
-    "likely_causes": [],
+    "likely_causes": [
+      {
+        "label": "75-84",
+        "sample": 1,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -5.417607223476298,
+        "stop_hit_rate": 100.0,
+        "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
+      },
+      {
+        "label": "記憶體/HBM",
+        "sample": 1,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -5.417607223476298,
+        "stop_hit_rate": 100.0,
+        "reason": "題材表現拖累，短期不宜只因新聞熱度加分。"
+      },
+      {
+        "label": "等拉回",
+        "sample": 1,
+        "win_rate_5d": 0.0,
+        "avg_return_5d": -5.417607223476298,
+        "stop_hit_rate": 100.0,
+        "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
+      },
+      {
+        "label": "停損觸發",
+        "sample": 1,
+        "win_rate_5d": null,
+        "avg_return_5d": -5.417607223476298,
+        "stop_hit_rate": null,
+        "reason": "停損有效，需檢討是否進場太晚或波動過大。"
+      },
+      {
+        "label": "進場後轉弱",
+        "sample": 1,
+        "win_rate_5d": null,
+        "avg_return_5d": -5.417607223476298,
+        "stop_hit_rate": null,
+        "reason": "樣本仍需累積，先保留觀察。"
+      }
+    ],
     "recommended_actions": [
       "整體勝率低於 50%，但尚未有單一穩定拖累因子；先維持小部位並累積樣本。"
     ]
   },
-  "monthly_returns": [],
-  "review_actions": [],
+  "monthly_returns": [
+    {
+      "month": "2026-09",
+      "signals": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "best_return_5d": -5.417607223476298,
+      "worst_return_5d": -5.417607223476298
+    }
+  ],
+  "review_actions": [
+    {
+      "group": "操作",
+      "label": "等拉回",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    },
+    {
+      "group": "題材",
+      "label": "記憶體/HBM",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -5.417607223476298,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    }
+  ],
   "adaptive_feedback": [
+    {
+      "priority": "high",
+      "source": "失敗歸因",
+      "target": "停損觸發",
+      "sample": 1,
+      "avg_return_5d": -5.417607223476298,
+      "action": "提高風險權重",
+      "reason": "停損有效，需檢討是否進場太晚或波動過大。"
+    },
+    {
+      "priority": "high",
+      "source": "失敗歸因",
+      "target": "進場後轉弱",
+      "sample": 1,
+      "avg_return_5d": -5.417607223476298,
+      "action": "提高風險權重",
+      "reason": "樣本仍需累積，先保留觀察。"
+    },
+    {
+      "priority": "medium",
+      "source": "校準建議",
+      "target": "操作:等拉回",
+      "sample": 1,
+      "avg_return_5d": -5.417607223476298,
+      "action": "降權觀察",
+      "reason": "依近期 5 日績效調整觀察權重。"
+    },
+    {
+      "priority": "medium",
+      "source": "校準建議",
+      "target": "題材:記憶體/HBM",
+      "sample": 1,
+      "avg_return_5d": -5.417607223476298,
+      "action": "降權觀察",
+      "reason": "依近期 5 日績效調整觀察權重。"
+    },
     {
       "priority": "medium",
       "source": "訊號因子",
-      "target": "題材+量能+K線+法人前導不足",
+      "target": "K線+法人前導不足",
       "sample": 1,
-      "avg_return_5d": -70.0,
+      "avg_return_5d": -27.575757575757574,
       "action": "降低因子權重",
       "reason": "近期同因子表現偏弱。"
     }
