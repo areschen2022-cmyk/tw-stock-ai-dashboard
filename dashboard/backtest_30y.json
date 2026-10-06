@@ -1,15 +1,15 @@
 {
-  "as_of": "2026-10-02",
-  "generated_at": "2026-10-05T07:47:40+08:00",
+  "as_of": "2026-10-05",
+  "generated_at": "2026-10-06T09:26:17+08:00",
   "status": "partial_coverage",
   "requested_years": 30,
   "requested_days": 10958,
   "coverage": {
     "actual_start": "2026-05-11",
-    "actual_end": "2026-09-23",
-    "actual_days": 136
+    "actual_end": "2026-10-05",
+    "actual_days": 148
   },
-  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 136 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
+  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 148 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
   "method": {
     "signal_source": "watch_signals",
     "return_basis": "5 trading-day forward return after signal entry price",
@@ -17,7 +17,7 @@
     "costs": "No commission/slippage model in this summary."
   },
   "overall": {
-    "signals": 1227,
+    "signals": 1230,
     "completed": 1106,
     "win_rate_5d": 48.73,
     "avg_signal_return_5d": 2.5434,
@@ -69,12 +69,21 @@
       "avg_signal_return_5d": -5.4176,
       "best_return_5d": -5.4176,
       "worst_return_5d": -5.4176
+    },
+    {
+      "period": "2026-10",
+      "signals": 3,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_signal_return_5d": null,
+      "best_return_5d": null,
+      "worst_return_5d": null
     }
   ],
   "yearly_returns": [
     {
       "period": "2026",
-      "signals": 1227,
+      "signals": 1230,
       "completed": 1106,
       "win_rate_5d": 48.73,
       "avg_signal_return_5d": 2.5434,
@@ -103,16 +112,16 @@
     },
     {
       "label": "75-84",
-      "signals": 369,
+      "signals": 371,
       "completed": 328,
       "win_rate_5d": 45.426829268292686,
       "avg_return_5d": 1.2715766261113728,
       "avg_return_10d": null,
-      "stop_hit_rate": 35.91160220994475
+      "stop_hit_rate": 35.81267217630854
     },
     {
       "label": "85-94",
-      "signals": 181,
+      "signals": 182,
       "completed": 161,
       "win_rate_5d": 50.931677018633536,
       "avg_return_5d": 2.581839091700019,
@@ -159,12 +168,12 @@
     },
     {
       "label": "低軌衛星/SpaceX",
-      "signals": 64,
+      "signals": 67,
       "completed": 60,
       "win_rate_5d": 48.333333333333336,
       "avg_return_5d": 0.8979470153686264,
       "avg_return_10d": null,
-      "stop_hit_rate": 40.625
+      "stop_hit_rate": 40.0
     },
     {
       "label": "先進封裝/CoWoS",
@@ -296,16 +305,16 @@
     },
     {
       "label": "可追蹤突破",
-      "signals": 348,
+      "signals": 350,
       "completed": 314,
       "win_rate_5d": 55.095541401273884,
       "avg_return_5d": 4.34598607679856,
       "avg_return_10d": 112.10015600155506,
-      "stop_hit_rate": 21.700879765395893
+      "stop_hit_rate": 21.637426900584796
     },
     {
       "label": "等拉回",
-      "signals": 323,
+      "signals": 324,
       "completed": 290,
       "win_rate_5d": 44.48275862068966,
       "avg_return_5d": 1.040216771413032,
@@ -324,17 +333,33 @@
   ],
   "data_quality": {
     "label": "高",
-    "coverage": 90.1,
-    "completion_rate_5d": 90.1,
+    "coverage": 89.9,
+    "completion_rate_5d": 89.9,
     "status_counts": {
       "completed_5d": 1106,
-      "pending_5d": 0,
+      "pending_5d": 3,
       "data_missing": 121
     },
     "missing": 121,
-    "pending": 0,
+    "pending": 3,
     "completed": 1106,
-    "pending_examples": [],
+    "pending_examples": [
+      {
+        "stock_id": "3491",
+        "name": "昇達科",
+        "signal_date": "2026-10-05"
+      },
+      {
+        "stock_id": "3105",
+        "name": "穩懋",
+        "signal_date": "2026-10-05"
+      },
+      {
+        "stock_id": "3105",
+        "name": "穩懋",
+        "signal_date": "2026-10-02"
+      }
+    ],
     "missing_examples": [
       {
         "stock_id": "8271",
