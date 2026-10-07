@@ -1,21 +1,31 @@
 {
-  "generated_at": "2026-10-06T09:40:32+08:00",
-  "status": "ok",
+  "generated_at": "2026-10-07T08:00:49+08:00",
+  "status": "warn",
   "counts": {
     "critical": 0,
-    "warning": 0,
-    "info": 2
+    "warning": 1,
+    "info": 3
   },
   "context": {
-    "as_of": "2026-10-05",
-    "weekly_as_of": "2026-10-05",
-    "performance_as_of": "2026-10-05",
-    "potential_as_of": "2026-10-05",
-    "rows": 160,
-    "valid": 160,
+    "as_of": "2026-10-06",
+    "weekly_as_of": "2026-10-06",
+    "performance_as_of": "2026-10-06",
+    "potential_as_of": "2026-10-06",
+    "rows": 122,
+    "valid": 122,
     "chase": 0,
-    "pullback": 2,
+    "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-10-06",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 122,
+        "source_date": "2026-10-06",
+        "message": "122 stocks scanned for institutional flow",
+        "run_id": "37549442242",
+        "created_at": "2026-10-07 00:00:20"
+      },
       {
         "update_date": "2026-10-06",
         "dataset": "tdcc_retail_holders",
@@ -23,18 +33,18 @@
         "row_count": 4078,
         "source_date": "2026-10-02",
         "message": "31 divergence signals; previous=2026-09-24",
-        "run_id": "37400122471",
-        "created_at": "2026-10-06 01:39:15"
+        "run_id": "37549442242",
+        "created_at": "2026-10-06 23:59:36"
       },
       {
         "update_date": "2026-10-05",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 160,
+        "row_count": 146,
         "source_date": "2026-10-05",
-        "message": "160 stocks scanned for institutional flow",
-        "run_id": "37400122471",
-        "created_at": "2026-10-06 01:40:00"
+        "message": "146 stocks scanned for institutional flow",
+        "run_id": "37407495136",
+        "created_at": "2026-10-06 03:09:01"
       },
       {
         "update_date": "2026-10-04",
@@ -105,26 +115,28 @@
         "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=45)",
         "run_id": "36648180366",
         "created_at": "2026-09-30 00:03:07"
-      },
-      {
-        "update_date": "2026-09-29",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 107,
-        "source_date": "2026-09-29",
-        "message": "107 stocks scanned for institutional flow",
-        "run_id": "36658704882",
-        "created_at": "2026-09-30 02:12:51"
       }
     ]
   },
   "database": {
-    "daily_scores": 160,
+    "daily_scores": 122,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 6
   },
   "issues": [
+    {
+      "severity": "info",
+      "area": "decision",
+      "message": "No chase or pullback candidates today",
+      "suggestion": "This can be normal. If repeated, review action thresholds."
+    },
+    {
+      "severity": "warning",
+      "area": "data_quality",
+      "message": "Data quality is not high: 中",
+      "suggestion": "Check fallback/retry attribution before treating this as a true data loss."
+    },
     {
       "severity": "info",
       "area": "us_stock_context",

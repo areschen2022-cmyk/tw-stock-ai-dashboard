@@ -1,14 +1,14 @@
 {
-  "as_of": "2026-10-05",
-  "generated_at": "2026-10-06T09:40:11+08:00",
+  "as_of": "2026-10-06",
+  "generated_at": "2026-10-07T08:00:29+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
-    "daily_signals": 4,
+    "daily_signals": 3,
     "daily_completed": 1,
     "daily_win_rate_5d": 0.0,
     "daily_avg_return_5d": -5.417607223476298,
-    "potential_signals": 252,
+    "potential_signals": 264,
     "potential_completed": 158,
     "potential_win_rate_5d": 43.67088607594937,
     "potential_avg_return_5d": 0.9514884275948091,
@@ -18,7 +18,7 @@
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 249,
+      "signals": 262,
       "completed": 157,
       "win_rate_5d": 43.94904458598726,
       "avg_return_5d": 0.9920559158181923,
@@ -26,7 +26,7 @@
     },
     "potential_factor": {
       "label": "題材+法人開始同步",
-      "signals": 42,
+      "signals": 41,
       "completed": 37,
       "win_rate_5d": 51.35135135135135,
       "avg_return_5d": 3.063982792169838,
@@ -35,40 +35,40 @@
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 267,
-        "trend": "降溫↓",
-        "today": 21
-      },
-      {
-        "theme": "矽光子/CPO",
-        "week_score": 225,
+        "week_score": 286,
         "trend": "升溫↑",
         "today": 45
       },
       {
-        "theme": "AI國防/軍工",
-        "week_score": 217,
-        "trend": "升溫↑",
-        "today": 35
-      },
-      {
         "theme": "防禦與政策",
-        "week_score": 214,
+        "week_score": 223,
         "trend": "升溫↑",
-        "today": 32
+        "today": 31
       },
       {
-        "theme": "網通光通訊",
-        "week_score": 202,
+        "theme": "AI國防/軍工",
+        "week_score": 216,
+        "trend": "持平→",
+        "today": 27
+      },
+      {
+        "theme": "先進封裝/CoWoS",
+        "week_score": 215,
         "trend": "升溫↑",
-        "today": 35
+        "today": 34
+      },
+      {
+        "theme": "矽光子/CPO",
+        "week_score": 211,
+        "trend": "升溫↑",
+        "today": 31
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 249,
+      "signals": 262,
       "completed": 157,
       "win_rate_5d": 43.94904458598726,
       "avg_return_5d": 0.9920559158181923,
@@ -76,7 +76,7 @@
     },
     "potential_factor": {
       "label": "題材+K線+法人開始同步",
-      "signals": 31,
+      "signals": 33,
       "completed": 25,
       "win_rate_5d": 20.0,
       "avg_return_5d": -3.338168501058759,
@@ -104,7 +104,7 @@
     "logic_verdict": "本週選股邏輯需要檢討，高風險項目應先降權或暫停升級。",
     "traffic_counts": {
       "green": 0,
-      "yellow": 2,
+      "yellow": 0,
       "red": 5
     },
     "sample_state": {
@@ -115,17 +115,10 @@
     },
     "issues": [
       {
-        "code": "no_green_with_watchlist",
-        "severity": "medium",
-        "finding": "本週沒有綠燈可追，但仍有黃燈觀察名單，可能是進場門檻偏嚴或市場尚未確認。",
-        "evidence": "green=0, yellow=2, red=5",
-        "recommendation": "檢查可追條件是否過度嚴格；若黃燈後續勝率高，可建立小倉位觀察規則。"
-      },
-      {
         "code": "risk_list_dominates",
         "severity": "high",
         "finding": "危險名單數量明顯高於可追與等拉回，代表風控壓力偏高。",
-        "evidence": "green=0, yellow=2, red=5",
+        "evidence": "green=0, yellow=0, red=5",
         "recommendation": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
       },
       {
@@ -136,13 +129,6 @@
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
-        "code": "current_candidates_no_reference",
-        "severity": "medium",
-        "finding": "今日候選股缺少可比較的歷史同條件樣本，決策可信度較低。",
-        "evidence": "candidate_count=3, referenceable_count=0",
-        "recommendation": "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
-      },
-      {
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
@@ -151,10 +137,8 @@
       }
     ],
     "next_week_focus": [
-      "檢查可追條件是否過度嚴格；若黃燈後續勝率高，可建立小倉位觀察規則。",
       "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。",
-      "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。",
-      "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
+      "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
     ]
   },
   "next_week_actions": [
@@ -180,11 +164,6 @@
     },
     {
       "type": "logic_audit",
-      "target": "no_green_with_watchlist",
-      "reason": "檢查可追條件是否過度嚴格；若黃燈後續勝率高，可建立小倉位觀察規則。"
-    },
-    {
-      "type": "logic_audit",
       "target": "risk_list_dominates",
       "reason": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
     },
@@ -192,11 +171,6 @@
       "type": "logic_audit",
       "target": "potential_radar_win_rate_below_50",
       "reason": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
-    },
-    {
-      "type": "logic_audit",
-      "target": "current_candidates_no_reference",
-      "reason": "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
     }
   ],
   "rules": [
