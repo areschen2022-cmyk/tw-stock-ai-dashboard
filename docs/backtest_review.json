@@ -1,51 +1,51 @@
 {
-  "as_of": "2026-10-09",
-  "generated_at": "2026-10-12T08:12:06+08:00",
+  "as_of": "2026-10-12",
+  "generated_at": "2026-10-13T10:15:41+08:00",
   "status": "ok",
   "risk_level": "sample_too_small",
   "summary": {
     "signals": 3,
-    "completed": 1,
+    "completed": 2,
     "win_rate_5d": 0.0,
-    "avg_return_5d": -5.417607223476298,
+    "avg_return_5d": -3.63942966926776,
     "stop_hit_rate": 33.33333333333333,
-    "data_completion_rate_5d": 33.3,
+    "data_completion_rate_5d": 66.7,
     "ai_win_rate_5d": 0.0,
-    "potential_win_rate_5d": 51.461988304093566
+    "potential_win_rate_5d": 57.432432432432435
   },
   "best": {
     "score_band": {
       "label": "75-84",
       "signals": 3,
-      "completed": 1,
+      "completed": 2,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -5.417607223476298,
+      "avg_return_5d": -3.63942966926776,
       "stop_hit_rate": 33.33333333333333
     },
     "theme": {
-      "label": "記憶體/HBM",
+      "label": "低軌衛星/SpaceX",
       "signals": 1,
       "completed": 1,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -5.417607223476298,
-      "stop_hit_rate": 100.0
+      "avg_return_5d": -1.8612521150592216,
+      "stop_hit_rate": 0.0
     },
     "action": {
-      "label": "等拉回",
-      "signals": 2,
+      "label": "可追蹤突破",
+      "signals": 1,
       "completed": 1,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -5.417607223476298,
-      "stop_hit_rate": 50.0
+      "avg_return_5d": -1.8612521150592216,
+      "stop_hit_rate": 0.0
     },
     "source_layer": {},
     "factor_layer": {},
     "segments": [
       {
         "label": "整體完成樣本",
-        "completed": 1,
+        "completed": 2,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -5.417607223476298
+        "avg_return_5d": -3.63942966926776
       }
     ]
   },
@@ -53,9 +53,9 @@
     "score_band": {
       "label": "75-84",
       "signals": 3,
-      "completed": 1,
+      "completed": 2,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -5.417607223476298,
+      "avg_return_5d": -3.63942966926776,
       "stop_hit_rate": 33.33333333333333
     },
     "theme": {
@@ -79,16 +79,16 @@
     "segments": [],
     "failure_attribution": [
       {
+        "label": "進場後轉弱",
+        "count": 2,
+        "avg_return_5d": -3.63942966926776,
+        "lesson": "樣本仍需累積，先保留觀察。"
+      },
+      {
         "label": "停損觸發",
         "count": 1,
         "avg_return_5d": -5.417607223476298,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
-      },
-      {
-        "label": "進場後轉弱",
-        "count": 1,
-        "avg_return_5d": -5.417607223476298,
-        "lesson": "樣本仍需累積，先保留觀察。"
       }
     ]
   },
@@ -96,12 +96,12 @@
     "success_factors": [],
     "failure_factors": [
       {
-        "label": "停損觸發",
-        "count": 1,
-        "avg_return_5d": -5.417607223476298
+        "label": "進場後轉弱",
+        "count": 2,
+        "avg_return_5d": -3.63942966926776
       },
       {
-        "label": "進場後轉弱",
+        "label": "停損觸發",
         "count": 1,
         "avg_return_5d": -5.417607223476298
       }
@@ -109,9 +109,9 @@
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 0.0%，平均報酬 -5.4%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 0.0%，平均報酬 -3.6%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "主要失敗歸因：停損觸發 1 筆，5日平均 -5.4%。"
+      "主要失敗歸因：進場後轉弱 2 筆，5日平均 -3.6%。"
     ],
     "guard_segments": []
   },
@@ -121,9 +121,9 @@
     "likely_causes": [
       {
         "label": "75-84",
-        "sample": 1,
+        "sample": 2,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -5.417607223476298,
+        "avg_return_5d": -3.63942966926776,
         "stop_hit_rate": 33.33333333333333,
         "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
       },
@@ -144,20 +144,20 @@
         "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
       },
       {
+        "label": "進場後轉弱",
+        "sample": 2,
+        "win_rate_5d": null,
+        "avg_return_5d": -3.63942966926776,
+        "stop_hit_rate": null,
+        "reason": "樣本仍需累積，先保留觀察。"
+      },
+      {
         "label": "停損觸發",
         "sample": 1,
         "win_rate_5d": null,
         "avg_return_5d": -5.417607223476298,
         "stop_hit_rate": null,
         "reason": "停損有效，需檢討是否進場太晚或波動過大。"
-      },
-      {
-        "label": "進場後轉弱",
-        "sample": 1,
-        "win_rate_5d": null,
-        "avg_return_5d": -5.417607223476298,
-        "stop_hit_rate": null,
-        "reason": "樣本仍需累積，先保留觀察。"
       }
     ],
     "recommended_actions": [
@@ -172,15 +172,41 @@
       "avg_return_5d": -5.417607223476298,
       "best_return_5d": -5.417607223476298,
       "worst_return_5d": -5.417607223476298
+    },
+    {
+      "month": "2026-10",
+      "signals": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -1.8612521150592216,
+      "best_return_5d": -1.8612521150592216,
+      "worst_return_5d": -1.8612521150592216
     }
   ],
   "review_actions": [
+    {
+      "group": "操作",
+      "label": "可追蹤突破",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -1.8612521150592216,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    },
     {
       "group": "操作",
       "label": "等拉回",
       "completed": 1,
       "win_rate_5d": 0.0,
       "avg_return_5d": -5.417607223476298,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    },
+    {
+      "group": "題材",
+      "label": "低軌衛星/SpaceX",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -1.8612521150592216,
       "priority": "降權觀察",
       "sample_label": "樣本不足"
     },
@@ -198,6 +224,15 @@
     {
       "priority": "high",
       "source": "失敗歸因",
+      "target": "進場後轉弱",
+      "sample": 2,
+      "avg_return_5d": -3.63942966926776,
+      "action": "提高風險權重",
+      "reason": "樣本仍需累積，先保留觀察。"
+    },
+    {
+      "priority": "high",
+      "source": "失敗歸因",
       "target": "停損觸發",
       "sample": 1,
       "avg_return_5d": -5.417607223476298,
@@ -205,13 +240,13 @@
       "reason": "停損有效，需檢討是否進場太晚或波動過大。"
     },
     {
-      "priority": "high",
-      "source": "失敗歸因",
-      "target": "進場後轉弱",
+      "priority": "medium",
+      "source": "校準建議",
+      "target": "操作:可追蹤突破",
       "sample": 1,
-      "avg_return_5d": -5.417607223476298,
-      "action": "提高風險權重",
-      "reason": "樣本仍需累積，先保留觀察。"
+      "avg_return_5d": -1.8612521150592216,
+      "action": "降權觀察",
+      "reason": "依近期 5 日績效調整觀察權重。"
     },
     {
       "priority": "medium",
@@ -225,18 +260,18 @@
     {
       "priority": "medium",
       "source": "校準建議",
-      "target": "題材:記憶體/HBM",
+      "target": "題材:低軌衛星/SpaceX",
       "sample": 1,
-      "avg_return_5d": -5.417607223476298,
+      "avg_return_5d": -1.8612521150592216,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
     {
       "priority": "medium",
       "source": "訊號因子",
-      "target": "題材+量能+法人開始同步",
-      "sample": 2,
-      "avg_return_5d": -9.764136368318056,
+      "target": "題材+法人前導不足",
+      "sample": 1,
+      "avg_return_5d": -6.028708133971289,
       "action": "降低因子權重",
       "reason": "近期同因子表現偏弱。"
     }

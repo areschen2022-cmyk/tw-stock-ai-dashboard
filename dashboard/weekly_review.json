@@ -1,100 +1,100 @@
 {
-  "as_of": "2026-10-09",
-  "generated_at": "2026-10-12T08:12:06+08:00",
+  "as_of": "2026-10-12",
+  "generated_at": "2026-10-13T10:15:41+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
     "daily_signals": 3,
-    "daily_completed": 1,
+    "daily_completed": 2,
     "daily_win_rate_5d": 0.0,
-    "daily_avg_return_5d": -5.417607223476298,
-    "potential_signals": 276,
-    "potential_completed": 171,
-    "potential_win_rate_5d": 51.461988304093566,
-    "potential_avg_return_5d": 2.420161880637142,
+    "daily_avg_return_5d": -3.63942966926776,
+    "potential_signals": 252,
+    "potential_completed": 148,
+    "potential_win_rate_5d": 57.432432432432435,
+    "potential_avg_return_5d": 3.766783904399289,
     "backtest_risk_level": "sample_too_small",
-    "backtest_completed": 1
+    "backtest_completed": 2
   },
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 274,
-      "completed": 170,
-      "win_rate_5d": 51.76470588235295,
-      "avg_return_5d": 2.466266404778986,
+      "signals": 250,
+      "completed": 146,
+      "win_rate_5d": 58.21917808219178,
+      "avg_return_5d": 3.8682388848604816,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "放量長紅",
-      "signals": 43,
-      "completed": 25,
-      "win_rate_5d": 68.0,
-      "avg_return_5d": 6.213585857471875,
+      "signals": 47,
+      "completed": 28,
+      "win_rate_5d": 75.0,
+      "avg_return_5d": 9.19131153286972,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 239,
+        "week_score": 225,
         "trend": "升溫↑",
-        "today": 37
-      },
-      {
-        "theme": "AI國防/軍工",
-        "week_score": 205,
-        "trend": "持平→",
         "today": 31
       },
       {
+        "theme": "AI國防/軍工",
+        "week_score": 202,
+        "trend": "-",
+        "today": 29
+      },
+      {
         "theme": "網通光通訊",
-        "week_score": 200,
+        "week_score": 197,
         "trend": "-",
         "today": 25
       },
       {
         "theme": "防禦與政策",
-        "week_score": 199,
+        "week_score": 195,
         "trend": "-",
-        "today": 27
+        "today": 28
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 197,
-        "trend": "-",
-        "today": 24
+        "week_score": 191,
+        "trend": "升溫↑",
+        "today": 27
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 274,
-      "completed": 170,
-      "win_rate_5d": 51.76470588235295,
-      "avg_return_5d": 2.466266404778986,
+      "signals": 250,
+      "completed": 146,
+      "win_rate_5d": 58.21917808219178,
+      "avg_return_5d": 3.8682388848604816,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "題材+K線+法人開始同步",
-      "signals": 31,
-      "completed": 20,
-      "win_rate_5d": 25.0,
-      "avg_return_5d": -2.3125661197410516,
+      "signals": 25,
+      "completed": 14,
+      "win_rate_5d": 42.857142857142854,
+      "avg_return_5d": -0.22000421131291387,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
     "failure_attribution": [
       {
+        "label": "進場後轉弱",
+        "count": 2,
+        "avg_return_5d": -3.63942966926776,
+        "lesson": "樣本仍需累積，先保留觀察。"
+      },
+      {
         "label": "停損觸發",
         "count": 1,
         "avg_return_5d": -5.417607223476298,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
-      },
-      {
-        "label": "進場後轉弱",
-        "count": 1,
-        "avg_return_5d": -5.417607223476298,
-        "lesson": "樣本仍需累積，先保留觀察。"
       }
     ]
   },
@@ -108,10 +108,10 @@
       "red": 5
     },
     "sample_state": {
-      "daily_completed": 1,
+      "daily_completed": 2,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 171,
-      "potential_win_rate_5d": 51.461988304093566
+      "potential_completed": 148,
+      "potential_win_rate_5d": 57.432432432432435
     },
     "issues": [
       {
@@ -122,15 +122,23 @@
         "recommendation": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
       },
       {
+        "code": "current_candidates_no_reference",
+        "severity": "medium",
+        "finding": "今日候選股缺少可比較的歷史同條件樣本，決策可信度較低。",
+        "evidence": "candidate_count=1, referenceable_count=0",
+        "recommendation": "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
+      },
+      {
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=因子, label=題材+量能+法人開始同步, completed=2",
+        "evidence": "group=因子, label=題材+法人前導不足, completed=1",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
     "next_week_focus": [
-      "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
+      "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。",
+      "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
     ]
   },
   "next_week_actions": [
@@ -141,23 +149,28 @@
     },
     {
       "type": "carry_forward",
-      "target": "停損觸發",
-      "reason": "提高風險權重"
-    },
-    {
-      "type": "carry_forward",
       "target": "進場後轉弱",
       "reason": "提高風險權重"
     },
     {
       "type": "carry_forward",
-      "target": "操作:等拉回",
+      "target": "停損觸發",
+      "reason": "提高風險權重"
+    },
+    {
+      "type": "carry_forward",
+      "target": "操作:可追蹤突破",
       "reason": "降權觀察"
     },
     {
       "type": "logic_audit",
       "target": "risk_list_dominates",
       "reason": "下週優先檢查紅色警戒是否命中下跌；若命中率低，降低過度保守的風險權重。"
+    },
+    {
+      "type": "logic_audit",
+      "target": "current_candidates_no_reference",
+      "reason": "補足同條件回測索引，至少用題材、強度、進場條件三層標籤找參考樣本。"
     }
   ],
   "rules": [
