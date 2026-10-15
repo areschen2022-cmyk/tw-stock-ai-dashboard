@@ -1,15 +1,15 @@
 {
-  "as_of": "2026-10-14",
-  "generated_at": "2026-10-15T07:37:29+08:00",
+  "as_of": "2026-10-15",
+  "generated_at": "2026-10-16T07:12:54+08:00",
   "status": "partial_coverage",
   "requested_years": 30,
   "requested_days": 10958,
   "coverage": {
     "actual_start": "2026-05-11",
-    "actual_end": "2026-10-05",
-    "actual_days": 148
+    "actual_end": "2026-10-14",
+    "actual_days": 157
   },
-  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 148 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
+  "coverage_note": "已用 30 年視窗查詢，但資料庫實際只有 157 天訊號；這不是完整 30 年回測。之後若匯入歷史訊號或每日持續累積，會自動延伸。",
   "method": {
     "signal_source": "watch_signals",
     "return_basis": "5 trading-day forward return after signal entry price",
@@ -17,7 +17,7 @@
     "costs": "No commission/slippage model in this summary."
   },
   "overall": {
-    "signals": 1229,
+    "signals": 1230,
     "completed": 1108,
     "win_rate_5d": 48.65,
     "avg_signal_return_5d": 2.5272,
@@ -72,7 +72,7 @@
     },
     {
       "period": "2026-10",
-      "signals": 2,
+      "signals": 3,
       "completed": 2,
       "win_rate_5d": 0.0,
       "avg_signal_return_5d": -6.4521,
@@ -83,7 +83,7 @@
   "yearly_returns": [
     {
       "period": "2026",
-      "signals": 1229,
+      "signals": 1230,
       "completed": 1108,
       "win_rate_5d": 48.65,
       "avg_signal_return_5d": 2.5272,
@@ -112,7 +112,7 @@
     },
     {
       "label": "75-84",
-      "signals": 371,
+      "signals": 372,
       "completed": 330,
       "win_rate_5d": 45.151515151515156,
       "avg_return_5d": 1.224766474133924,
@@ -159,7 +159,7 @@
     },
     {
       "label": "AI電力/重電/電網",
-      "signals": 32,
+      "signals": 33,
       "completed": 28,
       "win_rate_5d": 57.14285714285714,
       "avg_return_5d": 1.9178310309273783,
@@ -248,6 +248,15 @@
       "stop_hit_rate": 55.55555555555556
     },
     {
+      "label": "能源與重電",
+      "signals": 1,
+      "completed": 0,
+      "win_rate_5d": null,
+      "avg_return_5d": null,
+      "avg_return_10d": null,
+      "stop_hit_rate": null
+    },
+    {
       "label": "被動元件",
       "signals": 29,
       "completed": 20,
@@ -314,7 +323,7 @@
     },
     {
       "label": "等拉回",
-      "signals": 324,
+      "signals": 325,
       "completed": 291,
       "win_rate_5d": 44.329896907216494,
       "avg_return_5d": 0.9986938794656466,
@@ -333,17 +342,23 @@
   ],
   "data_quality": {
     "label": "高",
-    "coverage": 90.2,
-    "completion_rate_5d": 90.2,
+    "coverage": 90.1,
+    "completion_rate_5d": 90.1,
     "status_counts": {
       "completed_5d": 1108,
-      "pending_5d": 0,
+      "pending_5d": 1,
       "data_missing": 121
     },
     "missing": 121,
-    "pending": 0,
+    "pending": 1,
     "completed": 1108,
-    "pending_examples": [],
+    "pending_examples": [
+      {
+        "stock_id": "1605",
+        "name": "華新",
+        "signal_date": "2026-10-14"
+      }
+    ],
     "missing_examples": [
       {
         "stock_id": "8271",
