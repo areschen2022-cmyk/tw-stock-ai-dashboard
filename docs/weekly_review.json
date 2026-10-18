@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-15",
-  "generated_at": "2026-10-16T07:32:36+08:00",
+  "as_of": "2026-10-16",
+  "generated_at": "2026-10-19T06:33:57+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
@@ -9,9 +9,9 @@
     "daily_win_rate_5d": 0.0,
     "daily_avg_return_5d": -6.1072680412705305,
     "potential_signals": 276,
-    "potential_completed": 168,
-    "potential_win_rate_5d": 52.976190476190474,
-    "potential_avg_return_5d": 2.6443781612611925,
+    "potential_completed": 180,
+    "potential_win_rate_5d": 50.0,
+    "potential_avg_return_5d": 1.285931235270812,
     "backtest_risk_level": "sample_too_small",
     "backtest_completed": 3
   },
@@ -19,49 +19,49 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 273,
-      "completed": 166,
-      "win_rate_5d": 53.6144578313253,
-      "avg_return_5d": 2.7200866893398548,
+      "completed": 178,
+      "win_rate_5d": 50.56179775280899,
+      "avg_return_5d": 1.3412723690296722,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "量能+K線+法人開始同步",
-      "signals": 46,
-      "completed": 25,
-      "win_rate_5d": 72.0,
-      "avg_return_5d": 7.655478410608002,
+      "signals": 47,
+      "completed": 30,
+      "win_rate_5d": 70.0,
+      "avg_return_5d": 6.422214258702782,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 302,
-        "trend": "急升🔥",
-        "today": 97
+        "week_score": 281,
+        "trend": "降溫↓",
+        "today": 28
       },
       {
         "theme": "AI伺服器",
-        "week_score": 259,
+        "week_score": 258,
         "trend": "-",
-        "today": 38
+        "today": 32
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 248,
-        "trend": "降溫↓",
-        "today": 30
+        "week_score": 246,
+        "trend": "-",
+        "today": 28
       },
       {
         "theme": "AI電力/重電/電網",
-        "week_score": 241,
+        "week_score": 229,
         "trend": "-",
-        "today": 36
+        "today": 29
       },
       {
         "theme": "能源與重電",
-        "week_score": 220,
+        "week_score": 211,
         "trend": "-",
-        "today": 34
+        "today": 28
       }
     ]
   },
@@ -69,17 +69,17 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 273,
-      "completed": 166,
-      "win_rate_5d": 53.6144578313253,
-      "avg_return_5d": 2.7200866893398548,
+      "completed": 178,
+      "win_rate_5d": 50.56179775280899,
+      "avg_return_5d": 1.3412723690296722,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "題材+K線+法人開始同步",
-      "signals": 27,
-      "completed": 17,
-      "win_rate_5d": 35.294117647058826,
-      "avg_return_5d": -2.1437073258725965,
+      "label": "二階受惠型",
+      "signals": 76,
+      "completed": 48,
+      "win_rate_5d": 39.58333333333333,
+      "avg_return_5d": -2.114466519063798,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -110,8 +110,8 @@
     "sample_state": {
       "daily_completed": 3,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 168,
-      "potential_win_rate_5d": 52.976190476190474
+      "potential_completed": 180,
+      "potential_win_rate_5d": 50.0
     },
     "issues": [
       {
@@ -125,7 +125,7 @@
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=題材, label=未標記, completed=1",
+        "evidence": "group=因子, label=量能+K線+法人前導不足, completed=1",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
