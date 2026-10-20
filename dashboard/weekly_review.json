@@ -1,6 +1,6 @@
 {
   "as_of": "2026-10-19",
-  "generated_at": "2026-10-20T07:54:23+08:00",
+  "generated_at": "2026-10-20T08:07:14+08:00",
   "status": "ok",
   "risk_level": "needs_review",
   "summary": {
@@ -9,9 +9,9 @@
     "daily_win_rate_5d": 0.0,
     "daily_avg_return_5d": -6.1072680412705305,
     "potential_signals": 252,
-    "potential_completed": 144,
-    "potential_win_rate_5d": 48.61111111111111,
-    "potential_avg_return_5d": 0.8061165478725043,
+    "potential_completed": 156,
+    "potential_win_rate_5d": 47.43589743589743,
+    "potential_avg_return_5d": 0.4864888597034421,
     "backtest_risk_level": "sample_too_small",
     "backtest_completed": 3
   },
@@ -19,17 +19,17 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 249,
-      "completed": 142,
-      "win_rate_5d": 49.29577464788733,
-      "avg_return_5d": 0.8687298748744797,
+      "completed": 154,
+      "win_rate_5d": 48.05194805194805,
+      "avg_return_5d": 0.5400722172225482,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "放量長紅",
-      "signals": 55,
-      "completed": 30,
-      "win_rate_5d": 73.33333333333333,
-      "avg_return_5d": 5.866960087452392,
+      "label": "量能+K線+法人開始同步",
+      "signals": 47,
+      "completed": 29,
+      "win_rate_5d": 68.96551724137932,
+      "avg_return_5d": 5.191466501276232,
       "stop_hit_rate": null
     },
     "weekly_themes": [
@@ -69,14 +69,14 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 249,
-      "completed": 142,
-      "win_rate_5d": 49.29577464788733,
-      "avg_return_5d": 0.8687298748744797,
+      "completed": 154,
+      "win_rate_5d": 48.05194805194805,
+      "avg_return_5d": 0.5400722172225482,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "題材+法人開始同步",
-      "signals": 21,
+      "signals": 19,
       "completed": 18,
       "win_rate_5d": 22.22222222222222,
       "avg_return_5d": -3.6592457319811182,
@@ -110,8 +110,8 @@
     "sample_state": {
       "daily_completed": 3,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 144,
-      "potential_win_rate_5d": 48.61111111111111
+      "potential_completed": 156,
+      "potential_win_rate_5d": 47.43589743589743
     },
     "issues": [
       {
@@ -125,14 +125,14 @@
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
         "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
-        "evidence": "completed=144, win_rate_5d=48.6%",
+        "evidence": "completed=156, win_rate_5d=47.4%",
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=因子, label=量能+K線+法人前導不足, completed=1",
+        "evidence": "group=因子, label=量能+K線+法人前導不足, completed=2",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
