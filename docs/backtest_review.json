@@ -1,25 +1,25 @@
 {
-  "as_of": "2026-10-21",
-  "generated_at": "2026-10-22T07:53:48+08:00",
+  "as_of": "2026-10-22",
+  "generated_at": "2026-10-23T07:32:43+08:00",
   "status": "ok",
   "risk_level": "sample_too_small",
   "summary": {
     "signals": 4,
-    "completed": 3,
+    "completed": 4,
     "win_rate_5d": 0.0,
-    "avg_return_5d": -6.1072680412705305,
+    "avg_return_5d": -6.668903119404991,
     "stop_hit_rate": 75.0,
-    "data_completion_rate_5d": 75.0,
+    "data_completion_rate_5d": 100.0,
     "ai_win_rate_5d": 0.0,
-    "potential_win_rate_5d": 44.642857142857146
+    "potential_win_rate_5d": 40.828402366863905
   },
   "best": {
     "score_band": {
       "label": "75-84",
       "signals": 4,
-      "completed": 3,
+      "completed": 4,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -6.1072680412705305,
+      "avg_return_5d": -6.668903119404991,
       "stop_hit_rate": 75.0
     },
     "theme": {
@@ -43,9 +43,9 @@
     "segments": [
       {
         "label": "整體完成樣本",
-        "completed": 3,
+        "completed": 4,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -6.1072680412705305
+        "avg_return_5d": -6.668903119404991
       }
     ]
   },
@@ -53,9 +53,9 @@
     "score_band": {
       "label": "75-84",
       "signals": 4,
-      "completed": 3,
+      "completed": 4,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -6.1072680412705305,
+      "avg_return_5d": -6.668903119404991,
       "stop_hit_rate": 75.0
     },
     "theme": {
@@ -69,9 +69,9 @@
     "action": {
       "label": "等拉回",
       "signals": 3,
-      "completed": 2,
+      "completed": 3,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -8.230276004376186,
+      "avg_return_5d": -8.271453454186913,
       "stop_hit_rate": 100.0
     },
     "source_layer": {},
@@ -80,14 +80,14 @@
     "failure_attribution": [
       {
         "label": "進場後轉弱",
-        "count": 3,
-        "avg_return_5d": -6.1072680412705305,
+        "count": 4,
+        "avg_return_5d": -6.668903119404991,
         "lesson": "樣本仍需累積，先保留觀察。"
       },
       {
         "label": "停損觸發",
-        "count": 2,
-        "avg_return_5d": -8.230276004376186,
+        "count": 3,
+        "avg_return_5d": -8.271453454186913,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
       }
     ]
@@ -97,21 +97,21 @@
     "failure_factors": [
       {
         "label": "進場後轉弱",
-        "count": 3,
-        "avg_return_5d": -6.1072680412705305
+        "count": 4,
+        "avg_return_5d": -6.668903119404991
       },
       {
         "label": "停損觸發",
-        "count": 2,
-        "avg_return_5d": -8.230276004376186
+        "count": 3,
+        "avg_return_5d": -8.271453454186913
       }
     ],
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 0.0%，平均報酬 -6.1%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 0.0%，平均報酬 -6.7%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "主要失敗歸因：進場後轉弱 3 筆，5日平均 -6.1%。"
+      "主要失敗歸因：進場後轉弱 4 筆，5日平均 -6.7%。"
     ],
     "guard_segments": []
   },
@@ -121,9 +121,9 @@
     "likely_causes": [
       {
         "label": "75-84",
-        "sample": 3,
+        "sample": 4,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -6.1072680412705305,
+        "avg_return_5d": -6.668903119404991,
         "stop_hit_rate": 75.0,
         "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
       },
@@ -137,25 +137,25 @@
       },
       {
         "label": "等拉回",
-        "sample": 2,
+        "sample": 3,
         "win_rate_5d": 0.0,
-        "avg_return_5d": -8.230276004376186,
+        "avg_return_5d": -8.271453454186913,
         "stop_hit_rate": 100.0,
         "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
       },
       {
         "label": "進場後轉弱",
-        "sample": 3,
+        "sample": 4,
         "win_rate_5d": null,
-        "avg_return_5d": -6.1072680412705305,
+        "avg_return_5d": -6.668903119404991,
         "stop_hit_rate": null,
         "reason": "樣本仍需累積，先保留觀察。"
       },
       {
         "label": "停損觸發",
-        "sample": 2,
+        "sample": 3,
         "win_rate_5d": null,
-        "avg_return_5d": -8.230276004376186,
+        "avg_return_5d": -8.271453454186913,
         "stop_hit_rate": null,
         "reason": "停損有效，需檢討是否進場太晚或波動過大。"
       }
@@ -175,9 +175,9 @@
     },
     {
       "month": "2026-10",
-      "signals": 2,
+      "signals": 3,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -6.4520984501676475,
+      "avg_return_5d": -7.086001751381222,
       "best_return_5d": -1.8612521150592216,
       "worst_return_5d": -11.042944785276074
     }
@@ -186,9 +186,9 @@
     {
       "group": "操作",
       "label": "等拉回",
-      "completed": 2,
+      "completed": 3,
       "win_rate_5d": 0.0,
-      "avg_return_5d": -8.230276004376186,
+      "avg_return_5d": -8.271453454186913,
       "priority": "降權觀察",
       "sample_label": "樣本不足"
     },
@@ -198,6 +198,15 @@
       "completed": 1,
       "win_rate_5d": 0.0,
       "avg_return_5d": -1.8612521150592216,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    },
+    {
+      "group": "題材",
+      "label": "AI電力/重電/電網",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -8.353808353808368,
       "priority": "降權觀察",
       "sample_label": "樣本不足"
     },
@@ -221,6 +230,15 @@
     },
     {
       "group": "題材",
+      "label": "能源與重電",
+      "completed": 1,
+      "win_rate_5d": 0.0,
+      "avg_return_5d": -8.353808353808368,
+      "priority": "降權觀察",
+      "sample_label": "樣本不足"
+    },
+    {
+      "group": "題材",
       "label": "記憶體/HBM",
       "completed": 1,
       "win_rate_5d": 0.0,
@@ -234,8 +252,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "進場後轉弱",
-      "sample": 3,
-      "avg_return_5d": -6.1072680412705305,
+      "sample": 4,
+      "avg_return_5d": -6.668903119404991,
       "action": "提高風險權重",
       "reason": "樣本仍需累積，先保留觀察。"
     },
@@ -243,8 +261,8 @@
       "priority": "high",
       "source": "失敗歸因",
       "target": "停損觸發",
-      "sample": 2,
-      "avg_return_5d": -8.230276004376186,
+      "sample": 3,
+      "avg_return_5d": -8.271453454186913,
       "action": "提高風險權重",
       "reason": "停損有效，需檢討是否進場太晚或波動過大。"
     },
@@ -252,8 +270,8 @@
       "priority": "medium",
       "source": "校準建議",
       "target": "操作:等拉回",
-      "sample": 2,
-      "avg_return_5d": -8.230276004376186,
+      "sample": 3,
+      "avg_return_5d": -8.271453454186913,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
@@ -269,9 +287,9 @@
     {
       "priority": "medium",
       "source": "校準建議",
-      "target": "題材:低軌衛星/SpaceX",
+      "target": "題材:AI電力/重電/電網",
       "sample": 1,
-      "avg_return_5d": -1.8612521150592216,
+      "avg_return_5d": -8.353808353808368,
       "action": "降權觀察",
       "reason": "依近期 5 日績效調整觀察權重。"
     },
