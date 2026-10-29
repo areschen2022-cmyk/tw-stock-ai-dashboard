@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-27",
-  "generated_at": "2026-10-28T08:15:00+08:00",
+  "as_of": "2026-10-28",
+  "generated_at": "2026-10-29T08:14:55+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -8,78 +8,78 @@
     "daily_completed": 3,
     "daily_win_rate_5d": 0.0,
     "daily_avg_return_5d": -7.086001751381222,
-    "potential_signals": 262,
-    "potential_completed": 155,
-    "potential_win_rate_5d": 36.12903225806451,
-    "potential_avg_return_5d": -1.5013769119090927,
+    "potential_signals": 274,
+    "potential_completed": 168,
+    "potential_win_rate_5d": 38.69047619047619,
+    "potential_avg_return_5d": -1.2768168589662625,
     "backtest_risk_level": "sample_too_small",
     "backtest_completed": 3
   },
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 260,
-      "completed": 153,
-      "win_rate_5d": 36.60130718954248,
-      "avg_return_5d": -1.4542376527911238,
+      "signals": 272,
+      "completed": 166,
+      "win_rate_5d": 39.1566265060241,
+      "avg_return_5d": -1.2306636857678588,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "低位錘子線",
-      "signals": 30,
-      "completed": 14,
-      "win_rate_5d": 42.857142857142854,
-      "avg_return_5d": 0.005105996388182543,
+      "signals": 37,
+      "completed": 19,
+      "win_rate_5d": 52.63157894736842,
+      "avg_return_5d": 0.3536245671071435,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "低軌衛星/SpaceX",
-        "week_score": 257,
-        "trend": "-",
-        "today": 32
+        "week_score": 263,
+        "trend": "升溫↑",
+        "today": 42
       },
       {
         "theme": "AI伺服器",
-        "week_score": 255,
+        "week_score": 262,
         "trend": "急升🔥",
-        "today": 44
-      },
-      {
-        "theme": "記憶體/HBM",
-        "week_score": 229,
-        "trend": "急升🔥",
-        "today": 62
+        "today": 43
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 225,
-        "trend": "持平→",
-        "today": 31
+        "week_score": 253,
+        "trend": "急升🔥",
+        "today": 53
+      },
+      {
+        "theme": "記憶體/HBM",
+        "week_score": 240,
+        "trend": "升溫↑",
+        "today": 46
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 213,
-        "trend": "急升🔥",
-        "today": 52
+        "week_score": 225,
+        "trend": "-",
+        "today": 33
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 260,
-      "completed": 153,
-      "win_rate_5d": 36.60130718954248,
-      "avg_return_5d": -1.4542376527911238,
+      "signals": 272,
+      "completed": 166,
+      "win_rate_5d": 39.1566265060241,
+      "avg_return_5d": -1.2306636857678588,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "法人前導不足",
       "signals": 17,
-      "completed": 11,
-      "win_rate_5d": 27.27272727272727,
-      "avg_return_5d": -4.963659787539012,
+      "completed": 12,
+      "win_rate_5d": 25.0,
+      "avg_return_5d": -4.631720818315988,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -110,8 +110,8 @@
     "sample_state": {
       "daily_completed": 3,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 155,
-      "potential_win_rate_5d": 36.12903225806451
+      "potential_completed": 168,
+      "potential_win_rate_5d": 38.69047619047619
     },
     "issues": [
       {
@@ -125,7 +125,7 @@
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
         "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
-        "evidence": "completed=155, win_rate_5d=36.1%",
+        "evidence": "completed=168, win_rate_5d=38.7%",
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
@@ -150,7 +150,7 @@
     {
       "type": "deweight",
       "target": "潛力雷達：低位醞釀",
-      "reason": "已完成 153 筆，5日平均 -1.5%，下週先降權。"
+      "reason": "已完成 166 筆，5日平均 -1.2%，下週先降權。"
     },
     {
       "type": "carry_forward",
