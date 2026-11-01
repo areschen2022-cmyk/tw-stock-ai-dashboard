@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-29",
-  "generated_at": "2026-10-30T08:36:49+08:00",
+  "as_of": "2026-10-30",
+  "generated_at": "2026-11-02T07:47:55+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -9,9 +9,9 @@
     "daily_win_rate_5d": 0.0,
     "daily_avg_return_5d": -7.086001751381222,
     "potential_signals": 274,
-    "potential_completed": 179,
-    "potential_win_rate_5d": 37.43016759776536,
-    "potential_avg_return_5d": -1.4845386041220112,
+    "potential_completed": 168,
+    "potential_win_rate_5d": 35.714285714285715,
+    "potential_avg_return_5d": -1.8543695565317282,
     "backtest_risk_level": "sample_too_small",
     "backtest_completed": 3
   },
@@ -19,49 +19,49 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 272,
-      "completed": 177,
-      "win_rate_5d": 37.85310734463277,
-      "avg_return_5d": -1.4436008455874147,
+      "completed": 166,
+      "win_rate_5d": 36.144578313253014,
+      "avg_return_5d": -1.8151748495690527,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "低位錘子線",
-      "signals": 39,
-      "completed": 19,
-      "win_rate_5d": 52.63157894736842,
-      "avg_return_5d": 0.3536245671071435,
+      "signals": 40,
+      "completed": 18,
+      "win_rate_5d": 50.0,
+      "avg_return_5d": 0.13634227181571032,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
-        "theme": "低軌衛星/SpaceX",
-        "week_score": 264,
-        "trend": "升溫↑",
-        "today": 42
+        "theme": "矽光子/CPO",
+        "week_score": 257,
+        "trend": "-",
+        "today": 32
       },
       {
         "theme": "AI伺服器",
-        "week_score": 255,
-        "trend": "升溫↑",
-        "today": 47
+        "week_score": 248,
+        "trend": "降溫↓",
+        "today": 24
+      },
+      {
+        "theme": "低軌衛星/SpaceX",
+        "week_score": 233,
+        "trend": "-",
+        "today": 25
       },
       {
         "theme": "記憶體/HBM",
-        "week_score": 252,
-        "trend": "-",
-        "today": 42
+        "week_score": 226,
+        "trend": "降溫↓",
+        "today": 3
       },
       {
-        "theme": "矽光子/CPO",
-        "week_score": 251,
+        "theme": "網通光通訊",
+        "week_score": 217,
         "trend": "升溫↑",
-        "today": 38
-      },
-      {
-        "theme": "先進封裝/CoWoS",
-        "week_score": 243,
-        "trend": "升溫↑",
-        "today": 47
+        "today": 32
       }
     ]
   },
@@ -69,17 +69,17 @@
     "potential_stage": {
       "label": "低位醞釀",
       "signals": 272,
-      "completed": 177,
-      "win_rate_5d": 37.85310734463277,
-      "avg_return_5d": -1.4436008455874147,
+      "completed": 166,
+      "win_rate_5d": 36.144578313253014,
+      "avg_return_5d": -1.8151748495690527,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "法人前導不足",
-      "signals": 14,
-      "completed": 12,
-      "win_rate_5d": 25.0,
-      "avg_return_5d": -4.631720818315988,
+      "signals": 12,
+      "completed": 10,
+      "win_rate_5d": 20.0,
+      "avg_return_5d": -5.178490230164103,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -110,8 +110,8 @@
     "sample_state": {
       "daily_completed": 3,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 179,
-      "potential_win_rate_5d": 37.43016759776536
+      "potential_completed": 168,
+      "potential_win_rate_5d": 35.714285714285715
     },
     "issues": [
       {
@@ -125,7 +125,7 @@
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
         "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
-        "evidence": "completed=179, win_rate_5d=37.4%",
+        "evidence": "completed=168, win_rate_5d=35.7%",
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
@@ -150,7 +150,7 @@
     {
       "type": "deweight",
       "target": "潛力雷達：低位醞釀",
-      "reason": "已完成 177 筆，5日平均 -1.4%，下週先降權。"
+      "reason": "已完成 166 筆，5日平均 -1.8%，下週先降權。"
     },
     {
       "type": "carry_forward",
