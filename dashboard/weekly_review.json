@@ -1,100 +1,100 @@
 {
-  "as_of": "2026-10-30",
-  "generated_at": "2026-11-02T08:10:52+08:00",
+  "as_of": "2026-11-02",
+  "generated_at": "2026-11-03T10:34:56+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
-    "daily_signals": 3,
-    "daily_completed": 3,
+    "daily_signals": 2,
+    "daily_completed": 2,
     "daily_win_rate_5d": 0.0,
-    "daily_avg_return_5d": -7.086001751381222,
-    "potential_signals": 274,
-    "potential_completed": 168,
-    "potential_win_rate_5d": 35.714285714285715,
-    "potential_avg_return_5d": -1.8543695565317282,
+    "daily_avg_return_5d": -9.698376569542221,
+    "potential_signals": 250,
+    "potential_completed": 147,
+    "potential_win_rate_5d": 29.931972789115648,
+    "potential_avg_return_5d": -3.4583803364811105,
     "backtest_risk_level": "sample_too_small",
-    "backtest_completed": 3
+    "backtest_completed": 2
   },
   "best": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 272,
-      "completed": 166,
-      "win_rate_5d": 36.144578313253014,
-      "avg_return_5d": -1.8151748495690527,
+      "signals": 249,
+      "completed": 146,
+      "win_rate_5d": 30.136986301369863,
+      "avg_return_5d": -3.424850007595307,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "低位錘子線",
-      "signals": 40,
-      "completed": 18,
-      "win_rate_5d": 50.0,
-      "avg_return_5d": 0.13634227181571032,
+      "label": "K線+法人開始同步",
+      "signals": 39,
+      "completed": 30,
+      "win_rate_5d": 33.33333333333333,
+      "avg_return_5d": -0.9640601767989957,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 260,
-        "trend": "-",
-        "today": 36
-      },
-      {
-        "theme": "矽光子/CPO",
         "week_score": 257,
-        "trend": "-",
-        "today": 32
+        "trend": "升溫↑",
+        "today": 50
       },
       {
         "theme": "記憶體/HBM",
-        "week_score": 236,
-        "trend": "降溫↓",
-        "today": 13
+        "week_score": 252,
+        "trend": "升溫↑",
+        "today": 45
       },
       {
-        "theme": "低軌衛星/SpaceX",
-        "week_score": 230,
-        "trend": "-",
-        "today": 22
+        "theme": "矽光子/CPO",
+        "week_score": 242,
+        "trend": "升溫↑",
+        "today": 40
       },
       {
         "theme": "先進封裝/CoWoS",
-        "week_score": 227,
+        "week_score": 232,
+        "trend": "升溫↑",
+        "today": 37
+      },
+      {
+        "theme": "低軌衛星/SpaceX",
+        "week_score": 209,
         "trend": "-",
-        "today": 27
+        "today": 26
       }
     ]
   },
   "weak": {
     "potential_stage": {
       "label": "低位醞釀",
-      "signals": 272,
-      "completed": 166,
-      "win_rate_5d": 36.144578313253014,
-      "avg_return_5d": -1.8151748495690527,
+      "signals": 249,
+      "completed": 146,
+      "win_rate_5d": 30.136986301369863,
+      "avg_return_5d": -3.424850007595307,
       "stop_hit_rate": null
     },
     "potential_factor": {
-      "label": "法人前導不足",
-      "signals": 12,
-      "completed": 10,
-      "win_rate_5d": 20.0,
-      "avg_return_5d": -5.178490230164103,
+      "label": "半部位",
+      "signals": 18,
+      "completed": 12,
+      "win_rate_5d": 33.33333333333333,
+      "avg_return_5d": -6.233354412964542,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
     "failure_attribution": [
       {
-        "label": "進場後轉弱",
-        "count": 3,
-        "avg_return_5d": -7.086001751381222,
-        "lesson": "樣本仍需累積，先保留觀察。"
-      },
-      {
         "label": "停損觸發",
         "count": 2,
         "avg_return_5d": -9.698376569542221,
         "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
+      },
+      {
+        "label": "進場後轉弱",
+        "count": 2,
+        "avg_return_5d": -9.698376569542221,
+        "lesson": "樣本仍需累積，先保留觀察。"
       }
     ]
   },
@@ -108,10 +108,10 @@
       "red": 5
     },
     "sample_state": {
-      "daily_completed": 3,
+      "daily_completed": 2,
       "daily_win_rate_5d": 0.0,
-      "potential_completed": 168,
-      "potential_win_rate_5d": 35.714285714285715
+      "potential_completed": 147,
+      "potential_win_rate_5d": 29.931972789115648
     },
     "issues": [
       {
@@ -125,7 +125,7 @@
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
         "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
-        "evidence": "completed=168, win_rate_5d=35.7%",
+        "evidence": "completed=147, win_rate_5d=29.9%",
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
@@ -150,16 +150,16 @@
     {
       "type": "deweight",
       "target": "潛力雷達：低位醞釀",
-      "reason": "已完成 166 筆，5日平均 -1.8%，下週先降權。"
-    },
-    {
-      "type": "carry_forward",
-      "target": "進場後轉弱",
-      "reason": "提高風險權重"
+      "reason": "已完成 146 筆，5日平均 -3.4%，下週先降權。"
     },
     {
       "type": "carry_forward",
       "target": "停損觸發",
+      "reason": "提高風險權重"
+    },
+    {
+      "type": "carry_forward",
+      "target": "進場後轉弱",
       "reason": "提高風險權重"
     },
     {
