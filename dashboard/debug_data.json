@@ -1,15 +1,15 @@
 {
   "as_of": "2026-11-05",
-  "generated_at": "2026-11-06T09:22:03+08:00",
-  "dashboard_generated_at": "2026-11-06T09:21:54+08:00",
+  "generated_at": "2026-11-06T11:30:11+08:00",
+  "dashboard_generated_at": "2026-11-06T11:29:57+08:00",
   "source_status": {
     "label": "正常",
-    "api": 13,
-    "cache": 4794,
-    "fallback": 8,
+    "api": 3,
+    "cache": 4402,
+    "fallback": 1,
     "quota": 0,
     "error": 0,
-    "empty": 2,
+    "empty": 1,
     "official_snapshots": {
       "tpex_quotes": {
         "date": "2026-11-05",
@@ -81,106 +81,50 @@
     "score": 100,
     "source_score": 100,
     "coverage": 100.0,
-    "recovered_fetches": 130,
+    "recovered_fetches": 123,
     "effective_error": 0,
     "effective_empty": 0,
     "warnings": [
-      "已由備援/補抓補回 130 次"
+      "已由備援/補抓補回 123 次"
     ],
     "event_summary": {
-      "empty": 3,
-      "fallback": 6
+      "empty": 1,
+      "fallback": 1
     },
     "details": [
       {
+        "type": "empty",
+        "dataset": "STOCK_DAY",
+        "data_id": "TAIEX",
+        "period": "2026-05",
+        "reason": ""
+      },
+      {
         "type": "fallback",
         "dataset": "stock_prices",
-        "data_id": "6980",
+        "data_id": "TAIEX",
         "period": "",
         "reason": "twse_month_missing"
-      },
-      {
-        "type": "fallback",
-        "dataset": "revenue",
-        "data_id": "7769",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "institutional",
-        "data_id": "2465",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "margin",
-        "data_id": "2465",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "fallback",
-        "dataset": "revenue",
-        "data_id": "2465",
-        "period": "",
-        "reason": "cold_history_short"
-      },
-      {
-        "type": "empty",
-        "dataset": "TaiwanStockMarginPurchaseShortSale",
-        "data_id": "6980",
-        "period": "2026-05-01",
-        "reason": ""
       }
     ],
     "recovery_status": {
       "label": "clean",
       "retryable": 0,
       "blocked": 0,
-      "recovered": 6,
+      "recovered": 2,
       "items": [
         {
-          "dataset": "stock_prices",
-          "data_id": "6980",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "revenue",
-          "data_id": "7769",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "institutional",
-          "data_id": "2465",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "margin",
-          "data_id": "2465",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "revenue",
-          "data_id": "2465",
-          "period": "",
-          "type": "fallback",
-          "next_step": "recovered_by_fallback"
-        },
-        {
-          "dataset": "TaiwanStockMarginPurchaseShortSale",
-          "data_id": "6980",
-          "period": "2026-05-01",
+          "dataset": "STOCK_DAY",
+          "data_id": "TAIEX",
+          "period": "2026-05",
           "type": "empty",
+          "next_step": "recovered_by_fallback"
+        },
+        {
+          "dataset": "stock_prices",
+          "data_id": "TAIEX",
+          "period": "",
+          "type": "fallback",
           "next_step": "recovered_by_fallback"
         }
       ]
@@ -425,53 +369,49 @@
     "note": "已補回成功與少量歷史補抓失敗不列為阻塞；只把官方快照無效、有效錯誤、或完全沒有補回的失敗列入需檢查。"
   },
   "bundle_coverage": {
-    "stocks": 124,
+    "stocks": 113,
     "datasets": {
       "prices": {
         "minimum": 20,
         "missing": [],
-        "count": 124,
+        "count": 113,
         "coverage_pct": 100.0
       },
       "institutional": {
         "minimum": 1,
         "missing": [],
-        "count": 124,
+        "count": 113,
         "coverage_pct": 100.0
       },
       "margin": {
         "minimum": 1,
-        "missing": [
-          "6980"
-        ],
-        "count": 123,
-        "coverage_pct": 99.2
+        "missing": [],
+        "count": 113,
+        "coverage_pct": 100.0
       },
       "revenue": {
         "minimum": 1,
         "missing": [],
-        "count": 124,
+        "count": 113,
         "coverage_pct": 100.0
       },
       "revenue_15m": {
         "minimum": 15,
-        "missing": [
-          "7769"
-        ],
-        "count": 123,
-        "coverage_pct": 99.2
+        "missing": [],
+        "count": 113,
+        "coverage_pct": 100.0
       }
     },
-    "all_critical_complete": false
+    "all_critical_complete": true
   },
   "universe": {
     "enabled": true,
     "mode": "daily_layered",
     "target_total_listed": 1056,
-    "selected_count": 93,
-    "coverage_pct": 8.8,
+    "selected_count": 80,
+    "coverage_pct": 7.6,
     "core_count": 10,
-    "active_theme_count": 58,
+    "active_theme_count": 45,
     "theme_rotation_count": 0,
     "market_liquidity_count": 25,
     "market_universe_available": 1983,
@@ -479,16 +419,16 @@
     "weekly_market_limit": 60,
     "weekly_full_scan_weekday": 0,
     "active_themes": [
-      "ai_server",
-      "defense_ai",
+      "advanced_packaging",
       "silicon_photonics",
-      "memory",
-      "low_orbit_satellite"
+      "ai_server",
+      "network_optical_communication",
+      "defense_ai"
     ],
-    "pending_outcome_added": 31,
+    "pending_outcome_added": 33,
     "full_market_universe": 1056,
-    "stage1_scanned": 124,
-    "stage1_coverage_pct": 11.74
+    "stage1_scanned": 113,
+    "stage1_coverage_pct": 10.7
   },
   "retry": {
     "status_counts": {
@@ -735,13 +675,13 @@
         "label": "資料源",
         "status": "warn",
         "value": "正常",
-        "note": "API 13 | 快取 4794 | 限流 0"
+        "note": "API 3 | 快取 4402 | 限流 0"
       },
       {
         "key": "score",
         "label": "每日評分",
         "status": "ok",
-        "value": "124/124 檔",
+        "value": "113/113 檔",
         "note": "S+ 0 | S 0 | A 0"
       },
       {
@@ -781,15 +721,15 @@
       }
     ],
     "summary": {
-      "scanned": 124,
-      "valid": 124,
+      "scanned": 113,
+      "valid": 113,
       "watch_signals": 1,
       "watch_completed": 1,
       "potential_signals": 274,
       "potential_completed": 170,
       "data_coverage": {
-        "bundle_stocks": 124,
-        "all_critical_complete": false,
+        "bundle_stocks": 113,
+        "all_critical_complete": true,
         "datasets": {
           "prices": {
             "coverage_pct": 100.0,
@@ -800,24 +740,24 @@
             "missing_count": 0
           },
           "margin": {
-            "coverage_pct": 99.2,
-            "missing_count": 1
+            "coverage_pct": 100.0,
+            "missing_count": 0
           },
           "revenue": {
             "coverage_pct": 100.0,
             "missing_count": 0
           },
           "revenue_15m": {
-            "coverage_pct": 99.2,
-            "missing_count": 1
+            "coverage_pct": 100.0,
+            "missing_count": 0
           }
         }
       },
       "universe": {
         "mode": "daily_layered",
-        "selected_count": 93,
+        "selected_count": 80,
         "target_total_listed": 1056,
-        "coverage_pct": 8.8,
+        "coverage_pct": 7.6,
         "market_universe_available": 1983
       }
     },
@@ -827,7 +767,7 @@
         "status": "warn",
         "label": "資料源",
         "reason": "資料源狀態或資料品質低於正常門檻。",
-        "evidence": "source=正常; quality=high; api=13; cache=4794; quota=0; error=0",
+        "evidence": "source=正常; quality=high; api=3; cache=4402; quota=0; error=0",
         "next_action": "優先確認 TWSE/TPEX 官方資料、fallback 與快取是否成功補回。"
       },
       {
@@ -842,7 +782,7 @@
     "history": [
       {
         "run_date": "2026-11-05",
-        "generated_at": "2026-11-06T09:22:03+08:00",
+        "generated_at": "2026-11-06T11:30:11+08:00",
         "overall_status": "warn",
         "source_status": "warn",
         "score_status": "ok",
@@ -852,15 +792,15 @@
         "retry_status": "warn",
         "pages_status": "ok",
         "summary": {
-          "scanned": 124,
-          "valid": 124,
+          "scanned": 113,
+          "valid": 113,
           "watch_signals": 1,
           "watch_completed": 1,
           "potential_signals": 274,
           "potential_completed": 170,
           "data_coverage": {
-            "bundle_stocks": 124,
-            "all_critical_complete": false,
+            "bundle_stocks": 113,
+            "all_critical_complete": true,
             "datasets": {
               "prices": {
                 "coverage_pct": 100.0,
@@ -871,24 +811,24 @@
                 "missing_count": 0
               },
               "margin": {
-                "coverage_pct": 99.2,
-                "missing_count": 1
+                "coverage_pct": 100.0,
+                "missing_count": 0
               },
               "revenue": {
                 "coverage_pct": 100.0,
                 "missing_count": 0
               },
               "revenue_15m": {
-                "coverage_pct": 99.2,
-                "missing_count": 1
+                "coverage_pct": 100.0,
+                "missing_count": 0
               }
             }
           },
           "universe": {
             "mode": "daily_layered",
-            "selected_count": 93,
+            "selected_count": 80,
             "target_total_listed": 1056,
-            "coverage_pct": 8.8,
+            "coverage_pct": 7.6,
             "market_universe_available": 1983
           }
         },
@@ -898,13 +838,13 @@
             "label": "資料源",
             "status": "warn",
             "value": "正常",
-            "note": "API 13 | 快取 4794 | 限流 0"
+            "note": "API 3 | 快取 4402 | 限流 0"
           },
           {
             "key": "score",
             "label": "每日評分",
             "status": "ok",
-            "value": "124/124 檔",
+            "value": "113/113 檔",
             "note": "S+ 0 | S 0 | A 0"
           },
           {
