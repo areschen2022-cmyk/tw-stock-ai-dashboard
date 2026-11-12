@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T10:01:43+08:00",
+  "generated_at": "2026-11-12T10:09:08+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -11,30 +11,30 @@
     "weekly_as_of": "2026-11-11",
     "performance_as_of": "2026-11-11",
     "potential_as_of": "2026-11-11",
-    "rows": 107,
-    "valid": 107,
+    "rows": 105,
+    "valid": 105,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
       {
         "update_date": "2026-11-12",
         "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4115,
-        "source_date": "2026-11-06",
-        "message": "35 divergence signals; previous=2026-10-30",
-        "run_id": "43138043096",
-        "created_at": "2026-11-12 01:59:51"
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Read timed out. (read timeout=45)",
+        "run_id": "43138900750",
+        "created_at": "2026-11-12 02:07:57"
       },
       {
         "update_date": "2026-11-11",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 107,
+        "row_count": 105,
         "source_date": "2026-11-11",
-        "message": "107 stocks scanned for institutional flow",
-        "run_id": "43138043096",
-        "created_at": "2026-11-12 02:01:13"
+        "message": "105 stocks scanned for institutional flow",
+        "run_id": "43138900750",
+        "created_at": "2026-11-12 02:08:37"
       },
       {
         "update_date": "2026-11-11",
@@ -119,10 +119,10 @@
     ]
   },
   "database": {
-    "daily_scores": 107,
+    "daily_scores": 105,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 10
+    "recent_tdcc_update_rows": 9
   },
   "issues": [
     {
