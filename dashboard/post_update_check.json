@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T10:09:08+08:00",
+  "generated_at": "2026-11-13T09:25:34+08:00",
   "status": "ok",
   "counts": {
     "critical": 0,
@@ -7,15 +7,35 @@
     "info": 3
   },
   "context": {
-    "as_of": "2026-11-11",
-    "weekly_as_of": "2026-11-11",
-    "performance_as_of": "2026-11-11",
-    "potential_as_of": "2026-11-11",
-    "rows": 105,
-    "valid": 105,
+    "as_of": "2026-11-12",
+    "weekly_as_of": "2026-11-12",
+    "performance_as_of": "2026-11-12",
+    "potential_as_of": "2026-11-12",
+    "rows": 109,
+    "valid": 109,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-11-13",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "43344159551",
+        "created_at": "2026-11-13 01:24:45"
+      },
+      {
+        "update_date": "2026-11-12",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 109,
+        "source_date": "2026-11-12",
+        "message": "109 stocks scanned for institutional flow",
+        "run_id": "43344159551",
+        "created_at": "2026-11-13 01:25:02"
+      },
       {
         "update_date": "2026-11-12",
         "dataset": "tdcc_retail_holders",
@@ -30,11 +50,11 @@
         "update_date": "2026-11-11",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 105,
+        "row_count": 107,
         "source_date": "2026-11-11",
-        "message": "105 stocks scanned for institutional flow",
-        "run_id": "43138900750",
-        "created_at": "2026-11-12 02:08:37"
+        "message": "107 stocks scanned for institutional flow",
+        "run_id": "43151344152",
+        "created_at": "2026-11-12 03:56:13"
       },
       {
         "update_date": "2026-11-11",
@@ -95,34 +115,14 @@
         "message": "35 divergence signals; previous=2026-10-30",
         "run_id": "42537318963",
         "created_at": "2026-11-08 23:54:48"
-      },
-      {
-        "update_date": "2026-11-06",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 111,
-        "source_date": "2026-11-06",
-        "message": "111 stocks scanned for institutional flow",
-        "run_id": "42552583685",
-        "created_at": "2026-11-09 02:45:35"
-      },
-      {
-        "update_date": "2026-11-06",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4111,
-        "source_date": "2026-10-30",
-        "message": "28 divergence signals; previous=2026-10-22",
-        "run_id": "42143031332",
-        "created_at": "2026-11-06 01:21:04"
       }
     ]
   },
   "database": {
-    "daily_scores": 105,
+    "daily_scores": 109,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 9
+    "recent_tdcc_update_rows": 8
   },
   "issues": [
     {
