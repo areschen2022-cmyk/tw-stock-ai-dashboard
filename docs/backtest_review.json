@@ -1,260 +1,64 @@
 {
-  "as_of": "2026-11-13",
-  "generated_at": "2026-11-16T08:42:08+08:00",
+  "as_of": "2026-11-16",
+  "generated_at": "2026-11-17T11:07:25+08:00",
   "status": "ok",
   "risk_level": "sample_too_small",
   "summary": {
-    "signals": 1,
-    "completed": 1,
-    "win_rate_5d": 0.0,
-    "avg_return_5d": -8.353808353808368,
-    "stop_hit_rate": 100.0,
+    "signals": 0,
+    "completed": 0,
+    "win_rate_5d": null,
+    "avg_return_5d": null,
+    "stop_hit_rate": null,
     "data_completion_rate_5d": 100.0,
     "ai_win_rate_5d": null,
-    "potential_win_rate_5d": 22.395833333333336
+    "potential_win_rate_5d": 25.0
   },
   "best": {
-    "score_band": {
-      "label": "75-84",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
-    "theme": {
-      "label": "AI電力/重電/電網",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
-    "action": {
-      "label": "等拉回",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
+    "score_band": {},
+    "theme": {},
+    "action": {},
     "source_layer": {},
     "factor_layer": {},
-    "segments": [
-      {
-        "label": "整體完成樣本",
-        "completed": 1,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -8.353808353808368
-      }
-    ]
+    "segments": []
   },
   "weak": {
-    "score_band": {
-      "label": "75-84",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
-    "theme": {
-      "label": "AI電力/重電/電網",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
-    "action": {
-      "label": "等拉回",
-      "signals": 1,
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "stop_hit_rate": 100.0
-    },
+    "score_band": {},
+    "theme": {},
+    "action": {},
     "source_layer": {},
     "factor_layer": {},
     "segments": [],
-    "failure_attribution": [
-      {
-        "label": "停損觸發",
-        "count": 1,
-        "avg_return_5d": -8.353808353808368,
-        "lesson": "停損有效，需檢討是否進場太晚或波動過大。"
-      },
-      {
-        "label": "進場後轉弱",
-        "count": 1,
-        "avg_return_5d": -8.353808353808368,
-        "lesson": "樣本仍需累積，先保留觀察。"
-      }
-    ]
+    "failure_attribution": []
   },
   "learning": {
     "success_factors": [],
-    "failure_factors": [
-      {
-        "label": "停損觸發",
-        "count": 1,
-        "avg_return_5d": -8.353808353808368
-      },
-      {
-        "label": "進場後轉弱",
-        "count": 1,
-        "avg_return_5d": -8.353808353808368
-      }
-    ],
+    "failure_factors": [],
     "notes": []
   },
   "why_win_rate_not_higher": {
-    "headline": "近期 5 日勝率 0.0%，平均報酬 -8.4%；需降低高分追價與弱題材追高。",
+    "headline": "近期 5 日勝率 0.0%，平均報酬 0.0%；需降低高分追價與弱題材追高。",
     "root_causes": [
-      "主要失敗歸因：停損觸發 1 筆，5日平均 -8.4%。"
+      "近期整體勝率或平均報酬偏弱，但尚未形成足夠集中的可歸因區塊。"
     ],
     "guard_segments": []
   },
   "win_rate_diagnosis": {
     "triggered": true,
     "headline": "5日勝率 0.0%，低於 50% 門檻。",
-    "likely_causes": [
-      {
-        "label": "75-84",
-        "sample": 1,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -8.353808353808368,
-        "stop_hit_rate": 100.0,
-        "reason": "分數區間報酬偏弱，可能代表高分仍有追價或樣本偏誤。"
-      },
-      {
-        "label": "AI電力/重電/電網",
-        "sample": 1,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -8.353808353808368,
-        "stop_hit_rate": 100.0,
-        "reason": "題材表現拖累，短期不宜只因新聞熱度加分。"
-      },
-      {
-        "label": "等拉回",
-        "sample": 1,
-        "win_rate_5d": 0.0,
-        "avg_return_5d": -8.353808353808368,
-        "stop_hit_rate": 100.0,
-        "reason": "操作型態表現偏弱，需調整進場條件或降低優先度。"
-      },
-      {
-        "label": "停損觸發",
-        "sample": 1,
-        "win_rate_5d": null,
-        "avg_return_5d": -8.353808353808368,
-        "stop_hit_rate": null,
-        "reason": "停損有效，需檢討是否進場太晚或波動過大。"
-      },
-      {
-        "label": "進場後轉弱",
-        "sample": 1,
-        "win_rate_5d": null,
-        "avg_return_5d": -8.353808353808368,
-        "stop_hit_rate": null,
-        "reason": "樣本仍需累積，先保留觀察。"
-      }
-    ],
+    "likely_causes": [],
     "recommended_actions": [
       "整體勝率低於 50%，但尚未有單一穩定拖累因子；先維持小部位並累積樣本。"
     ]
   },
-  "monthly_returns": [
-    {
-      "month": "2026-10",
-      "signals": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "best_return_5d": -8.353808353808368,
-      "worst_return_5d": -8.353808353808368
-    }
-  ],
-  "review_actions": [
-    {
-      "group": "操作",
-      "label": "等拉回",
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "AI電力/重電/電網",
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    },
-    {
-      "group": "題材",
-      "label": "能源與重電",
-      "completed": 1,
-      "win_rate_5d": 0.0,
-      "avg_return_5d": -8.353808353808368,
-      "priority": "降權觀察",
-      "sample_label": "樣本不足"
-    }
-  ],
+  "monthly_returns": [],
+  "review_actions": [],
   "adaptive_feedback": [
-    {
-      "priority": "high",
-      "source": "失敗歸因",
-      "target": "停損觸發",
-      "sample": 1,
-      "avg_return_5d": -8.353808353808368,
-      "action": "提高風險權重",
-      "reason": "停損有效，需檢討是否進場太晚或波動過大。"
-    },
-    {
-      "priority": "high",
-      "source": "失敗歸因",
-      "target": "進場後轉弱",
-      "sample": 1,
-      "avg_return_5d": -8.353808353808368,
-      "action": "提高風險權重",
-      "reason": "樣本仍需累積，先保留觀察。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "操作:等拉回",
-      "sample": 1,
-      "avg_return_5d": -8.353808353808368,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "題材:AI電力/重電/電網",
-      "sample": 1,
-      "avg_return_5d": -8.353808353808368,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
-    {
-      "priority": "medium",
-      "source": "校準建議",
-      "target": "題材:能源與重電",
-      "sample": 1,
-      "avg_return_5d": -8.353808353808368,
-      "action": "降權觀察",
-      "reason": "依近期 5 日績效調整觀察權重。"
-    },
     {
       "priority": "medium",
       "source": "訊號因子",
-      "target": "量能+K線",
-      "sample": 1,
-      "avg_return_5d": -14.880952380952381,
+      "target": "題材+量能+法人開始同步",
+      "sample": 3,
+      "avg_return_5d": -12.412159013880704,
       "action": "降低因子權重",
       "reason": "近期同因子表現偏弱。"
     }

@@ -1,21 +1,41 @@
 {
-  "generated_at": "2026-11-16T08:42:29+08:00",
-  "status": "ok",
+  "generated_at": "2026-11-17T11:07:39+08:00",
+  "status": "warn",
   "counts": {
     "critical": 0,
-    "warning": 0,
+    "warning": 1,
     "info": 3
   },
   "context": {
-    "as_of": "2026-11-13",
-    "weekly_as_of": "2026-11-13",
-    "performance_as_of": "2026-11-13",
-    "potential_as_of": "2026-11-13",
-    "rows": 121,
-    "valid": 121,
+    "as_of": "2026-11-16",
+    "weekly_as_of": "2026-11-16",
+    "performance_as_of": "2026-11-16",
+    "potential_as_of": "2026-11-16",
+    "rows": 145,
+    "valid": 145,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-11-17",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "44007298723",
+        "created_at": "2026-11-17 03:06:45"
+      },
+      {
+        "update_date": "2026-11-16",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 145,
+        "source_date": "2026-11-16",
+        "message": "145 stocks scanned for institutional flow",
+        "run_id": "44007298723",
+        "created_at": "2026-11-17 03:07:16"
+      },
       {
         "update_date": "2026-11-16",
         "dataset": "tdcc_retail_holders",
@@ -30,11 +50,11 @@
         "update_date": "2026-11-13",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 121,
+        "row_count": 109,
         "source_date": "2026-11-13",
-        "message": "121 stocks scanned for institutional flow",
-        "run_id": "43781482666",
-        "created_at": "2026-11-16 00:41:58"
+        "message": "109 stocks scanned for institutional flow",
+        "run_id": "43794686398",
+        "created_at": "2026-11-16 02:52:50"
       },
       {
         "update_date": "2026-11-13",
@@ -95,34 +115,14 @@
         "message": "109 stocks scanned for institutional flow",
         "run_id": "42948808728",
         "created_at": "2026-11-11 02:52:17"
-      },
-      {
-        "update_date": "2026-11-10",
-        "dataset": "tdcc_retail_holders",
-        "status": "ok",
-        "row_count": 4115,
-        "source_date": "2026-11-06",
-        "message": "35 divergence signals; previous=2026-10-30",
-        "run_id": "42747134913",
-        "created_at": "2026-11-10 03:07:33"
-      },
-      {
-        "update_date": "2026-11-09",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 140,
-        "source_date": "2026-11-09",
-        "message": "140 stocks scanned for institutional flow",
-        "run_id": "42757322044",
-        "created_at": "2026-11-10 04:41:32"
       }
     ]
   },
   "database": {
-    "daily_scores": 121,
+    "daily_scores": 145,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 5
+    "recent_tdcc_update_rows": 4
   },
   "issues": [
     {
@@ -138,9 +138,15 @@
       "suggestion": "Sync a fresh us-stock-ai dashboard JSON before using US-stock picks as a Taiwan-stock decision input."
     },
     {
+      "severity": "warning",
+      "area": "performance",
+      "message": "No watch signal records in performance data",
+      "suggestion": "Check save_watch_candidates and update_forward_returns."
+    },
+    {
       "severity": "info",
       "area": "traceability",
-      "message": "Traceability diagnosis contains 2 item(s)",
+      "message": "Traceability diagnosis contains 3 item(s)",
       "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
     }
   ],
