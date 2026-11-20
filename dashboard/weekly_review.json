@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-11-18",
-  "generated_at": "2026-11-19T10:15:50+08:00",
+  "as_of": "2026-11-19",
+  "generated_at": "2026-11-20T09:54:47+08:00",
   "status": "ok",
   "risk_level": "high_review",
   "summary": {
@@ -10,8 +10,8 @@
     "daily_avg_return_5d": null,
     "potential_signals": 274,
     "potential_completed": 192,
-    "potential_win_rate_5d": 23.4375,
-    "potential_avg_return_5d": -6.3159283007650115,
+    "potential_win_rate_5d": 19.270833333333336,
+    "potential_avg_return_5d": -7.356460661349247,
     "backtest_risk_level": "sample_too_small",
     "backtest_completed": 0
   },
@@ -20,48 +20,48 @@
       "label": "低位醞釀",
       "signals": 274,
       "completed": 192,
-      "win_rate_5d": 23.4375,
-      "avg_return_5d": -6.3159283007650115,
+      "win_rate_5d": 19.270833333333336,
+      "avg_return_5d": -7.356460661349247,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "題材+量能",
-      "signals": 14,
-      "completed": 11,
-      "win_rate_5d": 63.63636363636363,
-      "avg_return_5d": 4.092815134139385,
+      "signals": 16,
+      "completed": 12,
+      "win_rate_5d": 58.333333333333336,
+      "avg_return_5d": 3.350830825996613,
       "stop_hit_rate": null
     },
     "weekly_themes": [
       {
         "theme": "AI伺服器",
-        "week_score": 371,
-        "trend": "升溫↑",
-        "today": 64
-      },
-      {
-        "theme": "AI電力/重電/電網",
-        "week_score": 264,
-        "trend": "急升🔥",
-        "today": 41
+        "week_score": 364,
+        "trend": "-",
+        "today": 39
       },
       {
         "theme": "矽光子/CPO",
-        "week_score": 234,
-        "trend": "升溫↑",
-        "today": 42
+        "week_score": 275,
+        "trend": "急升🔥",
+        "today": 56
+      },
+      {
+        "theme": "AI電力/重電/電網",
+        "week_score": 232,
+        "trend": "急升🔥",
+        "today": 36
       },
       {
         "theme": "防禦與政策",
-        "week_score": 226,
-        "trend": "升溫↑",
+        "week_score": 231,
+        "trend": "-",
         "today": 35
       },
       {
-        "theme": "先進封裝/CoWoS",
-        "week_score": 213,
-        "trend": "升溫↑",
-        "today": 41
+        "theme": "網通光通訊",
+        "week_score": 224,
+        "trend": "急升🔥",
+        "today": 50
       }
     ]
   },
@@ -70,16 +70,16 @@
       "label": "低位醞釀",
       "signals": 274,
       "completed": 192,
-      "win_rate_5d": 23.4375,
-      "avg_return_5d": -6.3159283007650115,
+      "win_rate_5d": 19.270833333333336,
+      "avg_return_5d": -7.356460661349247,
       "stop_hit_rate": null
     },
     "potential_factor": {
       "label": "散戶減少/籌碼轉乾淨",
-      "signals": 18,
-      "completed": 17,
-      "win_rate_5d": 17.647058823529413,
-      "avg_return_5d": -12.189932289238126,
+      "signals": 16,
+      "completed": 15,
+      "win_rate_5d": 6.666666666666667,
+      "avg_return_5d": -14.075010306330174,
       "stop_hit_rate": null
     },
     "backtest_segments": [],
@@ -98,7 +98,7 @@
       "daily_completed": 0,
       "daily_win_rate_5d": null,
       "potential_completed": 192,
-      "potential_win_rate_5d": 23.4375
+      "potential_win_rate_5d": 19.270833333333336
     },
     "issues": [
       {
@@ -112,14 +112,14 @@
         "code": "potential_radar_win_rate_below_50",
         "severity": "medium",
         "finding": "潛力雷達已完成樣本勝率低於 50%，代表提前觀察條件需要再校準。",
-        "evidence": "completed=192, win_rate_5d=23.4%",
+        "evidence": "completed=192, win_rate_5d=19.3%",
         "recommendation": "把潛力雷達拆成分群回測，弱分群降權，強分群保留到正式選股前置名單。"
       },
       {
         "code": "weak_segments_available",
         "severity": "info",
         "finding": "已找到較弱的歷史分群，可作為下週調權參考。",
-        "evidence": "group=因子, label=散戶減少/籌碼轉乾淨, completed=17",
+        "evidence": "group=因子, label=量能, completed=1",
         "recommendation": "把弱分群同步到 backtest_guard，避免同類低勝率條件下週繼續放大權重。"
       }
     ],
@@ -137,11 +137,11 @@
     {
       "type": "deweight",
       "target": "潛力雷達：低位醞釀",
-      "reason": "已完成 192 筆，5日平均 -6.3%，下週先降權。"
+      "reason": "已完成 192 筆，5日平均 -7.4%，下週先降權。"
     },
     {
       "type": "carry_forward",
-      "target": "散戶減少/籌碼轉乾淨",
+      "target": "量能",
       "reason": "降低因子權重"
     },
     {

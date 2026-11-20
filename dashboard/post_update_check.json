@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T10:16:07+08:00",
+  "generated_at": "2026-11-20T09:54:59+08:00",
   "status": "warn",
   "counts": {
     "critical": 0,
@@ -7,15 +7,35 @@
     "info": 3
   },
   "context": {
-    "as_of": "2026-11-18",
-    "weekly_as_of": "2026-11-18",
-    "performance_as_of": "2026-11-18",
-    "potential_as_of": "2026-11-18",
-    "rows": 112,
-    "valid": 112,
+    "as_of": "2026-11-19",
+    "weekly_as_of": "2026-11-19",
+    "performance_as_of": "2026-11-19",
+    "potential_as_of": "2026-11-19",
+    "rows": 108,
+    "valid": 108,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-11-20",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "44656477863",
+        "created_at": "2026-11-20 01:53:40"
+      },
+      {
+        "update_date": "2026-11-19",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 108,
+        "source_date": "2026-11-19",
+        "message": "108 stocks scanned for institutional flow",
+        "run_id": "44656477863",
+        "created_at": "2026-11-20 01:54:35"
+      },
       {
         "update_date": "2026-11-19",
         "dataset": "tdcc_retail_holders",
@@ -23,18 +43,18 @@
         "row_count": 0,
         "source_date": "",
         "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-        "run_id": "44440652138",
-        "created_at": "2026-11-19 02:01:00"
+        "run_id": "44442450752",
+        "created_at": "2026-11-19 02:15:51"
       },
       {
         "update_date": "2026-11-18",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 112,
+        "row_count": 110,
         "source_date": "2026-11-18",
-        "message": "112 stocks scanned for institutional flow",
-        "run_id": "44442450752",
-        "created_at": "2026-11-19 02:15:42"
+        "message": "110 stocks scanned for institutional flow",
+        "run_id": "44457047672",
+        "created_at": "2026-11-19 04:16:26"
       },
       {
         "update_date": "2026-11-18",
@@ -95,34 +115,14 @@
         "message": "109 stocks scanned for institutional flow",
         "run_id": "43794686398",
         "created_at": "2026-11-16 02:52:50"
-      },
-      {
-        "update_date": "2026-11-13",
-        "dataset": "tdcc_retail_holders",
-        "status": "failed",
-        "row_count": 0,
-        "source_date": "",
-        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-        "run_id": "43346272558",
-        "created_at": "2026-11-13 01:40:10"
-      },
-      {
-        "update_date": "2026-11-12",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 109,
-        "source_date": "2026-11-12",
-        "message": "109 stocks scanned for institutional flow",
-        "run_id": "43359030700",
-        "created_at": "2026-11-13 03:27:58"
       }
     ]
   },
   "database": {
-    "daily_scores": 112,
+    "daily_scores": 108,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 3
+    "recent_tdcc_update_rows": 2
   },
   "issues": [
     {
