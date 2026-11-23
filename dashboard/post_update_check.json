@@ -1,21 +1,41 @@
 {
-  "generated_at": "2026-11-20T10:02:38+08:00",
+  "generated_at": "2026-11-23T09:09:17+08:00",
   "status": "warn",
   "counts": {
     "critical": 0,
-    "warning": 1,
+    "warning": 2,
     "info": 3
   },
   "context": {
-    "as_of": "2026-11-19",
-    "weekly_as_of": "2026-11-19",
-    "performance_as_of": "2026-11-19",
-    "potential_as_of": "2026-11-19",
-    "rows": 109,
-    "valid": 109,
+    "as_of": "2026-11-20",
+    "weekly_as_of": "2026-11-20",
+    "performance_as_of": "2026-11-20",
+    "potential_as_of": "2026-11-20",
+    "rows": 104,
+    "valid": 104,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-11-23",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "45092268401",
+        "created_at": "2026-11-23 01:06:14"
+      },
+      {
+        "update_date": "2026-11-20",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 104,
+        "source_date": "2026-11-20",
+        "message": "104 stocks scanned for institutional flow",
+        "run_id": "45092268401",
+        "created_at": "2026-11-23 01:08:49"
+      },
       {
         "update_date": "2026-11-20",
         "dataset": "tdcc_retail_holders",
@@ -30,11 +50,11 @@
         "update_date": "2026-11-19",
         "dataset": "institutional_flow",
         "status": "ok",
-        "row_count": 109,
+        "row_count": 107,
         "source_date": "2026-11-19",
-        "message": "109 stocks scanned for institutional flow",
-        "run_id": "44657440221",
-        "created_at": "2026-11-20 02:02:06"
+        "message": "107 stocks scanned for institutional flow",
+        "run_id": "44671818392",
+        "created_at": "2026-11-20 04:04:31"
       },
       {
         "update_date": "2026-11-19",
@@ -95,34 +115,14 @@
         "message": "144 stocks scanned for institutional flow",
         "run_id": "44021806401",
         "created_at": "2026-11-17 05:08:04"
-      },
-      {
-        "update_date": "2026-11-16",
-        "dataset": "tdcc_retail_holders",
-        "status": "failed",
-        "row_count": 0,
-        "source_date": "",
-        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-        "run_id": "43781482666",
-        "created_at": "2026-11-16 00:41:58"
-      },
-      {
-        "update_date": "2026-11-13",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 109,
-        "source_date": "2026-11-13",
-        "message": "109 stocks scanned for institutional flow",
-        "run_id": "43794686398",
-        "created_at": "2026-11-16 02:52:50"
       }
     ]
   },
   "database": {
-    "daily_scores": 109,
+    "daily_scores": 104,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
-    "recent_tdcc_update_rows": 2
+    "recent_tdcc_update_rows": 0
   },
   "issues": [
     {
@@ -148,9 +148,16 @@
       "area": "traceability",
       "message": "Traceability diagnosis contains 3 item(s)",
       "suggestion": "Review dashboard/debug_data.json traceability.diagnosis."
+    },
+    {
+      "severity": "warning",
+      "area": "database",
+      "message": "No recent TDCC retail-holder update log within 10 days",
+      "suggestion": "Check the weekly TDCC schedule and source fetch status."
     }
   ],
   "next_optimizations": [
+    "Add a compact weekly data-source status summary to the internal check report.",
     "Tune action thresholds only after checking whether zero chase candidates repeats for several days."
   ],
   "note": "Internal post-update check. Not linked from the main dashboard UI."
