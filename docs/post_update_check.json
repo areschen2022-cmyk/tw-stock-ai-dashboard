@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-24T13:09:11+08:00",
+  "generated_at": "2026-11-25T11:43:52+08:00",
   "status": "warn",
   "counts": {
     "critical": 0,
@@ -7,15 +7,35 @@
     "info": 3
   },
   "context": {
-    "as_of": "2026-11-23",
-    "weekly_as_of": "2026-11-23",
-    "performance_as_of": "2026-11-23",
-    "potential_as_of": "2026-11-23",
-    "rows": 140,
-    "valid": 139,
+    "as_of": "2026-11-24",
+    "weekly_as_of": "2026-11-24",
+    "performance_as_of": "2026-11-24",
+    "potential_as_of": "2026-11-24",
+    "rows": 108,
+    "valid": 108,
     "chase": 0,
     "pullback": 0,
     "data_updates": [
+      {
+        "update_date": "2026-11-25",
+        "dataset": "tdcc_retail_holders",
+        "status": "failed",
+        "row_count": 0,
+        "source_date": "",
+        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+        "run_id": "45541419230",
+        "created_at": "2026-11-25 03:42:25"
+      },
+      {
+        "update_date": "2026-11-24",
+        "dataset": "institutional_flow",
+        "status": "ok",
+        "row_count": 108,
+        "source_date": "2026-11-24",
+        "message": "108 stocks scanned for institutional flow",
+        "run_id": "45541419230",
+        "created_at": "2026-11-25 03:43:30"
+      },
       {
         "update_date": "2026-11-24",
         "dataset": "tdcc_retail_holders",
@@ -95,31 +115,11 @@
         "message": "110 stocks scanned for institutional flow",
         "run_id": "44457047672",
         "created_at": "2026-11-19 04:16:26"
-      },
-      {
-        "update_date": "2026-11-18",
-        "dataset": "tdcc_retail_holders",
-        "status": "failed",
-        "row_count": 0,
-        "source_date": "",
-        "message": "TDCC fetch failed after 3 attempts: HTTPSConnectionPool(host='smart.tdcc.com.tw', port=443): Max retries exceeded with url: /opendata/getOD.ashx?id=1-5 (Caused by NewConnectionError(\"HTTPSConnection(host='smart.tdcc.com.tw', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-        "run_id": "44225044663",
-        "created_at": "2026-11-18 02:45:21"
-      },
-      {
-        "update_date": "2026-11-17",
-        "dataset": "institutional_flow",
-        "status": "ok",
-        "row_count": 123,
-        "source_date": "2026-11-17",
-        "message": "123 stocks scanned for institutional flow",
-        "run_id": "44238135689",
-        "created_at": "2026-11-18 04:34:33"
       }
     ]
   },
   "database": {
-    "daily_scores": 140,
+    "daily_scores": 108,
     "traceability_runs": 1,
     "institutional_update_rows": 1,
     "recent_tdcc_update_rows": 0
